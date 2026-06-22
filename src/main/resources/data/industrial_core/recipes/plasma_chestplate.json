@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "KDK",
+    "KLK",
+    "KMK"
+  ],
+  "key": {
+    "K": { "item": "industrial_core:kronit" },
+    "D": { "item": "industrial_core:data_transfer_matrix" },
+    "L": { "item": "industrial_core:lapotron_crystal" },
+    "M": { "item": "industrial_core:kronium_alloy" }
+  },
+  "result": {
+    "item": "industrial_core:plasma_chestplate",
+    "count": 1
+  }
+}

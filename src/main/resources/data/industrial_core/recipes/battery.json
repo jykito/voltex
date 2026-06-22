@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " C ",
+    "TXT",
+    "RRR"
+  ],
+  "key": {
+    "C": { "item": "industrial_core:copper_plate" },
+    "T": { "item": "industrial_core:tin_plate" },
+    "X": { "item": "minecraft:redstone" },
+    "R": { "item": "industrial_core:rubber" }
+  },
+  "result": {
+    "item": "industrial_core:battery",
+    "count": 1
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["PLP","SCS","PLP"],
+  "key": {
+    "P": { "tag": "forge:plates/aluminum" },
+    "L": { "item": "industrial_core:logic_board" },
+    "S": { "item": "industrial_core:hardened_steel_ingot" },
+    "C": { "item": "industrial_core:crate_t2" }
+  },
+  "result": { "item": "industrial_core:crate_t3", "count": 1 }
+}

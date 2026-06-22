@@ -1,0 +1,13 @@
+{
+  "name": "industrial_core.guide.name",
+  "subtitle": "industrial_core.guide.subtitle",
+  "landing_text": "industrial_core.guide.landing",
+  "model": "patchouli:book_brown",
+  "index_icon": "industrial_core:crusher",
+  "use_resource_pack": true,
+  "i18n": true,
+  "version": "1",
+  "nameplate_color": "00C9A7",
+  "link_color": "00A98F",
+  "link_hover_color": "00E6C0"
+}

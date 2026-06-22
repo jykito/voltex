@@ -1,0 +1,12 @@
+{
+  "parent": "item/generated",
+  "textures": { "layer0": "industrial_core:item/fluid_pusher" },
+  "overrides": [
+    {"predicate": {"industrial_core:direction": 0.1}, "model": "industrial_core:item/fluid_pusher_down"},
+    {"predicate": {"industrial_core:direction": 0.2}, "model": "industrial_core:item/fluid_pusher_up"},
+    {"predicate": {"industrial_core:direction": 0.3}, "model": "industrial_core:item/fluid_pusher_north"},
+    {"predicate": {"industrial_core:direction": 0.4}, "model": "industrial_core:item/fluid_pusher_south"},
+    {"predicate": {"industrial_core:direction": 0.5}, "model": "industrial_core:item/fluid_pusher_west"},
+    {"predicate": {"industrial_core:direction": 0.6}, "model": "industrial_core:item/fluid_pusher_east"}
+  ]
+}

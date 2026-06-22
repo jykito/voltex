@@ -1,0 +1,10 @@
+{
+  "type": "forge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": [
+    "industrial_core:lead_ore_upper",
+    "industrial_core:lead_ore_middle",
+    "industrial_core:lead_ore_small"
+  ],
+  "step": "underground_ores"
+}

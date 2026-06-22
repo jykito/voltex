@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "WWW",
+    "LRL"
+  ],
+  "key": {
+    "W": { "item": "industrial_core:bare_heavy_wire" },
+    "L": { "item": "industrial_core:lead_plate" },
+    "R": { "item": "industrial_core:rubber" }
+  },
+  "result": {
+    "item": "industrial_core:heavy_magistral",
+    "count": 3
+  }
+}

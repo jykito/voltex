@@ -1,0 +1,12 @@
+{
+  "sources": [
+    {
+      "type": "single",
+      "resource": "industrial_core:item/capsule_glass"
+    },
+    {
+      "type": "single",
+      "resource": "industrial_core:item/capsule_frame"
+    }
+  ]
+}

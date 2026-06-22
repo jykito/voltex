@@ -1,0 +1,22 @@
+{
+  "name": "industrial_core.guide.entry.plasma_armor",
+  "category": "industrial_core:equipment",
+  "icon": "industrial_core:plasma_chestplate",
+  "sortnum": 20,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:plasma_chestplate",
+      "text": "industrial_core.guide.entry.plasma_armor.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.plasma_armor.1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:plasma_chestplate",
+      "text": "industrial_core.guide.entry.plasma_armor.2"
+    }
+  ]
+}

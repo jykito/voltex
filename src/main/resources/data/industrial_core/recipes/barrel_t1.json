@@ -1,0 +1,6 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["PPP","P P","PPP"],
+  "key": { "P": { "item": "industrial_core:tin_plate" } },
+  "result": { "item": "industrial_core:barrel_t1", "count": 1 }
+}

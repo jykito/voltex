@@ -1,0 +1,22 @@
+{
+  "name": "industrial_core.guide.entry.ore_washer",
+  "category": "industrial_core:machines",
+  "icon": "industrial_core:ore_washer",
+  "sortnum": 30,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:ore_washer",
+      "text": "industrial_core.guide.entry.ore_washer.0"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:ore_washer",
+      "text": "industrial_core.guide.entry.ore_washer.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.ore_washer.2"
+    }
+  ]
+}

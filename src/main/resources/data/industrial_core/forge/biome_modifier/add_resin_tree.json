@@ -1,0 +1,11 @@
+﻿{
+  "type": "forge:add_features",
+  "biomes": [
+    "minecraft:plains",
+    "minecraft:forest",
+    "minecraft:birch_forest",
+    "minecraft:swamp"
+  ],
+  "features": "industrial_core:resin_tree",
+  "step": "vegetal_decoration"
+}

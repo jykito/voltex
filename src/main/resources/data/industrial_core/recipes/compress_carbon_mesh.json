@@ -1,0 +1,13 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:compressing",
+  "ingredient": {
+    "item": "industrial_core:carbon_mesh"
+  },
+  "result": {
+    "item": "industrial_core:carbon_plate",
+    "count": 1
+  },
+  "processingTime": 100,
+  "energyCost": 50
+}

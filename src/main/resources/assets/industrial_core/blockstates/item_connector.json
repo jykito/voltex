@@ -1,0 +1,17 @@
+{
+  "variants": {
+    "facing=down,pull=false":  { "model": "industrial_core:block/item_connector" },
+    "facing=north,pull=false": { "model": "industrial_core:block/item_connector", "x": 90, "y": 180 },
+    "facing=south,pull=false": { "model": "industrial_core:block/item_connector", "x": 90 },
+    "facing=east,pull=false":  { "model": "industrial_core:block/item_connector", "x": 90, "y": 270 },
+    "facing=west,pull=false":  { "model": "industrial_core:block/item_connector", "x": 90, "y": 90 },
+    "facing=up,pull=false":    { "model": "industrial_core:block/item_connector", "x": 180 },
+
+    "facing=down,pull=true":   { "model": "industrial_core:block/item_connector_pull" },
+    "facing=north,pull=true":  { "model": "industrial_core:block/item_connector_pull", "x": 90, "y": 180 },
+    "facing=south,pull=true":  { "model": "industrial_core:block/item_connector_pull", "x": 90 },
+    "facing=east,pull=true":   { "model": "industrial_core:block/item_connector_pull", "x": 90, "y": 270 },
+    "facing=west,pull=true":   { "model": "industrial_core:block/item_connector_pull", "x": 90, "y": 90 },
+    "facing=up,pull=true":     { "model": "industrial_core:block/item_connector_pull", "x": 180 }
+  }
+}

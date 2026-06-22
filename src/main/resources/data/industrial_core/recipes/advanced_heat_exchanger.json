@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "VEV",
+    "EHE",
+    "VEV"
+  ],
+  "key": {
+    "V": { "item": "industrial_core:invar_plate" },
+    "E": { "item": "industrial_core:electrum_plate" },
+    "H": { "item": "industrial_core:heat_exchanger" }
+  },
+  "result": {
+    "item": "industrial_core:advanced_heat_exchanger",
+    "count": 1
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LBL",
+    "BMB",
+    "LBL"
+  ],
+  "key": {
+    "L": { "item": "minecraft:lapis_lazuli" },
+    "B": { "item": "minecraft:bone_meal" },
+    "M": { "item": "industrial_core:electric_motor" }
+  },
+  "result": {
+    "item": "industrial_core:cultivator_biostimulator",
+    "count": 1
+  }
+}

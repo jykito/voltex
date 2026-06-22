@@ -1,0 +1,7 @@
+﻿{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "industrial_core:block/resin_log_top",
+    "side": "industrial_core:block/resin_log"
+  }
+}

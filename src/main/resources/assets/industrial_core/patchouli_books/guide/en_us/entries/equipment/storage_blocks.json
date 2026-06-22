@@ -1,0 +1,23 @@
+{
+  "name": "industrial_core.guide.entry.storage_blocks",
+  "category": "industrial_core:equipment",
+  "icon": "industrial_core:crate_t3",
+  "sortnum": 30,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:crate_t1",
+      "text": "industrial_core.guide.entry.storage_blocks.0"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:crate_t3",
+      "text": "industrial_core.guide.entry.storage_blocks.1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:barrel_t1",
+      "text": "industrial_core.guide.entry.storage_blocks.2"
+    }
+  ]
+}

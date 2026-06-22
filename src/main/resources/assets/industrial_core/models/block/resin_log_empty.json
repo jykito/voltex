@@ -1,0 +1,12 @@
+﻿{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "up": "industrial_core:block/resin_log_top",
+    "down": "industrial_core:block/resin_log_top",
+    "north": "industrial_core:block/resin_log_empty",
+    "south": "industrial_core:block/resin_log",
+    "east": "industrial_core:block/resin_log",
+    "west": "industrial_core:block/resin_log",
+    "particle": "industrial_core:block/resin_log"
+  }
+}

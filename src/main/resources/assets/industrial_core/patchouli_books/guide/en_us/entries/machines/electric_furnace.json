@@ -1,0 +1,22 @@
+{
+  "name": "industrial_core.guide.entry.electric_furnace",
+  "category": "industrial_core:machines",
+  "icon": "industrial_core:electric_furnace",
+  "sortnum": 20,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:electric_furnace",
+      "text": "industrial_core.guide.entry.electric_furnace.0"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:electric_furnace",
+      "text": "industrial_core.guide.entry.electric_furnace.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.electric_furnace.2"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "industrial_core.guide.entry.heat_machines",
+  "category": "industrial_core:machines",
+  "icon": "industrial_core:blast_furnace",
+  "sortnum": 40,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:thermogenerator",
+      "text": "industrial_core.guide.entry.heat_machines.0"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:blast_furnace",
+      "text": "industrial_core.guide.entry.heat_machines.1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:thermogenerator",
+      "text": "industrial_core.guide.entry.heat_machines.2"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:liquefier",
+      "text": "industrial_core.guide.entry.heat_machines.3"
+    }
+  ]
+}

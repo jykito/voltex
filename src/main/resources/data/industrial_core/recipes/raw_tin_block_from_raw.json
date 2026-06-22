@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "industrial_core:raw_tin"},
+    {"item": "industrial_core:raw_tin"},
+    {"item": "industrial_core:raw_tin"},
+    {"item": "industrial_core:raw_tin"},
+    {"item": "industrial_core:raw_tin"},
+    {"item": "industrial_core:raw_tin"},
+    {"item": "industrial_core:raw_tin"},
+    {"item": "industrial_core:raw_tin"},
+    {"item": "industrial_core:raw_tin"}
+  ],
+  "result": {
+    "item": "industrial_core:raw_tin_block",
+    "count": 1
+  }
+}

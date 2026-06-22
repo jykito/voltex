@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CCC",
+    "HMH",
+    "CCC"
+  ],
+  "key": {
+    "C": { "item": "industrial_core:copper_plate" },
+    "H": { "item": "industrial_core:heat_conductor" },
+    "M": { "item": "industrial_core:machine_casing" }
+  },
+  "result": {
+    "item": "industrial_core:thermogenerator",
+    "count": 1
+  }
+}

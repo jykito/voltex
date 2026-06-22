@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CCC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:invar_plate"
+    },
+    "B": {
+      "item": "industrial_core:electric_motor"
+    },
+    "C": {
+      "type": "forge:nbt",
+      "item": "industrial_core:capsule",
+      "nbt": "{Fluid:{Amount:1000,FluidName:\"industrial_core:coolant\"}}"
+    }
+  },
+  "result": {
+    "item": "industrial_core:accelerator"
+  }
+}

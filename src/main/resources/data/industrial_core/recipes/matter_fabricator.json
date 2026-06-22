@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "KDK",
+    "DMD",
+    "KDK"
+  ],
+  "key": {
+    "K": { "item": "industrial_core:kronium_alloy" },
+    "D": { "item": "industrial_core:data_transfer_matrix" },
+    "M": { "item": "industrial_core:machine_casing" }
+  },
+  "result": {
+    "item": "industrial_core:matter_fabricator",
+    "count": 1
+  }
+}

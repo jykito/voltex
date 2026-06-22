@@ -1,0 +1,28 @@
+{
+  "name": "industrial_core.guide.entry.logistics",
+  "category": "industrial_core:automation",
+  "icon": "industrial_core:logistics_node",
+  "sortnum": 10,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:item_connector",
+      "text": "industrial_core.guide.entry.logistics.0"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:logistics_linker",
+      "text": "industrial_core.guide.entry.logistics.1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:logistics_node",
+      "text": "industrial_core.guide.entry.logistics.2"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:connector_upgrade_t1",
+      "text": "industrial_core.guide.entry.logistics.3"
+    }
+  ]
+}

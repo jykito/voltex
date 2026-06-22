@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BIB",
+    "BMB",
+    "BIB"
+  ],
+  "key": {
+    "B": { "item": "minecraft:bricks" },
+    "I": { "item": "industrial_core:iron_plate" },
+    "M": { "item": "industrial_core:machine_casing" }
+  },
+  "result": {
+    "item": "industrial_core:blast_furnace",
+    "count": 1
+  }
+}

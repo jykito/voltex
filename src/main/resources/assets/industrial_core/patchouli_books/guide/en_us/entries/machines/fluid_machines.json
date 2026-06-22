@@ -1,0 +1,28 @@
+{
+  "name": "industrial_core.guide.entry.fluid_machines",
+  "category": "industrial_core:machines",
+  "icon": "industrial_core:fluid_enricher",
+  "sortnum": 50,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:fluid_enricher",
+      "text": "industrial_core.guide.entry.fluid_machines.0"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:lava_generator",
+      "text": "industrial_core.guide.entry.fluid_machines.1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:water_generator",
+      "text": "industrial_core.guide.entry.fluid_machines.2"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:stone_generator",
+      "text": "industrial_core.guide.entry.fluid_machines.3"
+    }
+  ]
+}

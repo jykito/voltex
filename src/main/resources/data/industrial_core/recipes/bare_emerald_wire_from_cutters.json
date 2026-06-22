@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "industrial_core:emerald_plate"},
+    {"item": "industrial_core:cutters"}
+  ],
+  "result": {
+    "item": "industrial_core:bare_emerald_wire",
+    "count": 1
+  }
+}

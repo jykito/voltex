@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "KEK",
+    "NTN",
+    "KEK"
+  ],
+  "key": {
+    "K": { "item": "industrial_core:kronium_alloy" },
+    "E": { "item": "industrial_core:exotic_matter" },
+    "N": { "item": "industrial_core:netherite_fiber_cable" },
+    "T": { "item": "industrial_core:energy_backpack_t2" }
+  },
+  "result": {
+    "item": "industrial_core:energy_backpack_t3"
+  }
+}

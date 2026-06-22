@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "TLT",
+    "LRL",
+    "TLT"
+  ],
+  "key": {
+    "T": { "item": "industrial_core:tin_plate" },
+    "L": { "item": "industrial_core:lapis_plate" },
+    "R": { "item": "minecraft:redstone" }
+  },
+  "result": {
+    "item": "industrial_core:condensator",
+    "count": 1
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [" A ", "BSB", " C "],
+  "key": {
+    "A": { "item": "industrial_core:condensator" },
+    "B": { "item": "industrial_core:advanced_heat_exchanger" },
+    "S": { "item": "industrial_core:reactor_scheme_p3" },
+    "C": { "item": "industrial_core:data_transfer_matrix" }
+  },
+  "result": { "item": "industrial_core:reactor_scheme_p4", "count": 1 }
+}

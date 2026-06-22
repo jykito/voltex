@@ -1,0 +1,8 @@
+﻿{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top":    "industrial_core:block/solar_panel_t2_top",
+    "bottom": "industrial_core:block/solar_panel_t2_bottom",
+    "side":   "industrial_core:block/solar_panel_t2_side"
+  }
+}

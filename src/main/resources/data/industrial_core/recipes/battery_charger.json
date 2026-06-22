@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GCG",
+    "BMB",
+    "GCG"
+  ],
+  "key": {
+    "G": { "item": "industrial_core:gold_plate" },
+    "C": { "item": "industrial_core:copper_cable" },
+    "B": { "item": "industrial_core:battery" },
+    "M": { "item": "industrial_core:machine_casing" }
+  },
+  "result": {
+    "item": "industrial_core:battery_charger",
+    "count": 1
+  }
+}

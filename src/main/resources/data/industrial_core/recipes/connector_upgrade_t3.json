@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " C ",
+    "CTC",
+    " C "
+  ],
+  "key": {
+    "C": { "item": "industrial_core:crystal_plate" },
+    "T": { "item": "industrial_core:connector_upgrade_t2" }
+  },
+  "result": {
+    "item": "industrial_core:connector_upgrade_t3",
+    "count": 1
+  }
+}

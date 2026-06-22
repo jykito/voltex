@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " C ",
+    "RIR",
+    " C "
+  ],
+  "key": {
+    "C": { "item": "industrial_core:bare_copper_wire" },
+    "R": { "item": "industrial_core:rubber" },
+    "I": { "item": "industrial_core:iron_plate" }
+  },
+  "result": {
+    "item": "industrial_core:electric_motor",
+    "count": 1
+  }
+}

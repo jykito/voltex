@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "WWW",
+    "TRT"
+  ],
+  "key": {
+    "W": { "item": "industrial_core:bare_ferro_wire" },
+    "T": { "item": "industrial_core:tin_plate" },
+    "R": { "item": "industrial_core:rubber" }
+  },
+  "result": {
+    "item": "industrial_core:ferro_cable",
+    "count": 3
+  }
+}

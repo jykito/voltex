@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [" A ", "BSB", " C "],
+  "key": {
+    "A": { "item": "industrial_core:advanced_heat_vent" },
+    "B": { "item": "industrial_core:heat_exchanger" },
+    "S": { "item": "industrial_core:reactor_scheme_p1" },
+    "C": { "item": "minecraft:redstone_block" }
+  },
+  "result": { "item": "industrial_core:reactor_scheme_p2", "count": 1 }
+}

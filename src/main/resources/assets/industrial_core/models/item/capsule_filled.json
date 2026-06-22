@@ -1,0 +1,9 @@
+{
+  "__comment": "Полная капсула: рамка + заливка-окно (layer1, красится в цвет флюида через ItemColor, tintindex=1) + блик.",
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "industrial_core:item/capsule_frame",
+    "layer1": "industrial_core:item/capsule_liquid",
+    "layer2": "industrial_core:item/capsule_glass"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "formed=false": { "model": "industrial_core:block/miner_casing" },
+    "formed=true":  { "model": "industrial_core:block/miner_casing" }
+  }
+}

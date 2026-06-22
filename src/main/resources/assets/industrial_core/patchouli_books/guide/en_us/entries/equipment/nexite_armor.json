@@ -1,0 +1,22 @@
+{
+  "name": "industrial_core.guide.entry.nexite_armor",
+  "category": "industrial_core:equipment",
+  "icon": "industrial_core:nexite_chestplate",
+  "sortnum": 10,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:nexite_chestplate",
+      "text": "industrial_core.guide.entry.nexite_armor.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.nexite_armor.1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:nexite_chestplate",
+      "text": "industrial_core.guide.entry.nexite_armor.2"
+    }
+  ]
+}

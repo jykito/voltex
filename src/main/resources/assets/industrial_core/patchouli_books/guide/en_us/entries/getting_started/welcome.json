@@ -1,0 +1,16 @@
+{
+  "name": "industrial_core.guide.entry.welcome",
+  "category": "industrial_core:getting_started",
+  "icon": "industrial_core:machine_casing",
+  "sortnum": 10,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.welcome.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.welcome.1"
+    }
+  ]
+}

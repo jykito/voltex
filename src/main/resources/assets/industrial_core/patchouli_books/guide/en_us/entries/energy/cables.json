@@ -1,0 +1,22 @@
+{
+  "name": "industrial_core.guide.entry.cables",
+  "category": "industrial_core:energy",
+  "icon": "industrial_core:copper_cable",
+  "sortnum": 40,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:copper_cable",
+      "text": "industrial_core.guide.entry.cables.0"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:copper_cable",
+      "text": "industrial_core.guide.entry.cables.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.cables.2"
+    }
+  ]
+}

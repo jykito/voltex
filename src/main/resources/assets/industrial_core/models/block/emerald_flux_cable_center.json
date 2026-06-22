@@ -1,0 +1,6 @@
+{
+  "parent": "industrial_core:block/base_wire_center",
+  "textures": {
+    "wire": "industrial_core:block/emerald_flux_cable"
+  }
+}

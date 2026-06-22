@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["PGP","RCR","PGP"],
+  "key": {
+    "P": { "tag": "forge:plates/iron" },
+    "G": { "item": "minecraft:glass" },
+    "R": { "item": "industrial_core:rubber" },
+    "C": { "item": "industrial_core:barrel_t1" }
+  },
+  "result": { "item": "industrial_core:barrel_t2", "count": 1 }
+}

@@ -1,0 +1,9 @@
+{
+  "type": "industrial_core:liquefier_recipe",
+  "ingredient": { "item": "minecraft:amethyst_shard" },
+  "itemCount": 1,
+  "fluid": "industrial_core:molten_amethyst",
+  "fluidAmount": 144,
+  "processingTime": 200,
+  "energyCostPerTick": 40
+}

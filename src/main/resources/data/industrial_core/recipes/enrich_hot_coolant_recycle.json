@@ -1,0 +1,13 @@
+{
+  "type": "industrial_core:fluid_enricher_recipe",
+  "ingredient": {
+    "item": "industrial_core:coal_dust"
+  },
+  "itemCount": 1,
+  "fluidInput": "industrial_core:hot_coolant",
+  "fluidInputAmount": 1000,
+  "fluidOutput": "industrial_core:coolant",
+  "fluidOutputAmount": 1000,
+  "processingTime": 60,
+  "energyCostPerTick": 20
+}

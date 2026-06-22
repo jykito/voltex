@@ -1,0 +1,28 @@
+{
+  "name": "industrial_core.guide.entry.cultivator",
+  "category": "industrial_core:machines",
+  "icon": "industrial_core:cultivator",
+  "sortnum": 80,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:cultivator",
+      "text": "industrial_core.guide.entry.cultivator.0"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:cultivator",
+      "text": "industrial_core.guide.entry.cultivator.1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:cultivator_biostimulator",
+      "text": "industrial_core.guide.entry.cultivator.2"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:cultivator_resonator",
+      "text": "industrial_core.guide.entry.cultivator.3"
+    }
+  ]
+}

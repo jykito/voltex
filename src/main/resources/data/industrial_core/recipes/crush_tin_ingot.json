@@ -1,0 +1,13 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:crushing",
+  "ingredient": {
+    "tag": "forge:ingots/tin"
+  },
+  "result": {
+    "item": "industrial_core:tin_dust",
+    "count": 1
+  },
+  "processingTime": 200,
+  "energyCost": 30
+}

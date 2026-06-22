@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": [ "industrial_core:uranium_ore_deep" ],
+  "step": "underground_ores"
+}

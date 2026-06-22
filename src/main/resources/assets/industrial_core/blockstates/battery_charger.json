@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "facing=north,lit=false": { "model": "industrial_core:block/battery_charger" },
+    "facing=south,lit=false": { "model": "industrial_core:block/battery_charger",  "y": 180 },
+    "facing=west,lit=false":  { "model": "industrial_core:block/battery_charger",  "y": 270 },
+    "facing=east,lit=false":  { "model": "industrial_core:block/battery_charger",  "y": 90  },
+    "facing=north,lit=true":  { "model": "industrial_core:block/battery_charger_lit" },
+    "facing=south,lit=true":  { "model": "industrial_core:block/battery_charger_lit", "y": 180 },
+    "facing=west,lit=true":   { "model": "industrial_core:block/battery_charger_lit", "y": 270 },
+    "facing=east,lit=true":   { "model": "industrial_core:block/battery_charger_lit", "y": 90  }
+  }
+}

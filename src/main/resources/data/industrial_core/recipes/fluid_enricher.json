@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GCG",
+    "GMG",
+    "GEG"
+  ],
+  "key": {
+    "G": { "item": "minecraft:glass" },
+    "C": { "item": "industrial_core:crystal_plate" },
+    "M": { "item": "industrial_core:machine_casing" },
+    "E": { "item": "industrial_core:electric_motor" }
+  },
+  "result": {
+    "item": "industrial_core:fluid_enricher",
+    "count": 1
+  }
+}

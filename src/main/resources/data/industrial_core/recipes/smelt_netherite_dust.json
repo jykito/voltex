@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "industrial_core:netherite_dust"
+  },
+  "result": "minecraft:netherite_scrap",
+  "experience": 1.0,
+  "cookingtime": 200
+}

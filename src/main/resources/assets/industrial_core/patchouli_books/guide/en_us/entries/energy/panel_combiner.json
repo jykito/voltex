@@ -1,0 +1,22 @@
+{
+  "name": "industrial_core.guide.entry.panel_combiner",
+  "category": "industrial_core:energy",
+  "icon": "industrial_core:panel_combiner",
+  "sortnum": 30,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:panel_combiner",
+      "text": "industrial_core.guide.entry.panel_combiner.0"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:panel_combiner",
+      "text": "industrial_core.guide.entry.panel_combiner.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.panel_combiner.2"
+    }
+  ]
+}

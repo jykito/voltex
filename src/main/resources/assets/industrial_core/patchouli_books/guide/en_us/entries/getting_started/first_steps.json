@@ -1,0 +1,32 @@
+{
+  "name": "industrial_core.guide.entry.first_steps",
+  "category": "industrial_core:getting_started",
+  "icon": "industrial_core:hammer",
+  "sortnum": 20,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:hammer",
+      "text": "industrial_core.guide.entry.first_steps.0"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:hammer",
+      "text": "industrial_core.guide.entry.first_steps.1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:cutters",
+      "text": "industrial_core.guide.entry.first_steps.2"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.first_steps.3"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:machine_casing",
+      "text": "industrial_core.guide.entry.first_steps.4"
+    }
+  ]
+}

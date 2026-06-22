@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "minecraft:redstone_block"},
+    {"item": "industrial_core:cutters"}
+  ],
+  "result": {
+    "item": "industrial_core:bare_heavy_wire",
+    "count": 1
+  }
+}

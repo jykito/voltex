@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IGI",
+    "BME",
+    "III"
+  ],
+  "key": {
+    "I": { "item": "industrial_core:iron_plate" },
+    "G": { "item": "minecraft:glass" },
+    "B": { "item": "minecraft:bucket" },
+    "M": { "item": "industrial_core:machine_casing" },
+    "E": { "item": "industrial_core:electric_motor" }
+  },
+  "result": {
+    "item": "industrial_core:ore_washer",
+    "count": 1
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GDG",
+    "BLB",
+    "GDG"
+  ],
+  "key": {
+    "G": { "item": "minecraft:glass" },
+    "D": { "item": "minecraft:diamond" },
+    "B": { "item": "minecraft:blaze_powder" },
+    "L": { "item": "industrial_core:logic_board" }
+  },
+  "result": {
+    "item": "industrial_core:miner_lens_2",
+    "count": 1
+  }
+}

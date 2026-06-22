@@ -1,0 +1,53 @@
+{
+  "name": "industrial_core.guide.entry.reactor",
+  "category": "industrial_core:multiblocks",
+  "icon": "industrial_core:nuclear_reactor",
+  "sortnum": 20,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:nuclear_reactor",
+      "text": "industrial_core.guide.entry.reactor.0"
+    },
+    {
+      "type": "patchouli:multiblock",
+      "name": "industrial_core.guide.entry.reactor",
+      "multiblock": {
+        "pattern": [
+          [
+            "CCC",
+            "CCC",
+            "CCC"
+          ],
+          [
+            "CCC",
+            "C0C",
+            "CCC"
+          ],
+          [
+            "CCC",
+            "CCC",
+            "CCC"
+          ]
+        ],
+        "mapping": {
+          "0": "industrial_core:nuclear_reactor",
+          "C": "industrial_core:reactor_chamber"
+        }
+      },
+      "text": "industrial_core.guide.entry.reactor.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.reactor.2"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.reactor.3"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.reactor.4"
+    }
+  ]
+}

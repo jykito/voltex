@@ -1,0 +1,13 @@
+{
+  "conditions": [
+    { "type": "forge:mod_loaded", "modid": "ae2" }
+  ],
+  "type": "industrial_core:growing_recipe",
+  "input": { "item": "ae2:flawless_budding_quartz" },
+  "inputCount": 1,
+  "output": { "item": "ae2:certus_quartz_crystal", "count": 1 },
+  "category": "mineral",
+  "keepInput": true,
+  "time": 120,
+  "energy": 250
+}

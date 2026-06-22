@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "HPH",
+    "PCP",
+    "HPH"
+  ],
+  "key": {
+    "H": { "item": "industrial_core:heat_conductor" },
+    "P": { "item": "industrial_core:iron_plate" },
+    "C": { "item": "industrial_core:machine_casing" }
+  },
+  "result": {
+    "item": "industrial_core:lava_generator",
+    "count": 1
+  }
+}

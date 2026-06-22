@@ -1,0 +1,17 @@
+{
+  "type": "industrial_core:phase_splitter_recipe",
+  "ingredient": {
+    "item": "industrial_core:depleted_plutonium_fuel_rod"
+  },
+  "inputCount": 1,
+  "result": {
+    "item": "industrial_core:plutonium",
+    "count": 4
+  },
+  "result2": {
+    "item": "industrial_core:uranium_dust",
+    "count": 2
+  },
+  "processingTime": 600,
+  "energyCost": 200
+}

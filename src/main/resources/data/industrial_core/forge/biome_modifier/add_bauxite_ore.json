@@ -1,0 +1,10 @@
+{
+  "type": "forge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": [
+    "industrial_core:bauxite_ore_upper",
+    "industrial_core:bauxite_ore_middle",
+    "industrial_core:bauxite_ore_small"
+  ],
+  "step": "underground_ores"
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " D ",
+    "PEP",
+    " K "
+  ],
+  "key": {
+    "D": { "item": "industrial_core:data_transfer_matrix" },
+    "P": { "item": "industrial_core:plutonium" },
+    "E": { "item": "industrial_core:energy_crystal" },
+    "K": { "item": "industrial_core:kronium_alloy" }
+  },
+  "result": {
+    "item": "industrial_core:quantum_capacitor",
+    "count": 1
+  }
+}

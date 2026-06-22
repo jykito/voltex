@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GGG",
+    "ALA",
+    "CSC"
+  ],
+  "key": {
+    "G": { "item": "minecraft:glass" },
+    "A": { "item": "industrial_core:amethyst_crystal" },
+    "L": {
+      "type": "forge:nbt",
+      "item": "industrial_core:capsule",
+      "nbt": "{Fluid:{Amount:1000,FluidName:\"industrial_core:molten_amethyst\"}}"
+    },
+    "C": { "item": "industrial_core:crystal_plate" },
+    "S": { "item": "industrial_core:silicon" }
+  },
+  "result": {
+    "item": "industrial_core:photonic_lens",
+    "count": 2
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "RDR",
+    "DBD",
+    "RDR"
+  ],
+  "key": {
+    "R": { "item": "minecraft:redstone" },
+    "D": { "item": "minecraft:diamond" },
+    "B": { "item": "industrial_core:lithium_battery" }
+  },
+  "result": {
+    "item": "industrial_core:energy_crystal",
+    "count": 1
+  }
+}

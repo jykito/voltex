@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "industrial_core:bronze_dust"
+  },
+  "result": "industrial_core:bronze_ingot",
+  "experience": 0.5,
+  "cookingtime": 200
+}

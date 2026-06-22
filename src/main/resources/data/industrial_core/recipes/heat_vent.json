@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CIC",
+    "IRI",
+    "CIC"
+  ],
+  "key": {
+    "C": { "item": "industrial_core:copper_plate" },
+    "I": { "item": "industrial_core:iron_plate" },
+    "R": { "item": "minecraft:redstone" }
+  },
+  "result": {
+    "item": "industrial_core:heat_vent",
+    "count": 1
+  }
+}

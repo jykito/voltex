@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "EQE",
+    "LSL",
+    "EQE"
+  ],
+  "key": {
+    "E": { "item": "industrial_core:exotic_matter" },
+    "Q": { "item": "industrial_core:quantum_capacitor" },
+    "L": { "item": "industrial_core:lapotron_crystal" },
+    "S": { "item": "industrial_core:solar_panel_t7" }
+  },
+  "result": {
+    "item": "industrial_core:solar_panel_t8",
+    "count": 1
+  }
+}

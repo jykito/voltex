@@ -1,0 +1,9 @@
+{
+  "type": "industrial_core:liquefier_recipe",
+  "ingredient": { "item": "minecraft:amethyst_block" },
+  "itemCount": 1,
+  "fluid": "industrial_core:molten_amethyst",
+  "fluidAmount": 576,
+  "processingTime": 400,
+  "energyCostPerTick": 40
+}

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "industrial_core:iron_plate"},
+    {"item": "industrial_core:cutters"}
+  ],
+  "result": {
+    "item": "industrial_core:bare_ferro_wire",
+    "count": 1
+  }
+}

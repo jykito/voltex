@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " L ",
+    "LBL",
+    " L "
+  ],
+  "key": {
+    "L": { "item": "industrial_core:lithium" },
+    "B": { "item": "industrial_core:battery" }
+  },
+  "result": {
+    "item": "industrial_core:lithium_battery",
+    "count": 1
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "industrial_core.guide.cat.energy",
+  "description": "industrial_core.guide.cat.energy.desc",
+  "icon": "industrial_core:solar_panel_t3",
+  "sortnum": 30
+}

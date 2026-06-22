@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LIL",
+    "DMD",
+    "LIL"
+  ],
+  "key": {
+    "L": { "item": "industrial_core:lead_plate" },
+    "I": { "item": "industrial_core:invar_plate" },
+    "D": { "item": "industrial_core:data_transfer_matrix" },
+    "M": { "item": "industrial_core:machine_casing" }
+  },
+  "result": {
+    "item": "industrial_core:nuclear_reactor",
+    "count": 1
+  }
+}

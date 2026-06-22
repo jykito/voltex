@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " R ",
+    "CCC",
+    " R "
+  ],
+  "key": {
+    "C": { "item": "industrial_core:copper_plate" },
+    "R": { "item": "minecraft:redstone" }
+  },
+  "result": {
+    "item": "industrial_core:heat_conductor",
+    "count": 1
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SPS",
+    "PMP",
+    "SPS"
+  ],
+  "key": {
+    "S": { "item": "industrial_core:hardened_steel_ingot" },
+    "P": { "item": "industrial_core:iron_plate" },
+    "M": { "item": "industrial_core:machine_casing" }
+  },
+  "result": {
+    "item": "industrial_core:miner_casing",
+    "count": 2
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " K ",
+    "CPC",
+    " K "
+  ],
+  "key": {
+    "K": { "item": "industrial_core:kronit" },
+    "C": { "item": "industrial_core:crystal_plate" },
+    "P": { "item": "industrial_core:plutonium" }
+  },
+  "result": {
+    "item": "industrial_core:kronium_alloy",
+    "count": 1
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "industrial_core.guide.entry.solar_panels",
+  "category": "industrial_core:energy",
+  "icon": "industrial_core:solar_panel_t3",
+  "sortnum": 20,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:solar_panel_t3",
+      "text": "industrial_core.guide.entry.solar_panels.0"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:solar_panel_t1",
+      "text": "industrial_core.guide.entry.solar_panels.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.solar_panels.2"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "industrial_core:block/fluid_enricher_top",
+    "bottom": "industrial_core:block/fluid_enricher_top",
+    "side": "industrial_core:block/fluid_enricher_side",
+    "front": "industrial_core:block/fluid_enricher_front_off"
+  }
+}

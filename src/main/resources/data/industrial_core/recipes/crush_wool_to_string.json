@@ -1,0 +1,14 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:crushing",
+  "ingredient": {
+    "tag": "minecraft:wool"
+  },
+  "inputCount": 1,
+  "result": {
+    "item": "minecraft:string",
+    "count": 4
+  },
+  "processingTime": 120,
+  "energyCost": 20
+}

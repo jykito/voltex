@@ -1,0 +1,13 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:compressing",
+  "ingredient": {
+    "item": "industrial_core:composite_ingot"
+  },
+  "inputCount": 1,
+  "result": {
+    "item": "industrial_core:composite"
+  },
+  "processingTime": 200,
+  "energyCost": 50
+}

@@ -1,0 +1,13 @@
+{
+  "type": "industrial_core:fluid_enricher_recipe",
+  "ingredient": {
+    "item": "industrial_core:lapis_dust"
+  },
+  "itemCount": 8,
+  "fluidInput": "minecraft:water",
+  "fluidInputAmount": 1000,
+  "fluidOutput": "industrial_core:coolant",
+  "fluidOutputAmount": 1000,
+  "processingTime": 100,
+  "energyCostPerTick": 50
+}

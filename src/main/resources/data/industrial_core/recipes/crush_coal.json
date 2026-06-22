@@ -1,0 +1,13 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:crushing",
+  "ingredient": {
+    "item": "minecraft:coal"
+  },
+  "result": {
+    "item": "industrial_core:coal_dust",
+    "count": 1
+  },
+  "processingTime": 200,
+  "energyCost": 30
+}

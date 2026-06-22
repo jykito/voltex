@@ -1,0 +1,15 @@
+{
+  "type": "industrial_core:blast_furnace_recipe",
+  "ingredient": {
+    "item": "minecraft:gold_ingot"
+  },
+  "fuel": {
+    "item": "industrial_core:silver_ingot"
+  },
+  "result": {
+    "item": "industrial_core:electrum_ingot",
+    "count": 2
+  },
+  "processingTime": 300,
+  "requiredHeat": 1200
+}

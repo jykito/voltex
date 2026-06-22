@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PMP",
+    "PBP"
+  ],
+  "key": {
+    "P": { "item": "industrial_core:iron_plate" },
+    "M": { "item": "industrial_core:electric_motor" },
+    "B": { "item": "industrial_core:battery" }
+  },
+  "result": {
+    "item": "industrial_core:tool_base",
+    "count": 1
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "industrial_core:blast_furnace_recipe",
+  "ingredient": {
+    "item": "industrial_core:amethyst_dust"
+  },
+  "ingredientCount": 32,
+  "fuel": {
+    "item": "industrial_core:hardened_steel_ingot"
+  },
+  "fuelCount": 1,
+  "result": {
+    "item": "industrial_core:crystal_ingot",
+    "count": 1
+  },
+  "processingTime": 400,
+  "requiredHeat": 3200
+}

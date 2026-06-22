@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "BCB",
+    "DED"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:glass"
+    },
+    "B": {
+      "item": "industrial_core:electric_motor"
+    },
+    "C": {
+      "item": "industrial_core:silicon"
+    },
+    "D": {
+      "item": "industrial_core:textolite_board"
+    },
+    "E": {
+      "item": "industrial_core:solar_panel_t1"
+    }
+  },
+  "result": {
+    "item": "industrial_core:solar_panel_t2"
+  }
+}

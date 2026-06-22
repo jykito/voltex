@@ -1,0 +1,23 @@
+{
+  "name": "industrial_core.guide.entry.machine_upgrades",
+  "category": "industrial_core:automation",
+  "icon": "industrial_core:accelerator",
+  "sortnum": 20,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:accelerator",
+      "text": "industrial_core.guide.entry.machine_upgrades.0"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:item_pusher",
+      "text": "industrial_core.guide.entry.machine_upgrades.1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:parallel_module",
+      "text": "industrial_core.guide.entry.machine_upgrades.2"
+    }
+  ]
+}

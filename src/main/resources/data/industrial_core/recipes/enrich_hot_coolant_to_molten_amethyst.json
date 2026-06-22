@@ -1,0 +1,13 @@
+{
+  "type": "industrial_core:fluid_enricher_recipe",
+  "ingredient": {
+    "item": "industrial_core:amethyst_dust"
+  },
+  "itemCount": 4,
+  "fluidInput": "industrial_core:hot_coolant",
+  "fluidInputAmount": 1000,
+  "fluidOutput": "industrial_core:molten_amethyst",
+  "fluidOutputAmount": 500,
+  "processingTime": 100,
+  "energyCostPerTick": 50
+}

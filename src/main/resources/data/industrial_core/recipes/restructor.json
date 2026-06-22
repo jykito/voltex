@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CAC",
+    "DMD",
+    "CAC"
+  ],
+  "key": {
+    "C": { "item": "industrial_core:composite" },
+    "A": { "item": "industrial_core:amethyst_crystal" },
+    "D": { "item": "industrial_core:data_transfer_matrix" },
+    "M": { "item": "industrial_core:machine_casing" }
+  },
+  "result": {
+    "item": "industrial_core:restructor",
+    "count": 1
+  }
+}

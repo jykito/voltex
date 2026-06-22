@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " V ",
+    "CVC",
+    " V "
+  ],
+  "key": {
+    "V": { "item": "industrial_core:invar_plate" },
+    "C": { "item": "industrial_core:copper_plate" }
+  },
+  "result": {
+    "item": "industrial_core:heat_exchanger",
+    "count": 1
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "industrial_core:block/resin_collector", "y": 180 },
+    "facing=south": { "model": "industrial_core:block/resin_collector" },
+    "facing=east":  { "model": "industrial_core:block/resin_collector", "y": 270 },
+    "facing=west":  { "model": "industrial_core:block/resin_collector", "y": 90 }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    "IFI",
+    "IMI"
+  ],
+  "key": {
+    "I": { "item": "industrial_core:iron_plate" },
+    "F": { "item": "minecraft:furnace" },
+    "M": { "item": "industrial_core:machine_casing" }
+  },
+  "result": {
+    "item": "industrial_core:coal_generator",
+    "count": 1
+  }
+}

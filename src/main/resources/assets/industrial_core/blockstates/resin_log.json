@@ -1,0 +1,50 @@
+﻿{
+  "multipart": [
+    {
+      "when": { "latex_state": "0", "axis": "y" },
+      "apply": { "model": "industrial_core:block/resin_log" }
+    },
+    {
+      "when": { "latex_state": "0", "axis": "x" },
+      "apply": { "model": "industrial_core:block/resin_log", "x": 90, "y": 90 }
+    },
+    {
+      "when": { "latex_state": "0", "axis": "z" },
+      "apply": { "model": "industrial_core:block/resin_log", "x": 90 }
+    },
+
+    {
+      "when": { "latex_state": "1", "latex_facing": "north" },
+      "apply": { "model": "industrial_core:block/resin_log_empty" }
+    },
+    {
+      "when": { "latex_state": "1", "latex_facing": "east" },
+      "apply": { "model": "industrial_core:block/resin_log_empty", "y": 90 }
+    },
+    {
+      "when": { "latex_state": "1", "latex_facing": "south" },
+      "apply": { "model": "industrial_core:block/resin_log_empty", "y": 180 }
+    },
+    {
+      "when": { "latex_state": "1", "latex_facing": "west" },
+      "apply": { "model": "industrial_core:block/resin_log_empty", "y": 270 }
+    },
+
+    {
+      "when": { "latex_state": "2", "latex_facing": "north" },
+      "apply": { "model": "industrial_core:block/resin_log_full" }
+    },
+    {
+      "when": { "latex_state": "2", "latex_facing": "east" },
+      "apply": { "model": "industrial_core:block/resin_log_full", "y": 90 }
+    },
+    {
+      "when": { "latex_state": "2", "latex_facing": "south" },
+      "apply": { "model": "industrial_core:block/resin_log_full", "y": 180 }
+    },
+    {
+      "when": { "latex_state": "2", "latex_facing": "west" },
+      "apply": { "model": "industrial_core:block/resin_log_full", "y": 270 }
+    }
+  ]
+}

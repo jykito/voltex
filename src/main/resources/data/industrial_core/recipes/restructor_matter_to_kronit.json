@@ -1,0 +1,15 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:molecular_transforming",
+  "ingredient": {
+    "item": "industrial_core:exotic_matter"
+  },
+  "inputCount": 1,
+  "result": {
+    "item": "industrial_core:kronit",
+    "count": 4
+  },
+  "catalyst": "industrial_core:resonant_catalyst",
+  "processingTime": 400,
+  "energyCost": 5000000
+}

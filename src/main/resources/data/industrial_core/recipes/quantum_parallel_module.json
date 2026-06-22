@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "KAK",
+    "ADA",
+    "KAK"
+  ],
+  "key": {
+    "K": { "item": "industrial_core:kronium_alloy" },
+    "A": { "item": "industrial_core:advanced_parallel_module" },
+    "D": { "item": "industrial_core:exotic_matter" }
+  },
+  "result": {
+    "item": "industrial_core:quantum_parallel_module",
+    "count": 1
+  }
+}

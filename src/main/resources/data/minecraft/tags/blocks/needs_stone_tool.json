@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    "industrial_core:tin_ore",
+    "industrial_core:deepslate_tin_ore",
+    "industrial_core:bauxite_ore",
+    "industrial_core:deepslate_bauxite_ore",
+    "industrial_core:raw_tin_block",
+    "industrial_core:invar_block",
+    "industrial_core:nickel_block",
+    "industrial_core:crate_t2",
+    "industrial_core:crate_t3",
+    "industrial_core:barrel_t1",
+    "industrial_core:barrel_t2",
+    "industrial_core:barrel_t3"
+  ]
+}

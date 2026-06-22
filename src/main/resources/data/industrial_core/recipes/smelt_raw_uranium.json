@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": { "item": "industrial_core:raw_uranium" },
+  "result": "industrial_core:uranium_ingot",
+  "experience": 1.5,
+  "cookingtime": 400
+}

@@ -1,0 +1,15 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:molecular_transforming",
+  "ingredient": {
+    "item": "minecraft:quartz_block"
+  },
+  "inputCount": 1,
+  "result": {
+    "item": "industrial_core:silicon",
+    "count": 4
+  },
+  "catalyst": "industrial_core:basic_catalyst",
+  "processingTime": 200,
+  "energyCost": 450000
+}

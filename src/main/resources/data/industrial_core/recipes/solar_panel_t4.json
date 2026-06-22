@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "BCB",
+    "DED"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:glass"
+    },
+    "B": {
+      "item": "industrial_core:crystal_plate"
+    },
+    "C": {
+      "item": "industrial_core:advanced_heat_vent"
+    },
+    "D": {
+      "item": "industrial_core:solar_panel_t3"
+    },
+    "E": {
+      "item": "industrial_core:data_transfer_matrix"
+    }
+  },
+  "result": {
+    "item": "industrial_core:solar_panel_t4"
+  }
+}

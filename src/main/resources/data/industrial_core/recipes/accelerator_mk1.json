@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:crystal_plate"
+    },
+    "B": {
+      "item": "industrial_core:graphite_rod"
+    },
+    "C": {
+      "item": "industrial_core:accelerator"
+    },
+    "D": {
+      "item": "industrial_core:data_transfer_matrix"
+    }
+  },
+  "result": {
+    "item": "industrial_core:accelerator_mk1"
+  }
+}

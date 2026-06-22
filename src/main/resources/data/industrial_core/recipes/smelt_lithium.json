@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "industrial_core:lithium_dust"
+  },
+  "result": "industrial_core:lithium",
+  "experience": 0.3,
+  "cookingtime": 200
+}

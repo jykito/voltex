@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PEP",
+    "EBE",
+    "PEP"
+  ],
+  "key": {
+    "P": { "item": "industrial_core:plutonium" },
+    "E": { "item": "industrial_core:electrum_plate" },
+    "B": { "item": "industrial_core:basic_catalyst" }
+  },
+  "result": {
+    "item": "industrial_core:activated_catalyst",
+    "count": 1
+  }
+}

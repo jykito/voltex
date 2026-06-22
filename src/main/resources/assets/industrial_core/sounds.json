@@ -1,0 +1,10 @@
+{
+  "plasma_burst": {
+    "sounds": [
+      {
+        "name": "industrial_core:plasma_burst",
+        "stream": false
+      }
+    ]
+  }
+}

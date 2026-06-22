@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GDG",
+    "ELE",
+    "GDG"
+  ],
+  "key": {
+    "G": { "item": "minecraft:glass" },
+    "D": { "item": "minecraft:diamond" },
+    "E": { "item": "minecraft:ender_eye" },
+    "L": { "item": "industrial_core:logic_board" }
+  },
+  "result": {
+    "item": "industrial_core:miner_lens_3",
+    "count": 1
+  }
+}

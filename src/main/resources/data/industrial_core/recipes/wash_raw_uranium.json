@@ -1,0 +1,14 @@
+{
+  "type": "industrial_core:ore_washing_recipe",
+  "ingredient": {
+    "tag": "forge:raw_materials/uranium"
+  },
+  "inputCount": 1,
+  "waterAmount": 1000,
+  "result": {
+    "item": "industrial_core:uranium_dust",
+    "count": 3
+  },
+  "processingTime": 300,
+  "energyCostPerTick": 60
+}

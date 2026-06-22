@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PHP",
+    "HMH",
+    "PHP"
+  ],
+  "key": {
+    "P": { "item": "industrial_core:iron_plate" },
+    "H": { "item": "industrial_core:heat_conductor" },
+    "M": { "item": "industrial_core:electric_motor" }
+  },
+  "result": {
+    "item": "industrial_core:blast_upgrade_forced_air",
+    "count": 1
+  }
+}

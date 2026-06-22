@@ -1,0 +1,17 @@
+{
+  "type": "industrial_core:rod_fabrication_recipe",
+  "ingredient1": {
+    "item": "industrial_core:uranium_ingot"
+  },
+  "count1": 1,
+  "ingredient2": {
+    "item": "industrial_core:empty_fuel_rod"
+  },
+  "count2": 1,
+  "result": {
+    "item": "industrial_core:uranium_fuel_rod",
+    "count": 1
+  },
+  "processingTime": 200,
+  "energyCostPerTick": 500
+}

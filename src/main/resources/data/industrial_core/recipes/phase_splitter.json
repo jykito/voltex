@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GCG",
+    "EME",
+    "GCG"
+  ],
+  "key": {
+    "G": { "item": "industrial_core:gold_plate" },
+    "C": { "item": "industrial_core:crystal_plate" },
+    "E": { "item": "industrial_core:electric_motor" },
+    "M": { "item": "industrial_core:machine_casing" }
+  },
+  "result": {
+    "item": "industrial_core:phase_splitter",
+    "count": 1
+  }
+}

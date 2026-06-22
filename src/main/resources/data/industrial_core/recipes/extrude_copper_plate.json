@@ -1,0 +1,9 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:extruding",
+  "ingredient": {"item": "industrial_core:copper_plate"},
+  "inputCount": 1,
+  "result": {"item": "industrial_core:bare_copper_wire", "count": 4},
+  "processingTime": 200,
+  "energyCost": 100
+}

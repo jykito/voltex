@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["PBP","RCR","PBP"],
+  "key": {
+    "P": { "tag": "forge:plates/aluminum" },
+    "B": { "tag": "forge:plates/invar" },
+    "R": { "item": "industrial_core:rubber" },
+    "C": { "item": "industrial_core:barrel_t2" }
+  },
+  "result": { "item": "industrial_core:barrel_t3", "count": 1 }
+}

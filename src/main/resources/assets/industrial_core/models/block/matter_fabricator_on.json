@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end":  "industrial_core:block/matter_fabricator_end",
+    "side": "industrial_core:block/matter_fabricator_side"
+  }
+}

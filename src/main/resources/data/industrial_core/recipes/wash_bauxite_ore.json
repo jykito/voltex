@@ -1,0 +1,9 @@
+{
+  "type": "industrial_core:ore_washing_recipe",
+  "ingredient": { "tag": "forge:ores/aluminum" },
+  "inputCount": 1,
+  "waterAmount": 1000,
+  "result": { "item": "industrial_core:aluminum_dust", "count": 3 },
+  "processingTime": 200,
+  "energyCostPerTick": 40
+}

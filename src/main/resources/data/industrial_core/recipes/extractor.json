@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PGP",
+    "PMP",
+    "PEP"
+  ],
+  "key": {
+    "P": { "item": "industrial_core:iron_plate" },
+    "G": { "item": "minecraft:glass" },
+    "M": { "item": "industrial_core:machine_casing" },
+    "E": { "item": "industrial_core:electric_motor" }
+  },
+  "result": {
+    "item": "industrial_core:extractor",
+    "count": 1
+  }
+}

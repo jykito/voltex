@@ -1,0 +1,13 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:compressing",
+  "ingredient": {
+    "item": "industrial_core:crystal_ingot"
+  },
+  "inputCount": 4,
+  "result": {
+    "item": "industrial_core:amethyst_crystal"
+  },
+  "processingTime": 400,
+  "energyCost": 150
+}

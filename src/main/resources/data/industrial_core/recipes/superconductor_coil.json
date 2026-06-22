@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "EGE",
+    "GLG",
+    "EGE"
+  ],
+  "key": {
+    "E": { "item": "industrial_core:emerald_plate" },
+    "G": { "item": "industrial_core:gold_conductor" },
+    "L": { "item": "industrial_core:lithium" }
+  },
+  "result": {
+    "item": "industrial_core:superconductor_coil",
+    "count": 2
+  }
+}

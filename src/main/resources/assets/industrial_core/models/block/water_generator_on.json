@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "industrial_core:block/water_generator_top",
+    "bottom": "industrial_core:block/water_generator_top",
+    "side": "industrial_core:block/water_generator_side",
+    "front": "industrial_core:block/water_generator_front_on"
+  }
+}

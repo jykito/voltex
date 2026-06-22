@@ -1,0 +1,47 @@
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
+
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
+
+# gradle
+build
+.gradle
+
+# other
+eclipse
+run
+
+# Files from Forge MDK
+forge*changelog.txt
+
+# project internals — NOT part of the published mod source
+.claude
+mods_download
+sim
+tools
+*.log
+
+# internal working docs / scratch (kept private)
+AUDIT_REPORT.html
+PROJECT_STATE.md
+PROJECT_SUMMARY.md
+PROGRESSION_PLAN.md
+MOD_MECHANICS.txt
+JEI_PNG_LIST.md
+RECIPES.txt
+LogisticsNodeGUI_Layout.txt
+curseforge_kubejs_section.md
+progression_tree.html
+KUBEJS_RECIPES.md
+_deps.txt
+_qids.txt

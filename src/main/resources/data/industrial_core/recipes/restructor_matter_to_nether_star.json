@@ -1,0 +1,15 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:molecular_transforming",
+  "ingredient": {
+    "item": "industrial_core:exotic_matter"
+  },
+  "inputCount": 4,
+  "result": {
+    "item": "minecraft:nether_star",
+    "count": 1
+  },
+  "catalyst": "industrial_core:universal_catalyst",
+  "processingTime": 500,
+  "energyCost": 15000000
+}

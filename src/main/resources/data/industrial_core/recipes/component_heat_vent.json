@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABC",
+    "BDB",
+    "CBA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:textolite_board"
+    },
+    "B": {
+      "item": "industrial_core:invar_plate"
+    },
+    "C": {
+      "item": "industrial_core:gold_plate"
+    },
+    "D": {
+      "item": "industrial_core:integral_heat_vent"
+    }
+  },
+  "result": {
+    "item": "industrial_core:component_heat_vent"
+  }
+}

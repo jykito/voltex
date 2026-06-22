@@ -1,0 +1,15 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:molecular_transforming",
+  "ingredient": {
+    "item": "minecraft:redstone_block"
+  },
+  "inputCount": 1,
+  "result": {
+    "item": "minecraft:lapis_block",
+    "count": 1
+  },
+  "catalyst": "industrial_core:basic_catalyst",
+  "processingTime": 200,
+  "energyCost": 600000
+}

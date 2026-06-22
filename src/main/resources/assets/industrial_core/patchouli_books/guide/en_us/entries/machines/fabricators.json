@@ -1,0 +1,27 @@
+{
+  "name": "industrial_core.guide.entry.fabricators",
+  "category": "industrial_core:machines",
+  "icon": "industrial_core:matter_fabricator",
+  "sortnum": 60,
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:phase_splitter",
+      "text": "industrial_core.guide.entry.fabricators.0"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:rod_fabricator",
+      "text": "industrial_core.guide.entry.fabricators.1"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:matter_fabricator",
+      "text": "industrial_core.guide.entry.fabricators.2"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.fabricators.3"
+    }
+  ]
+}

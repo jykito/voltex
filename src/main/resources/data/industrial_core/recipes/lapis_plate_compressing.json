@@ -1,0 +1,13 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:compressing",
+  "ingredient": {
+    "item": "industrial_core:lapis_dust"
+  },
+  "inputCount": 8,
+  "result": {
+    "item": "industrial_core:lapis_plate"
+  },
+  "processingTime": 300,
+  "energyCost": 50
+}

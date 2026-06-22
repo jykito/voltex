@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PLP",
+    "CTC",
+    "PLP"
+  ],
+  "key": {
+    "P": { "item": "industrial_core:crystal_plate" },
+    "L": { "item": "industrial_core:lapotron_crystal" },
+    "C": { "item": "industrial_core:emerald_flux_cable" },
+    "T": { "item": "industrial_core:energy_backpack_t1" }
+  },
+  "result": {
+    "item": "industrial_core:energy_backpack_t2"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "industrial_core.guide.entry.alloys_ingots",
+  "category": "industrial_core:materials",
+  "icon": "industrial_core:kronit",
+  "sortnum": 40,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:kronit",
+      "text": "industrial_core.guide.entry.alloys_ingots.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.alloys_ingots.1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:kronium_alloy",
+      "text": "industrial_core.guide.entry.alloys_ingots.2"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:composite_ingot_shaped",
+      "text": "industrial_core.guide.entry.alloys_ingots.3"
+    }
+  ]
+}

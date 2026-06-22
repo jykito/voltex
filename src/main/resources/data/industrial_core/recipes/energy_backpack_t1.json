@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "BCB",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:carbon_plate"
+    },
+    "B": {
+      "item": "industrial_core:gold_conductor"
+    },
+    "C": {
+      "item": "industrial_core:energy_crystal"
+    }
+  },
+  "result": {
+    "item": "industrial_core:energy_backpack_t1"
+  }
+}

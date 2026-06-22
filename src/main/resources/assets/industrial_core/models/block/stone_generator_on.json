@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "industrial_core:block/stone_generator_top_on",
+    "bottom": "industrial_core:block/stone_generator_bottom",
+    "side": "industrial_core:block/stone_generator_side"
+  }
+}

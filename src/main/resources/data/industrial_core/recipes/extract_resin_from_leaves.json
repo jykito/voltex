@@ -1,0 +1,14 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:extracting",
+  "ingredient": {
+    "item": "industrial_core:resin_leaves"
+  },
+  "inputCount": 8,
+  "result": {
+    "item": "industrial_core:tree_resin",
+    "count": 1
+  },
+  "processingTime": 150,
+  "energyCost": 30
+}

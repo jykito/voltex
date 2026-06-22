@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["PBP","TCT","PBP"],
+  "key": {
+    "P": { "tag": "forge:plates/iron" },
+    "B": { "tag": "forge:plates/bronze" },
+    "T": { "item": "industrial_core:textolite_board" },
+    "C": { "item": "industrial_core:crate_t1" }
+  },
+  "result": { "item": "industrial_core:crate_t2", "count": 1 }
+}

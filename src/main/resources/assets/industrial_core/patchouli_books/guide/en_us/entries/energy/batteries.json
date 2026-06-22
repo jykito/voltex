@@ -1,0 +1,22 @@
+{
+  "name": "industrial_core.guide.entry.batteries",
+  "category": "industrial_core:energy",
+  "icon": "industrial_core:lapotron_crystal",
+  "sortnum": 50,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:battery",
+      "text": "industrial_core.guide.entry.batteries.0"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:battery",
+      "text": "industrial_core.guide.entry.batteries.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.batteries.2"
+    }
+  ]
+}

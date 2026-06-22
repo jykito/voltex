@@ -1,0 +1,27 @@
+{
+  "name": "industrial_core.guide.entry.tools",
+  "category": "industrial_core:materials",
+  "icon": "industrial_core:industrial_drill",
+  "sortnum": 60,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:electric_drill",
+      "text": "industrial_core.guide.entry.tools.0"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:industrial_drill",
+      "text": "industrial_core.guide.entry.tools.1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:electric_wrench",
+      "text": "industrial_core.guide.entry.tools.2"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.tools.3"
+    }
+  ]
+}

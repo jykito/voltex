@@ -1,0 +1,1 @@
+com.jykito.industrialcore.compat.kubejs.ICKubeJSPlugin industrial_core

@@ -1,0 +1,14 @@
+{
+  "type": "industrial_core:ore_washing_recipe",
+  "ingredient": {
+    "tag": "forge:raw_materials/tin"
+  },
+  "inputCount": 1,
+  "waterAmount": 1000,
+  "result": {
+    "item": "industrial_core:tin_dust",
+    "count": 2
+  },
+  "processingTime": 200,
+  "energyCostPerTick": 40
+}

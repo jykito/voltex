@@ -1,0 +1,22 @@
+{
+  "name": "industrial_core.guide.entry.charging_packs",
+  "category": "industrial_core:energy",
+  "icon": "industrial_core:energy_backpack_t3",
+  "sortnum": 70,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:energy_backpack_t1",
+      "text": "industrial_core.guide.entry.charging_packs.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.charging_packs.1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:energy_backpack_t3",
+      "text": "industrial_core.guide.entry.charging_packs.2"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "__comment": "Плоская капсула (вариант B): обычная item/generated модель. Пустая = только рамка; при наличии жидкости (предикат filled) → capsule_filled (рамка+заливка+блик), слой заливки красится в цвет флюида через ItemColor.",
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "industrial_core:item/capsule_frame"
+  },
+  "overrides": [
+    {
+      "predicate": { "industrial_core:filled": 1.0 },
+      "model": "industrial_core:item/capsule_filled"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "industrial_core.guide.cat.equipment",
+  "description": "industrial_core.guide.cat.equipment.desc",
+  "icon": "industrial_core:industrial_drill",
+  "sortnum": 60
+}

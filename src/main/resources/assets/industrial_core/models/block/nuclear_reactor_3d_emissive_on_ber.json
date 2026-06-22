@@ -1,0 +1,9 @@
+{
+    "loader": "forge:obj",
+    "model": "industrial_core:models/block/nuclear_reactor_3d.obj",
+    "flip_v": true,
+    "textures": {
+        "nuclear_reactor_idle": "industrial_core:block/nuclear_reactor_emissive_active",
+        "particle": "industrial_core:block/nuclear_reactor_emissive_active"
+    }
+}

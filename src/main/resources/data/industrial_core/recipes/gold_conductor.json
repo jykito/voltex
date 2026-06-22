@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "WWW",
+    "RDR"
+  ],
+  "key": {
+    "W": { "item": "industrial_core:bare_gold_wire" },
+    "R": { "item": "industrial_core:rubber" },
+    "D": { "item": "minecraft:redstone" }
+  },
+  "result": {
+    "item": "industrial_core:gold_conductor",
+    "count": 3
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:molecular_transforming",
+  "ingredient": {
+    "item": "industrial_core:uranium_ingot"
+  },
+  "inputCount": 4,
+  "result": {
+    "item": "industrial_core:plutonium",
+    "count": 1
+  },
+  "catalyst": "industrial_core:resonant_catalyst",
+  "processingTime": 400,
+  "energyCost": 10000000
+}

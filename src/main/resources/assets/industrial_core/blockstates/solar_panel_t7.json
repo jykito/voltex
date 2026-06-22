@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "lit=false": { "model": "industrial_core:block/solar_panel_t7" },
+    "lit=true":  { "model": "industrial_core:block/solar_panel_t7_lit" }
+  }
+}

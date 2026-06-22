@@ -1,0 +1,4 @@
+{
+  "type": "minecraft:block",
+  "pools": [ { "rolls": 1.0, "entries": [ { "type": "minecraft:item", "name": "industrial_core:barrel_t2", "functions": [ { "function": "minecraft:copy_nbt", "source": "block_entity", "ops": [ { "source": "fluid", "target": "BlockEntityTag.fluid", "op": "replace" } ] } ] } ], "conditions": [ { "condition": "minecraft:survives_explosion" } ] } ]
+}

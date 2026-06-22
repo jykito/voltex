@@ -1,0 +1,15 @@
+{
+  "type": "industrial_core:blast_furnace_recipe",
+  "ingredient": {
+    "item": "minecraft:iron_ingot"
+  },
+  "fuel": {
+    "item": "industrial_core:nickel_ingot"
+  },
+  "result": {
+    "item": "industrial_core:invar_ingot",
+    "count": 2
+  },
+  "processingTime": 300,
+  "requiredHeat": 1600
+}

@@ -1,0 +1,4 @@
+{
+  "parent": "industrial_core:block/cultivator",
+  "gui_light": "side"
+}

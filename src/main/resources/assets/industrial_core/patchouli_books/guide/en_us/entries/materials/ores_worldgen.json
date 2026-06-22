@@ -1,0 +1,22 @@
+{
+  "name": "industrial_core.guide.entry.ores_worldgen",
+  "category": "industrial_core:materials",
+  "icon": "industrial_core:tin_ore",
+  "sortnum": 10,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:tin_ore",
+      "text": "industrial_core.guide.entry.ores_worldgen.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.ores_worldgen.1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:raw_tin_block_from_raw",
+      "text": "industrial_core.guide.entry.ores_worldgen.2"
+    }
+  ]
+}

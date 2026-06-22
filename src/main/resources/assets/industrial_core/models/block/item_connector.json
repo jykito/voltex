@@ -1,0 +1,7 @@
+{
+  "parent": "industrial_core:block/connector_item",
+  "textures": {
+    "0": "industrial_core:block/connector_item_output",
+    "particle": "industrial_core:block/connector_item_output"
+  }
+}

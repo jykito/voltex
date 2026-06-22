@@ -1,0 +1,6 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "industrial_core:item/industrial_drill"
+  }
+}

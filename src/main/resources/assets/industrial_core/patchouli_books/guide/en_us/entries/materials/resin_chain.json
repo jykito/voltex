@@ -1,0 +1,22 @@
+{
+  "name": "industrial_core.guide.entry.resin_chain",
+  "category": "industrial_core:materials",
+  "icon": "industrial_core:rubber",
+  "sortnum": 20,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:resin_log",
+      "text": "industrial_core.guide.entry.resin_chain.0"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:resin_collector",
+      "text": "industrial_core.guide.entry.resin_chain.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.resin_chain.2"
+    }
+  ]
+}

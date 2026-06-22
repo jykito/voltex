@@ -1,0 +1,13 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:compressing",
+  "ingredient": {
+    "item": "industrial_core:emerald_dust"
+  },
+  "inputCount": 4,
+  "result": {
+    "item": "industrial_core:emerald_plate"
+  },
+  "processingTime": 300,
+  "energyCost": 50
+}

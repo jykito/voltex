@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=north,formed=false,lit=false": { "model": "industrial_core:block/miner_core" },
+    "facing=south,formed=false,lit=false": { "model": "industrial_core:block/miner_core", "y": 180 },
+    "facing=east,formed=false,lit=false":  { "model": "industrial_core:block/miner_core", "y": 90 },
+    "facing=west,formed=false,lit=false":  { "model": "industrial_core:block/miner_core", "y": 270 },
+    "facing=north,formed=false,lit=true":  { "model": "industrial_core:block/miner_core_on" },
+    "facing=south,formed=false,lit=true":  { "model": "industrial_core:block/miner_core_on", "y": 180 },
+    "facing=east,formed=false,lit=true":   { "model": "industrial_core:block/miner_core_on", "y": 90 },
+    "facing=west,formed=false,lit=true":   { "model": "industrial_core:block/miner_core_on", "y": 270 },
+    "facing=north,formed=true,lit=false":  { "model": "industrial_core:block/miner_core_formed" },
+    "facing=south,formed=true,lit=false":  { "model": "industrial_core:block/miner_core_formed", "y": 180 },
+    "facing=east,formed=true,lit=false":   { "model": "industrial_core:block/miner_core_formed", "y": 90 },
+    "facing=west,formed=true,lit=false":   { "model": "industrial_core:block/miner_core_formed", "y": 270 },
+    "facing=north,formed=true,lit=true":   { "model": "industrial_core:block/miner_core_formed_on" },
+    "facing=south,formed=true,lit=true":   { "model": "industrial_core:block/miner_core_formed_on", "y": 180 },
+    "facing=east,formed=true,lit=true":    { "model": "industrial_core:block/miner_core_formed_on", "y": 90 },
+    "facing=west,formed=true,lit=true":    { "model": "industrial_core:block/miner_core_formed_on", "y": 270 }
+  }
+}

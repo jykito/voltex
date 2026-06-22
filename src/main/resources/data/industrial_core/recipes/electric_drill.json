@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "industrial_core:tool_base" },
+    { "item": "industrial_core:iron_drill_tip" }
+  ],
+  "result": {
+    "item": "industrial_core:electric_drill",
+    "count": 1
+  }
+}

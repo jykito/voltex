@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "industrial_core:lead_ore",
+    "industrial_core:deepslate_lead_ore",
+    "industrial_core:uranium_ore",
+    "industrial_core:deepslate_uranium_ore",
+    "industrial_core:raw_lead_block",
+    "industrial_core:raw_uranium_block",
+    "industrial_core:silver_block",
+    "industrial_core:electrum_block"
+  ]
+}

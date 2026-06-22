@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "industrial_core:tin_ore",
+    "industrial_core:deepslate_tin_ore"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:compressing",
+  "ingredient": {
+    "item": "industrial_core:diamond_dust"
+  },
+  "inputCount": 4,
+  "result": {
+    "item": "industrial_core:diamond_plate",
+    "count": 1
+  },
+  "processingTime": 100,
+  "energyCost": 50
+}

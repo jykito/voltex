@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "facing=north,lit=false": { "model": "industrial_core:block/restructor" },
+    "facing=north,lit=true":  { "model": "industrial_core:block/restructor" },
+    "facing=south,lit=false": { "model": "industrial_core:block/restructor", "y": 180 },
+    "facing=south,lit=true":  { "model": "industrial_core:block/restructor", "y": 180 },
+    "facing=west,lit=false":  { "model": "industrial_core:block/restructor", "y": 270 },
+    "facing=west,lit=true":   { "model": "industrial_core:block/restructor", "y": 270 },
+    "facing=east,lit=false":  { "model": "industrial_core:block/restructor", "y": 90 },
+    "facing=east,lit=true":   { "model": "industrial_core:block/restructor", "y": 90 }
+  }
+}

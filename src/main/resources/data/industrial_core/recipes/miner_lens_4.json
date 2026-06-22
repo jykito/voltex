@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "industrial_core:miner_lens_1" },
+    { "item": "industrial_core:miner_lens_2" },
+    { "item": "industrial_core:miner_lens_3" },
+    { "item": "minecraft:nether_star" }
+  ],
+  "result": {
+    "item": "industrial_core:miner_lens_4",
+    "count": 1
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LIL",
+    "PMP",
+    "LIL"
+  ],
+  "key": {
+    "L": { "item": "industrial_core:lead_plate" },
+    "I": { "item": "industrial_core:invar_plate" },
+    "P": { "item": "industrial_core:composite" },
+    "M": { "item": "industrial_core:machine_casing" }
+  },
+  "result": {
+    "item": "industrial_core:rod_fabricator",
+    "count": 1
+  }
+}

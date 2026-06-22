@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "WWW",
+    "RRR"
+  ],
+  "key": {
+    "W": { "item": "industrial_core:bare_copper_wire" },
+    "R": { "item": "industrial_core:rubber" }
+  },
+  "result": {
+    "item": "industrial_core:copper_cable",
+    "count": 3
+  }
+}

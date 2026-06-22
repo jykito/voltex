@@ -1,0 +1,23 @@
+{
+  "name": "industrial_core.guide.entry.capsule_system",
+  "category": "industrial_core:automation",
+  "icon": "industrial_core:capsule",
+  "sortnum": 30,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:capsule",
+      "text": "industrial_core.guide.entry.capsule_system.0"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:capsule",
+      "text": "industrial_core.guide.entry.capsule_system.1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:capsule_filler",
+      "text": "industrial_core.guide.entry.capsule_system.2"
+    }
+  ]
+}

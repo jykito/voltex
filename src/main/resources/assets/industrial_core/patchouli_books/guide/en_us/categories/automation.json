@@ -1,0 +1,6 @@
+{
+  "name": "industrial_core.guide.cat.automation",
+  "description": "industrial_core.guide.cat.automation.desc",
+  "icon": "industrial_core:logistics_node",
+  "sortnum": 50
+}

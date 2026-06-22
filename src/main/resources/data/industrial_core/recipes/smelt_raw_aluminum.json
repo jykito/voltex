@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "industrial_core:raw_aluminum"
+  },
+  "result": "industrial_core:aluminum_ingot",
+  "experience": 0.4,
+  "cookingtime": 200
+}

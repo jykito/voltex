@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "RSR",
+    "SLS",
+    "RSR"
+  ],
+  "key": {
+    "R": { "item": "minecraft:redstone" },
+    "S": { "item": "industrial_core:silicon" },
+    "L": { "item": "industrial_core:logic_board" }
+  },
+  "result": {
+    "item": "industrial_core:microcontroller",
+    "count": 1
+  }
+}

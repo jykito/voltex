@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ARA",
+    "RLR",
+    "ARA"
+  ],
+  "key": {
+    "A": { "item": "industrial_core:amethyst_crystal" },
+    "R": { "item": "industrial_core:accelerator_mk1" },
+    "L": {
+      "type": "forge:nbt",
+      "item": "industrial_core:capsule",
+      "nbt": "{Fluid:{Amount:1000,FluidName:\"industrial_core:molten_amethyst\"}}"
+    }
+  },
+  "result": {
+    "item": "minecraft:budding_amethyst",
+    "count": 1
+  }
+}

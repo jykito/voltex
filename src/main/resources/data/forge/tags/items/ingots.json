@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "#forge:ingots/tin",
+    "#forge:ingots/lead",
+    "#forge:ingots/uranium",
+    "#forge:ingots/aluminum",
+    "#forge:ingots/nickel",
+    "#forge:ingots/silver",
+    "#forge:ingots/bronze",
+    "#forge:ingots/invar",
+    "#forge:ingots/electrum"
+  ]
+}

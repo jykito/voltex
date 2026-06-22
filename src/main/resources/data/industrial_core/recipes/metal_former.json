@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PCP",
+    "EME",
+    "PCP"
+  ],
+  "key": {
+    "P": { "item": "industrial_core:iron_plate" },
+    "C": { "item": "industrial_core:copper_plate" },
+    "E": { "item": "industrial_core:electric_motor" },
+    "M": { "item": "industrial_core:machine_casing" }
+  },
+  "result": {
+    "item": "industrial_core:metal_former",
+    "count": 1
+  }
+}

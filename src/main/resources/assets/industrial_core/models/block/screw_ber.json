@@ -1,0 +1,9 @@
+{
+    "loader": "forge:obj",
+    "model": "industrial_core:models/block/screw.obj",
+    "flip_v": true,
+    "textures": {
+        "screw": "industrial_core:block/screw",
+        "particle": "industrial_core:block/screw"
+    }
+}

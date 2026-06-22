@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " P ",
+    "RMR",
+    " C "
+  ],
+  "key": {
+    "P": { "item": "minecraft:piston" },
+    "R": { "item": "industrial_core:rubber" },
+    "M": { "item": "industrial_core:electric_motor" },
+    "C": { "item": "industrial_core:copper_cable" }
+  },
+  "result": {
+    "item": "industrial_core:item_pusher",
+    "count": 1
+  }
+}

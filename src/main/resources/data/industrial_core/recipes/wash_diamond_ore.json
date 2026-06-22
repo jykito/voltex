@@ -1,0 +1,11 @@
+{
+  "type": "industrial_core:ore_washing_recipe",
+  "ingredient": { "tag": "forge:ores/diamond" },
+  "inputCount": 1,
+  "waterAmount": 1000,
+  "result": { "item": "minecraft:diamond", "count": 1 },
+  "byproduct": { "item": "minecraft:coal", "count": 1 },
+  "byproductChance": 0.25,
+  "processingTime": 200,
+  "energyCostPerTick": 40
+}

@@ -1,0 +1,6 @@
+{
+  "name": "industrial_core.guide.cat.machines",
+  "description": "industrial_core.guide.cat.machines.desc",
+  "icon": "industrial_core:crusher",
+  "sortnum": 40
+}

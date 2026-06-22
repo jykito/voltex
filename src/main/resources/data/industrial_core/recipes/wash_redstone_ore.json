@@ -1,0 +1,9 @@
+{
+  "type": "industrial_core:ore_washing_recipe",
+  "ingredient": { "tag": "forge:ores/redstone" },
+  "inputCount": 1,
+  "waterAmount": 1000,
+  "result": { "item": "minecraft:redstone", "count": 10 },
+  "processingTime": 200,
+  "energyCostPerTick": 40
+}

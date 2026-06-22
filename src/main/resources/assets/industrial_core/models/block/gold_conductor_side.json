@@ -1,0 +1,6 @@
+{
+  "parent": "industrial_core:block/base_wire_side",
+  "textures": {
+    "wire": "industrial_core:block/gold_conductor"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "conditions": [
+    { "type": "forge:mod_loaded", "modid": "patchouli" }
+  ],
+  "ingredients": [
+    { "item": "minecraft:book" },
+    { "item": "industrial_core:iron_plate" }
+  ],
+  "result": {
+    "item": "patchouli:guide_book",
+    "count": 1,
+    "nbt": { "patchouli:book": "industrial_core:guide" }
+  }
+}

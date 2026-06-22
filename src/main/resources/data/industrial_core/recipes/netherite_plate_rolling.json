@@ -1,0 +1,14 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:rolling",
+  "ingredient": {
+    "item": "minecraft:netherite_ingot"
+  },
+  "inputCount": 1,
+  "result": {
+    "item": "industrial_core:netherite_plate",
+    "count": 2
+  },
+  "processingTime": 200,
+  "energyCost": 50
+}

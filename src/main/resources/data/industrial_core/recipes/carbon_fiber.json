@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CC",
+    "CC"
+  ],
+  "key": {
+    "C": {
+      "item": "industrial_core:coal_dust"
+    }
+  },
+  "result": {
+    "item": "industrial_core:carbon_fiber",
+    "count": 1
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "EKE",
+    "KNK",
+    "ESE"
+  ],
+  "key": {
+    "E": { "item": "industrial_core:exotic_matter" },
+    "K": { "item": "industrial_core:kronium_alloy" },
+    "N": { "item": "minecraft:nether_star" },
+    "S": { "item": "industrial_core:singularity_core" }
+  },
+  "result": {
+    "item": "industrial_core:stellar_matrix",
+    "count": 1
+  }
+}

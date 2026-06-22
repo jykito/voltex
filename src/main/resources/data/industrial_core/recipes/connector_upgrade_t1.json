@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GRG",
+    "RIR",
+    "GRG"
+  ],
+  "key": {
+    "G": { "item": "industrial_core:gold_plate" },
+    "R": { "item": "minecraft:redstone" },
+    "I": { "item": "industrial_core:iron_plate" }
+  },
+  "result": {
+    "item": "industrial_core:connector_upgrade_t1",
+    "count": 1
+  }
+}

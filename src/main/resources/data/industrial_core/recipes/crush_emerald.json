@@ -1,0 +1,13 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:crushing",
+  "ingredient": {
+    "item": "minecraft:emerald"
+  },
+  "result": {
+    "item": "industrial_core:emerald_dust",
+    "count": 1
+  },
+  "processingTime": 200,
+  "energyCost": 30
+}

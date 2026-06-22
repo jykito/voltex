@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GBG",
+    "PCP",
+    "GMG"
+  ],
+  "key": {
+    "G": { "item": "minecraft:glass" },
+    "B": { "item": "minecraft:bone_meal" },
+    "P": { "item": "industrial_core:iron_plate" },
+    "C": { "item": "industrial_core:machine_casing" },
+    "M": { "item": "industrial_core:microcontroller" }
+  },
+  "result": {
+    "item": "industrial_core:cultivator",
+    "count": 1
+  }
+}

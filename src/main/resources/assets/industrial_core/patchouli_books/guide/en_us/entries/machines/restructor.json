@@ -1,0 +1,27 @@
+{
+  "name": "industrial_core.guide.entry.restructor",
+  "category": "industrial_core:machines",
+  "icon": "industrial_core:restructor",
+  "sortnum": 70,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:restructor",
+      "text": "industrial_core.guide.entry.restructor.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.restructor.1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:basic_catalyst",
+      "text": "industrial_core.guide.entry.restructor.2"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:universal_catalyst",
+      "text": "industrial_core.guide.entry.restructor.3"
+    }
+  ]
+}

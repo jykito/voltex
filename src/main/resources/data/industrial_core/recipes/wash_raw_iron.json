@@ -1,0 +1,19 @@
+{
+  "type": "industrial_core:ore_washing_recipe",
+  "ingredient": {
+    "tag": "forge:raw_materials/iron"
+  },
+  "inputCount": 1,
+  "waterAmount": 1000,
+  "result": {
+    "item": "industrial_core:iron_dust",
+    "count": 2
+  },
+  "byproduct": {
+    "item": "industrial_core:nickel_dust",
+    "count": 1
+  },
+  "byproductChance": 0.25,
+  "processingTime": 200,
+  "energyCostPerTick": 40
+}

@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "industrial_core:block/capsule_filler_top",
+    "bottom": "industrial_core:block/capsule_filler_top",
+    "side": "industrial_core:block/capsule_filler_side",
+    "front": "industrial_core:block/capsule_filler_front_off"
+  }
+}

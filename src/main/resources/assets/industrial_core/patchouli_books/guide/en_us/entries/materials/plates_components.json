@@ -1,0 +1,31 @@
+{
+  "name": "industrial_core.guide.entry.plates_components",
+  "category": "industrial_core:materials",
+  "icon": "industrial_core:logic_board",
+  "sortnum": 50,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.plates_components.0"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:carbon_fiber",
+      "text": "industrial_core.guide.entry.plates_components.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.plates_components.2"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:logic_board",
+      "text": "industrial_core.guide.entry.plates_components.3"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:data_transfer_matrix",
+      "text": "industrial_core.guide.entry.plates_components.4"
+    }
+  ]
+}

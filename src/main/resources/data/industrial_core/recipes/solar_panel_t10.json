@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ETE",
+    "KSK",
+    "EKE"
+  ],
+  "key": {
+    "E": { "item": "industrial_core:exotic_matter" },
+    "T": { "item": "industrial_core:stellar_matrix" },
+    "K": { "item": "industrial_core:kronium_alloy" },
+    "S": { "item": "industrial_core:solar_panel_t9" }
+  },
+  "result": {
+    "item": "industrial_core:solar_panel_t10",
+    "count": 1
+  }
+}

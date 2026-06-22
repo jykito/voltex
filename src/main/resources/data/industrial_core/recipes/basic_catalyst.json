@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " A ",
+    "ECE",
+    " A "
+  ],
+  "key": {
+    "A": { "item": "industrial_core:amethyst_crystal" },
+    "E": { "item": "industrial_core:electrum_ingot" },
+    "C": { "item": "industrial_core:crystal_plate" }
+  },
+  "result": {
+    "item": "industrial_core:basic_catalyst",
+    "count": 1
+  }
+}

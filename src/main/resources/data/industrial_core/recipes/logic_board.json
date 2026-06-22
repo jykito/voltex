@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:composite"
+    },
+    "B": {
+      "item": "industrial_core:gold_plate"
+    },
+    "C": {
+      "item": "industrial_core:textolite_board"
+    },
+    "D": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "result": {
+    "item": "industrial_core:logic_board"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "KMK",
+    "KLK"
+  ],
+  "key": {
+    "K": { "item": "industrial_core:kronit" },
+    "M": { "item": "industrial_core:kronium_alloy" },
+    "L": { "item": "industrial_core:lapotron_crystal" }
+  },
+  "result": {
+    "item": "industrial_core:plasma_helmet",
+    "count": 1
+  }
+}

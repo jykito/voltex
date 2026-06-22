@@ -1,0 +1,15 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:molecular_transforming",
+  "ingredient": {
+    "item": "industrial_core:exotic_matter"
+  },
+  "inputCount": 1,
+  "result": {
+    "item": "minecraft:netherite_ingot",
+    "count": 1
+  },
+  "catalyst": "industrial_core:activated_catalyst",
+  "processingTime": 300,
+  "energyCost": 2000000
+}

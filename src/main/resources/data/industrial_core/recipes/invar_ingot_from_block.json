@@ -1,0 +1,5 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [ { "item": "industrial_core:invar_block" } ],
+  "result": { "item": "industrial_core:invar_ingot", "count": 9 }
+}

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "industrial_core:hammer" },
+    { "item": "industrial_core:bronze_ingot" }
+  ],
+  "result": {
+    "item": "industrial_core:bronze_plate",
+    "count": 1
+  }
+}

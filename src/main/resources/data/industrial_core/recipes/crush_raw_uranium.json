@@ -1,0 +1,11 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:crushing",
+  "ingredient": { "tag": "forge:raw_materials/uranium" },
+  "result": {
+    "item": "industrial_core:uranium_dust",
+    "count": 2
+  },
+  "processingTime": 200,
+  "energyCost": 60
+}

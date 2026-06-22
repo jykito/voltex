@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top":   "industrial_core:block/miner_core_side",
+    "front": "industrial_core:block/miner_core_front",
+    "side":  "industrial_core:block/miner_core_side"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:extruding",
+  "ingredient": {"item": "minecraft:redstone_block"},
+  "inputCount": 1,
+  "result": {"item": "industrial_core:bare_heavy_wire", "count": 2},
+  "processingTime": 200,
+  "energyCost": 100
+}

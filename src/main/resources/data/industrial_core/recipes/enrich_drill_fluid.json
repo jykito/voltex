@@ -1,0 +1,13 @@
+{
+  "type": "industrial_core:fluid_enricher_recipe",
+  "ingredient": { "item": "industrial_core:mineral_dust" },
+  "itemCount": 8,
+  "ingredient2": { "item": "industrial_core:silicon_dust" },
+  "itemCount2": 2,
+  "fluidInput": "minecraft:water",
+  "fluidInputAmount": 4000,
+  "fluidOutput": "industrial_core:drill_fluid",
+  "fluidOutputAmount": 4000,
+  "processingTime": 200,
+  "energyCostPerTick": 60
+}

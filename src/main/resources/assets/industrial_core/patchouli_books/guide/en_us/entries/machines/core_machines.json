@@ -1,0 +1,28 @@
+{
+  "name": "industrial_core.guide.entry.core_machines",
+  "category": "industrial_core:machines",
+  "icon": "industrial_core:crusher",
+  "sortnum": 10,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:crusher",
+      "text": "industrial_core.guide.entry.core_machines.0"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:metal_former",
+      "text": "industrial_core.guide.entry.core_machines.1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:compressor",
+      "text": "industrial_core.guide.entry.core_machines.2"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:extractor",
+      "text": "industrial_core.guide.entry.core_machines.3"
+    }
+  ]
+}

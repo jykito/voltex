@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "BCB",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:composite"
+    },
+    "B": {
+      "item": "industrial_core:copper_plate"
+    },
+    "C": {
+      "item": "industrial_core:heat_vent"
+    }
+  },
+  "result": {
+    "item": "industrial_core:integral_heat_vent"
+  }
+}

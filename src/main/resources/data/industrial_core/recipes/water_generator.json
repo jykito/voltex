@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GPG",
+    "PCP",
+    "GPG"
+  ],
+  "key": {
+    "G": { "item": "minecraft:glass" },
+    "P": { "item": "industrial_core:iron_plate" },
+    "C": { "item": "industrial_core:machine_casing" }
+  },
+  "result": {
+    "item": "industrial_core:water_generator",
+    "count": 1
+  }
+}

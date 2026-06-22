@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "industrial_core:bauxite_ore",
+    "industrial_core:deepslate_bauxite_ore"
+  ]
+}

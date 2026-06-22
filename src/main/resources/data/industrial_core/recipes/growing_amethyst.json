@@ -1,0 +1,10 @@
+{
+  "type": "industrial_core:growing_recipe",
+  "input": { "item": "minecraft:budding_amethyst" },
+  "inputCount": 1,
+  "output": { "item": "minecraft:amethyst_shard", "count": 1 },
+  "category": "mineral",
+  "keepInput": true,
+  "time": 100,
+  "energy": 200
+}

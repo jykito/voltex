@@ -1,0 +1,22 @@
+{
+  "name": "industrial_core.guide.entry.battery_charger",
+  "category": "industrial_core:energy",
+  "icon": "industrial_core:battery_charger",
+  "sortnum": 60,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:battery_charger",
+      "text": "industrial_core.guide.entry.battery_charger.0"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:battery_charger",
+      "text": "industrial_core.guide.entry.battery_charger.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.battery_charger.2"
+    }
+  ]
+}

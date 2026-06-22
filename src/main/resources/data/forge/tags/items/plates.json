@@ -1,0 +1,18 @@
+{
+  "replace": false,
+  "values": [
+    "#forge:plates/iron",
+    "#forge:plates/gold",
+    "#forge:plates/copper",
+    "#forge:plates/tin",
+    "#forge:plates/lead",
+    "#forge:plates/bronze",
+    "#forge:plates/aluminum",
+    "#forge:plates/invar",
+    "#forge:plates/electrum",
+    "#forge:plates/diamond",
+    "#forge:plates/emerald",
+    "#forge:plates/lapis",
+    "#forge:plates/netherite"
+  ]
+}

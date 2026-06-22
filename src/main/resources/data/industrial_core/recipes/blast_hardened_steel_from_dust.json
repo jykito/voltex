@@ -1,0 +1,15 @@
+{
+  "type": "industrial_core:blast_furnace_recipe",
+  "ingredient": {
+    "item": "industrial_core:iron_dust"
+  },
+  "fuel": {
+    "item": "industrial_core:coal_dust"
+  },
+  "result": {
+    "item": "industrial_core:hardened_steel_ingot",
+    "count": 1
+  },
+  "processingTime": 300,
+  "requiredHeat": 2400
+}

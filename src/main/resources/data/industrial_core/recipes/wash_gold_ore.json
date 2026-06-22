@@ -1,0 +1,11 @@
+{
+  "type": "industrial_core:ore_washing_recipe",
+  "ingredient": { "tag": "forge:ores/gold" },
+  "inputCount": 1,
+  "waterAmount": 1000,
+  "result": { "item": "industrial_core:gold_dust", "count": 3 },
+  "byproduct": { "item": "industrial_core:silver_dust", "count": 1 },
+  "byproductChance": 0.2,
+  "processingTime": 200,
+  "energyCostPerTick": 40
+}

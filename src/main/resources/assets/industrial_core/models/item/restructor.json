@@ -1,0 +1,4 @@
+{
+  "parent": "industrial_core:block/restructor",
+  "gui_light": "side"
+}

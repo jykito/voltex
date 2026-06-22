@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AGA",
+    "GLG",
+    "AGA"
+  ],
+  "key": {
+    "A": { "item": "industrial_core:aluminum_plate" },
+    "G": { "item": "minecraft:glass" },
+    "L": { "item": "industrial_core:logic_board" }
+  },
+  "result": {
+    "item": "industrial_core:fluid_connector",
+    "count": 2
+  }
+}

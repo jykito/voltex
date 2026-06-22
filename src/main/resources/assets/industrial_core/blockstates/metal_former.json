@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "facing=north,lit=false": { "model": "industrial_core:block/metal_former" },
+    "facing=east,lit=false":  { "model": "industrial_core:block/metal_former" },
+    "facing=south,lit=false": { "model": "industrial_core:block/metal_former" },
+    "facing=west,lit=false":  { "model": "industrial_core:block/metal_former" },
+
+    "facing=north,lit=true":  { "model": "industrial_core:block/metal_former_on" },
+    "facing=east,lit=true":   { "model": "industrial_core:block/metal_former_on" },
+    "facing=south,lit=true":  { "model": "industrial_core:block/metal_former_on" },
+    "facing=west,lit=true":   { "model": "industrial_core:block/metal_former_on" }
+  }
+}

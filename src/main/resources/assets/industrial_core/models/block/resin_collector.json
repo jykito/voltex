@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "industrial_core:block/resin_collector_front",
+    "top":   "industrial_core:block/resin_collector_top",
+    "side":  "industrial_core:block/resin_collector_side"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:molecular_transforming",
+  "ingredient": {
+    "item": "minecraft:gold_block"
+  },
+  "inputCount": 1,
+  "result": {
+    "item": "industrial_core:uranium_ingot",
+    "count": 4
+  },
+  "catalyst": "industrial_core:activated_catalyst",
+  "processingTime": 300,
+  "energyCost": 3000000
+}

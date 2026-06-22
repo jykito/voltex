@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " D ",
+    " L ",
+    " I "
+  ],
+  "key": {
+    "D": { "item": "industrial_core:data_transfer_matrix" },
+    "L": { "item": "industrial_core:logic_board" },
+    "I": { "item": "minecraft:iron_ingot" }
+  },
+  "result": {
+    "item": "industrial_core:logistics_linker",
+    "count": 1
+  }
+}

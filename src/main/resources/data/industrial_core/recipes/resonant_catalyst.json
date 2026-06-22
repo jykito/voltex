@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AEA",
+    "ERE",
+    "AEA"
+  ],
+  "key": {
+    "A": { "item": "industrial_core:amethyst_crystal" },
+    "E": { "item": "industrial_core:electrum_plate" },
+    "R": { "item": "industrial_core:activated_catalyst" }
+  },
+  "result": {
+    "item": "industrial_core:resonant_catalyst",
+    "count": 1
+  }
+}

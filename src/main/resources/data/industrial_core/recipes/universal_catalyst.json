@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "EAE",
+    "ARA",
+    "EAE"
+  ],
+  "key": {
+    "E": { "item": "industrial_core:exotic_matter" },
+    "A": { "item": "industrial_core:amethyst_crystal" },
+    "R": { "item": "industrial_core:resonant_catalyst" }
+  },
+  "result": {
+    "item": "industrial_core:universal_catalyst",
+    "count": 1
+  }
+}

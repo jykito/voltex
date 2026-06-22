@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SSS",
+    "SMS",
+    "PEP"
+  ],
+  "key": {
+    "S": { "item": "minecraft:smooth_stone" },
+    "M": { "item": "industrial_core:machine_casing" },
+    "P": { "item": "industrial_core:iron_plate" },
+    "E": { "item": "industrial_core:electric_motor" }
+  },
+  "result": {
+    "item": "industrial_core:compressor",
+    "count": 1
+  }
+}

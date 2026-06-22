@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "K K",
+    "KEK",
+    "KKK"
+  ],
+  "key": {
+    "K": { "item": "industrial_core:kronit" },
+    "E": { "item": "industrial_core:energy_crystal" }
+  },
+  "result": {
+    "item": "industrial_core:nexite_chestplate",
+    "count": 1
+  }
+}

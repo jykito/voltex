@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "industrial_core:block/logistics_node" }
+  }
+}

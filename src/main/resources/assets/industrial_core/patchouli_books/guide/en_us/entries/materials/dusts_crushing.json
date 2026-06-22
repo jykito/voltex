@@ -1,0 +1,22 @@
+{
+  "name": "industrial_core.guide.entry.dusts_crushing",
+  "category": "industrial_core:materials",
+  "icon": "industrial_core:iron_dust",
+  "sortnum": 30,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:iron_dust",
+      "text": "industrial_core.guide.entry.dusts_crushing.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.dusts_crushing.1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:bronze_dust",
+      "text": "industrial_core.guide.entry.dusts_crushing.2"
+    }
+  ]
+}

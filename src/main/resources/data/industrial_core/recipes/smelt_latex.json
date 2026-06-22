@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "industrial_core:tree_resin"
+  },
+  "result": "industrial_core:rubber",
+  "experience": 0.5,
+  "cookingtime": 200
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "KEK",
+    "EUE",
+    "KEK"
+  ],
+  "key": {
+    "K": { "item": "industrial_core:kronium_alloy" },
+    "E": { "item": "industrial_core:exotic_matter" },
+    "U": { "item": "industrial_core:universal_catalyst" }
+  },
+  "result": {
+    "item": "industrial_core:singularity_core",
+    "count": 1
+  }
+}

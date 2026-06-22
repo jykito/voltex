@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CPC",
+    "PDP",
+    "CPC"
+  ],
+  "key": {
+    "C": { "item": "industrial_core:crystal_plate" },
+    "P": { "item": "industrial_core:parallel_module" },
+    "D": { "item": "industrial_core:data_transfer_matrix" }
+  },
+  "result": {
+    "item": "industrial_core:advanced_parallel_module",
+    "count": 1
+  }
+}

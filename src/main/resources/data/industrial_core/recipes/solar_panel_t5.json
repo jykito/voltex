@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "DCD",
+    "EBE"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:emerald_flux_cable"
+    },
+    "B": {
+      "item": "industrial_core:crystal_plate"
+    },
+    "C": {
+      "item": "industrial_core:solar_panel_t4"
+    },
+    "D": {
+      "item": "industrial_core:data_transfer_matrix"
+    },
+    "E": {
+      "item": "industrial_core:amethyst_crystal"
+    }
+  },
+  "result": {
+    "item": "industrial_core:solar_panel_t5"
+  }
+}

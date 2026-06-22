@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CEC",
+    "HFH",
+    "CEC"
+  ],
+  "key": {
+    "C": { "item": "industrial_core:composite" },
+    "E": { "item": "industrial_core:advanced_heat_exchanger" },
+    "H": { "item": "industrial_core:heat_conductor" },
+    "F": { "item": "industrial_core:blast_upgrade_forced_air" }
+  },
+  "result": {
+    "item": "industrial_core:blast_upgrade_oxygen_boost",
+    "count": 1
+  }
+}

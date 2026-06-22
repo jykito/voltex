@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PCP",
+    "CFC",
+    "PMP"
+  ],
+  "key": {
+    "P": { "item": "industrial_core:iron_plate" },
+    "C": { "item": "industrial_core:bare_copper_wire" },
+    "F": { "item": "minecraft:furnace" },
+    "M": { "item": "industrial_core:machine_casing" }
+  },
+  "result": {
+    "item": "industrial_core:electric_furnace",
+    "count": 1
+  }
+}

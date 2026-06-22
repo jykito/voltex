@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " E ",
+    "ETE",
+    " E "
+  ],
+  "key": {
+    "E": { "item": "industrial_core:electrum_ingot" },
+    "T": { "item": "industrial_core:connector_upgrade_t1" }
+  },
+  "result": {
+    "item": "industrial_core:connector_upgrade_t2",
+    "count": 1
+  }
+}

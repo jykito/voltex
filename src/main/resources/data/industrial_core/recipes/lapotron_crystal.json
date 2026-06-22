@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LBL",
+    "CEC",
+    "LBL"
+  ],
+  "key": {
+    "L": { "item": "minecraft:lapis_block" },
+    "B": { "item": "industrial_core:electrum_plate" },
+    "C": { "item": "industrial_core:crystal_plate" },
+    "E": { "item": "industrial_core:energy_crystal" }
+  },
+  "result": {
+    "item": "industrial_core:lapotron_crystal",
+    "count": 1
+  }
+}

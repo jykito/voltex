@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SCS",
+    "CRC",
+    "SCS"
+  ],
+  "key": {
+    "S": { "item": "industrial_core:silicon" },
+    "C": { "item": "industrial_core:bare_copper_wire" },
+    "R": { "item": "minecraft:redstone" }
+  },
+  "result": {
+    "item": "industrial_core:textolite_board",
+    "count": 2
+  }
+}

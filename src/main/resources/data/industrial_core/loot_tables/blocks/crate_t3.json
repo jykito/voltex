@@ -1,0 +1,4 @@
+{
+  "type": "minecraft:block",
+  "pools": [ { "rolls": 1.0, "entries": [ { "type": "minecraft:item", "name": "industrial_core:crate_t3" } ], "conditions": [ { "condition": "minecraft:survives_explosion" } ] } ]
+}

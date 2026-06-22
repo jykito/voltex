@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PPP",
+    "LSL",
+    "KKK"
+  ],
+  "key": {
+    "P": { "item": "industrial_core:photonic_lens" },
+    "L": { "item": "industrial_core:lapotron_crystal" },
+    "S": { "item": "industrial_core:solar_panel_t5" },
+    "K": { "item": "industrial_core:kronium_alloy" }
+  },
+  "result": {
+    "item": "industrial_core:solar_panel_t6",
+    "count": 1
+  }
+}

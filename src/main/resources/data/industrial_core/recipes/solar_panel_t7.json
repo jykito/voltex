@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "KCK",
+    "VSV",
+    "KCK"
+  ],
+  "key": {
+    "K": { "item": "industrial_core:kronium_alloy" },
+    "C": { "item": "industrial_core:superconductor_coil" },
+    "V": { "item": "industrial_core:advanced_heat_vent" },
+    "S": { "item": "industrial_core:solar_panel_t6" }
+  },
+  "result": {
+    "item": "industrial_core:solar_panel_t7",
+    "count": 1
+  }
+}

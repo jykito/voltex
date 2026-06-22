@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "lit=false": { "model": "industrial_core:block/matter_fabricator" },
+    "lit=true":  { "model": "industrial_core:block/matter_fabricator_on" }
+  }
+}

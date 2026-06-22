@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "industrial_core:tool_base" },
+    { "item": "industrial_core:netherite_drill_tip" },
+    { "item": "industrial_core:logic_board" }
+  ],
+  "result": {
+    "item": "industrial_core:industrial_drill",
+    "count": 1
+  }
+}

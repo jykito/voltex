@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [" A ", "BSB", " C "],
+  "key": {
+    "A": { "item": "industrial_core:plutonium" },
+    "B": { "item": "industrial_core:heat_exchanger" },
+    "S": { "item": "industrial_core:reactor_scheme_u3" },
+    "C": { "item": "industrial_core:graphite_rod" }
+  },
+  "result": { "item": "industrial_core:reactor_scheme_p1", "count": 1 }
+}

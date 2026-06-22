@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SIS",
+    "IMI",
+    "SIS"
+  ],
+  "key": {
+    "S": { "item": "industrial_core:solar_panel_t3" },
+    "I": { "item": "industrial_core:electrum_plate" },
+    "M": { "item": "industrial_core:machine_casing" }
+  },
+  "result": {
+    "item": "industrial_core:panel_combiner",
+    "count": 1
+  }
+}

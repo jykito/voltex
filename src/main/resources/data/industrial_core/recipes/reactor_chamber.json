@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LIL",
+    "ISI",
+    "LIL"
+  ],
+  "key": {
+    "L": { "item": "industrial_core:lead_plate" },
+    "I": { "item": "industrial_core:invar_plate" },
+    "S": { "item": "industrial_core:hardened_steel_ingot" }
+  },
+  "result": {
+    "item": "industrial_core:reactor_chamber",
+    "count": 2
+  }
+}

@@ -1,0 +1,9 @@
+{
+    "loader": "forge:obj",
+    "model": "industrial_core:models/block/drill_2.obj",
+    "flip_v": true,
+    "textures": {
+        "drill_2": "industrial_core:block/drill_2",
+        "particle": "industrial_core:block/drill_2"
+    }
+}

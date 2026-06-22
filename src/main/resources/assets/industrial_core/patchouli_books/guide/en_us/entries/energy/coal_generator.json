@@ -1,0 +1,22 @@
+{
+  "name": "industrial_core.guide.entry.coal_generator",
+  "category": "industrial_core:energy",
+  "icon": "industrial_core:coal_generator",
+  "sortnum": 10,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "industrial_core:coal_generator",
+      "text": "industrial_core.guide.entry.coal_generator.0"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "industrial_core:coal_generator",
+      "text": "industrial_core.guide.entry.coal_generator.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "industrial_core.guide.entry.coal_generator.2"
+    }
+  ]
+}
