@@ -1,14 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "I I",
-    "IMI",
-    " B "
+    "A A",
+    "BCB",
+    " D "
   ],
   "key": {
-    "I": { "item": "industrial_core:iron_plate" },
-    "M": { "item": "industrial_core:electric_motor" },
-    "B": { "item": "industrial_core:battery" }
+    "A": {
+      "tag": "forge:plates/bronze"
+    },
+    "B": {
+      "item": "industrial_core:gold_conductor"
+    },
+    "C": {
+      "item": "industrial_core:electric_motor"
+    },
+    "D": {
+      "item": "industrial_core:battery"
+    }
   },
   "result": {
     "item": "industrial_core:electric_wrench",

@@ -1,14 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "CIC",
-    "IRI",
-    "CIC"
+    "ABA",
+    "BCB",
+    "ABA"
   ],
   "key": {
-    "C": { "item": "industrial_core:copper_plate" },
-    "I": { "item": "industrial_core:iron_plate" },
-    "R": { "item": "minecraft:redstone" }
+    "A": {
+      "tag": "forge:plates/copper"
+    },
+    "B": {
+      "tag": "forge:plates/iron"
+    },
+    "C": {
+      "tag": "forge:dusts/redstone"
+    }
   },
   "result": {
     "item": "industrial_core:heat_vent",

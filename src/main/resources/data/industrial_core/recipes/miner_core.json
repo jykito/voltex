@@ -1,15 +1,26 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "DLD",
-    "EME",
-    "DLD"
+    "ABA",
+    "CDC",
+    "AEA"
   ],
   "key": {
-    "D": { "item": "minecraft:diamond" },
-    "L": { "item": "industrial_core:logic_board" },
-    "E": { "item": "industrial_core:electric_motor" },
-    "M": { "item": "industrial_core:machine_casing" }
+    "A": {
+      "item": "minecraft:diamond"
+    },
+    "B": {
+      "item": "industrial_core:logic_board"
+    },
+    "C": {
+      "item": "industrial_core:manipulator"
+    },
+    "D": {
+      "item": "industrial_core:machine_casing"
+    },
+    "E": {
+      "item": "industrial_core:electric_motor"
+    }
   },
   "result": {
     "item": "industrial_core:miner_core",

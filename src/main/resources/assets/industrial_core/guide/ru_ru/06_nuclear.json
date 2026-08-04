@@ -1,0 +1,131 @@
+{
+  "name": "Ядерка",
+  "entries": [
+    {
+      "name": "Ядерный реактор",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Ядерный реактор"
+        },
+        {
+          "type": "text",
+          "text": "Мощный источник FE и способ добычи плутония. Мультиблок 3×3×3: ядро-контроллер в окружении 26 камер. Внутри — сетка стержней и компонентов охлаждения."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:nuclear_reactor",
+            "industrial_core:reactor_chamber",
+            "industrial_core:reactor_blueprint"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Топливные стержни",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Топливные стержни"
+        },
+        {
+          "type": "text",
+          "text": "Топливо по возрастанию мощности и тепла: урановый стержень, плутониевый и MOX. Собираются в фабрикаторе стержней из пустых стержней и топлива."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:uranium_fuel_rod",
+            "industrial_core:plutonium_fuel_rod",
+            "industrial_core:mox_fuel_rod"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Схемы реактора",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Схемы реактора"
+        },
+        {
+          "type": "text",
+          "text": "Схема — это проверенная раскладка сетки реактора. Линейка растёт по мощности от урановых к плутониевым и MOX. Выбирай схему под своё топливо и охлаждение."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:reactor_blueprint"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Компоненты и тепло",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Охлаждение"
+        },
+        {
+          "type": "text",
+          "text": "Стержни и графит задают нейтронное умножение и жар; венты, теплообменники и конденсатор рассеивают тепло. Перегрев корпуса ведёт к взрыву — держи баланс."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:graphite_rod",
+            "industrial_core:advanced_heat_vent",
+            "industrial_core:advanced_heat_exchanger",
+            "industrial_core:condensator"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Отходы и плутоний",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Переработка отходов"
+        },
+        {
+          "type": "text",
+          "text": "Отработанные стержни не выбрасывай — фазовый расщепитель извлекает из них плутоний (и немного урана). MOX-отходы дают больше всего плутония."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:depleted_uranium_fuel_rod",
+            "industrial_core:phase_splitter",
+            "industrial_core:plutonium"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Уран-цепь",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Уран"
+        },
+        {
+          "type": "text",
+          "text": "Урановую руду дроби и промывай ради пыли, плавь в слиток. Уран — топливо и сырьё для плутония и MOX. С реактором цепь становится замкнутой и растущей."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:uranium_ore",
+            "industrial_core:uranium_dust",
+            "industrial_core:uranium_ingot",
+            "industrial_core:mox_fuel"
+          ]
+        }
+      ]
+    }
+  ]
+}

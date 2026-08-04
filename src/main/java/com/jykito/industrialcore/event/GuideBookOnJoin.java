@@ -16,8 +16,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 public class GuideBookOnJoin {
 
     private static final String FLAG = "industrial_core:received_guide";
-    private static final ResourceLocation GUIDE_BOOK_ITEM = new ResourceLocation("patchouli", "guide_book");
-    private static final String BOOK_ID = "industrial_core:guide";
+    private static final ResourceLocation GUIDE_BOOK_ITEM = new ResourceLocation("industrial_core", "manual");
 
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
@@ -34,7 +33,6 @@ public class GuideBookOnJoin {
         Item guideBook = ForgeRegistries.ITEMS.getValue(GUIDE_BOOK_ITEM);
         if (guideBook != null) {
             ItemStack stack = new ItemStack(guideBook);
-            stack.getOrCreateTag().putString("patchouli:book", BOOK_ID);
             ItemHandlerHelper.giveItemToPlayer(player, stack);
         }
 

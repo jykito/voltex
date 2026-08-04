@@ -1,0 +1,14 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:rolling",
+  "ingredient": {
+    "tag": "forge:gems/diamond"
+  },
+  "inputCount": 1,
+  "result": {
+    "item": "industrial_core:diamond_plate",
+    "count": 2
+  },
+  "processingTime": 140,
+  "energyCost": 50
+}

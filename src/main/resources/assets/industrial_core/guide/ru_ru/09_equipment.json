@@ -1,0 +1,92 @@
+{
+  "name": "Снаряжение",
+  "entries": [
+    {
+      "name": "Инструменты",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Электроинструменты"
+        },
+        {
+          "type": "text",
+          "text": "Работают на FE из инвентарной ячейки или рюкзака. Ключ настраивает и снимает машины, электро- и промышленный бур копают быстро и по площади. Наконечники задают уровень бура."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:electric_wrench",
+            "industrial_core:electric_drill",
+            "industrial_core:industrial_drill",
+            "industrial_core:netherite_drill_tip"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Энергорюкзак",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Энергорюкзак"
+        },
+        {
+          "type": "text",
+          "text": "Носимый аккумулятор, заряжающий инструменты и броню прямо на теле. 3 тира ёмкости (1M, 10M и 100M FE) и режимы: рука, хотбар или весь инвентарь."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:energy_backpack_t1",
+            "industrial_core:energy_backpack_t2",
+            "industrial_core:energy_backpack_t3"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Броня Nexite",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Броня Nexite"
+        },
+        {
+          "type": "text",
+          "text": "Энергоброня: неломающаяся, поглощает урон за FE. Ботинки гасят урон от падения, полный заряженный сет даёт ускорение. Средний энд-тир защиты."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:nexite_helmet",
+            "industrial_core:nexite_chestplate",
+            "industrial_core:nexite_leggings",
+            "industrial_core:nexite_boots"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Броня Plasma",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Броня Plasma"
+        },
+        {
+          "type": "text",
+          "text": "Вершина защиты. Огромный буфер FE, поглощение до 100% урона. Полный сет даёт полёт и огнестойкость, а по накоплению — плазменный взрыв по врагам вокруг."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:plasma_helmet",
+            "industrial_core:plasma_chestplate",
+            "industrial_core:plasma_leggings",
+            "industrial_core:plasma_boots"
+          ]
+        }
+      ]
+    }
+  ]
+}

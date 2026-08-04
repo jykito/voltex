@@ -1,14 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "CCC",
-    "HMH",
-    "CCC"
+    "AAA",
+    "BCB",
+    "ADA"
   ],
   "key": {
-    "C": { "item": "industrial_core:copper_plate" },
-    "H": { "item": "industrial_core:heat_conductor" },
-    "M": { "item": "industrial_core:machine_casing" }
+    "A": {
+      "tag": "forge:plates/copper"
+    },
+    "B": {
+      "item": "industrial_core:heat_conductor"
+    },
+    "C": {
+      "item": "industrial_core:machine_casing"
+    },
+    "D": {
+      "item": "industrial_core:copper_cable"
+    }
   },
   "result": {
     "item": "industrial_core:thermogenerator",

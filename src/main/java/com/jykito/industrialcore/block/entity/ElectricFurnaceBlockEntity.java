@@ -32,7 +32,7 @@ import java.util.Optional;
 
 public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvider {
     private static class FurnaceEnergyStorage extends EnergyStorage {
-        FurnaceEnergyStorage() { super(10000, 100, 0); }
+        FurnaceEnergyStorage() { super(64000, 64000, 0); } // буфер 64k, без лимита на вход
         void setEnergy(int amount) { this.energy = amount; }
 
         void consumeEnergy(int amount) { this.energy = Math.max(0, this.energy - amount); }
@@ -129,10 +129,19 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
         float timeMultiplier   = 1.0f;
         float energyMultiplier = 1.0f;
         int parallelCount      = 1;
+        Direction itemPusherDir = null;
+        Direction itemPullerDir = null;
         for (int s = 2; s <= 5; s++) {
             ItemStack upgrade = entity.itemHandler.getStackInSlot(s);
             if (upgrade.isEmpty()) continue;
-            if (upgrade.getItem() instanceof com.jykito.industrialcore.item.upgrade.AcceleratorItem acc) {
+            if (upgrade.getItem() instanceof com.jykito.industrialcore.item.upgrade.DirectionalUpgradeItem dir) {
+                Direction d = com.jykito.industrialcore.item.upgrade.DirectionalUpgradeItem.getStoredDirection(upgrade);
+                if (d != null) switch (dir.getMode()) {
+                    case ITEM_PUSH -> itemPusherDir = d;
+                    case ITEM_PULL -> itemPullerDir = d;
+                    default -> {} // печь без жидкостей — FLUID_* игнор
+                }
+            } else if (upgrade.getItem() instanceof com.jykito.industrialcore.item.upgrade.AcceleratorItem acc) {
                 for (int c = 0; c < upgrade.getCount(); c++) {
                     timeMultiplier   *= acc.getSpeedMultiplier();
                     energyMultiplier *= acc.getEnergyMultiplier();
@@ -141,6 +150,27 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
                 parallelCount = Math.max(parallelCount, pm.getParallelCount());
             } else if (upgrade.getItem() instanceof com.jykito.industrialcore.item.upgrade.AdvancedParallelModuleItem adv) {
                 parallelCount = Math.max(parallelCount, adv.getParallelCount());
+            }
+        }
+
+        // Затягиватель: тянем предметы из соседа во входной слот (0)
+        if (itemPullerDir != null) {
+            final Direction pullDir = itemPullerDir;
+            BlockEntity neighbor = level.getBlockEntity(pos.relative(pullDir));
+            if (neighbor != null) {
+                neighbor.getCapability(ForgeCapabilities.ITEM_HANDLER, pullDir.getOpposite()).ifPresent(nh -> {
+                    for (int i = 0; i < nh.getSlots(); i++) {
+                        ItemStack extracted = nh.extractItem(i, 64, true);
+                        if (extracted.isEmpty()) continue;
+                        ItemStack remaining = entity.itemHandler.insertItem(0, extracted.copy(), true);
+                        int inserted = extracted.getCount() - remaining.getCount();
+                        if (inserted > 0) {
+                            entity.itemHandler.insertItem(0, nh.extractItem(i, inserted, false), false);
+                            entity.setChanged();
+                            break;
+                        }
+                    }
+                });
             }
         }
 
@@ -153,14 +183,31 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
         if (hasEnergy && hasRecipe) {
             entity.progress++;
             entity.energyStorage.consumeEnergy(energyCost);
-            setLit(level, pos, state, true);
+            setLit(entity, level, pos, state, true);
 
             if (entity.progress >= entity.maxProgress) {
                 entity.craftItem(parallelCount);
             }
         } else {
             entity.progress = 0;
-            setLit(level, pos, state, false);
+            setLit(entity, level, pos, state, false);
+        }
+
+        // Выталкиватель: выталкиваем готовый предмет из выходного слота (1) в соседа
+        if (itemPusherDir != null) {
+            final Direction pushDir = itemPusherDir;
+            BlockEntity neighbor = level.getBlockEntity(pos.relative(pushDir));
+            if (neighbor != null) {
+                neighbor.getCapability(ForgeCapabilities.ITEM_HANDLER, pushDir.getOpposite()).ifPresent(nh -> {
+                    ItemStack output = entity.itemHandler.getStackInSlot(1);
+                    if (output.isEmpty()) return;
+                    ItemStack remaining = net.minecraftforge.items.ItemHandlerHelper.insertItem(nh, output.copy(), false);
+                    if (remaining.getCount() < output.getCount()) {
+                        entity.itemHandler.setStackInSlot(1, remaining.isEmpty() ? ItemStack.EMPTY : remaining);
+                        entity.setChanged();
+                    }
+                });
+            }
         }
     }
 
@@ -211,10 +258,8 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
         }
     }
 
-    private static void setLit(Level level, BlockPos pos, BlockState state, boolean isLit) {
-        if (state.getValue(ElectricFurnaceBlock.LIT) != isLit) {
-            level.setBlock(pos, state.setValue(ElectricFurnaceBlock.LIT, isLit), 3);
-        }
+    private static void setLit(ElectricFurnaceBlockEntity entity, Level level, BlockPos pos, BlockState state, boolean isLit) {
+        MachineLit.tick(entity, level, pos, state, ElectricFurnaceBlock.LIT, isLit);
     }
 
     @Override

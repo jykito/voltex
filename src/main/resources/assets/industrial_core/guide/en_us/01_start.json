@@ -1,0 +1,84 @@
+{
+  "name": "Getting Started",
+  "entries": [
+    {
+      "name": "Introduction",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Voltex"
+        },
+        {
+          "type": "text",
+          "text": "An industrial tech mod powered by FE. The path runs from ore processing to machines, then to heat and multiblocks, to the magnet accelerator and finally the Dyson panel."
+        },
+        {
+          "type": "text",
+          "text": "Opened with the Information Panel. Here you will find mechanics, how machines and multiblocks work, and the order of progression — what unlocks what and how it functions."
+        }
+      ]
+    },
+    {
+      "name": "First Machines",
+      "elements": [
+        {
+          "type": "header",
+          "text": "First Machines"
+        },
+        {
+          "type": "text",
+          "text": "Everything starts with the machine casing. The Coal Generator gives your first FE. The Crusher doubles ore into dust; the Electric Furnace smelts dust and ore into ingots."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:machine_casing",
+            "industrial_core:coal_generator",
+            "industrial_core:crusher",
+            "industrial_core:electric_furnace"
+          ],
+          "label": "Starter set"
+        }
+      ]
+    },
+    {
+      "name": "Ore Doubling",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Ore Doubling"
+        },
+        {
+          "type": "text",
+          "text": "Crush ore or raw material for 2 dust instead of 1 ingot, then smelt the dust. Result: double the metal from every ore."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:tin_ore",
+            "industrial_core:tin_dust",
+            "industrial_core:tin_ingot"
+          ],
+          "label": "Example: tin"
+        }
+      ]
+    },
+    {
+      "name": "FE Energy",
+      "elements": [
+        {
+          "type": "header",
+          "text": "FE Energy"
+        },
+        {
+          "type": "text",
+          "text": "Everything runs on Forge Energy (FE). Generators produce FE, cables carry it, machines keep a small buffer and spend FE per tick of work."
+        },
+        {
+          "type": "text",
+          "text": "Each cable has its own transfer limit; generators and stores have their own capacity. Watch the balance of production and draw."
+        }
+      ]
+    }
+  ]
+}

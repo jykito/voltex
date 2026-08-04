@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "tag": "forge:plates/electrum"
+    },
+    "B": {
+      "item": "industrial_core:superconductor_coil"
+    },
+    "C": {
+      "item": "industrial_core:composite"
+    },
+    "D": {
+      "item": "industrial_core:machine_casing"
+    }
+  },
+  "result": {
+    "item": "industrial_core:energy_bank",
+    "count": 1
+  }
+}

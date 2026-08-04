@@ -1,14 +1,26 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "RSR",
-    "SLS",
-    "RSR"
+    "ABA",
+    "CDC",
+    "AEA"
   ],
   "key": {
-    "R": { "item": "minecraft:redstone" },
-    "S": { "item": "industrial_core:silicon" },
-    "L": { "item": "industrial_core:logic_board" }
+    "A": {
+      "item": "industrial_core:gold_conductor"
+    },
+    "B": {
+      "item": "industrial_core:photonic_lens"
+    },
+    "C": {
+      "item": "industrial_core:superconductor_coil"
+    },
+    "D": {
+      "item": "industrial_core:data_transfer_matrix"
+    },
+    "E": {
+      "item": "industrial_core:carbon_plate"
+    }
   },
   "result": {
     "item": "industrial_core:microcontroller",

@@ -1,14 +1,26 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "HPH",
-    "PCP",
-    "HPH"
+    "ABA",
+    "CDC",
+    "AEA"
   ],
   "key": {
-    "H": { "item": "industrial_core:heat_conductor" },
-    "P": { "item": "industrial_core:iron_plate" },
-    "C": { "item": "industrial_core:machine_casing" }
+    "A": {
+      "item": "industrial_core:heat_conductor"
+    },
+    "B": {
+      "item": "industrial_core:fluid_valve"
+    },
+    "C": {
+      "tag": "forge:plates/copper"
+    },
+    "D": {
+      "item": "industrial_core:machine_casing"
+    },
+    "E": {
+      "item": "industrial_core:heat_vent"
+    }
   },
   "result": {
     "item": "industrial_core:lava_generator",

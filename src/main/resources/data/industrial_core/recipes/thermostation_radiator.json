@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "BCB",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:heat_vent"
+    },
+    "B": {
+      "item": "industrial_core:heat_resistant_plating"
+    },
+    "C": {
+      "item": "industrial_core:machine_casing"
+    }
+  },
+  "result": {
+    "item": "industrial_core:thermostation_radiator",
+    "count": 1
+  }
+}

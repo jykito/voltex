@@ -11,6 +11,9 @@ import com.jykito.industrialcore.recipe.ModRecipes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Containers;
@@ -44,6 +47,7 @@ public class RestructorBlockEntity extends BlockEntity implements MenuProvider {
 
     private int currentRecipeCost = 10_000_000;
     private int currentRecipeTime = 100;
+    private ItemStack displayResult = ItemStack.EMPTY; // что рисуется в центре (синкается на клиент для BER)
     private int energyAccumulated = 0;
 
     private final com.jykito.industrialcore.recipe.CachedRecipe<RestructorRecipeRegistry.RestructorRecipeData> recipeCache =
@@ -186,8 +190,15 @@ public class RestructorBlockEntity extends BlockEntity implements MenuProvider {
         processUpgrades(level, pos);
 
         boolean working = energyAccumulated > 0 && recipe.isPresent();
-        if (state.getValue(RestructorBlock.LIT) != working) {
-            level.setBlock(pos, state.setValue(RestructorBlock.LIT, working), 3);
+        boolean shown = MachineLit.tick(this, level, pos, state, RestructorBlock.LIT, working);
+
+        ItemStack newDisplay;
+        if (!shown) newDisplay = ItemStack.EMPTY;
+        else if (recipe.isPresent()) newDisplay = recipe.get().result();
+        else newDisplay = displayResult; // во время grace-паузы держим текущий
+        if (!ItemStack.matches(displayResult, newDisplay)) {
+            displayResult = newDisplay.isEmpty() ? ItemStack.EMPTY : newDisplay.copy();
+            level.sendBlockUpdated(pos, state, state, 3);
         }
 
         if (changed) setChanged();
@@ -264,6 +275,7 @@ public class RestructorBlockEntity extends BlockEntity implements MenuProvider {
         tag.putInt("energyAccumulated", energyAccumulated);
         tag.putInt("recipeCost", currentRecipeCost);
         tag.putInt("recipeTime", currentRecipeTime);
+        tag.put("displayResult", displayResult.save(new CompoundTag()));
         super.saveAdditional(tag);
     }
 
@@ -280,6 +292,25 @@ public class RestructorBlockEntity extends BlockEntity implements MenuProvider {
 
         if (tag.contains("recipeCost")) currentRecipeCost = tag.getInt("recipeCost");
         if (tag.contains("recipeTime")) currentRecipeTime = Math.max(1, tag.getInt("recipeTime"));
+        if (tag.contains("displayResult")) displayResult = ItemStack.of(tag.getCompound("displayResult"));
+    }
+
+    public ItemStack getDisplayResult() { return displayResult; }
+
+    @Override public CompoundTag getUpdateTag() {
+        CompoundTag tag = super.getUpdateTag();
+        tag.put("displayResult", displayResult.save(new CompoundTag()));
+        return tag;
+    }
+    @Override public void handleUpdateTag(CompoundTag tag) {
+        super.handleUpdateTag(tag);
+        if (tag.contains("displayResult")) displayResult = ItemStack.of(tag.getCompound("displayResult"));
+    }
+    @Nullable @Override public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+    @Override public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+        if (pkt.getTag() != null) handleUpdateTag(pkt.getTag());
     }
 
     public void drops(Level level, BlockPos pos) {

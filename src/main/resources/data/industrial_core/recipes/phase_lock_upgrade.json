@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "EFE"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:photonic_lens"
+    },
+    "B": {
+      "item": "industrial_core:signal_receiver"
+    },
+    "C": {
+      "item": "industrial_core:data_transfer_matrix"
+    },
+    "D": {
+      "item": "industrial_core:plasma_core"
+    },
+    "E": {
+      "item": "industrial_core:superconductor_coil"
+    },
+    "F": {
+      "item": "industrial_core:gold_conductor"
+    }
+  },
+  "result": {
+    "item": "industrial_core:phase_lock_upgrade",
+    "count": 1
+  }
+}

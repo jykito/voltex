@@ -1,13 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "K K",
-    "KEK",
-    "KKK"
+    "A A",
+    "BCB",
+    "ADA"
   ],
   "key": {
-    "K": { "item": "industrial_core:kronit" },
-    "E": { "item": "industrial_core:energy_crystal" }
+    "A": {
+      "item": "industrial_core:kronit"
+    },
+    "B": {
+      "item": "industrial_core:carbon_composite_ingot"
+    },
+    "C": {
+      "item": "industrial_core:flux_core"
+    },
+    "D": {
+      "item": "industrial_core:netherite_fiber_cable"
+    }
   },
   "result": {
     "item": "industrial_core:nexite_chestplate",

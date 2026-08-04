@@ -73,6 +73,28 @@ public class ModRenderTypes extends RenderType {
         return ENTITY_CUTOUT_NO_CULL_OFFSET.apply(tex);
     }
 
+    // Cull-вариант для ЗАКРЫТЫХ solid-моделей: задние грани не рисуются (~2× меньше фрагментов).
+    private static final Function<ResourceLocation, RenderType> ENTITY_CUTOUT_OFFSET = Util.memoize(tex ->
+        create("ic_entity_cutout_offset",
+            DefaultVertexFormat.NEW_ENTITY,
+            VertexFormat.Mode.QUADS, 1536, true, false,
+            CompositeState.builder()
+                .setShaderState(RENDERTYPE_ENTITY_CUTOUT_SHADER)
+                .setTextureState(new TextureStateShard(tex, false, false))
+                .setTransparencyState(NO_TRANSPARENCY)
+                .setCullState(CULL)
+                .setLightmapState(LIGHTMAP)
+                .setOverlayState(OVERLAY)
+                .setLayeringState(POLYGON_OFFSET_LAYERING)
+                .createCompositeState(true)
+        ));
+
+    /** Solid-модель: cull (оптимизация) ИЛИ NO_CULL (как было) — по конфигу cullSolidFaces. Мгновенный откат без пересборки. */
+    public static RenderType solidModel(ResourceLocation tex) {
+        return com.jykito.industrialcore.Config.cullSolidFaces
+                ? ENTITY_CUTOUT_OFFSET.apply(tex) : ENTITY_CUTOUT_NO_CULL_OFFSET.apply(tex);
+    }
+
     private static final RenderType PLASMA_RING_TYPE = create("ic_plasma_ring",
         DefaultVertexFormat.POSITION_COLOR,
         VertexFormat.Mode.QUADS, 1024, false, true,
@@ -86,6 +108,36 @@ public class ModRenderTypes extends RenderType {
     );
 
     public static RenderType plasmaRing() { return PLASMA_RING_TYPE; }
+
+    // Магнитное поле: полупрозрачные ленты-дуги без текстуры. TRANSLUCENT (не аддитив) — альфа реально
+    // управляет прозрачностью и пересечения не выжигаются в белый. ПИШЕТ глубину (COLOR_DEPTH_WRITE) —
+    // иначе облака (рисуются ПОЗЖЕ BER) просвечивают сквозь поле, особенно с шейдерами. sort=true.
+    private static final RenderType MAGNET_FIELD = create("ic_magnet_field",
+        DefaultVertexFormat.POSITION_COLOR,
+        VertexFormat.Mode.QUADS, 4096, false, true,
+        CompositeState.builder()
+            .setShaderState(POSITION_COLOR_SHADER)
+            .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+            .setDepthTestState(LEQUAL_DEPTH_TEST)
+            .setCullState(NO_CULL)
+            .setWriteMaskState(COLOR_DEPTH_WRITE)
+            .createCompositeState(false));
+
+    public static RenderType magnetField() { return MAGNET_FIELD; }
+
+    // DEBUG: сплошной цвет, без текстуры, сквозь всё (проверка чистой геометрии)
+    private static final RenderType DEBUG_GEO = create("ic_debug_geo",
+        DefaultVertexFormat.POSITION_COLOR,
+        VertexFormat.Mode.QUADS, 1024, false, false,
+        CompositeState.builder()
+            .setShaderState(POSITION_COLOR_SHADER)
+            .setTransparencyState(NO_TRANSPARENCY)
+            .setDepthTestState(NO_DEPTH_TEST)
+            .setCullState(NO_CULL)
+            .setWriteMaskState(COLOR_WRITE)
+            .createCompositeState(false));
+
+    public static RenderType debugGeo() { return DEBUG_GEO; }
 
     public static final Function<ResourceLocation, RenderType> ADDITIVE_GLOW_INNER = Util.memoize(tex ->
         create("industrial_core_glow_inner",

@@ -78,12 +78,13 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    // Эта строка скачивает Mekanism и сразу переводит его в читаемый для IntelliJ формат
-    implementation fg.deobf("mekanism:Mekanism:1.20.1-10.4.16.80")
-
     // JEI — compileOnly чтобы не бандлить в jar, runtimeOnly чтобы работал при запуске из IDE
     compileOnly fg.deobf("mezz.jei:jei-1.20.1-forge:15.3.0.4")
     runtimeOnly fg.deobf("mezz.jei:jei-1.20.1-forge:15.3.0.4")
+
+    // Jade — опциональная зависимость, только чтобы скомпилировать плагин-подсказчик.
+    // Не бандлится и в рантайме не нужна: без Jade класс плагина никто не грузит.
+    compileOnly files('libs/Jade-1.20.1-Forge-11.13.2.jar')
 
     // KubeJS — опциональная зависимость, не бандлится в jar
     compileOnly fg.deobf("dev.latvian.mods:rhino-forge:2001.2.2-build.17")

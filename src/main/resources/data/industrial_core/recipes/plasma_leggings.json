@@ -1,14 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "KMK",
-    "KLK",
-    "K K"
+    "ABA",
+    "C C",
+    "D D"
   ],
   "key": {
-    "K": { "item": "industrial_core:kronit" },
-    "M": { "item": "industrial_core:kronium_alloy" },
-    "L": { "item": "industrial_core:lapotron_crystal" }
+    "A": {
+      "item": "industrial_core:kronium_alloy"
+    },
+    "B": {
+      "item": "industrial_core:exotic_matter"
+    },
+    "C": {
+      "item": "industrial_core:plasma_core"
+    },
+    "D": {
+      "item": "industrial_core:heat_resistant_plating"
+    }
   },
   "result": {
     "item": "industrial_core:plasma_leggings",

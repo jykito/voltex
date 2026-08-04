@@ -1,12 +1,13 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "CC",
-    "CC"
+    "AA ",
+    "AA ",
+    "   "
   ],
   "key": {
-    "C": {
-      "item": "industrial_core:coal_dust"
+    "A": {
+      "tag": "forge:dusts/coal"
     }
   },
   "result": {

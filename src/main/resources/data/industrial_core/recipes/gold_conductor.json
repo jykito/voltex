@@ -1,13 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "WWW",
-    "RDR"
+    "ABA",
+    "CDC",
+    "ABA"
   ],
   "key": {
-    "W": { "item": "industrial_core:bare_gold_wire" },
-    "R": { "item": "industrial_core:rubber" },
-    "D": { "item": "minecraft:redstone" }
+    "A": {
+      "item": "industrial_core:rubber"
+    },
+    "B": {
+      "item": "minecraft:redstone"
+    },
+    "C": {
+      "item": "industrial_core:bare_gold_wire"
+    },
+    "D": {
+      "tag": "forge:plates/gold"
+    }
   },
   "result": {
     "item": "industrial_core:gold_conductor",

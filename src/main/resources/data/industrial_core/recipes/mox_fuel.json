@@ -1,9 +1,15 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    { "item": "industrial_core:plutonium" },
-    { "item": "industrial_core:uranium_dust" },
-    { "item": "industrial_core:uranium_dust" }
+    {
+      "item": "industrial_core:plutonium"
+    },
+    {
+      "tag": "forge:dusts/uranium"
+    },
+    {
+      "tag": "forge:dusts/uranium"
+    }
   ],
   "result": {
     "item": "industrial_core:mox_fuel",

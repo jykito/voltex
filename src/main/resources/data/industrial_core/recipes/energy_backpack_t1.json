@@ -2,21 +2,28 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "ABA",
-    "BCB",
-    "ABA"
+    "CDC",
+    "AEA"
   ],
   "key": {
     "A": {
-      "item": "industrial_core:carbon_plate"
+      "item": "minecraft:leather"
     },
     "B": {
-      "item": "industrial_core:gold_conductor"
+      "item": "industrial_core:copper_cable"
     },
     "C": {
-      "item": "industrial_core:energy_crystal"
+      "item": "industrial_core:carbon_plate"
+    },
+    "D": {
+      "item": "industrial_core:flux_core"
+    },
+    "E": {
+      "item": "industrial_core:battery"
     }
   },
   "result": {
-    "item": "industrial_core:energy_backpack_t1"
+    "item": "industrial_core:energy_backpack_t1",
+    "count": 1
   }
 }

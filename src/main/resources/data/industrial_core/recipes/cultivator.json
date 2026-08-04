@@ -1,16 +1,29 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "GBG",
-    "PCP",
-    "GMG"
+    "ABA",
+    "CDC",
+    "EFE"
   ],
   "key": {
-    "G": { "item": "minecraft:glass" },
-    "B": { "item": "minecraft:bone_meal" },
-    "P": { "item": "industrial_core:iron_plate" },
-    "C": { "item": "industrial_core:machine_casing" },
-    "M": { "item": "industrial_core:microcontroller" }
+    "A": {
+      "item": "minecraft:glass"
+    },
+    "B": {
+      "item": "minecraft:bone_meal"
+    },
+    "C": {
+      "item": "industrial_core:crystal_plate"
+    },
+    "D": {
+      "item": "industrial_core:machine_casing"
+    },
+    "E": {
+      "tag": "forge:plates/aluminum"
+    },
+    "F": {
+      "item": "industrial_core:electric_motor"
+    }
   },
   "result": {
     "item": "industrial_core:cultivator",

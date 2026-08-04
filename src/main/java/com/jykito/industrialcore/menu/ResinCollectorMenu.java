@@ -26,13 +26,13 @@ public class ResinCollectorMenu extends AbstractContainerMenu {
 
         for (int row = 0; row < 3; row++)
             for (int col = 0; col < 3; col++)
-                addSlot(new SlotItemHandler(h, row * 3 + col, 62 + col * 18, 18 + row * 18));
+                addSlot(new SlotItemHandler(h, row * 3 + col, 101 + col * 19, 46 + row * 19));
 
         for (int i = 0; i < 3; i++)
             for (int j = 0; j < 9; j++)
-                addSlot(new Slot(inv, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+                addSlot(new Slot(inv, j + i * 9 + 9, 44 + j * 19, 133 + i * 19));
         for (int k = 0; k < 9; k++)
-            addSlot(new Slot(inv, k, 8 + k * 18, 142));
+            addSlot(new Slot(inv, k, 44 + k * 19, 196));
     }
 
     @Override

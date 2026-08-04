@@ -54,11 +54,12 @@ public class OreWasherMenu extends AbstractContainerMenu {
         return Math.min(arrow, (progress * arrow + maxProgress - 1) / maxProgress);
     }
 
+    public int getEnergyStored() { return (data.get(3) << 16) | (data.get(2) & 0xFFFF); }
+    public int getMaxEnergy()    { return (data.get(5) << 16) | (data.get(4) & 0xFFFF); }
+
     public int getScaledEnergy() {
-        int energy = (this.data.get(3) << 16) | (this.data.get(2) & 0xFFFF);
-        int maxEnergy = (this.data.get(5) << 16) | (this.data.get(4) & 0xFFFF);
-        int bar = 110;
-        return maxEnergy != 0 && energy != 0 ? (int) ((long) energy * bar / maxEnergy) : 0;
+        int energy = getEnergyStored(), maxEnergy = getMaxEnergy();
+        return maxEnergy != 0 && energy != 0 ? (int) ((long) energy * 110 / maxEnergy) : 0;
     }
 
     @Override

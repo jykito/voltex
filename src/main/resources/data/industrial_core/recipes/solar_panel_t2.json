@@ -23,6 +23,7 @@
     }
   },
   "result": {
-    "item": "industrial_core:solar_panel_t2"
+    "item": "industrial_core:solar_panel_t2",
+    "count": 1
   }
 }

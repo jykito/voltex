@@ -32,6 +32,18 @@ public final class ModCreativeTab {
                     .displayItems((parameters, output) -> {
 
                         output.accept(ModItems.MACHINE_CASING_ITEM.get());
+                        output.accept(ModItems.MANUAL.get());
+                        output.accept(ModItems.COIL_WINDING.get());
+                        output.accept(ModItems.SIGNAL_RECEIVER.get());
+                        output.accept(ModItems.FLUID_VALVE.get());
+                        output.accept(ModItems.THERMAL_INSULATION.get());
+                        output.accept(ModItems.MANIPULATOR.get());
+                        output.accept(ModItems.HARDENED_STEEL_ROD.get());
+                        output.accept(ModItems.MATERIAL_CONTAINER.get());
+                        output.accept(ModItems.STAR_SHARD.get());
+                        output.accept(ModItems.CARBON_COMPOSITE_INGOT.get());
+                        output.accept(ModItems.PIEZO_ELEMENT.get());
+                        output.accept(ModItems.HEAT_RESISTANT_PLATING.get());
                         output.accept(ModItems.COAL_GENERATOR_ITEM.get());
                         output.accept(ModItems.THERMOGENERATOR_ITEM.get());
                         output.accept(ModItems.MOD_BLAST_FURNACE_ITEM.get());
@@ -58,7 +70,7 @@ public final class ModCreativeTab {
                         output.accept(ModItems.CAPSULE_FILLER_ITEM.get());
                         output.accept(ModItems.CULTIVATOR_ITEM.get());
                         output.accept(ModItems.ORE_WASHER_ITEM.get());
-                        output.accept(ModItems.RECIPE_EXPORTER_ITEM.get());
+                        if (Config.devTools) output.accept(ModItems.RECIPE_EXPORTER_ITEM.get()); // дев-тул: пишет json в пак
                         output.accept(ModItems.ROD_FABRICATOR_ITEM.get());
                         output.accept(ModItems.EXTRACTOR_ITEM.get());
                         output.accept(ModItems.PHASE_SPLITTER_ITEM.get());
@@ -180,10 +192,26 @@ public final class ModCreativeTab {
                         output.accept(ModItems.EMERALD_FLUX_CABLE_ITEM.get());
                         output.accept(ModItems.HEAVY_MAGISTRAL_ITEM.get());
                         output.accept(ModItems.NETHERITE_FIBER_CABLE_ITEM.get());
-                        output.accept(ModItems.ITEM_CONNECTOR_ITEM.get());
-                        output.accept(ModItems.FLUID_CONNECTOR_ITEM.get());
                         output.accept(ModItems.LOGISTICS_NODE_ITEM.get());
                         output.accept(ModItems.LOGISTICS_LINKER.get());
+                        output.accept(ModItems.ITEM_HUB_ITEM.get());
+                        output.accept(ModItems.FLUID_HUB_ITEM.get());
+                        output.accept(ModItems.HEAT_PIPE_ITEM.get());
+                        output.accept(ModItems.HEAT_PIPE_T2_ITEM.get());
+                        output.accept(ModItems.ENERGY_BANK_ITEM.get());
+                        output.accept(ModItems.STRUCTURAL_BLOCK_ITEM.get());
+                        output.accept(ModItems.COIL_HOLDER_ITEM.get());
+                        output.accept(ModItems.ELECTROMAGNET_CORE_ITEM.get());
+                        output.accept(ModItems.DISTANT_CONTROLLER_ITEM.get());
+                        output.accept(ModItems.THERMOSTATION_CORE_ITEM.get());
+                        output.accept(ModItems.THERMOSTATION_EXPANDER_ITEM.get());
+                        output.accept(ModItems.THERMOSTATION_RADIATOR_ITEM.get());
+                        output.accept(ModItems.MAGNET_COPPER_COIL.get());
+                        output.accept(ModItems.MAGNET_SUPERCONDUCTOR_COIL.get());
+                        output.accept(ModItems.MAGNET_GRAVITON_COIL.get());
+                        output.accept(ModItems.ANTIGRAV_COLUMN_ITEM.get());
+                        output.accept(ModItems.PHASE_LOCK_UPGRADE.get());
+                        output.accept(ModItems.STRUCTURE_WAND.get());
 
                         output.accept(ModItems.CRATE_T1_ITEM.get());
                         output.accept(ModItems.CRATE_T2_ITEM.get());
@@ -230,9 +258,9 @@ public final class ModCreativeTab {
                         output.accept(ModItems.BLAST_UPGRADE_OXYGEN_BOOST.get());
                         output.accept(ModItems.CULTIVATOR_BIOSTIMULATOR.get());
                         output.accept(ModItems.CULTIVATOR_RESONATOR.get());
-                        output.accept(ModItems.CONNECTOR_UPGRADE_T1.get());
-                        output.accept(ModItems.CONNECTOR_UPGRADE_T2.get());
-                        output.accept(ModItems.CONNECTOR_UPGRADE_T3.get());
+                        output.accept(ModItems.HUB_UPGRADE_T1.get());
+                        output.accept(ModItems.HUB_UPGRADE_T2.get());
+                        output.accept(ModItems.HUB_UPGRADE_T3.get());
                         output.accept(ModItems.BASIC_CATALYST.get());
                         output.accept(ModItems.ACTIVATED_CATALYST.get());
                         output.accept(ModItems.RESONANT_CATALYST.get());
@@ -246,12 +274,12 @@ public final class ModCreativeTab {
                         ItemStack fullLithium = new ItemStack(ModItems.LITHIUM_BATTERY.get());
                         fullLithium.getOrCreateTag().putInt("energy", 50000);
                         output.accept(fullLithium);
-                        output.accept(ModItems.ENERGY_CRYSTAL.get());
-                        ItemStack fullCrystal = new ItemStack(ModItems.ENERGY_CRYSTAL.get());
+                        output.accept(ModItems.FLUX_CORE.get());
+                        ItemStack fullCrystal = new ItemStack(ModItems.FLUX_CORE.get());
                         fullCrystal.getOrCreateTag().putInt("energy", 100000);
                         output.accept(fullCrystal);
-                        output.accept(ModItems.LAPOTRON_CRYSTAL.get());
-                        ItemStack fullLapotron = new ItemStack(ModItems.LAPOTRON_CRYSTAL.get());
+                        output.accept(ModItems.PLASMA_CORE.get());
+                        ItemStack fullLapotron = new ItemStack(ModItems.PLASMA_CORE.get());
                         fullLapotron.getOrCreateTag().putInt("energy", 500000);
                         output.accept(fullLapotron);
                         output.accept(ModItems.ENERGY_BACKPACK_T1.get());

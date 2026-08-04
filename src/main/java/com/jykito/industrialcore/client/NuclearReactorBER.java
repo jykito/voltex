@@ -187,6 +187,6 @@ public class NuclearReactorBER implements BlockEntityRenderer<NuclearReactorBloc
         }
     }
 
-    @Override public boolean shouldRenderOffScreen(NuclearReactorBlockEntity be) { return true; }
-    @Override public int getViewDistance() { return 128; }
+    @Override public boolean shouldRenderOffScreen(NuclearReactorBlockEntity be) { return false; } // фрустум-куллинг (bbox p-2..p+3 покрывает свечения)
+    @Override public int getViewDistance() { return 96; }
 }

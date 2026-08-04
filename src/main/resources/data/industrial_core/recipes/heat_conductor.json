@@ -1,13 +1,17 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    " R ",
-    "CCC",
-    " R "
+    " A ",
+    "BBB",
+    " A "
   ],
   "key": {
-    "C": { "item": "industrial_core:copper_plate" },
-    "R": { "item": "minecraft:redstone" }
+    "A": {
+      "tag": "forge:dusts/redstone"
+    },
+    "B": {
+      "tag": "forge:plates/copper"
+    }
   },
   "result": {
     "item": "industrial_core:heat_conductor",

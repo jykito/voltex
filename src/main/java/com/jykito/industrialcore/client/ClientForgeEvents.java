@@ -66,17 +66,14 @@ public final class ClientForgeEvents {
         ItemStack held = mc.player.getMainHandItem();
         if (held.getItem() instanceof LogisticsLinkerItem && LogisticsLinkerItem.hasSource(held)) {
             BlockPos srcPos = LogisticsLinkerItem.getSource(held);
-            if (srcPos != null) {
-                float[] col = LogisticsBeamRenderer.COL_PREVIEW;
-                float pulse = 0.6f + 0.4f * Mth.sin((mc.level.getGameTime() + event.getPartialTick()) * 0.15f);
-                PoseStack ps = event.getPoseStack();
-                Vec3 cam = event.getCamera().getPosition();
-                MultiBufferSource.BufferSource buf = mc.renderBuffers().bufferSource();
-                ps.pushPose();
-                ps.translate(-cam.x + srcPos.getX() + 0.5, -cam.y + srcPos.getY() + 0.5, -cam.z + srcPos.getZ() + 0.5);
-                LogisticsBeamRenderer.drawOrb(ps, buf, 0, 0, 0, col[0] * pulse, col[1] * pulse, col[2] * pulse);
-                ps.popPose();
-                buf.endBatch(ModRenderTypes.ADDITIVE_GLOW.apply(LogisticsBeamRenderer.glowTex()));
+            if (srcPos != null && mc.hitResult instanceof net.minecraft.world.phys.BlockHitResult bhr
+                    && bhr.getType() == net.minecraft.world.phys.HitResult.Type.BLOCK) {
+                LogisticsBeamRenderer.renderPreviewLine(
+                        event.getPoseStack(),
+                        mc.renderBuffers().bufferSource(),
+                        event.getCamera().getPosition(),
+                        srcPos, bhr.getBlockPos(),
+                        LogisticsBeamRenderer.COL_PREVIEW);
             }
         }
 

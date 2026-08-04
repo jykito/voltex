@@ -1,14 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    " R ",
-    "PDP",
-    " R "
+    " A ",
+    "BCB",
+    " A "
   ],
   "key": {
-    "R": { "item": "minecraft:redstone" },
-    "P": { "item": "minecraft:paper" },
-    "D": { "item": "industrial_core:data_transfer_matrix" }
+    "A": {
+      "tag": "forge:dusts/redstone"
+    },
+    "B": {
+      "item": "minecraft:paper"
+    },
+    "C": {
+      "item": "industrial_core:data_transfer_matrix"
+    }
   },
   "result": {
     "item": "industrial_core:reactor_blueprint",

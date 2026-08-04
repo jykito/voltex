@@ -1,13 +1,29 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "PMP",
-    "PBP"
+    "ABA",
+    "CDC",
+    "EFE"
   ],
   "key": {
-    "P": { "item": "industrial_core:iron_plate" },
-    "M": { "item": "industrial_core:electric_motor" },
-    "B": { "item": "industrial_core:battery" }
+    "A": {
+      "tag": "forge:plates/copper"
+    },
+    "B": {
+      "item": "industrial_core:electric_motor"
+    },
+    "C": {
+      "item": "industrial_core:gold_conductor"
+    },
+    "D": {
+      "item": "industrial_core:battery"
+    },
+    "E": {
+      "item": "industrial_core:rubber"
+    },
+    "F": {
+      "tag": "forge:plates/iron"
+    }
   },
   "result": {
     "item": "industrial_core:tool_base",

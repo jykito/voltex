@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:structural_block"
+    },
+    "B": {
+      "item": "industrial_core:coil_winding"
+    },
+    "C": {
+      "item": "industrial_core:hardened_steel_rod"
+    },
+    "D": {
+      "item": "industrial_core:machine_casing"
+    }
+  },
+  "result": {
+    "item": "industrial_core:coil_holder",
+    "count": 1
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "name": "Nuclear",
+  "entries": [
+    {
+      "name": "Nuclear Reactor",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Nuclear Reactor"
+        },
+        {
+          "type": "text",
+          "text": "A powerful FE source and the way to obtain plutonium. A 3×3×3 multiblock: a controller core surrounded by 26 chambers. Inside is a grid of rods and cooling components."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:nuclear_reactor",
+            "industrial_core:reactor_chamber",
+            "industrial_core:reactor_blueprint"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Fuel Rods",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Fuel Rods"
+        },
+        {
+          "type": "text",
+          "text": "Fuel by rising output and heat: the uranium rod, the plutonium rod and MOX. Assembled in the Rod Fabricator from empty rods and fuel."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:uranium_fuel_rod",
+            "industrial_core:plutonium_fuel_rod",
+            "industrial_core:mox_fuel_rod"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Reactor Schemes",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Reactor Schemes"
+        },
+        {
+          "type": "text",
+          "text": "A scheme is a validated reactor grid layout. The line grows in power from uranium to plutonium and MOX. Pick a scheme to match your fuel and cooling."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:reactor_blueprint"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Components & Heat",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Cooling"
+        },
+        {
+          "type": "text",
+          "text": "Rods and graphite set neutron multiplication and heat; vents, exchangers and the condensator dissipate it. Hull overheating leads to an explosion — keep the balance."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:graphite_rod",
+            "industrial_core:advanced_heat_vent",
+            "industrial_core:advanced_heat_exchanger",
+            "industrial_core:condensator"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Waste & Plutonium",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Waste Reprocessing"
+        },
+        {
+          "type": "text",
+          "text": "Do not discard spent rods — the Phase Splitter extracts plutonium (and some uranium) from them. Spent MOX yields the most plutonium."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:depleted_uranium_fuel_rod",
+            "industrial_core:phase_splitter",
+            "industrial_core:plutonium"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Uranium Chain",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Uranium"
+        },
+        {
+          "type": "text",
+          "text": "Crush and wash uranium ore for dust, then smelt to ingot. Uranium is fuel and the source of plutonium and MOX. With the reactor the chain becomes closed and growing."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:uranium_ore",
+            "industrial_core:uranium_dust",
+            "industrial_core:uranium_ingot",
+            "industrial_core:mox_fuel"
+          ]
+        }
+      ]
+    }
+  ]
+}

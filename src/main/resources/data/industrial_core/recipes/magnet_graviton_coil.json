@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:kronium_alloy"
+    },
+    "B": {
+      "item": "industrial_core:singularity_core"
+    },
+    "C": {
+      "item": "industrial_core:exotic_matter"
+    },
+    "D": {
+      "item": "industrial_core:magnet_superconductor_coil"
+    },
+    "E": {
+      "item": "industrial_core:quantum_capacitor"
+    }
+  },
+  "result": {
+    "item": "industrial_core:magnet_graviton_coil",
+    "count": 1
+  }
+}

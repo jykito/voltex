@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "BCB",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:composite"
+    },
+    "B": {
+      "item": "industrial_core:carbon_plate"
+    },
+    "C": {
+      "item": "minecraft:diamond"
+    }
+  },
+  "result": {
+    "item": "industrial_core:carbon_composite_ingot",
+    "count": 1
+  }
+}

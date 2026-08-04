@@ -1,15 +1,29 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "ADA",
-    "LML",
-    "ADA"
+    "ABA",
+    "CDC",
+    "EFE"
   ],
   "key": {
-    "A": { "item": "industrial_core:electrum_plate" },
-    "D": { "item": "industrial_core:data_transfer_matrix" },
-    "L": { "item": "industrial_core:logic_board" },
-    "M": { "item": "industrial_core:machine_casing" }
+    "A": {
+      "tag": "forge:plates/gold"
+    },
+    "B": {
+      "item": "industrial_core:textolite_board"
+    },
+    "C": {
+      "item": "industrial_core:copper_cable"
+    },
+    "D": {
+      "item": "industrial_core:machine_casing"
+    },
+    "E": {
+      "tag": "forge:plates/iron"
+    },
+    "F": {
+      "tag": "forge:dusts/redstone"
+    }
   },
   "result": {
     "item": "industrial_core:logistics_node",

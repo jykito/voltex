@@ -1,14 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "PHP",
-    "HMH",
-    "PHP"
+    "ABA",
+    "CDC",
+    "ABA"
   ],
   "key": {
-    "P": { "item": "industrial_core:iron_plate" },
-    "H": { "item": "industrial_core:heat_conductor" },
-    "M": { "item": "industrial_core:electric_motor" }
+    "A": {
+      "tag": "forge:plates/invar"
+    },
+    "B": {
+      "item": "industrial_core:heat_vent"
+    },
+    "C": {
+      "item": "industrial_core:heat_conductor"
+    },
+    "D": {
+      "item": "industrial_core:electric_motor"
+    }
   },
   "result": {
     "item": "industrial_core:blast_upgrade_forced_air",

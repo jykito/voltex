@@ -4,13 +4,10 @@ import com.jykito.industrialcore.IndustrialCore;
 import com.jykito.industrialcore.block.ModBlocks;
 import com.jykito.industrialcore.fluid.ModFluids;
 import com.jykito.industrialcore.item.ModItems;
-import com.jykito.industrialcore.networking.ConnectorFilterFluidPacket;
-import com.jykito.industrialcore.networking.ConnectorFilterItemPacket;
 import com.jykito.industrialcore.networking.ModMessages;
 import com.jykito.industrialcore.recipe.*;
 import net.minecraft.world.item.Items;
-import com.jykito.industrialcore.screen.FluidConnectorScreen;
-import com.jykito.industrialcore.screen.ItemConnectorScreen;
+import com.jykito.industrialcore.screen.HubScreen;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
@@ -88,6 +85,8 @@ public class IndustrialCoreJeiPlugin implements IModPlugin {
             RecipeType.create(IndustrialCore.MODID, "fluid_generator", com.jykito.industrialcore.block.entity.FluidGeneratorType.class);
     public static final RecipeType<CapsuleFillerJeiRecipe> CAPSULE_FILLER =
             RecipeType.create(IndustrialCore.MODID, "capsule_filler", CapsuleFillerJeiRecipe.class);
+    public static final RecipeType<AcceleratorRecipe> MAGNET =
+            RecipeType.create(IndustrialCore.MODID, "magnet_jei", AcceleratorRecipe.class);
 
     @Override
     public ResourceLocation getPluginUid() {
@@ -212,7 +211,11 @@ new ReactorSchemeCategory(gui, REACTOR_SCHEME,
 
                 new CapsuleFillerJeiCategory(gui, CAPSULE_FILLER,
                         new ItemStack(ModBlocks.CAPSULE_FILLER.get()),
-                        Component.translatable("block.industrial_core.capsule_filler"), jeiTex("jei_capsule_filler"))
+                        Component.translatable("block.industrial_core.capsule_filler"), jeiTex("jei_capsule_filler")),
+
+                new MagnetJeiCategory(gui, MAGNET,
+                        new ItemStack(ModBlocks.ELECTROMAGNET_CORE.get()),
+                        Component.translatable("block.industrial_core.electromagnet_core"))
         );
     }
 
@@ -309,16 +312,17 @@ new ReactorSchemeCategory(gui, REACTOR_SCHEME,
             }
         }
         registration.addRecipes(CAPSULE_FILLER, capRecipes);
+
+        registration.addRecipes(MAGNET, rm.getAllRecipesFor(ModRecipes.ACCELERATING_TYPE.get()));
     }
 
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
-        registration.addGhostIngredientHandler(ItemConnectorScreen.class, new ItemConnectorGhostHandler());
-        registration.addGhostIngredientHandler(FluidConnectorScreen.class, new FluidConnectorGhostHandler());
+        registration.addGhostIngredientHandler(HubScreen.class, new HubGhostHandler());
 
         recipeArea(registration, com.jykito.industrialcore.screen.CrusherScreen.class,         117,61,16,12, CRUSHING);
         recipeArea(registration, com.jykito.industrialcore.screen.CompressorScreen.class,      116,61,16,12, COMPRESSING);
-        recipeArea(registration, com.jykito.industrialcore.screen.ElectricFurnaceScreen.class, 112,62,24,10, ELECTRIC_SMELTING);
+        recipeArea(registration, com.jykito.industrialcore.screen.ElectricFurnaceScreen.class, 112,62,24,10, mezz.jei.api.constants.RecipeTypes.SMELTING);
 
         recipeArea(registration, com.jykito.industrialcore.screen.MetalFormerScreen.class,     107,60,14,14, ROLLING, EXTRUDING);
         recipeArea(registration, com.jykito.industrialcore.screen.MetalFormerScreen.class,     129,60,11,14, ROLLING, EXTRUDING);
@@ -339,6 +343,12 @@ new ReactorSchemeCategory(gui, REACTOR_SCHEME,
 
         recipeArea(registration, com.jykito.industrialcore.screen.MinerCoreScreen.class,       111,53,30,6,  MINER_LENS);
         recipeArea(registration, com.jykito.industrialcore.screen.MinerCoreScreen.class,       111,75,30,12, MINER_LENS);
+
+        // выход в (120,52); клик-зоны — в зазорах вокруг него (крест), чтобы хинт JEI не налезал на тултип слота
+        recipeArea(registration, com.jykito.industrialcore.screen.ElectromagnetScreen.class,   120,39,16,12, MAGNET);
+        recipeArea(registration, com.jykito.industrialcore.screen.ElectromagnetScreen.class,   120,69,16,12, MAGNET);
+        recipeArea(registration, com.jykito.industrialcore.screen.ElectromagnetScreen.class,   101,53,18,14, MAGNET);
+        recipeArea(registration, com.jykito.industrialcore.screen.ElectromagnetScreen.class,   137,53,18,14, MAGNET);
     }
 
     private void recipeArea(IGuiHandlerRegistration reg, Class<? extends AbstractContainerScreen<?>> cls,
@@ -346,52 +356,36 @@ new ReactorSchemeCategory(gui, REACTOR_SCHEME,
         reg.addRecipeClickArea(cls, x, y, w, h, types);
     }
 
-    private static class ItemConnectorGhostHandler implements IGhostIngredientHandler<ItemConnectorScreen> {
+    private static class HubGhostHandler implements IGhostIngredientHandler<HubScreen> {
         @Override
-        public <I> List<Target<I>> getTargetsTyped(ItemConnectorScreen gui, ITypedIngredient<I> ingredient, boolean doStart) {
+        public <I> List<Target<I>> getTargetsTyped(HubScreen gui, ITypedIngredient<I> ingredient, boolean doStart) {
             if (ingredient.getType() != VanillaTypes.ITEM_STACK) return List.of();
+            int face = gui.getSelectedFace();
+            if (face < 0 || gui.getMenu().be == null) return List.of();
+            final net.minecraft.core.BlockPos pos = gui.getMenu().be.getBlockPos();
+            final boolean fluid = gui.getMenu().be.fluid;
             List<Target<I>> targets = new ArrayList<>();
-            for (int s = 0; s < com.jykito.industrialcore.menu.ItemConnectorMenu.FILTER_SLOTS; s++) {
+            for (int s = 0; s < com.jykito.industrialcore.block.entity.HubBlockEntity.FILTER_SLOTS; s++) {
                 final int slot = s;
-                int col = s % ItemConnectorScreen.FILTER_COLS;
-                int row = s / ItemConnectorScreen.FILTER_COLS;
-                int x = gui.getGuiLeft() + ItemConnectorScreen.FILTER_COL_START + col * ItemConnectorScreen.FILTER_GAP;
-                int y = gui.getGuiTop()  + ItemConnectorScreen.FILTER_ROW_START + row * ItemConnectorScreen.FILTER_GAP;
+                int x = gui.getGuiLeft() + HubScreen.FGRID_X + (s % 3) * HubScreen.FCELL;
+                int y = gui.getGuiTop()  + HubScreen.FGRID_Y + (s / 3) * HubScreen.FCELL;
                 targets.add(new Target<>() {
                     @Override public Rect2i getArea() { return new Rect2i(x, y, 16, 16); }
                     @Override public void accept(I value) {
-                        if (value instanceof ItemStack stack)
-                            ModMessages.sendToServer(new ConnectorFilterItemPacket(
-                                    gui.getMenu().blockEntity.getBlockPos(), slot, stack));
-                    }
-                });
-            }
-            return targets;
-        }
-        @Override public void onComplete() {}
-    }
-
-    private static class FluidConnectorGhostHandler implements IGhostIngredientHandler<FluidConnectorScreen> {
-        @Override
-        public <I> List<Target<I>> getTargetsTyped(FluidConnectorScreen gui, ITypedIngredient<I> ingredient, boolean doStart) {
-            if (ingredient.getType() != VanillaTypes.ITEM_STACK) return List.of();
-            List<Target<I>> targets = new ArrayList<>();
-            for (int s = 0; s < FluidConnectorScreen.FILTER_SLOTS; s++) {
-                final int slot = s;
-                int x = gui.getGuiLeft() + FluidConnectorScreen.FILTER_COL_START + s * FluidConnectorScreen.FILTER_GAP;
-                int y = gui.getGuiTop()  + FluidConnectorScreen.FILTER_ROW_START;
-                targets.add(new Target<>() {
-                    @Override public Rect2i getArea() { return new Rect2i(x, y, 16, 16); }
-                    @Override public void accept(I value) {
-                        if (value instanceof ItemStack stack) {
+                        if (!(value instanceof ItemStack stack)) return;
+                        boolean out = gui.getMenu().filterDir == 1;
+                        if (fluid) {
                             var cap = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).resolve();
                             if (cap.isEmpty()) return;
                             IFluidHandlerItem handler = cap.get();
                             if (handler.getTanks() == 0) return;
-                            FluidStack fluid = handler.getFluidInTank(0);
-                            if (!fluid.isEmpty())
-                                ModMessages.sendToServer(new ConnectorFilterFluidPacket(
-                                        gui.getMenu().blockEntity.getBlockPos(), slot, fluid));
+                            FluidStack f = handler.getFluidInTank(0);
+                            if (!f.isEmpty())
+                                ModMessages.sendToServer(new com.jykito.industrialcore.networking.HubFluidFilterPacket(
+                                        pos, face, slot, out, f));
+                        } else {
+                            ModMessages.sendToServer(new com.jykito.industrialcore.networking.HubFilterPacket(
+                                    pos, face, slot, stack, out));
                         }
                     }
                 });
@@ -406,7 +400,7 @@ new ReactorSchemeCategory(gui, REACTOR_SCHEME,
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.RESTRUCTOR.get()), RESTRUCTOR);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.CRUSHER.get()),        CRUSHING);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.COMPRESSOR.get()),     COMPRESSING);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.ELECTRIC_FURNACE.get()), ELECTRIC_SMELTING);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.ELECTRIC_FURNACE.get()), mezz.jei.api.constants.RecipeTypes.SMELTING);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.METAL_FORMER.get()),   ROLLING, EXTRUDING);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.BLAST_FURNACE.get()),   BLAST_FURNACE);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.ROD_FABRICATOR.get()),  ROD_FABRICATOR);
@@ -429,5 +423,6 @@ new ReactorSchemeCategory(gui, REACTOR_SCHEME,
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.LAVA_GENERATOR.get()),    FLUID_GEN);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.WATER_GENERATOR.get()),   FLUID_GEN);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.CAPSULE_FILLER.get()),    CAPSULE_FILLER);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.ELECTROMAGNET_CORE.get()), MAGNET);
     }
 }

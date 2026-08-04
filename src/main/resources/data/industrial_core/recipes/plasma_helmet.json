@@ -1,13 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "KMK",
-    "KLK"
+    "ABA",
+    "C C",
+    "   "
   ],
   "key": {
-    "K": { "item": "industrial_core:kronit" },
-    "M": { "item": "industrial_core:kronium_alloy" },
-    "L": { "item": "industrial_core:lapotron_crystal" }
+    "A": {
+      "item": "industrial_core:kronium_alloy"
+    },
+    "B": {
+      "item": "industrial_core:photonic_lens"
+    },
+    "C": {
+      "item": "industrial_core:exotic_matter"
+    }
   },
   "result": {
     "item": "industrial_core:plasma_helmet",

@@ -1,0 +1,246 @@
+{
+  "name": "Multiblocks",
+  "entries": [
+    {
+      "name": "Miner",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Miner"
+        },
+        {
+          "type": "text",
+          "text": "Automated ore mining without digging. A 3×3×3 cube: core in the center, 26 casings around. A lens sets the dimension and ore pool. Runs on FE and drill fluid."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:miner_casing",
+              "O": "industrial_core:miner_core"
+            },
+            "layers": [
+              [
+                "CCC",
+                "CCC",
+                "CCC"
+              ],
+              [
+                "CCC",
+                "COC",
+                "CCC"
+              ],
+              [
+                "CCC",
+                "CCC",
+                "CCC"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:miner_core",
+            "industrial_core:miner_casing",
+            "industrial_core:miner_lens_1",
+            "industrial_core:miner_lens_4"
+          ],
+          "label": "Components"
+        }
+      ]
+    },
+    {
+      "name": "Nuclear Reactor",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Reactor (multiblock)"
+        },
+        {
+          "type": "text",
+          "text": "The same 3×3×3 cube: reactor core in the center, 26 chambers around. Chambers expand the internal grid and hook up cooling. Details in the Nuclear chapter."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:reactor_chamber",
+              "R": "industrial_core:nuclear_reactor"
+            },
+            "layers": [
+              [
+                "CCC",
+                "CCC",
+                "CCC"
+              ],
+              [
+                "CCC",
+                "CRC",
+                "CCC"
+              ],
+              [
+                "CCC",
+                "CCC",
+                "CCC"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:nuclear_reactor",
+            "industrial_core:reactor_chamber"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Magnet Accelerator",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Magnet Accelerator"
+        },
+        {
+          "type": "text",
+          "text": "The apex of the mod — a 7×7×8 frame of structural blocks with two coil holders and an electromagnet core. A coil goes into the holder (copper, superconductor or graviton), and its tier unlocks ever stronger accelerations."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "S": "industrial_core:structural_block",
+              "H": "industrial_core:coil_holder",
+              "C": "industrial_core:electromagnet_core"
+            },
+            "layers": [
+              [
+                ".SSSSS.",
+                "SSSSSSS",
+                "SSSSSSS",
+                "SSSSSSS",
+                "SSSSSSS",
+                "SSSSSSS",
+                ".SSSSS."
+              ],
+              [
+                "...C...",
+                ".S...S.",
+                "..SSS..",
+                "..SSS..",
+                "..SSS..",
+                ".S...S.",
+                "......."
+              ],
+              [
+                ".......",
+                ".S...S.",
+                ".......",
+                "...H...",
+                ".......",
+                ".S...S.",
+                "......."
+              ],
+              [
+                "S.....S",
+                ".......",
+                ".......",
+                ".......",
+                ".......",
+                ".......",
+                "S.....S"
+              ],
+              [
+                "S.....S",
+                ".......",
+                ".......",
+                ".......",
+                ".......",
+                ".......",
+                "S.....S"
+              ],
+              [
+                "S.....S",
+                ".......",
+                ".......",
+                ".......",
+                ".......",
+                ".......",
+                "S.....S"
+              ],
+              [
+                ".......",
+                ".S...S.",
+                ".......",
+                "...H...",
+                ".......",
+                ".S...S.",
+                "......."
+              ],
+              [
+                ".......",
+                ".S...S.",
+                "..SSS..",
+                "..SSS..",
+                "..SSS..",
+                ".S...S.",
+                "......."
+              ]
+            ]
+          }
+        },
+        {
+          "type": "text",
+          "text": "Accelerating builds up instability. In the resonance band the output doubles, but overshooting triggers a quench wave that wrecks your base. Nearby antigravity columns raise the safe threshold — place them BEFORE moving to higher coils."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:structural_block",
+            "industrial_core:coil_holder",
+            "industrial_core:electromagnet_core",
+            "industrial_core:antigrav_column"
+          ],
+          "label": "Frame"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:magnet_copper_coil",
+            "industrial_core:magnet_superconductor_coil",
+            "industrial_core:magnet_graviton_coil"
+          ],
+          "label": "Coils"
+        }
+      ]
+    },
+    {
+      "name": "Antigrav Columns",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Antigrav Columns"
+        },
+        {
+          "type": "text",
+          "text": "Antigrav columns run on HEAT, not FE. Heat comes in from below through a heat pipe from the heat network: a thermogenerator warms the pipe, and the pipe feeds heat into the column base. The column stores it in a buffer (up to 4000) and starts working for the magnet once warm (from 200). The hotter the column, the greater its contribution to stability."
+        },
+        {
+          "type": "text",
+          "text": "Each fully heated column raises the safe quench threshold by 7.5% over the base 50%. Up to 8 columns within 16 blocks of the magnet center are counted. Rough guide: 2 columns hold the threshold at 65%, 4 at 80% (needed for the superconductor coil), 6 at 95%, 7 the full 100% (needed for the graviton coil). The copper coil needs no columns: its ceiling sits below 50%."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:antigrav_column",
+            "industrial_core:heat_pipe",
+            "industrial_core:thermogenerator"
+          ],
+          "label": "Heat feed"
+        }
+      ]
+    }
+  ]
+}

@@ -54,11 +54,8 @@ public class MinerCoreScreen extends AbstractContainerScreen<MinerCoreMenu> {
         super.render(g, mx, my, partial);
         this.renderTooltip(g, mx, my);
 
-        int ex = leftPos + ENERGY_X, ey = topPos + ENERGY_Y;
-        if (mx >= ex && mx < ex + ENERGY_W && my >= ey && my < ey + BAR_H)
-            g.renderTooltip(font, Component.literal(
-                    menu.getTotalEnergy() + " / " + menu.getMaxTotalEnergy() + " FE")
-                    .withStyle(com.jykito.industrialcore.ModStyle.ENERGY_STYLE), mx, my);
+        Bars.energy(g, font, mx, my, leftPos + ENERGY_X, topPos + ENERGY_Y, ENERGY_W, BAR_H,
+                menu.getTotalEnergy(), menu.getMaxTotalEnergy());
 
         int fx = leftPos + TANK_X, fy = topPos + TANK_Y;
         if (mx >= fx && mx < fx + TANK_W && my >= fy && my < fy + TANK_H)
@@ -84,9 +81,14 @@ public class MinerCoreScreen extends AbstractContainerScreen<MinerCoreMenu> {
             }
         }
 
-        int progress = menu.getScaledProgress(PROG_W);
-        if (progress > 0)
-            g.blit(TEXTURE, x + PROG_X, y + PROG_Y, PROG_SRC_U, PROG_SRC_V, progress, PROG_H, TEX_W, TEX_H);
+        // Заполнение снизу вверх: берём нижние `progress` пикселей исходника
+        // и кладём их к нижней кромке области, поэтому смещение одно и то же по src и dst.
+        int progress = menu.getScaledProgress(PROG_H);
+        if (progress > 0) {
+            int offset = PROG_H - progress;
+            g.blit(TEXTURE, x + PROG_X, y + PROG_Y + offset,
+                    PROG_SRC_U, PROG_SRC_V + offset, PROG_W, progress, TEX_W, TEX_H);
+        }
 
         renderFluid(g, new FluidStack(ModFluids.SOURCE_DRILL_FLUID.get(), menu.getTotalFluid()),
                 menu.getMaxTotalFluid(), x + TANK_X, y + TANK_Y, TANK_W, TANK_H);

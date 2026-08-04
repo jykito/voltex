@@ -1,14 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "GDG",
-    "DLD",
-    "GDG"
+    "ABA",
+    "BCB",
+    "ABA"
   ],
   "key": {
-    "G": { "item": "minecraft:glass" },
-    "D": { "item": "minecraft:diamond" },
-    "L": { "item": "industrial_core:logic_board" }
+    "A": {
+      "item": "minecraft:glass"
+    },
+    "B": {
+      "item": "minecraft:diamond"
+    },
+    "C": {
+      "item": "industrial_core:logic_board"
+    }
   },
   "result": {
     "item": "industrial_core:miner_lens_1",

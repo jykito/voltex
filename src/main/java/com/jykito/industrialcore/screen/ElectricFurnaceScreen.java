@@ -45,6 +45,8 @@ public class ElectricFurnaceScreen extends AbstractContainerScreen<ElectricFurna
         if (++animTick >= FRAME_TICKS) { animTick = 0; currentFrame = (currentFrame + 1) % FRAMES; }
         super.render(g, mouseX, mouseY, partialTick);
         this.renderTooltip(g, mouseX, mouseY);
+        Bars.energy(g, font, mouseX, mouseY, leftPos + BAR_X, topPos + BAR_Y, BAR_W, BAR_H,
+                menu.getEnergyStored(), menu.getMaxEnergy());
     }
 
     @Override

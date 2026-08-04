@@ -1,0 +1,9 @@
+{
+    "loader": "forge:obj",
+    "model": "industrial_core:models/block/electromagnet_superconductor_coil.obj",
+    "flip_v": true,
+    "textures": {
+        "electromagnet_superconductor_coil": "industrial_core:block/electromagnet_superconductor_coil",
+        "particle": "industrial_core:block/electromagnet_superconductor_coil"
+    }
+}

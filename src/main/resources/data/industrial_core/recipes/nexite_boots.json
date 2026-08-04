@@ -1,12 +1,17 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "K K",
-    "KEK"
+    "A A",
+    "B B",
+    "   "
   ],
   "key": {
-    "K": { "item": "industrial_core:kronit" },
-    "E": { "item": "industrial_core:energy_crystal" }
+    "A": {
+      "item": "industrial_core:carbon_composite_ingot"
+    },
+    "B": {
+      "item": "industrial_core:kronit"
+    }
   },
   "result": {
     "item": "industrial_core:nexite_boots",

@@ -1,14 +1,29 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "KAK",
-    "ADA",
-    "KAK"
+    "ABA",
+    "CDC",
+    "EFE"
   ],
   "key": {
-    "K": { "item": "industrial_core:kronium_alloy" },
-    "A": { "item": "industrial_core:advanced_parallel_module" },
-    "D": { "item": "industrial_core:exotic_matter" }
+    "A": {
+      "item": "industrial_core:quantum_capacitor"
+    },
+    "B": {
+      "item": "industrial_core:singularity_core"
+    },
+    "C": {
+      "item": "industrial_core:star_shard"
+    },
+    "D": {
+      "item": "industrial_core:advanced_parallel_module"
+    },
+    "E": {
+      "item": "industrial_core:exotic_matter"
+    },
+    "F": {
+      "item": "industrial_core:data_transfer_matrix"
+    }
   },
   "result": {
     "item": "industrial_core:quantum_parallel_module",

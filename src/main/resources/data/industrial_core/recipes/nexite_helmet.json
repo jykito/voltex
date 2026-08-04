@@ -1,12 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "KKK",
-    "KEK"
+    "ABA",
+    "C C",
+    "   "
   ],
   "key": {
-    "K": { "item": "industrial_core:kronit" },
-    "E": { "item": "industrial_core:energy_crystal" }
+    "A": {
+      "item": "industrial_core:kronit"
+    },
+    "B": {
+      "item": "industrial_core:data_transfer_matrix"
+    },
+    "C": {
+      "item": "industrial_core:flux_core"
+    }
   },
   "result": {
     "item": "industrial_core:nexite_helmet",

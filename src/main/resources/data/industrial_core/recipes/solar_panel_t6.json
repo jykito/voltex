@@ -1,15 +1,29 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "PPP",
-    "LSL",
-    "KKK"
+    "ABA",
+    "CDC",
+    "EFE"
   ],
   "key": {
-    "P": { "item": "industrial_core:photonic_lens" },
-    "L": { "item": "industrial_core:lapotron_crystal" },
-    "S": { "item": "industrial_core:solar_panel_t5" },
-    "K": { "item": "industrial_core:kronium_alloy" }
+    "A": {
+      "item": "industrial_core:photonic_lens"
+    },
+    "B": {
+      "item": "industrial_core:plasma_core"
+    },
+    "C": {
+      "item": "industrial_core:kronium_alloy"
+    },
+    "D": {
+      "item": "industrial_core:solar_panel_t5"
+    },
+    "E": {
+      "item": "industrial_core:advanced_heat_vent"
+    },
+    "F": {
+      "item": "industrial_core:data_transfer_matrix"
+    }
   },
   "result": {
     "item": "industrial_core:solar_panel_t6",

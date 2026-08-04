@@ -42,6 +42,8 @@ public class CoalGeneratorScreen extends AbstractContainerScreen<CoalGeneratorMe
         if (++animTick >= FRAME_TICKS) { animTick = 0; animFrame = (animFrame + 1) % FRAMES; }
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
+        Bars.energy(guiGraphics, font, mouseX, mouseY, leftPos + BAR_X, topPos + BAR_Y, BAR_W, BAR_H,
+                menu.getEnergyStored(), menu.getMaxEnergy());
     }
 
     @Override

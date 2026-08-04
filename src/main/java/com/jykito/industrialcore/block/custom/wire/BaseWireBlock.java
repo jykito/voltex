@@ -70,16 +70,31 @@ public class BaseWireBlock extends Block implements SimpleWaterloggedBlock, Enti
         return new BaseWireBlockEntity(pos, state);
     }
 
+    /**
+     * Готовые формы на все 64 комбинации соединений. Форму раньше собирали заново на КАЖДЫЙ
+     * вызов getShape, а зовут его коллизии, луч прицела, пасфайндинг и обновления соседей —
+     * то есть очень часто, а кабелей на базе больше всего. Считаем один раз при загрузке.
+     * WATERLOGGED на форму не влияет и в маску не входит.
+     */
+    private static final VoxelShape[] SHAPES = new VoxelShape[64];
+    static {
+        VoxelShape[] byDir = {
+                DOWN_SHAPE, UP_SHAPE, NORTH_SHAPE, SOUTH_SHAPE, WEST_SHAPE, EAST_SHAPE
+        }; // порядок как у Direction.get3DDataValue()
+        for (int mask = 0; mask < SHAPES.length; mask++) {
+            VoxelShape shape = CENTER_SHAPE;
+            for (int i = 0; i < 6; i++)
+                if ((mask & (1 << i)) != 0) shape = Shapes.or(shape, byDir[i]);
+            SHAPES[mask] = shape.optimize();
+        }
+    }
+
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        VoxelShape shape = CENTER_SHAPE;
-        if (state.getValue(UP)) shape = Shapes.or(shape, UP_SHAPE);
-        if (state.getValue(DOWN)) shape = Shapes.or(shape, DOWN_SHAPE);
-        if (state.getValue(NORTH)) shape = Shapes.or(shape, NORTH_SHAPE);
-        if (state.getValue(SOUTH)) shape = Shapes.or(shape, SOUTH_SHAPE);
-        if (state.getValue(EAST)) shape = Shapes.or(shape, EAST_SHAPE);
-        if (state.getValue(WEST)) shape = Shapes.or(shape, WEST_SHAPE);
-        return shape;
+        int mask = 0;
+        for (Map.Entry<Direction, BooleanProperty> e : PROPERTY_BY_DIRECTION.entrySet())
+            if (state.getValue(e.getValue())) mask |= 1 << e.getKey().get3DDataValue();
+        return SHAPES[mask];
     }
 
     private boolean canConnectTo(LevelAccessor level, BlockPos currentPos, Direction direction) {

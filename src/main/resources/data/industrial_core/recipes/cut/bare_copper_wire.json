@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "tag": "forge:plates/copper"
+    },
+    {
+      "item": "industrial_core:cutters"
+    }
+  ],
+  "result": {
+    "item": "industrial_core:bare_copper_wire",
+    "count": 1
+  }
+}

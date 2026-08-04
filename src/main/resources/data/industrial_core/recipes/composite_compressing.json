@@ -6,8 +6,9 @@
   },
   "inputCount": 1,
   "result": {
-    "item": "industrial_core:composite"
+    "item": "industrial_core:composite",
+    "count": 1
   },
-  "processingTime": 200,
+  "processingTime": 140,
   "energyCost": 50
 }

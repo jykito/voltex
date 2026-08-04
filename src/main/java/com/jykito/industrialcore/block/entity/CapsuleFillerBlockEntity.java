@@ -84,7 +84,7 @@ public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvide
         void consume(int amount) { this.energy = Math.max(0, this.energy - amount); }
         void set(int amount)     { this.energy = Math.min(getMaxEnergyStored(), Math.max(0, amount)); }
     }
-    private final FillerEnergy energyStorage = new FillerEnergy(50_000, 2_000);
+    private final FillerEnergy energyStorage = new FillerEnergy(50_000, 50_000); // приём = буфер, без потолка на вход
     private LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.empty();
 
     public final FluidTank inputTank = new FluidTank(TANK_CAP) {
@@ -229,10 +229,7 @@ public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvide
                     FluidUtil.tryFluidTransfer(dst, inputTank, inputTank.getFluidAmount(), true));
         }
 
-        if (state.getValue(CapsuleFillerBlock.LIT) != working)
-            level.setBlock(pos, state.setValue(CapsuleFillerBlock.LIT, working), 3);
-
-        setChanged();
+        MachineLit.tick(this, level, pos, state, CapsuleFillerBlock.LIT, working);setChanged();
     }
 
     private record FillResult(ItemStack result, int consumed) {}

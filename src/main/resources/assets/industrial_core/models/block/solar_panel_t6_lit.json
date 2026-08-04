@@ -1,8 +1,23 @@
 {
-  "parent": "minecraft:block/cube_bottom_top",
+  "parent": "block/block",
   "textures": {
-    "top":    "industrial_core:block/solar_panel_t6_top",
+    "top": "industrial_core:block/solar_panel_t6_top",
     "bottom": "industrial_core:block/solar_panel_t6_bottom",
-    "side":   "industrial_core:block/solar_panel_t6_side"
-  }
+    "side": "industrial_core:block/solar_panel_t6_side",
+    "particle": "industrial_core:block/solar_panel_t6_side"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 16, 16],
+      "faces": {
+        "down":  { "uv": [0, 0, 16, 16], "texture": "#bottom", "cullface": "down" },
+        "up":    { "uv": [0, 0, 16, 16], "texture": "#top", "cullface": "up", "forge_data": { "block_light": 15, "sky_light": 15 } },
+        "north": { "uv": [0, 0, 16, 16], "texture": "#side", "cullface": "north", "forge_data": { "block_light": 8, "sky_light": 15 } },
+        "south": { "uv": [0, 0, 16, 16], "texture": "#side", "cullface": "south", "forge_data": { "block_light": 8, "sky_light": 15 } },
+        "west":  { "uv": [0, 0, 16, 16], "texture": "#side", "cullface": "west", "forge_data": { "block_light": 8, "sky_light": 15 } },
+        "east":  { "uv": [0, 0, 16, 16], "texture": "#side", "cullface": "east", "forge_data": { "block_light": 8, "sky_light": 15 } }
+      }
+    }
+  ]
 }

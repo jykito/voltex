@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "part=lower":  { "model": "industrial_core:block/antigrav_board" },
+    "part=middle": { "model": "industrial_core:block/antigrav_board" },
+    "part=upper":  { "model": "industrial_core:block/antigrav_board" }
+  }
+}

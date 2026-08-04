@@ -1,0 +1,14 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:crushing",
+  "ingredient": {
+    "tag": "forge:gems/emerald"
+  },
+  "inputCount": 1,
+  "result": {
+    "item": "industrial_core:emerald_dust",
+    "count": 1
+  },
+  "processingTime": 140,
+  "energyCost": 50
+}

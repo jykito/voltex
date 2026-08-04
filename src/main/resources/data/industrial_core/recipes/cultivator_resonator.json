@@ -1,14 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "ACA",
-    "CMC",
-    "ACA"
+    "ABA",
+    "CDC",
+    "ABA"
   ],
   "key": {
-    "A": { "item": "industrial_core:amethyst_crystal" },
-    "C": { "item": "industrial_core:crystal_plate" },
-    "M": { "item": "industrial_core:data_transfer_matrix" }
+    "A": {
+      "item": "industrial_core:amethyst_crystal"
+    },
+    "B": {
+      "item": "industrial_core:crystal_fiber"
+    },
+    "C": {
+      "item": "industrial_core:crystal_plate"
+    },
+    "D": {
+      "item": "industrial_core:data_transfer_matrix"
+    }
   },
   "result": {
     "item": "industrial_core:cultivator_resonator",

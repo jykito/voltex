@@ -1,0 +1,282 @@
+{
+  "name": "Переработка",
+  "entries": [
+    {
+      "name": "Дробилка",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Дробилка"
+        },
+        {
+          "type": "text",
+          "text": "Измельчает руду, сырьё и слитки в пыль — основа даблинга металла. Также дробит ванильное сырьё: кости в муку, обсидиан и аметист в пыль и т.п."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:crusher"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Электропечь",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Электропечь"
+        },
+        {
+          "type": "text",
+          "text": "Плавит на FE быстрее и без угля: пыль в слитки, руду в металл, всё как обычная печь, но эффективнее и в цепочке автоматизации."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:electric_furnace"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Компрессор",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Компрессор"
+        },
+        {
+          "type": "text",
+          "text": "Сжимает материалы: пыль и волокно в плотные пластины, компоненты в блоки. Часть продвинутых деталей делается только прессованием."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:compressor"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Формовщик металла",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Формовщик металла"
+        },
+        {
+          "type": "text",
+          "text": "Два режима в GUI: прокат (слиток в пластину) и экструзия (слиток в голый провод или стержень). Ключевая машина для кабелей и корпусов."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:metal_former"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Экстрактор",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Экстрактор"
+        },
+        {
+          "type": "text",
+          "text": "Вытягивает материал из сырья: резину из смолы и брёвен, ресурсы из вторсырья. Мягкая переработка без дробления."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:extractor"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Промыватель руды",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Промыватель руды"
+        },
+        {
+          "type": "text",
+          "text": "Премиум-переработка руды с водой: больше пыли плюс шанс на побочный металл (никель, серебро, литий). Требует подведённой воды."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:ore_washer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Реструктор",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Реструктор"
+        },
+        {
+          "type": "text",
+          "text": "Молекулярное преобразование: превращает одни вещества в другие через катализатор. Позвоночник прогрессии — тир катализатора открывает всё более сильные превращения."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:restructor",
+            "industrial_core:basic_catalyst",
+            "industrial_core:activated_catalyst",
+            "industrial_core:resonant_catalyst",
+            "industrial_core:universal_catalyst"
+          ],
+          "label": "Катализаторы"
+        }
+      ]
+    },
+    {
+      "name": "Обогатитель",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Обогатитель"
+        },
+        {
+          "type": "text",
+          "text": "Смешивает предмет с жидкостью и выдаёт новую жидкость: пыль лазурита с водой даёт хладагент, а минеральная пыль с водой — буровую жижу."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:fluid_enricher"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Сжижитель",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Сжижитель"
+        },
+        {
+          "type": "text",
+          "text": "Плавит предметы в жидкость под нагревом (нужно тепло от термосети). Например, аметист в расплав аметиста — сырьё для капсул и экзотики."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:liquefier"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Капсулы",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Капсулы и наполнитель"
+        },
+        {
+          "type": "text",
+          "text": "Универсальная капсула хранит 1000 мб любой жидкости. Наполнитель капсул закачивает жидкость из бака в капсулу. Заполненные капсулы идут прямо в рецепты."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:capsule",
+            "industrial_core:capsule_filler"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Фазовый расщепитель",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Фазовый расщепитель"
+        },
+        {
+          "type": "text",
+          "text": "Разделяет один вход на несколько выходов. Главное применение — переработка отработанных стержней реактора в плутоний и уран."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:phase_splitter"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Фабрикатор стержней",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Фабрикатор стержней"
+        },
+        {
+          "type": "text",
+          "text": "Собирает топливные стержни реактора из пустых стержней и топлива (уран, плутоний, MOX). Специализированная машина ядерной цепи."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:rod_fabricator",
+            "industrial_core:graphite_rod"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Взраститель",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Взраститель"
+        },
+        {
+          "type": "text",
+          "text": "Выращивает и дублирует материалы с водой. Апгрейд задаёт категорию: биостимулятор — растения, кристаллический резонатор — минералы (например, цветущий аметист в осколки)."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:cultivator",
+            "industrial_core:cultivator_biostimulator",
+            "industrial_core:cultivator_resonator"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Генераторы ресурсов",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Генераторы ресурсов"
+        },
+        {
+          "type": "text",
+          "text": "Тратят FE (и воду/лаву) на материалы: генератор камня даёт камень, гравий, песок и обсидиан; генераторы лавы и воды выдают жидкость в бак."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:stone_generator",
+            "industrial_core:lava_generator",
+            "industrial_core:water_generator"
+          ]
+        }
+      ]
+    }
+  ]
+}

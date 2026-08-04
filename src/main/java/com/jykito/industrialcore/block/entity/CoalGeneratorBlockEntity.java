@@ -131,9 +131,7 @@ public class CoalGeneratorBlockEntity extends BlockEntity implements MenuProvide
         }
 
         boolean isBurning = burnProgress > 0;
-        if (state.getValue(CoalGeneratorBlock.LIT) != isBurning) {
-            level.setBlock(pos, state.setValue(CoalGeneratorBlock.LIT, isBurning), 3);
-        }
+        MachineLit.tick(this, level, pos, state, CoalGeneratorBlock.LIT, isBurning);
 
         if (distributeEnergy()) {
             hasChanges = true;

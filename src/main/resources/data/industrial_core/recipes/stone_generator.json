@@ -1,15 +1,26 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "SPS",
-    "PCP",
-    "SMS"
+    "ABA",
+    "CDC",
+    "AEA"
   ],
   "key": {
-    "S": { "item": "minecraft:cobblestone" },
-    "P": { "item": "industrial_core:iron_plate" },
-    "C": { "item": "industrial_core:machine_casing" },
-    "M": { "item": "industrial_core:microcontroller" }
+    "A": {
+      "item": "minecraft:cobblestone"
+    },
+    "B": {
+      "item": "minecraft:piston"
+    },
+    "C": {
+      "tag": "forge:plates/iron"
+    },
+    "D": {
+      "item": "industrial_core:machine_casing"
+    },
+    "E": {
+      "item": "industrial_core:electric_motor"
+    }
   },
   "result": {
     "item": "industrial_core:stone_generator",

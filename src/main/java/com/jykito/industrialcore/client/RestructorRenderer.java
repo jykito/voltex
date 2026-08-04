@@ -15,7 +15,13 @@ public class RestructorRenderer implements BlockEntityRenderer<RestructorBlockEn
 
     @Override
     public void render(RestructorBlockEntity be, float partialTick,
-                       PoseStack ps, MultiBufferSource buf, int light, int overlay) {}
+                       PoseStack ps, MultiBufferSource buf, int light, int overlay) {
+        net.minecraft.core.Direction f = be.getBlockState().getValue(com.jykito.industrialcore.block.custom.RestructorBlock.FACING);
+        // ближе к лицевой грани (FACING смотрит на игрока при установке) + чуть ниже
+        MachineItemRender.render(be.getDisplayResult(), be.getLevel(), partialTick, ps, buf, overlay,
+                0.5 + f.getStepX() * 0.22, 0.42, 0.5 + f.getStepZ() * 0.22);
+    }
 
+    @Override public int getViewDistance() { return 32; } // кап дистанции: дальние не рисуют предмет
     @Override public boolean shouldRenderOffScreen(RestructorBlockEntity be) { return false; }
 }

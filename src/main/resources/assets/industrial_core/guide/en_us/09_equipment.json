@@ -1,0 +1,92 @@
+{
+  "name": "Equipment",
+  "entries": [
+    {
+      "name": "Tools",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Power Tools"
+        },
+        {
+          "type": "text",
+          "text": "Run on FE from an inventory cell or backpack. The wrench configures and removes machines; the electric and industrial drills mine fast and in an area. Drill tips set the drill’s tier."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:electric_wrench",
+            "industrial_core:electric_drill",
+            "industrial_core:industrial_drill",
+            "industrial_core:netherite_drill_tip"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Energy Backpack",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Energy Backpack"
+        },
+        {
+          "type": "text",
+          "text": "A wearable battery that charges tools and armor on your body. 3 capacity tiers (1M, 10M and 100M FE) and modes: hand, hotbar or the whole inventory."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:energy_backpack_t1",
+            "industrial_core:energy_backpack_t2",
+            "industrial_core:energy_backpack_t3"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Nexite Armor",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Nexite Armor"
+        },
+        {
+          "type": "text",
+          "text": "Energy armor: unbreakable, absorbs damage for FE. Boots negate fall damage; a fully charged set grants Haste. The mid endgame defense tier."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:nexite_helmet",
+            "industrial_core:nexite_chestplate",
+            "industrial_core:nexite_leggings",
+            "industrial_core:nexite_boots"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Plasma Armor",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Plasma Armor"
+        },
+        {
+          "type": "text",
+          "text": "The apex of defense. A huge FE buffer, absorbing up to 100% of damage. A full set grants flight and fire resistance, and on charge — a plasma burst against nearby foes."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:plasma_helmet",
+            "industrial_core:plasma_chestplate",
+            "industrial_core:plasma_leggings",
+            "industrial_core:plasma_boots"
+          ]
+        }
+      ]
+    }
+  ]
+}

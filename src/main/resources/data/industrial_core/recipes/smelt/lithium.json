@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "tag": "forge:dusts/lithium"
+  },
+  "result": "industrial_core:lithium",
+  "experience": 0.3,
+  "cookingtime": 200
+}

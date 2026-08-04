@@ -1,14 +1,29 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "EAE",
-    "ARA",
-    "EAE"
+    "ABA",
+    "CDC",
+    "EFE"
   ],
   "key": {
-    "E": { "item": "industrial_core:exotic_matter" },
-    "A": { "item": "industrial_core:amethyst_crystal" },
-    "R": { "item": "industrial_core:resonant_catalyst" }
+    "A": {
+      "item": "industrial_core:photonic_lens"
+    },
+    "B": {
+      "item": "industrial_core:star_shard"
+    },
+    "C": {
+      "item": "industrial_core:amethyst_crystal"
+    },
+    "D": {
+      "item": "industrial_core:resonant_catalyst"
+    },
+    "E": {
+      "item": "industrial_core:quantum_capacitor"
+    },
+    "F": {
+      "item": "industrial_core:exotic_matter"
+    }
   },
   "result": {
     "item": "industrial_core:universal_catalyst",

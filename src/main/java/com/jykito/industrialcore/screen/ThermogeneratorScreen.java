@@ -62,6 +62,8 @@ public class ThermogeneratorScreen extends AbstractContainerScreen<Thermogenerat
 
         super.render(g, mouseX, mouseY, partialTick);
         this.renderTooltip(g, mouseX, mouseY);
+        Bars.heat(g, font, mouseX, mouseY, leftPos + HEAT_BAR_X, topPos + HEAT_BAR_Y, HEAT_BAR_W, HEAT_BAR_H,
+                menu.getHeat(), menu.getMaxHeat());
     }
 
     @Override

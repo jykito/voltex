@@ -1,14 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "SCS",
-    "CRC",
-    "SCS"
+    "ABA",
+    "BCB",
+    "ABA"
   ],
   "key": {
-    "S": { "item": "industrial_core:silicon" },
-    "C": { "item": "industrial_core:bare_copper_wire" },
-    "R": { "item": "minecraft:redstone" }
+    "A": {
+      "item": "industrial_core:silicon"
+    },
+    "B": {
+      "item": "industrial_core:bare_copper_wire"
+    },
+    "C": {
+      "tag": "forge:dusts/redstone"
+    }
   },
   "result": {
     "item": "industrial_core:textolite_board",

@@ -1,0 +1,108 @@
+{
+  "name": "Heat",
+  "entries": [
+    {
+      "name": "Heat as a Resource",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Thermal Network"
+        },
+        {
+          "type": "text",
+          "text": "Heat is a separate resource, not FE. The Thermogenerator turns FE into heat, heat pipes carry it, and the Blast Furnace, Liquefier and Thermostation consume it."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:thermogenerator",
+            "industrial_core:heat_pipe",
+            "industrial_core:heat_conductor"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Thermogenerator",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Thermogenerator"
+        },
+        {
+          "type": "text",
+          "text": "Converts FE into heat and feeds it to the block it faces. Motor and conductor upgrades raise output. The heart of any thermal chain."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:thermogenerator"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Blast Furnace",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Blast Furnace"
+        },
+        {
+          "type": "text",
+          "text": "Runs on heat, not FE. Smelts high-temperature alloys: invar, electrum, hardened steel, the crystal ingot. Upgrades speed it up and add parallelism."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:blast_furnace",
+            "industrial_core:blast_upgrade_forced_air",
+            "industrial_core:blast_upgrade_oxygen_boost"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Heat Pipes",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Heat Pipes"
+        },
+        {
+          "type": "text",
+          "text": "Carry heat from generator to consumers. T1 has small losses, T2 is lossless with higher throughput. Insulation reduces leakage."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:heat_pipe",
+            "industrial_core:heat_pipe_t2",
+            "industrial_core:thermal_insulation"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Thermostation",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Thermostation"
+        },
+        {
+          "type": "text",
+          "text": "A vertical tower: core at the bottom, expanders above, radiators at the back. It pools heat from several thermogenerators into one buffer and outputs downward. Overheating halts the cycle."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:thermostation_core",
+            "industrial_core:thermostation_expander",
+            "industrial_core:thermostation_radiator"
+          ]
+        }
+      ]
+    }
+  ]
+}

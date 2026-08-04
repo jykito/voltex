@@ -26,6 +26,22 @@
         public static final RegistryObject<Item> MACHINE_CASING_ITEM = ITEMS.register("machine_casing",
                 () -> new BlockItem(ModBlocks.MACHINE_CASING.get(), new Item.Properties()));
 
+        public static final RegistryObject<Item> MANUAL = ITEMS.register("manual",
+                () -> new com.jykito.industrialcore.item.custom.ManualItem(new Item.Properties().stacksTo(1)));
+
+        // --- Компоненты ускорителя/магнита (2026-07-10) ---
+        public static final RegistryObject<Item> COIL_WINDING = ITEMS.register("coil_winding", () -> new Item(new Item.Properties()));
+        public static final RegistryObject<Item> SIGNAL_RECEIVER = ITEMS.register("signal_receiver", () -> new Item(new Item.Properties()));
+        public static final RegistryObject<Item> FLUID_VALVE = ITEMS.register("fluid_valve", () -> new Item(new Item.Properties()));
+        public static final RegistryObject<Item> THERMAL_INSULATION = ITEMS.register("thermal_insulation", () -> new Item(new Item.Properties()));
+        public static final RegistryObject<Item> MANIPULATOR = ITEMS.register("manipulator", () -> new Item(new Item.Properties()));
+        public static final RegistryObject<Item> HARDENED_STEEL_ROD = ITEMS.register("hardened_steel_rod", () -> new Item(new Item.Properties()));
+        public static final RegistryObject<Item> MATERIAL_CONTAINER = ITEMS.register("material_container", () -> new Item(new Item.Properties()));
+        public static final RegistryObject<Item> STAR_SHARD = ITEMS.register("star_shard", () -> new Item(new Item.Properties()));
+        public static final RegistryObject<Item> CARBON_COMPOSITE_INGOT = ITEMS.register("carbon_composite_ingot", () -> new Item(new Item.Properties()));
+        public static final RegistryObject<Item> PIEZO_ELEMENT = ITEMS.register("piezo_element", () -> new Item(new Item.Properties()));
+        public static final RegistryObject<Item> HEAT_RESISTANT_PLATING = ITEMS.register("heat_resistant_plating", () -> new Item(new Item.Properties()));
+
         public static final RegistryObject<Item> COAL_GENERATOR_ITEM = ITEMS.register("coal_generator",
                 () -> new BlockItem(ModBlocks.COAL_GENERATOR.get(), new Item.Properties()));
 
@@ -135,6 +151,17 @@
                 () -> new Item(new Item.Properties()));
         public static final RegistryObject<Item> SUPERCONDUCTOR_COIL = ITEMS.register("superconductor_coil",
                 () -> new Item(new Item.Properties()));
+        // Катушки электромагнита-ускорителя (тиры): вставляются в контроллер, задают уровень
+        public static final RegistryObject<Item> MAGNET_COPPER_COIL = ITEMS.register("magnet_copper_coil",
+                () -> new com.jykito.industrialcore.item.custom.MagnetCoilItem(1, 1.0f, 0.06f, "tooltip.industrial_core.res_energy", new Item.Properties()));
+        public static final RegistryObject<Item> MAGNET_SUPERCONDUCTOR_COIL = ITEMS.register("magnet_superconductor_coil",
+                () -> new com.jykito.industrialcore.item.custom.MagnetCoilItem(2, 1.5f, 0.11f, "tooltip.industrial_core.res_energy_cryo", new Item.Properties()));
+        public static final RegistryObject<Item> MAGNET_GRAVITON_COIL = ITEMS.register("magnet_graviton_coil",
+                () -> new com.jykito.industrialcore.item.custom.MagnetCoilItem(3, 2.2f, 0.17f, "tooltip.industrial_core.res_energy_contain", new Item.Properties()));
+        public static final RegistryObject<Item> PHASE_LOCK_UPGRADE = ITEMS.register("phase_lock_upgrade",
+                () -> new com.jykito.industrialcore.item.custom.PhaseLockUpgradeItem(new Item.Properties()));
+        public static final RegistryObject<Item> STRUCTURE_WAND = ITEMS.register("structure_wand",
+                () -> new com.jykito.industrialcore.item.custom.StructureWandItem(new Item.Properties().stacksTo(1)));
         public static final RegistryObject<Item> QUANTUM_CAPACITOR = ITEMS.register("quantum_capacitor",
                 () -> new Item(new Item.Properties()));
         public static final RegistryObject<Item> SINGULARITY_CORE = ITEMS.register("singularity_core",
@@ -297,10 +324,10 @@
         public static final RegistryObject<Item> LITHIUM_BATTERY = ITEMS.register("lithium_battery",
                 () -> new BatteryItem(new Item.Properties().stacksTo(1), 50000, 5000));
 
-        public static final RegistryObject<Item> ENERGY_CRYSTAL = ITEMS.register("energy_crystal",
+        public static final RegistryObject<Item> FLUX_CORE = ITEMS.register("flux_core",
                 () -> new BatteryItem(new Item.Properties().stacksTo(1), 100000, 10000));
 
-        public static final RegistryObject<Item> LAPOTRON_CRYSTAL = ITEMS.register("lapotron_crystal",
+        public static final RegistryObject<Item> PLASMA_CORE = ITEMS.register("plasma_core",
                 () -> new BatteryItem(new Item.Properties().stacksTo(1), 500000, 50000));
 
         public static final RegistryObject<Item> BATTERY_CHARGER = ITEMS.register("battery_charger",
@@ -376,14 +403,40 @@
         public static final RegistryObject<Item> LOGISTICS_LINKER = ITEMS.register("logistics_linker",
                 () -> new com.jykito.industrialcore.item.custom.LogisticsLinkerItem(new Item.Properties().stacksTo(1)));
 
-        public static final RegistryObject<Item> ITEM_CONNECTOR_ITEM = ITEMS.register("item_connector",
-                () -> new BlockItem(ModBlocks.ITEM_CONNECTOR.get(), new Item.Properties()));
-
-        public static final RegistryObject<Item> FLUID_CONNECTOR_ITEM = ITEMS.register("fluid_connector",
-                () -> new BlockItem(ModBlocks.FLUID_CONNECTOR.get(), new Item.Properties()));
-
         public static final RegistryObject<Item> LOGISTICS_NODE_ITEM = ITEMS.register("logistics_node",
                 () -> new BlockItem(ModBlocks.LOGISTICS_NODE.get(), new Item.Properties()));
+
+        public static final RegistryObject<Item> ITEM_HUB_ITEM = ITEMS.register("item_hub",
+                () -> new BlockItem(ModBlocks.ITEM_HUB.get(), new Item.Properties()));
+
+        public static final RegistryObject<Item> FLUID_HUB_ITEM = ITEMS.register("fluid_hub",
+                () -> new BlockItem(ModBlocks.FLUID_HUB.get(), new Item.Properties()));
+
+        public static final RegistryObject<Item> HEAT_PIPE_ITEM = ITEMS.register("heat_pipe",
+                () -> new BlockItem(ModBlocks.HEAT_PIPE.get(), new Item.Properties()));
+
+        public static final RegistryObject<Item> HEAT_PIPE_T2_ITEM = ITEMS.register("heat_pipe_t2",
+                () -> new BlockItem(ModBlocks.HEAT_PIPE_T2.get(), new Item.Properties()));
+
+        public static final RegistryObject<Item> ENERGY_BANK_ITEM = ITEMS.register("energy_bank",
+                () -> new BlockItem(ModBlocks.ENERGY_BANK.get(), new Item.Properties()));
+
+        public static final RegistryObject<Item> STRUCTURAL_BLOCK_ITEM = ITEMS.register("structural_block",
+                () -> new BlockItem(ModBlocks.STRUCTURAL_BLOCK.get(), new Item.Properties()));
+        public static final RegistryObject<Item> COIL_HOLDER_ITEM = ITEMS.register("coil_holder",
+                () -> new BlockItem(ModBlocks.COIL_HOLDER.get(), new Item.Properties()));
+        public static final RegistryObject<Item> ELECTROMAGNET_CORE_ITEM = ITEMS.register("electromagnet_core",
+                () -> new BlockItem(ModBlocks.ELECTROMAGNET_CORE.get(), new Item.Properties()));
+        public static final RegistryObject<Item> ANTIGRAV_COLUMN_ITEM = ITEMS.register("antigrav_column",
+                () -> new BlockItem(ModBlocks.ANTIGRAV_COLUMN.get(), new Item.Properties()));
+        public static final RegistryObject<Item> DISTANT_CONTROLLER_ITEM = ITEMS.register("distant_controller",
+                () -> new BlockItem(ModBlocks.DISTANT_CONTROLLER.get(), new Item.Properties()));
+        public static final RegistryObject<Item> THERMOSTATION_CORE_ITEM = ITEMS.register("thermostation_core",
+                () -> new BlockItem(ModBlocks.THERMOSTATION_CORE.get(), new Item.Properties()));
+        public static final RegistryObject<Item> THERMOSTATION_EXPANDER_ITEM = ITEMS.register("thermostation_expander",
+                () -> new BlockItem(ModBlocks.THERMOSTATION_EXPANDER.get(), new Item.Properties()));
+        public static final RegistryObject<Item> THERMOSTATION_RADIATOR_ITEM = ITEMS.register("thermostation_radiator",
+                () -> new BlockItem(ModBlocks.THERMOSTATION_RADIATOR.get(), new Item.Properties()));
 
         public static final RegistryObject<Item> SOLAR_PANEL_T1_ITEM = ITEMS.register("solar_panel_t1",
                 () -> new BlockItem(ModBlocks.SOLAR_PANEL_T1.get(), new Item.Properties()));
@@ -588,16 +641,16 @@
                         com.jykito.industrialcore.item.custom.MinerLensItem.LensType.ALL, new Item.Properties()));
 
         public static final RegistryObject<Item> ITEM_PUSHER = ITEMS.register("item_pusher",
-                () -> new DirectionalUpgradeItem(DirectionalUpgradeItem.Mode.ITEM_PUSH, new Item.Properties().stacksTo(1)));
+                () -> new DirectionalUpgradeItem(DirectionalUpgradeItem.Mode.ITEM_PUSH, new Item.Properties()));
 
         public static final RegistryObject<Item> ITEM_PULLER = ITEMS.register("item_puller",
-                () -> new DirectionalUpgradeItem(DirectionalUpgradeItem.Mode.ITEM_PULL, new Item.Properties().stacksTo(1)));
+                () -> new DirectionalUpgradeItem(DirectionalUpgradeItem.Mode.ITEM_PULL, new Item.Properties()));
 
         public static final RegistryObject<Item> FLUID_PUSHER = ITEMS.register("fluid_pusher",
-                () -> new DirectionalUpgradeItem(DirectionalUpgradeItem.Mode.FLUID_PUSH, new Item.Properties().stacksTo(1)));
+                () -> new DirectionalUpgradeItem(DirectionalUpgradeItem.Mode.FLUID_PUSH, new Item.Properties()));
 
         public static final RegistryObject<Item> FLUID_PULLER = ITEMS.register("fluid_puller",
-                () -> new DirectionalUpgradeItem(DirectionalUpgradeItem.Mode.FLUID_PULL, new Item.Properties().stacksTo(1)));
+                () -> new DirectionalUpgradeItem(DirectionalUpgradeItem.Mode.FLUID_PULL, new Item.Properties()));
 
         public static final RegistryObject<Item> ACCELERATOR = ITEMS.register("accelerator",
                 () -> new AcceleratorItem(0.70f, 1.30f, new Item.Properties()));
@@ -663,14 +716,14 @@
                         ModArmorMaterials.NEXITE, net.minecraft.world.item.ArmorItem.Type.BOOTS,
                         new Item.Properties().stacksTo(1)));
 
-        public static final RegistryObject<Item> CONNECTOR_UPGRADE_T1 = ITEMS.register("connector_upgrade_t1",
-                () -> new com.jykito.industrialcore.item.upgrade.ConnectorUpgradeItem(10, 16, 1000, new Item.Properties().stacksTo(1)));
+        public static final RegistryObject<Item> HUB_UPGRADE_T1 = ITEMS.register("hub_upgrade_t1",
+                () -> new com.jykito.industrialcore.item.upgrade.HubUpgradeItem(10, 16, 1000, new Item.Properties().stacksTo(1)));
 
-        public static final RegistryObject<Item> CONNECTOR_UPGRADE_T2 = ITEMS.register("connector_upgrade_t2",
-                () -> new com.jykito.industrialcore.item.upgrade.ConnectorUpgradeItem(5, 32, 2000, new Item.Properties().stacksTo(1)));
+        public static final RegistryObject<Item> HUB_UPGRADE_T2 = ITEMS.register("hub_upgrade_t2",
+                () -> new com.jykito.industrialcore.item.upgrade.HubUpgradeItem(5, 32, 2000, new Item.Properties().stacksTo(1)));
 
-        public static final RegistryObject<Item> CONNECTOR_UPGRADE_T3 = ITEMS.register("connector_upgrade_t3",
-                () -> new com.jykito.industrialcore.item.upgrade.ConnectorUpgradeItem(5, 64, 10000, new Item.Properties().stacksTo(1)));
+        public static final RegistryObject<Item> HUB_UPGRADE_T3 = ITEMS.register("hub_upgrade_t3",
+                () -> new com.jykito.industrialcore.item.upgrade.HubUpgradeItem(1, 64, 10000, new Item.Properties().stacksTo(1)));
 
         public static void register(IEventBus eventBus) {
             ITEMS.register(eventBus);

@@ -1,6 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": ["PPP","PCP","PPP"],
-  "key": { "P": { "tag": "minecraft:planks" }, "C": { "tag": "forge:chests/wooden" } },
-  "result": { "item": "industrial_core:crate_t1", "count": 1 }
+  "pattern": [
+    "AAA",
+    "ABA",
+    "AAA"
+  ],
+  "key": {
+    "A": {
+      "tag": "minecraft:planks"
+    },
+    "B": {
+      "tag": "forge:chests/wooden"
+    }
+  },
+  "result": {
+    "item": "industrial_core:crate_t1",
+    "count": 1
+  }
 }

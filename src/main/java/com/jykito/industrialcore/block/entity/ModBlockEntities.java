@@ -158,20 +158,50 @@ public class ModBlockEntities {
                     BlockEntityType.Builder.of(MinerCasingBlockEntity::new,
                             ModBlocks.MINER_CASING.get()).build(null));
 
-    public static final RegistryObject<BlockEntityType<ItemConnectorBlockEntity>> ITEM_CONNECTOR_BE =
-            BLOCK_ENTITIES.register("item_connector_be", () ->
-                    BlockEntityType.Builder.of(ItemConnectorBlockEntity::new,
-                            ModBlocks.ITEM_CONNECTOR.get()).build(null));
-
-    public static final RegistryObject<BlockEntityType<FluidConnectorBlockEntity>> FLUID_CONNECTOR_BE =
-            BLOCK_ENTITIES.register("fluid_connector_be", () ->
-                    BlockEntityType.Builder.of(FluidConnectorBlockEntity::new,
-                            ModBlocks.FLUID_CONNECTOR.get()).build(null));
-
     public static final RegistryObject<BlockEntityType<LogisticsNodeBlockEntity>> LOGISTICS_NODE_BE =
             BLOCK_ENTITIES.register("logistics_node_be", () ->
                     BlockEntityType.Builder.of(LogisticsNodeBlockEntity::new,
                             ModBlocks.LOGISTICS_NODE.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<HubBlockEntity>> ITEM_HUB_BE =
+            BLOCK_ENTITIES.register("item_hub_be", () ->
+                    BlockEntityType.Builder.of((pos, state) -> new HubBlockEntity(pos, state, state.is(ModBlocks.FLUID_HUB.get())),
+                            ModBlocks.ITEM_HUB.get(), ModBlocks.FLUID_HUB.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<HeatPipeBlockEntity>> HEAT_PIPE_BE =
+            BLOCK_ENTITIES.register("heat_pipe_be", () ->
+                    BlockEntityType.Builder.of(HeatPipeBlockEntity::new,
+                            ModBlocks.HEAT_PIPE.get(), ModBlocks.HEAT_PIPE_T2.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<EnergyBankBlockEntity>> ENERGY_BANK_BE =
+            BLOCK_ENTITIES.register("energy_bank_be", () ->
+                    BlockEntityType.Builder.of(EnergyBankBlockEntity::new,
+                            ModBlocks.ENERGY_BANK.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<ElectromagnetCoreBlockEntity>> ELECTROMAGNET_CORE_BE =
+            BLOCK_ENTITIES.register("electromagnet_core_be", () ->
+                    BlockEntityType.Builder.of(ElectromagnetCoreBlockEntity::new,
+                            ModBlocks.ELECTROMAGNET_CORE.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<DistantControllerBlockEntity>> DISTANT_CONTROLLER_BE =
+            BLOCK_ENTITIES.register("distant_controller_be", () ->
+                    BlockEntityType.Builder.of(DistantControllerBlockEntity::new,
+                            ModBlocks.DISTANT_CONTROLLER.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<ThermostationBlockEntity>> THERMOSTATION_BE =
+            BLOCK_ENTITIES.register("thermostation_be", () ->
+                    BlockEntityType.Builder.of(ThermostationBlockEntity::new,
+                            ModBlocks.THERMOSTATION_CORE.get(), ModBlocks.THERMOSTATION_EXPANDER.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<MagnetPortBlockEntity>> MAGNET_PORT_BE =
+            BLOCK_ENTITIES.register("magnet_port_be", () ->
+                    BlockEntityType.Builder.of(MagnetPortBlockEntity::new,
+                            ModBlocks.STRUCTURAL_BLOCK.get(), ModBlocks.COIL_HOLDER.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<AntigravColumnBlockEntity>> ANTIGRAV_COLUMN_BE =
+            BLOCK_ENTITIES.register("antigrav_column_be", () ->
+                    BlockEntityType.Builder.of(AntigravColumnBlockEntity::new,
+                            ModBlocks.ANTIGRAV_COLUMN.get()).build(null));
 
     public static final RegistryObject<BlockEntityType<SolarPanelBlockEntity>> SOLAR_PANEL_T1_BE =
             BLOCK_ENTITIES.register("solar_panel_t1_be", () ->

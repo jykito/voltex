@@ -124,6 +124,14 @@ public class ModRecipes {
     public static final RegistryObject<RecipeSerializer<MachineRecipe>> MOLECULAR_TRANSFORMING_SERIALIZER =
             SERIALIZERS.register("molecular_transforming", () -> new MachineTypeRecipeSerializer(() -> MOLECULAR_TRANSFORMING_TYPE.get()));
 
+    public static final RegistryObject<RecipeType<AcceleratorRecipe>> ACCELERATING_TYPE =
+            RECIPE_TYPES.register("accelerating", () -> new RecipeType<AcceleratorRecipe>() {
+                @Override public String toString() { return "accelerating"; }
+            });
+
+    public static final RegistryObject<RecipeSerializer<AcceleratorRecipe>> ACCELERATOR_SERIALIZER =
+            SERIALIZERS.register("accelerating", () -> AcceleratorRecipe.Serializer.INSTANCE);
+
     public static void register(IEventBus eventBus) {
         RECIPE_TYPES.register(eventBus);
         SERIALIZERS.register(eventBus);

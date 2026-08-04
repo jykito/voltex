@@ -1,0 +1,14 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:extruding",
+  "ingredient": {
+    "tag": "forge:plates/diamond"
+  },
+  "inputCount": 1,
+  "result": {
+    "item": "industrial_core:bare_crystalline_wire",
+    "count": 4
+  },
+  "processingTime": 140,
+  "energyCost": 100
+}

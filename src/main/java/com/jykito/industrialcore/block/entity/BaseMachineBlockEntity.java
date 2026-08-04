@@ -80,7 +80,9 @@ public abstract class BaseMachineBlockEntity extends BlockEntity implements Menu
         @Override public boolean isItemValid(int slot, @NotNull ItemStack stack) { return itemHandler.isItemValid(slot, stack); }
     };
 
-    protected final MachineEnergyStorage energyStorage = new MachineEnergyStorage(64000, 1024);
+    // приём = буфер: потолок на вход ничего не ограничивал (расход рецепта на порядок ниже),
+    // только тормозил доливку после простоя. Как у электропечи.
+    protected final MachineEnergyStorage energyStorage = new MachineEnergyStorage(64000, 64000);
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
     private LazyOptional<IEnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
@@ -127,7 +129,10 @@ public abstract class BaseMachineBlockEntity extends BlockEntity implements Menu
         Direction itemPullerDir = null;
         int parallelCount = 1;
 
-        float timeMultiplier   = 0.7f;
+        // 1.0 = время берётся из рецепта как есть. Прежние 0.7 (глобальный «-30% времени»)
+        // перенесены прямо в json рецептов crushing/compressing/extracting/rolling/extruding,
+        // иначе JEI показывал время из файла, а машина исполняла на 30% быстрее.
+        float timeMultiplier   = 1.0f;
         float energyMultiplier = 1.0f;
 
         for (int s = 2; s <= 5; s++) {
@@ -250,11 +255,7 @@ public abstract class BaseMachineBlockEntity extends BlockEntity implements Menu
             }
         }
 
-        if (state.hasProperty(BlockStateProperties.LIT)
-                && state.getValue(BlockStateProperties.LIT) != isWorking) {
-            level.setBlock(pos, state.setValue(BlockStateProperties.LIT, isWorking), 3);
-            hasChanges = true;
-        }
+        MachineLit.tick(this, level, pos, state, BlockStateProperties.LIT, isWorking);
 
         if (hasChanges) setChanged();
     }

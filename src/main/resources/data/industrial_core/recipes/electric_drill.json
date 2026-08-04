@@ -1,9 +1,21 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "ingredients": [
-    { "item": "industrial_core:tool_base" },
-    { "item": "industrial_core:iron_drill_tip" }
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " A ",
+    " B ",
+    " C "
   ],
+  "key": {
+    "A": {
+      "item": "industrial_core:iron_drill_tip"
+    },
+    "B": {
+      "item": "industrial_core:tool_base"
+    },
+    "C": {
+      "item": "industrial_core:rubber"
+    }
+  },
   "result": {
     "item": "industrial_core:electric_drill",
     "count": 1

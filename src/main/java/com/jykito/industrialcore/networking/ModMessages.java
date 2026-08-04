@@ -36,22 +36,28 @@ public class ModMessages {
                 .consumerMainThread(DrillModeSwitchPacket::handle)
                 .add();
 
-        net.messageBuilder(ConnectorFilterItemPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(ConnectorFilterItemPacket::new)
-                .encoder(ConnectorFilterItemPacket::toBytes)
-                .consumerMainThread(ConnectorFilterItemPacket::handle)
-                .add();
-
-        net.messageBuilder(ConnectorFilterFluidPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(ConnectorFilterFluidPacket::new)
-                .encoder(ConnectorFilterFluidPacket::toBytes)
-                .consumerMainThread(ConnectorFilterFluidPacket::handle)
-                .add();
-
         net.messageBuilder(NodeReorderPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
                 .decoder(NodeReorderPacket::new)
                 .encoder(NodeReorderPacket::toBytes)
                 .consumerMainThread(NodeReorderPacket::handle)
+                .add();
+
+        net.messageBuilder(HubFilterPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(HubFilterPacket::new)
+                .encoder(HubFilterPacket::toBytes)
+                .consumerMainThread(HubFilterPacket::handle)
+                .add();
+
+        net.messageBuilder(HubFilterQtyPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(HubFilterQtyPacket::new)
+                .encoder(HubFilterQtyPacket::toBytes)
+                .consumerMainThread(HubFilterQtyPacket::handle)
+                .add();
+
+        net.messageBuilder(HubFluidFilterPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(HubFluidFilterPacket::new)
+                .encoder(HubFluidFilterPacket::toBytes)
+                .consumerMainThread(HubFluidFilterPacket::handle)
                 .add();
 
         net.messageBuilder(PlasmaBurstPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
@@ -65,6 +71,13 @@ public class ModMessages {
                 .encoder(ExportRecipePacket::toBytes)
                 .consumerMainThread(ExportRecipePacket::handle)
                 .add();
+
+        net.messageBuilder(MagnetThrottlePacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(MagnetThrottlePacket::new)
+                .encoder(MagnetThrottlePacket::toBytes)
+                .consumerMainThread(MagnetThrottlePacket::handle)
+                .add();
+
     }
 
     public static <MSG> void sendToServer(MSG message) {

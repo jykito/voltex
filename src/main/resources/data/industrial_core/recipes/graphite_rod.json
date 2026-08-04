@@ -1,12 +1,14 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    " C ",
-    " C ",
-    " C "
+    " A ",
+    " A ",
+    " A "
   ],
   "key": {
-    "C": { "item": "industrial_core:carbon_plate" }
+    "A": {
+      "item": "industrial_core:carbon_plate"
+    }
   },
   "result": {
     "item": "industrial_core:graphite_rod",

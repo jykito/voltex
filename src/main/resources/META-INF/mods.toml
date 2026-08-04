@@ -86,13 +86,13 @@ description='''${mod_description}'''
     ordering="AFTER"
     side="BOTH"
 
-# Patchouli — обязательная: на ней работает внутриигровой гайдбук Voltex.
 [[dependencies.${mod_id}]]
-    modId="patchouli"
-    mandatory=true
-    versionRange="*"
+    modId="jade"
+    mandatory=false
+    versionRange="[11,)"
     ordering="AFTER"
-    side="BOTH"
+    side="CLIENT"
+
 
 # Features are specific properties of the game environment, that you may want to declare you require. This example declares
 # that your mod requires GL version 3.2 or higher. Other features will be added. They are side aware so declaring this won't

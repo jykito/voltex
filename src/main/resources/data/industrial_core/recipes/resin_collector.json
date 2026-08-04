@@ -1,13 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "PPP",
-    "PCP",
-    "PPP"
+    "ABA",
+    "CDC",
+    "ABA"
   ],
   "key": {
-    "P": { "tag": "minecraft:planks" },
-    "C": { "item": "industrial_core:machine_casing" }
+    "A": {
+      "tag": "forge:plates/tin"
+    },
+    "B": {
+      "item": "industrial_core:rubber"
+    },
+    "C": {
+      "tag": "minecraft:planks"
+    },
+    "D": {
+      "item": "industrial_core:machine_casing"
+    }
   },
   "result": {
     "item": "industrial_core:resin_collector",

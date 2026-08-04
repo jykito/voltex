@@ -19,8 +19,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import com.jykito.industrialcore.block.custom.wire.BaseWireBlock;
 import com.jykito.industrialcore.block.custom.wire.WireTier;
-import com.jykito.industrialcore.block.custom.logistics.ItemConnectorBlock;
-import com.jykito.industrialcore.block.custom.logistics.FluidConnectorBlock;
 import com.jykito.industrialcore.block.custom.logistics.LogisticsNodeBlock;
 
 public class ModBlocks {
@@ -38,13 +36,13 @@ public class ModBlocks {
             () -> new CrusherBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion()));
 
     public static final RegistryObject<Block> ELECTRIC_FURNACE = BLOCKS.register("electric_furnace",
-            () -> new ElectricFurnaceBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).lightLevel(state -> state.getValue(ElectricFurnaceBlock.LIT) ? 13 : 0)));
+            () -> new ElectricFurnaceBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).lightLevel(state -> state.getValue(ElectricFurnaceBlock.LIT) ? 1 : 0)));
 
     public static final RegistryObject<Block> COMPRESSOR = BLOCKS.register("compressor",
-            () -> new CompressorBlock(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.IRON_BLOCK).lightLevel(state -> state.getValue(CompressorBlock.LIT) ? 13 : 0)));
+            () -> new CompressorBlock(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.IRON_BLOCK).lightLevel(state -> state.getValue(CompressorBlock.LIT) ? 1 : 0)));
 
     public static final RegistryObject<Block> METAL_FORMER = BLOCKS.register("metal_former",
-            () -> new MetalFormerBlock(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.IRON_BLOCK).lightLevel(state -> state.getValue(MetalFormerBlock.LIT) ? 13 : 0)));
+            () -> new MetalFormerBlock(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.IRON_BLOCK).lightLevel(state -> state.getValue(MetalFormerBlock.LIT) ? 1 : 0)));
 
     public static final RegistryObject<Block> RAW_TIN_BLOCK = BLOCKS.register("raw_tin_block",
             () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(5.0f, 6.0f).requiresCorrectToolForDrops()));
@@ -146,46 +144,46 @@ public class ModBlocks {
             () -> new com.jykito.industrialcore.block.custom.MatterFabricatorBlock(
                     BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
                             .requiresCorrectToolForDrops().strength(6.0f, 10.0f)
-                            .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.MatterFabricatorBlock.LIT) ? 12 : 0)));
+                            .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.MatterFabricatorBlock.LIT) ? 1 : 0)));
 
     public static final RegistryObject<Block> ORE_WASHER = BLOCKS.register("ore_washer",
             () -> new com.jykito.industrialcore.block.custom.OreWasherBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
                     .requiresCorrectToolForDrops().strength(5.0f)
-                    .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.OreWasherBlock.LIT) ? 7 : 0)));
+                    .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.OreWasherBlock.LIT) ? 1 : 0)));
 
     public static final RegistryObject<Block> LIQUEFIER = BLOCKS.register("liquefier",
             () -> new com.jykito.industrialcore.block.custom.LiquefierBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
                     .requiresCorrectToolForDrops().strength(5.0f)
-                    .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.LiquefierBlock.LIT) ? 10 : 0)));
+                    .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.LiquefierBlock.LIT) ? 1 : 0)));
 
     public static final RegistryObject<Block> LAVA_GENERATOR = BLOCKS.register("lava_generator",
             () -> new com.jykito.industrialcore.block.custom.FluidGeneratorBlock(
                     com.jykito.industrialcore.block.entity.FluidGeneratorType.LAVA,
                     () -> com.jykito.industrialcore.block.entity.ModBlockEntities.LAVA_GENERATOR_BE.get(),
                     BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops().strength(5.0f)
-                            .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.FluidGeneratorBlock.LIT) ? 12 : 0)));
+                            .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.FluidGeneratorBlock.LIT) ? 1 : 0)));
 
     public static final RegistryObject<Block> WATER_GENERATOR = BLOCKS.register("water_generator",
             () -> new com.jykito.industrialcore.block.custom.FluidGeneratorBlock(
                     com.jykito.industrialcore.block.entity.FluidGeneratorType.WATER,
                     () -> com.jykito.industrialcore.block.entity.ModBlockEntities.WATER_GENERATOR_BE.get(),
                     BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops().strength(5.0f)
-                            .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.FluidGeneratorBlock.LIT) ? 7 : 0)));
+                            .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.FluidGeneratorBlock.LIT) ? 1 : 0)));
 
     public static final RegistryObject<Block> STONE_GENERATOR = BLOCKS.register("stone_generator",
             () -> new com.jykito.industrialcore.block.custom.StoneGeneratorBlock(
                     BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops().strength(5.0f)
-                            .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.StoneGeneratorBlock.LIT) ? 8 : 0)));
+                            .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.StoneGeneratorBlock.LIT) ? 1 : 0)));
 
     public static final RegistryObject<Block> CAPSULE_FILLER = BLOCKS.register("capsule_filler",
             () -> new com.jykito.industrialcore.block.custom.CapsuleFillerBlock(
                     BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops().strength(5.0f)
-                            .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.CapsuleFillerBlock.LIT) ? 7 : 0)));
+                            .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.CapsuleFillerBlock.LIT) ? 1 : 0)));
 
     public static final RegistryObject<Block> CULTIVATOR = BLOCKS.register("cultivator",
             () -> new com.jykito.industrialcore.block.custom.CultivatorBlock(
                     BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops().strength(5.0f).noOcclusion()
-                            .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.CultivatorBlock.LIT) ? 7 : 0)));
+                            .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.CultivatorBlock.LIT) ? 1 : 0)));
 
     public static final RegistryObject<Block> NUCLEAR_REACTOR = BLOCKS.register("nuclear_reactor",
             () -> new NuclearReactorBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
@@ -205,18 +203,18 @@ public class ModBlocks {
     public static final RegistryObject<Block> EXTRACTOR = BLOCKS.register("extractor",
             () -> new ExtractorBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
                     .requiresCorrectToolForDrops()
-                    .lightLevel(state -> state.getValue(ExtractorBlock.LIT) ? 13 : 0)));
+                    .lightLevel(state -> state.getValue(ExtractorBlock.LIT) ? 1 : 0)));
 
     public static final RegistryObject<Block> PHASE_SPLITTER = BLOCKS.register("phase_splitter",
             () -> new PhaseSplitterBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
                     .requiresCorrectToolForDrops().strength(5.0f)
-                    .lightLevel(state -> state.getValue(PhaseSplitterBlock.LIT) ? 10 : 0)));
+                    .lightLevel(state -> state.getValue(PhaseSplitterBlock.LIT) ? 1 : 0)));
 
     public static final RegistryObject<Block> RESTRUCTOR = BLOCKS.register("restructor",
             () -> new com.jykito.industrialcore.block.custom.RestructorBlock(
                     BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
                             .requiresCorrectToolForDrops().strength(6.0f, 10.0f).noOcclusion()
-                            .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.RestructorBlock.LIT) ? 7 : 0)));
+                            .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.RestructorBlock.LIT) ? 1 : 0)));
 
     public static final RegistryObject<Block> MINER_CASING = BLOCKS.register("miner_casing",
             () -> new com.jykito.industrialcore.block.custom.MinerCasingBlock(
@@ -232,19 +230,60 @@ public class ModBlocks {
                     BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
                             .requiresCorrectToolForDrops().strength(6.0f, 10.0f)));
 
-    public static final RegistryObject<Block> ITEM_CONNECTOR = BLOCKS.register("item_connector",
-            () -> new ItemConnectorBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion().strength(2.0f)));
-
-    public static final RegistryObject<Block> FLUID_CONNECTOR = BLOCKS.register("fluid_connector",
-            () -> new FluidConnectorBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion().strength(2.0f)));
-
     public static final RegistryObject<Block> LOGISTICS_NODE = BLOCKS.register("logistics_node",
             () -> new LogisticsNodeBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion().strength(2.0f)));
+
+    public static final RegistryObject<Block> ITEM_HUB = BLOCKS.register("item_hub",
+            () -> new com.jykito.industrialcore.block.custom.logistics.HubBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion().strength(2.0f)));
+
+    public static final RegistryObject<Block> FLUID_HUB = BLOCKS.register("fluid_hub",
+            () -> new com.jykito.industrialcore.block.custom.logistics.HubBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion().strength(2.0f)));
+
+    public static final RegistryObject<Block> HEAT_PIPE = BLOCKS.register("heat_pipe",
+            () -> new com.jykito.industrialcore.block.custom.HeatPipeBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(1.5f).noOcclusion()));
+
+    public static final RegistryObject<Block> HEAT_PIPE_T2 = BLOCKS.register("heat_pipe_t2",
+            () -> new com.jykito.industrialcore.block.custom.HeatPipeBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(1.5f).noOcclusion()));
+
+    public static final RegistryObject<Block> ENERGY_BANK = BLOCKS.register("energy_bank",
+            () -> new com.jykito.industrialcore.block.custom.EnergyBankBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(3.0f).requiresCorrectToolForDrops()));
+
+    // ── Электромагнит / ускоритель частиц (мультиблок) ──
+    public static final RegistryObject<Block> STRUCTURAL_BLOCK = BLOCKS.register("structural_block",
+            () -> new com.jykito.industrialcore.block.custom.MultiblockShellBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops().strength(5.0f).noOcclusion()));
+
+    public static final RegistryObject<Block> COIL_HOLDER = BLOCKS.register("coil_holder",
+            () -> new com.jykito.industrialcore.block.custom.MultiblockShellBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops().strength(5.0f).noOcclusion()));
+
+    public static final RegistryObject<Block> ELECTROMAGNET_CORE = BLOCKS.register("electromagnet_core",
+            () -> new com.jykito.industrialcore.block.custom.ElectromagnetCoreBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops().strength(6.0f, 10.0f).noOcclusion()));
+
+    public static final RegistryObject<Block> DISTANT_CONTROLLER = BLOCKS.register("distant_controller",
+            () -> new com.jykito.industrialcore.block.custom.DistantControllerBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops().strength(4.0f).noOcclusion()));
+
+    // ── Термостанция (башня: ядро + расширители + радиаторы) ──
+    public static final RegistryObject<Block> THERMOSTATION_CORE = BLOCKS.register("thermostation_core",
+            () -> new com.jykito.industrialcore.block.custom.ThermostationCoreBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops().strength(5.0f).noOcclusion()));
+    public static final RegistryObject<Block> THERMOSTATION_EXPANDER = BLOCKS.register("thermostation_expander",
+            () -> new com.jykito.industrialcore.block.custom.ThermostationExpanderBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops().strength(5.0f).noOcclusion()));
+    public static final RegistryObject<Block> THERMOSTATION_RADIATOR = BLOCKS.register("thermostation_radiator",
+            () -> new com.jykito.industrialcore.block.custom.ThermostationRadiatorBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops().strength(4.0f).noOcclusion()));
+
+    public static final RegistryObject<Block> ANTIGRAV_COLUMN = BLOCKS.register("antigrav_column",
+            () -> new com.jykito.industrialcore.block.custom.AntigravColumnBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops().strength(4.0f).noOcclusion()));
 
     public static final RegistryObject<Block> ROD_FABRICATOR = BLOCKS.register("rod_fabricator",
             () -> new RodFabricatorBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
                     .requiresCorrectToolForDrops().strength(5.0f)
-                    .lightLevel(state -> state.getValue(RodFabricatorBlock.LIT) ? 8 : 0)));
+                    .lightLevel(state -> state.getValue(RodFabricatorBlock.LIT) ? 1 : 0)));
 
     private static BlockBehaviour.Properties solarProps(SolarPanelTier tier) {
         return BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)

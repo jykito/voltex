@@ -1,0 +1,27 @@
+{
+  "type": "industrial_core:accelerating",
+  "inputs": [
+    {
+      "item": "minecraft:netherite_block",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:plutonium",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:kronium_alloy",
+      "count": 2
+    }
+  ],
+  "result": {
+    "item": "industrial_core:exotic_matter",
+    "count": 10
+  },
+  "minTier": 2,
+  "processingTime": 400,
+  "energyCostPerTick": 6000,
+  "minInstab": 70,
+  "bandLo": 72,
+  "bandHi": 78
+}

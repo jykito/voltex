@@ -1,16 +1,26 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "FDF",
-    "PMP",
-    "PEP"
+    "ABA",
+    "BCB",
+    "DED"
   ],
   "key": {
-    "F": { "item": "minecraft:flint" },
-    "D": { "item": "minecraft:diamond" },
-    "P": { "item": "industrial_core:iron_plate" },
-    "M": { "item": "industrial_core:machine_casing" },
-    "E": { "item": "industrial_core:electric_motor" }
+    "A": {
+      "item": "minecraft:flint"
+    },
+    "B": {
+      "tag": "forge:ingots/iron"
+    },
+    "C": {
+      "tag": "forge:components/machine_casing"
+    },
+    "D": {
+      "item": "minecraft:cobblestone"
+    },
+    "E": {
+      "tag": "forge:dusts/redstone"
+    }
   },
   "result": {
     "item": "industrial_core:crusher",

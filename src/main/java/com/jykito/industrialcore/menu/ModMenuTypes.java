@@ -82,14 +82,11 @@ public class ModMenuTypes {
     public static final RegistryObject<MenuType<MinerCoreMenu>> MINER_CORE_MENU =
             MENUS.register("miner_core_menu", () -> IForgeMenuType.create(MinerCoreMenu::new));
 
-    public static final RegistryObject<MenuType<ItemConnectorMenu>> ITEM_CONNECTOR_MENU =
-            MENUS.register("item_connector_menu", () -> IForgeMenuType.create(ItemConnectorMenu::new));
-
-    public static final RegistryObject<MenuType<FluidConnectorMenu>> FLUID_CONNECTOR_MENU =
-            MENUS.register("fluid_connector_menu", () -> IForgeMenuType.create(FluidConnectorMenu::new));
-
     public static final RegistryObject<MenuType<LogisticsNodeMenu>> LOGISTICS_NODE_MENU =
             MENUS.register("logistics_node_menu", () -> IForgeMenuType.create(LogisticsNodeMenu::new));
+
+    public static final RegistryObject<MenuType<HubMenu>> HUB_MENU =
+            MENUS.register("hub_menu", () -> IForgeMenuType.create(HubMenu::new));
 
     public static final RegistryObject<MenuType<SolarPanelMenu>> SOLAR_PANEL_MENU =
             MENUS.register("solar_panel_menu", () -> IForgeMenuType.create(SolarPanelMenu::new));
@@ -102,6 +99,15 @@ public class ModMenuTypes {
 
     public static final RegistryObject<MenuType<CrateMenu>> CRATE_MENU =
             MENUS.register("crate_menu", () -> IForgeMenuType.create(CrateMenu::new));
+
+    public static final RegistryObject<MenuType<ElectromagnetMenu>> ELECTROMAGNET_MENU =
+            MENUS.register("electromagnet_menu", () -> IForgeMenuType.create(ElectromagnetMenu::new));
+
+    public static final RegistryObject<MenuType<ThermostationMenu>> THERMOSTATION_MENU =
+            MENUS.register("thermostation_menu", () -> IForgeMenuType.create(ThermostationMenu::new));
+
+    public static final RegistryObject<MenuType<EnergyBankMenu>> ENERGY_BANK_MENU =
+            MENUS.register("energy_bank_menu", () -> IForgeMenuType.create(EnergyBankMenu::new));
 
     public static void register(IEventBus eventBus) {
         MENUS.register(eventBus);

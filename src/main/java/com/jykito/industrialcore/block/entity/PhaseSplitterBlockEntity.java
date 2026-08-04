@@ -80,7 +80,7 @@ public class PhaseSplitterBlockEntity extends BlockEntity implements MenuProvide
     }
 
     protected final BaseMachineBlockEntity.MachineEnergyStorage energyStorage =
-            new BaseMachineBlockEntity.MachineEnergyStorage(200_000, 4_000);
+            new BaseMachineBlockEntity.MachineEnergyStorage(200_000, 200_000); // приём = буфер, без потолка на вход
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
     private LazyOptional<IEnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
@@ -153,7 +153,7 @@ public class PhaseSplitterBlockEntity extends BlockEntity implements MenuProvide
             }
         }
 
-        if (itemPullerDir != null && itemHandler.getStackInSlot(0).isEmpty()) {
+        if (itemPullerDir != null) { // тянем постоянно — insertItem сам добьёт слот 0 до полного
             final Direction dir = itemPullerDir;
             BlockEntity neighbor = level.getBlockEntity(pos.relative(dir));
             if (neighbor != null) {
@@ -221,10 +221,7 @@ public class PhaseSplitterBlockEntity extends BlockEntity implements MenuProvide
             }
         }
 
-        if (state.hasProperty(BlockStateProperties.LIT) && state.getValue(BlockStateProperties.LIT) != isWorking) {
-            level.setBlock(pos, state.setValue(BlockStateProperties.LIT, isWorking), 3);
-            hasChanges = true;
-        }
+        MachineLit.tick(this, level, pos, state, BlockStateProperties.LIT, isWorking);
 
         if (hasChanges) setChanged();
     }

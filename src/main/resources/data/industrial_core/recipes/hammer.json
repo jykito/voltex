@@ -1,13 +1,17 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    " I ",
-    "III",
-    " S "
+    " A ",
+    "AAA",
+    " B "
   ],
   "key": {
-    "I": { "item": "minecraft:iron_ingot" },
-    "S": { "item": "minecraft:stick" }
+    "A": {
+      "tag": "forge:ingots/iron"
+    },
+    "B": {
+      "item": "minecraft:stick"
+    }
   },
   "result": {
     "item": "industrial_core:hammer",

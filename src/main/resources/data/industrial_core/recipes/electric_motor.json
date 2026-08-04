@@ -1,14 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    " C ",
-    "RIR",
-    " C "
+    " A ",
+    "BCB",
+    " A "
   ],
   "key": {
-    "C": { "item": "industrial_core:bare_copper_wire" },
-    "R": { "item": "industrial_core:rubber" },
-    "I": { "item": "industrial_core:iron_plate" }
+    "A": {
+      "item": "industrial_core:bare_copper_wire"
+    },
+    "B": {
+      "item": "industrial_core:rubber"
+    },
+    "C": {
+      "tag": "forge:plates/iron"
+    }
   },
   "result": {
     "item": "industrial_core:electric_motor",

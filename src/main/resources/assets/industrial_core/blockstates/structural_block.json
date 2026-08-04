@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "formed=false": { "model": "industrial_core:block/structural_block" },
+    "formed=true":  { "model": "industrial_core:block/structural_block" }
+  }
+}

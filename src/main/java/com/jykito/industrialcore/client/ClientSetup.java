@@ -43,6 +43,7 @@ public final class ClientSetup {
                     (stack, level, entity, seed) -> FluidUtil.getFluidContained(stack).isPresent() ? 1.0F : 0.0F);
 
             MenuScreens.register(ModMenuTypes.COAL_GENERATOR_MENU.get(), CoalGeneratorScreen::new);
+            MenuScreens.register(ModMenuTypes.ELECTROMAGNET_MENU.get(), ElectromagnetScreen::new);
             MenuScreens.register(ModMenuTypes.CRUSHER_MENU.get(), CrusherScreen::new);
             MenuScreens.register(ModMenuTypes.ELECTRIC_FURNACE_MENU.get(), ElectricFurnaceScreen::new);
             MenuScreens.register(ModMenuTypes.COMPRESSOR_MENU.get(), CompressorScreen::new);
@@ -65,13 +66,14 @@ public final class ClientSetup {
             MenuScreens.register(ModMenuTypes.PHASE_SPLITTER_MENU.get(), PhaseSplitterScreen::new);
             MenuScreens.register(ModMenuTypes.RESTRUCTOR_MENU.get(), RestructorScreen::new);
             MenuScreens.register(ModMenuTypes.MINER_CORE_MENU.get(), MinerCoreScreen::new);
-            MenuScreens.register(ModMenuTypes.ITEM_CONNECTOR_MENU.get(), ItemConnectorScreen::new);
-            MenuScreens.register(ModMenuTypes.FLUID_CONNECTOR_MENU.get(), FluidConnectorScreen::new);
             MenuScreens.register(ModMenuTypes.LOGISTICS_NODE_MENU.get(), LogisticsNodeScreen::new);
+            MenuScreens.register(ModMenuTypes.HUB_MENU.get(), HubScreen::new);
             MenuScreens.register(ModMenuTypes.SOLAR_PANEL_MENU.get(), SolarPanelScreen::new);
             MenuScreens.register(ModMenuTypes.PANEL_COMBINER_MENU.get(), PanelCombinerScreen::new);
             MenuScreens.register(ModMenuTypes.RESIN_COLLECTOR_MENU.get(), ResinCollectorScreen::new);
             MenuScreens.register(ModMenuTypes.CRATE_MENU.get(), CrateScreen::new);
+            MenuScreens.register(ModMenuTypes.THERMOSTATION_MENU.get(), ThermostationScreen::new);
+            MenuScreens.register(ModMenuTypes.ENERGY_BANK_MENU.get(), EnergyBankScreen::new);
         });
     }
 
@@ -85,16 +87,23 @@ public final class ClientSetup {
         event.registerEntityRenderer(ModEntities.PLASMA_WAVE.get(), PlasmaWaveRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.RESTRUCTOR_BE.get(),
                 RestructorRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.CULTIVATOR_BE.get(),
+                CultivatorRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.NUCLEAR_REACTOR_BE.get(),
                 NuclearReactorBER::new);
         event.registerBlockEntityRenderer(ModBlockEntities.MINER_CORE_BE.get(),
                 MinerCoreBER::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.ITEM_CONNECTOR_BE.get(),
-                LogisticsBeamRenderer::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.FLUID_CONNECTOR_BE.get(),
-                LogisticsBeamRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.LOGISTICS_NODE_BE.get(),
                 LogisticsBeamRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.ITEM_HUB_BE.get(),
+                LogisticsBeamRenderer::new);
+        // Теплотруба: свечение теперь статик-эмиссив по blockstate hot (в чанк-меше), BER-рендерер убран
+        event.registerBlockEntityRenderer(ModBlockEntities.ELECTROMAGNET_CORE_BE.get(),
+                ElectromagnetCoreBER::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.DISTANT_CONTROLLER_BE.get(),
+                DistantControllerBER::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.ANTIGRAV_COLUMN_BE.get(),
+                AntigravColumnBER::new);
     }
 
     @SubscribeEvent
@@ -104,6 +113,15 @@ public final class ClientSetup {
         event.register(NuclearReactorBER.IDLE_MODEL_RL);
         event.register(NuclearReactorBER.ACTIVE_MODEL_RL);
         event.register(NuclearReactorBER.EMISSIVE_ACTIVE_MODEL_RL);
+        event.register(HeatPipeBER.CORE_GLOW);
+        event.register(HeatPipeBER.ARM_GLOW);
+        event.register(ElectromagnetCoreBER.BODY_MODEL);
+        event.register(ElectromagnetCoreBER.PILONS_MODEL);
+        event.register(ElectromagnetCoreBER.COIL_MODEL);
+        event.register(ElectromagnetCoreBER.COIL_MODEL_2);
+        event.register(ElectromagnetCoreBER.COIL_MODEL_3);
+        event.register(AntigravColumnBER.PILON_MODEL);
+        event.register(AntigravColumnBER.PILON_GLOW_MODEL);
     }
 
     @SubscribeEvent
@@ -159,6 +177,12 @@ public final class ClientSetup {
     @SubscribeEvent
     public static void onRegisterOverlays(RegisterGuiOverlaysEvent event) {
         event.registerAboveAll("armor_energy_hud", ArmorEnergyHudOverlay.OVERLAY);
+    }
+
+    @SubscribeEvent
+    public static void onRegisterParticles(net.minecraftforge.client.event.RegisterParticleProvidersEvent event) {
+        event.registerSpriteSet(com.jykito.industrialcore.particle.ModParticles.ENERGY_MOTE.get(),
+                com.jykito.industrialcore.client.particle.EnergyMoteParticle.Provider::new);
     }
 
     private ClientSetup() {}

@@ -1,7 +1,9 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {"item": "industrial_core:raw_uranium_block"}
+    {
+      "item": "industrial_core:raw_uranium_block"
+    }
   ],
   "result": {
     "item": "industrial_core:raw_uranium",

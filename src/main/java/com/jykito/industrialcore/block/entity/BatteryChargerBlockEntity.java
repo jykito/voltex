@@ -101,9 +101,7 @@ public class BatteryChargerBlockEntity extends BlockEntity implements MenuProvid
             }
         }
 
-        if (state.getValue(BatteryChargerBlock.LIT) != isCharging) {
-            level.setBlock(pos, state.setValue(BatteryChargerBlock.LIT, isCharging), 3);
-        }
+        MachineLit.tick(this, level, pos, state, BatteryChargerBlock.LIT, isCharging);
     }
 
     @Override

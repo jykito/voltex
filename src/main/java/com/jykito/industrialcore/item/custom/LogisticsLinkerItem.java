@@ -1,7 +1,8 @@
 package com.jykito.industrialcore.item.custom;
 
-import com.jykito.industrialcore.block.entity.FluidConnectorBlockEntity;
-import com.jykito.industrialcore.block.entity.ItemConnectorBlockEntity;
+import com.jykito.industrialcore.block.entity.DistantControllerBlockEntity;
+import com.jykito.industrialcore.block.entity.ElectromagnetCoreBlockEntity;
+import com.jykito.industrialcore.block.entity.HubBlockEntity;
 import com.jykito.industrialcore.block.entity.LogisticsNodeBlockEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -25,8 +26,9 @@ public class LogisticsLinkerItem extends Item {
 
     public LogisticsLinkerItem(Properties props) { super(props); }
 
+    // onItemUseFirst — вызывается ДО block.use(), иначе GUI-блоки (ядро/нода/хаб) открывали бы окно раньше бинда
     @Override
-    public InteractionResult useOn(UseOnContext ctx) {
+    public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext ctx) {
         Level level = ctx.getLevel();
         BlockPos pos = ctx.getClickedPos();
         Player player = ctx.getPlayer();
@@ -52,7 +54,7 @@ public class LogisticsLinkerItem extends Item {
         }
 
         BlockEntity be = level.getBlockEntity(pos);
-        if (!isLogistics(be)) return InteractionResult.PASS;
+        if (!isLinkable(be)) return InteractionResult.PASS;
 
         if (!tag.contains(KEY_SOURCE)) {
 
@@ -78,10 +80,24 @@ public class LogisticsLinkerItem extends Item {
             }
 
             BlockEntity srcBe = level.getBlockEntity(srcPos);
-            if (!isLogistics(srcBe)) {
+            if (!isLinkable(srcBe)) {
                 tag.remove(KEY_SOURCE);
                 player.displayClientMessage(msg("msg.industrial_core.linker.source_invalid", ChatFormatting.RED), true);
                 return InteractionResult.FAIL;
+            }
+
+            // Контроллер ↔ ядро: привязка пульта (одностороннее хранение позиции ядра в контроллере)
+            DistantControllerBlockEntity ctrl =
+                    srcBe instanceof DistantControllerBlockEntity cs ? cs
+                  : be    instanceof DistantControllerBlockEntity ct ? ct : null;
+            ElectromagnetCoreBlockEntity linkCore =
+                    srcBe instanceof ElectromagnetCoreBlockEntity ks ? ks
+                  : be    instanceof ElectromagnetCoreBlockEntity kt ? kt : null;
+            if (ctrl != null && linkCore != null) {
+                ctrl.setLinkedCore(linkCore.getBlockPos());
+                tag.remove(KEY_SOURCE);
+                player.displayClientMessage(msg("msg.industrial_core.linker.connected", ChatFormatting.GREEN), true);
+                return InteractionResult.sidedSuccess(level.isClientSide());
             }
 
             if (!areCompatible(srcBe, be)) {
@@ -108,27 +124,38 @@ public class LogisticsLinkerItem extends Item {
     }
 
     private static boolean isLogistics(BlockEntity be) {
-        return be instanceof ItemConnectorBlockEntity
-                || be instanceof FluidConnectorBlockEntity
-                || be instanceof LogisticsNodeBlockEntity;
+        return be instanceof LogisticsNodeBlockEntity
+                || be instanceof HubBlockEntity;
+    }
+
+    // Линкер соединяет всё: логистику (нода/хаб) + пульт ↔ ядро магнита
+    private static boolean isLinkable(BlockEntity be) {
+        return isLogistics(be)
+                || be instanceof DistantControllerBlockEntity
+                || be instanceof ElectromagnetCoreBlockEntity;
+    }
+
+    private static boolean isItemSide(BlockEntity be) {
+        return be instanceof HubBlockEntity h && !h.fluid;
+    }
+
+    private static boolean isFluidSide(BlockEntity be) {
+        return be instanceof HubBlockEntity h && h.fluid;
     }
 
     private static boolean areCompatible(BlockEntity a, BlockEntity b) {
         if (a instanceof LogisticsNodeBlockEntity || b instanceof LogisticsNodeBlockEntity) return true;
-        return (a instanceof ItemConnectorBlockEntity && b instanceof ItemConnectorBlockEntity)
-                || (a instanceof FluidConnectorBlockEntity && b instanceof FluidConnectorBlockEntity);
+        return (isItemSide(a) && isItemSide(b)) || (isFluidSide(a) && isFluidSide(b));
     }
 
     private static void addLink(BlockEntity be, BlockPos target) {
-        if (be instanceof ItemConnectorBlockEntity c) c.addLink(target);
-        else if (be instanceof FluidConnectorBlockEntity c) c.addLink(target);
-        else if (be instanceof LogisticsNodeBlockEntity n) n.addLink(target);
+        if (be instanceof LogisticsNodeBlockEntity n) n.addLink(target);
+        else if (be instanceof HubBlockEntity h) h.addLink(target);
     }
 
     private static void clearLinks(Level level, BlockEntity be) {
-        if (be instanceof ItemConnectorBlockEntity c) c.clearAllLinks(level);
-        else if (be instanceof FluidConnectorBlockEntity c) c.clearAllLinks(level);
-        else if (be instanceof LogisticsNodeBlockEntity n) n.clearAllLinks(level);
+        if (be instanceof LogisticsNodeBlockEntity n) n.clearAllLinks(level);
+        else if (be instanceof HubBlockEntity h) h.clearAllLinks(level);
     }
 
     private static Component msg(String key, ChatFormatting color) {

@@ -105,8 +105,8 @@ public class MinerCoreBER implements BlockEntityRenderer<MinerCoreBlockEntity> {
     }
 
     @Override
-    public boolean shouldRenderOffScreen(MinerCoreBlockEntity be) { return true; }
+    public boolean shouldRenderOffScreen(MinerCoreBlockEntity be) { return false; } // фрустум-куллинг (bbox p-2..p+3 покрывает бур)
 
     @Override
-    public int getViewDistance() { return 128; }
+    public int getViewDistance() { return 96; }
 }

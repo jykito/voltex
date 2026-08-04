@@ -25,10 +25,10 @@ public class SolarPanelMenu extends AbstractContainerMenu {
 
         for (int i = 0; i < 3; i++)
             for (int j = 0; j < 9; j++)
-                addSlot(new Slot(inv, j + i * 9 + 9, 44 + j * 19, 132 + i * 19));
+                addSlot(new Slot(inv, j + i * 9 + 9, 44 + j * 19, 133 + i * 19));
 
         for (int k = 0; k < 9; k++)
-            addSlot(new Slot(inv, k, 44 + k * 19, 195));
+            addSlot(new Slot(inv, k, 44 + k * 19, 196));
     }
 
     public int getEnergyStored()   { return (data.get(1) << 16) | (data.get(0) & 0xFFFF); }

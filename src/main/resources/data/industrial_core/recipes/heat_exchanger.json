@@ -1,13 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    " V ",
-    "CVC",
-    " V "
+    "ABA",
+    "CBC",
+    "ABA"
   ],
   "key": {
-    "V": { "item": "industrial_core:invar_plate" },
-    "C": { "item": "industrial_core:copper_plate" }
+    "A": {
+      "item": "minecraft:lapis_lazuli"
+    },
+    "B": {
+      "tag": "forge:plates/invar"
+    },
+    "C": {
+      "tag": "forge:plates/copper"
+    }
   },
   "result": {
     "item": "industrial_core:heat_exchanger",

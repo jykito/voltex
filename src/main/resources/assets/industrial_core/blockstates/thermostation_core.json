@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=north,up=false,active=false": { "model": "industrial_core:block/thermostation_core_off" },
+    "facing=north,up=false,active=true":  { "model": "industrial_core:block/thermostation_core_on" },
+    "facing=north,up=true,active=false":  { "model": "industrial_core:block/thermostation_core_off_connect" },
+    "facing=north,up=true,active=true":   { "model": "industrial_core:block/thermostation_core_on_connect" },
+    "facing=east,up=false,active=false": { "model": "industrial_core:block/thermostation_core_off", "y": 90 },
+    "facing=east,up=false,active=true":  { "model": "industrial_core:block/thermostation_core_on", "y": 90 },
+    "facing=east,up=true,active=false":  { "model": "industrial_core:block/thermostation_core_off_connect", "y": 90 },
+    "facing=east,up=true,active=true":   { "model": "industrial_core:block/thermostation_core_on_connect", "y": 90 },
+    "facing=south,up=false,active=false": { "model": "industrial_core:block/thermostation_core_off", "y": 180 },
+    "facing=south,up=false,active=true":  { "model": "industrial_core:block/thermostation_core_on", "y": 180 },
+    "facing=south,up=true,active=false":  { "model": "industrial_core:block/thermostation_core_off_connect", "y": 180 },
+    "facing=south,up=true,active=true":   { "model": "industrial_core:block/thermostation_core_on_connect", "y": 180 },
+    "facing=west,up=false,active=false": { "model": "industrial_core:block/thermostation_core_off", "y": 270 },
+    "facing=west,up=false,active=true":  { "model": "industrial_core:block/thermostation_core_on", "y": 270 },
+    "facing=west,up=true,active=false":  { "model": "industrial_core:block/thermostation_core_off_connect", "y": 270 },
+    "facing=west,up=true,active=true":   { "model": "industrial_core:block/thermostation_core_on_connect", "y": 270 }
+  }
+}

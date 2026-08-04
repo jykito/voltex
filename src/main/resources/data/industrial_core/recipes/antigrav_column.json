@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:structural_block"
+    },
+    "B": {
+      "item": "industrial_core:advanced_heat_vent"
+    },
+    "C": {
+      "item": "industrial_core:kronium_alloy"
+    },
+    "D": {
+      "item": "industrial_core:condensator"
+    },
+    "E": {
+      "item": "industrial_core:advanced_heat_exchanger"
+    }
+  },
+  "result": {
+    "item": "industrial_core:antigrav_column",
+    "count": 1
+  }
+}

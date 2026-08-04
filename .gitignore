@@ -27,6 +27,8 @@ forge*changelog.txt
 # project internals — NOT part of the published mod source
 .claude
 mods_download
+libs
+CLAUDE.md
 sim
 tools
 *.log

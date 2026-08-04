@@ -43,6 +43,8 @@ public class BlastFurnaceScreen extends AbstractContainerScreen<BlastFurnaceMenu
         if (++fillTick >= FILL_TICKS) { fillTick = 0; fillFrame = (fillFrame + 1) % FILL_FRAMES; }
         super.render(g, mouseX, mouseY, partialTick);
         this.renderTooltip(g, mouseX, mouseY);
+        Bars.heat(g, font, mouseX, mouseY, leftPos + HEAT_X, topPos + HEAT_Y, HEAT_W, HEAT_H,
+                menu.getHeat(), menu.getMaxHeat());
     }
 
     @Override

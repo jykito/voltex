@@ -6,5 +6,29 @@
         "stream": false
       }
     ]
+  },
+  "magnet_hum": {
+    "sounds": [
+      {
+        "name": "industrial_core:magnet_hum",
+        "stream": false
+      }
+    ]
+  },
+  "magnet_whoosh": {
+    "sounds": [
+      {
+        "name": "industrial_core:magnet_whoosh",
+        "stream": false
+      }
+    ]
+  },
+  "magnet_powerup": {
+    "sounds": [
+      {
+        "name": "industrial_core:magnet_powerup",
+        "stream": false
+      }
+    ]
   }
 }

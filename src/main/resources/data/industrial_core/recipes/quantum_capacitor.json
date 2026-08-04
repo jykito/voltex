@@ -1,15 +1,26 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    " D ",
-    "PEP",
-    " K "
+    "ABA",
+    "CDC",
+    "AEA"
   ],
   "key": {
-    "D": { "item": "industrial_core:data_transfer_matrix" },
-    "P": { "item": "industrial_core:plutonium" },
-    "E": { "item": "industrial_core:energy_crystal" },
-    "K": { "item": "industrial_core:kronium_alloy" }
+    "A": {
+      "item": "industrial_core:kronium_alloy"
+    },
+    "B": {
+      "item": "industrial_core:data_transfer_matrix"
+    },
+    "C": {
+      "item": "industrial_core:plutonium"
+    },
+    "D": {
+      "item": "industrial_core:flux_core"
+    },
+    "E": {
+      "item": "industrial_core:plasma_core"
+    }
   },
   "result": {
     "item": "industrial_core:quantum_capacitor",

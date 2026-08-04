@@ -13,13 +13,14 @@
       "item": "industrial_core:graphite_rod"
     },
     "C": {
-      "item": "industrial_core:accelerator"
+      "item": "industrial_core:data_transfer_matrix"
     },
     "D": {
-      "item": "industrial_core:data_transfer_matrix"
+      "item": "industrial_core:accelerator"
     }
   },
   "result": {
-    "item": "industrial_core:accelerator_mk1"
+    "item": "industrial_core:accelerator_mk1",
+    "count": 1
   }
 }

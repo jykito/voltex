@@ -6,17 +6,24 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class DirectionalUpgradeItem extends MachineUpgradeItem {
 
     public enum Mode { ITEM_PUSH, ITEM_PULL, FLUID_PUSH, FLUID_PULL }
 
     private final Mode mode;
+
+    // Серверный детект даблклика по игроку. Метку времени в NBT НЕ пишем — иначе предметы перестанут стакаться.
+    private static final Map<UUID, Long> LAST_CLICK = new HashMap<>();
 
     public DirectionalUpgradeItem(Mode mode, Properties props) {
         super(props);
@@ -59,16 +66,30 @@ public class DirectionalUpgradeItem extends MachineUpgradeItem {
 
     @Override
     public InteractionResult useOn(UseOnContext ctx) {
-        Direction face = ctx.getClickedFace();
+        Level level = ctx.getLevel();
+        if (level.isClientSide()) return InteractionResult.SUCCESS;
 
-        ctx.getItemInHand().getOrCreateTag().putString("direction", face.getName());
+        Player player = ctx.getPlayer();
+        ItemStack stack = ctx.getItemInHand();
+        long now = level.getGameTime();
+        UUID id = player != null ? player.getUUID() : null;
+        Long last = id != null ? LAST_CLICK.get(id) : null;
+        boolean doubleClick = last != null && (now - last) <= 7; // два ПКМ подряд (~0.35с) → сброс конфига
 
-        if (!ctx.getLevel().isClientSide()) {
-            Component dirName = Component.translatable("tooltip.industrial_core.dir_" + face.getName());
-            ctx.getPlayer().displayClientMessage(
-                Component.translatable("tooltip.industrial_core.direction_set", dirName), true);
+        if (doubleClick) {
+            if (stack.hasTag()) stack.getTag().remove("direction");
+            if (id != null) LAST_CLICK.remove(id);
+            if (player != null)
+                player.displayClientMessage(Component.translatable("tooltip.industrial_core.direction_not_set"), true);
+        } else {
+            Direction face = ctx.getClickedFace();
+            stack.getOrCreateTag().putString("direction", face.getName());
+            if (id != null) LAST_CLICK.put(id, now);
+            if (player != null) {
+                Component dirName = Component.translatable("tooltip.industrial_core.dir_" + face.getName());
+                player.displayClientMessage(Component.translatable("tooltip.industrial_core.direction_set", dirName), true);
+            }
         }
-
         return InteractionResult.SUCCESS;
     }
 }

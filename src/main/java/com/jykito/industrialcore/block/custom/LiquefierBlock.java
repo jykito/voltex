@@ -22,6 +22,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
@@ -30,11 +31,13 @@ public class LiquefierBlock extends BaseEntityBlock {
 
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
+    public static final int VARIANTS = 7;                                  // число случайных лицевых анимаций
+    public static final IntegerProperty VARIANT = IntegerProperty.create("variant", 0, VARIANTS - 1);
 
     public LiquefierBlock(Properties props) {
         super(props);
         this.registerDefaultState(this.stateDefinition.any()
-                .setValue(FACING, Direction.NORTH).setValue(LIT, false));
+                .setValue(FACING, Direction.NORTH).setValue(LIT, false).setValue(VARIANT, 0));
     }
 
     @Nullable
@@ -75,7 +78,7 @@ public class LiquefierBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, LIT);
+        builder.add(FACING, LIT, VARIANT);
     }
 
     @Override

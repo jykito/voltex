@@ -1,7 +1,9 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {"item": "industrial_core:raw_lead_block"}
+    {
+      "item": "industrial_core:raw_lead_block"
+    }
   ],
   "result": {
     "item": "industrial_core:raw_lead",

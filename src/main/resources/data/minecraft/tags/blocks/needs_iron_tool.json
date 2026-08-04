@@ -8,6 +8,9 @@
     "industrial_core:raw_lead_block",
     "industrial_core:raw_uranium_block",
     "industrial_core:silver_block",
-    "industrial_core:electrum_block"
+    "industrial_core:electrum_block",
+    "industrial_core:structural_block",
+    "industrial_core:coil_holder",
+    "industrial_core:electromagnet_core"
   ]
 }

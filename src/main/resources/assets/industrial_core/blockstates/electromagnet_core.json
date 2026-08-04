@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "industrial_core:block/electromagnet_core" },
+    "facing=east":  { "model": "industrial_core:block/electromagnet_core", "y": 90 },
+    "facing=south": { "model": "industrial_core:block/electromagnet_core", "y": 180 },
+    "facing=west":  { "model": "industrial_core:block/electromagnet_core", "y": 270 }
+  }
+}

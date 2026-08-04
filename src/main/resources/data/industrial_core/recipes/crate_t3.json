@@ -1,11 +1,26 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": ["PLP","SCS","PLP"],
+  "pattern": [
+    "ABA",
+    "BCB",
+    "ADA"
+  ],
   "key": {
-    "P": { "tag": "forge:plates/aluminum" },
-    "L": { "item": "industrial_core:logic_board" },
-    "S": { "item": "industrial_core:hardened_steel_ingot" },
-    "C": { "item": "industrial_core:crate_t2" }
+    "A": {
+      "tag": "forge:plates/aluminum"
+    },
+    "B": {
+      "item": "industrial_core:textolite_board"
+    },
+    "C": {
+      "item": "industrial_core:crate_t2"
+    },
+    "D": {
+      "item": "industrial_core:electric_motor"
+    }
   },
-  "result": { "item": "industrial_core:crate_t3", "count": 1 }
+  "result": {
+    "item": "industrial_core:crate_t3",
+    "count": 1
+  }
 }

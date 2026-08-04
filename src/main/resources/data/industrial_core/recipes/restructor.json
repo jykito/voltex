@@ -1,15 +1,26 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "CAC",
-    "DMD",
-    "CAC"
+    "ABA",
+    "CDC",
+    "AEA"
   ],
   "key": {
-    "C": { "item": "industrial_core:composite" },
-    "A": { "item": "industrial_core:amethyst_crystal" },
-    "D": { "item": "industrial_core:data_transfer_matrix" },
-    "M": { "item": "industrial_core:machine_casing" }
+    "A": {
+      "item": "industrial_core:crystal_plate"
+    },
+    "B": {
+      "item": "industrial_core:textolite_board"
+    },
+    "C": {
+      "tag": "forge:plates/electrum"
+    },
+    "D": {
+      "item": "industrial_core:machine_casing"
+    },
+    "E": {
+      "item": "industrial_core:amethyst_crystal"
+    }
   },
   "result": {
     "item": "industrial_core:restructor",

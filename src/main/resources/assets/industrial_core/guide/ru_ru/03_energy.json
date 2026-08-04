@@ -1,0 +1,148 @@
+{
+  "name": "Энергия",
+  "entries": [
+    {
+      "name": "Угольный генератор",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Угольный генератор"
+        },
+        {
+          "type": "text",
+          "text": "Стартовый источник FE. Жжёт любое топливо; угольный блок даёт дольше и мощнее. Отдаёт энергию во все стороны соседним машинам и кабелям."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:coal_generator"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Солнечные панели",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Солнечные панели"
+        },
+        {
+          "type": "text",
+          "text": "Пассивный FE под открытым небом. Днём — полная выработка, ночью — четверть. 10 тиров: каждый следующий кратно мощнее и с большим буфером, от кремниевой T1 до Dyson-панели T10."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:solar_panel_t1",
+            "industrial_core:solar_panel_t4",
+            "industrial_core:solar_panel_t7",
+            "industrial_core:solar_panel_t10"
+          ],
+          "label": "Ступени тиров"
+        }
+      ]
+    },
+    {
+      "name": "Сумматор панелей",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Сумматор панелей"
+        },
+        {
+          "type": "text",
+          "text": "Держит до 18 солнечных панелей как предметы и суммирует их выработку в один большой буфер с безлимитным выводом. Компактная «солнечная ферма» под небом."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:panel_combiner"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Кабели",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Кабели и передача"
+        },
+        {
+          "type": "text",
+          "text": "Кабели переносят FE. Тир задаёт предел передачи за такт: медь — базовый, дальше ферро, золото, кристалл, изумруд, тяжёлый, незеритовое волокно (практически без предела)."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:copper_cable",
+            "industrial_core:gold_conductor",
+            "industrial_core:emerald_flux_cable",
+            "industrial_core:netherite_fiber_cable"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Батареи и ячейки",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Портативные ячейки"
+        },
+        {
+          "type": "text",
+          "text": "Носимые хранилища FE: батарея, литиевая батарея, энергокристалл и лапотрон, по возрастанию ёмкости. Заряжают инструменты и броню в инвентаре, переносят энергию между базами."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:battery",
+            "industrial_core:lithium_battery",
+            "industrial_core:energy_crystal",
+            "industrial_core:lapotron_crystal"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Энергобанк",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Энергобанк"
+        },
+        {
+          "type": "text",
+          "text": "Стационарное хранилище на 10M FE. Держит заданный резерв в процентах, излишек отдаёт в сеть. В GUI — монитор ввода/вывода и настройка резерва."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:energy_bank"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Зарядник",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Зарядник батарей"
+        },
+        {
+          "type": "text",
+          "text": "Заряжает батарею, кристалл или инструмент, вставленный в слот, из подведённой энергосети. Простой способ пополнять носимые ячейки."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:battery_charger"
+          ]
+        }
+      ]
+    }
+  ]
+}

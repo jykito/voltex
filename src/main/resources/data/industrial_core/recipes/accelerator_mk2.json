@@ -1,14 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "BAB",
-    "ADA",
-    "BAB"
+    "ABA",
+    "BCB",
+    "ABA"
   ],
   "key": {
-    "B": { "item": "industrial_core:lapotron_crystal" },
-    "A": { "item": "industrial_core:accelerator_mk1" },
-    "D": { "item": "industrial_core:kronium_alloy" }
+    "A": {
+      "item": "industrial_core:plasma_core"
+    },
+    "B": {
+      "item": "industrial_core:kronium_alloy"
+    },
+    "C": {
+      "item": "industrial_core:accelerator_mk1"
+    }
   },
   "result": {
     "item": "industrial_core:accelerator_mk2",

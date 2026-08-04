@@ -1,0 +1,148 @@
+{
+  "name": "Energy",
+  "entries": [
+    {
+      "name": "Coal Generator",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Coal Generator"
+        },
+        {
+          "type": "text",
+          "text": "Your starter FE source. Burns any fuel; a coal block runs longer and stronger. Pushes energy to neighboring machines and cables on all sides."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:coal_generator"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Solar Panels",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Solar Panels"
+        },
+        {
+          "type": "text",
+          "text": "Passive FE under open sky. Full output by day, a quarter at night. 10 tiers: each is far stronger with a bigger buffer, from the silicon T1 to the Dyson panel T10."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:solar_panel_t1",
+            "industrial_core:solar_panel_t4",
+            "industrial_core:solar_panel_t7",
+            "industrial_core:solar_panel_t10"
+          ],
+          "label": "Tier steps"
+        }
+      ]
+    },
+    {
+      "name": "Panel Combiner",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Panel Combiner"
+        },
+        {
+          "type": "text",
+          "text": "Holds up to 18 solar panels as items and sums their output into one big buffer with unlimited output. A compact solar farm under the sky."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:panel_combiner"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cables",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Cables & Transfer"
+        },
+        {
+          "type": "text",
+          "text": "Cables carry FE. Tier sets the per-tick transfer cap: copper is basic, then ferro, gold, crystalline, emerald, heavy, and netherite fiber (practically unlimited)."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:copper_cable",
+            "industrial_core:gold_conductor",
+            "industrial_core:emerald_flux_cable",
+            "industrial_core:netherite_fiber_cable"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Batteries & Cells",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Portable Cells"
+        },
+        {
+          "type": "text",
+          "text": "Wearable FE stores: battery, lithium battery, energy crystal and lapotron, by rising capacity. They charge tools and armor in your inventory and carry energy between bases."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:battery",
+            "industrial_core:lithium_battery",
+            "industrial_core:energy_crystal",
+            "industrial_core:lapotron_crystal"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Energy Bank",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Energy Bank"
+        },
+        {
+          "type": "text",
+          "text": "A stationary 10M FE store. Holds a set reserve percentage and pushes the surplus to the grid. Its GUI shows I/O and the reserve setting."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:energy_bank"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Battery Charger",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Battery Charger"
+        },
+        {
+          "type": "text",
+          "text": "Charges a battery, cell or tool placed in its slot from the connected grid. A simple way to top up portable cells."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:battery_charger"
+          ]
+        }
+      ]
+    }
+  ]
+}

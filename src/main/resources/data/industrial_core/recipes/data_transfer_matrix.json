@@ -1,15 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "EAE",
-    "FLF",
-    "EAE"
+    "ABA",
+    "CDC",
+    "ABA"
   ],
   "key": {
-    "E": { "item": "industrial_core:electrum_plate" },
-    "A": { "item": "industrial_core:amethyst_crystal" },
-    "F": { "item": "industrial_core:crystal_fiber" },
-    "L": { "item": "industrial_core:logic_board" }
+    "A": {
+      "tag": "forge:plates/electrum"
+    },
+    "B": {
+      "item": "industrial_core:amethyst_crystal"
+    },
+    "C": {
+      "item": "industrial_core:crystal_fiber"
+    },
+    "D": {
+      "item": "industrial_core:logic_board"
+    }
   },
   "result": {
     "item": "industrial_core:data_transfer_matrix",

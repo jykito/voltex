@@ -76,17 +76,34 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
         void consumeEnergy(int amount) { this.energy = Math.max(0, this.energy - amount); }
         void setEnergy(int amount) { this.energy = Math.min(getMaxEnergyStored(), Math.max(0, amount)); }
     }
-    private final LiquefierEnergy energyStorage = new LiquefierEnergy(50000, 2000);
+    private final LiquefierEnergy energyStorage = new LiquefierEnergy(50000, 50000); // приём = буфер, без потолка на вход
     private LazyOptional<EnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
     public final FluidTank outputTank = new FluidTank(8000) {
-        @Override protected void onContentsChanged() { recipeCache.markDirty(); setChanged(); }
+        @Override protected void onContentsChanged() {
+            recipeCache.markDirty();
+            setChanged();
+            if (level != null && !level.isClientSide())
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
     };
     private LazyOptional<IFluidHandler> lazyFluidHandler = LazyOptional.empty();
 
     private int heat = 0;
+    private int litGrace = 0; // анти-мигание LIT (грейс через MachineLit)
     private static final int MAX_HEAT = 10000;
     private boolean isReceivingHeat = false;
+
+    private final com.jykito.industrialcore.heat.IHeatHandler heatHandler = new com.jykito.industrialcore.heat.IHeatHandler() {
+        @Override public int getHeat() { return heat; }
+        @Override public int getMaxHeat() { return MAX_HEAT; }
+        @Override public int receiveHeat(int amount, boolean simulate) {
+            int accepted = Math.min(Math.max(0, amount), MAX_HEAT - heat);
+            if (!simulate && accepted > 0) addHeat(accepted);
+            return accepted;
+        }
+    };
+    private LazyOptional<com.jykito.industrialcore.heat.IHeatHandler> lazyHeat = LazyOptional.empty();
 
     protected final ContainerData data;
     private int progress = 0;
@@ -186,8 +203,15 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
             progress = 0;
         }
 
-        if (state.getValue(LiquefierBlock.LIT) != working)
-            level.setBlock(pos, state.setValue(LiquefierBlock.LIT, working), 3);
+        boolean wasLit = state.getValue(LiquefierBlock.LIT);
+        if (working) litGrace = MachineLit.GRACE; else if (litGrace > 0) litGrace--;
+        boolean wantLit = litGrace > 0;
+        if (wasLit != wantLit) {
+            BlockState ns = state.setValue(LiquefierBlock.LIT, wantLit);
+            if (wantLit) // новая сессия работы (с грейсом) — новая случайная лицевая анимация
+                ns = ns.setValue(LiquefierBlock.VARIANT, level.random.nextInt(LiquefierBlock.VARIANTS));
+            level.setBlock(pos, ns, 3);
+        }
 
         if (fluidPushDir != null && !outputTank.isEmpty()) {
             final Direction d = fluidPushDir;
@@ -215,8 +239,6 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
         }
 
         setChanged();
-        if (outputTank.getFluidAmount() != fluidBefore)
-            level.sendBlockUpdated(pos, state, state, 3);
     }
 
     private LiquefierRecipe findRecipe(Level level) {
@@ -301,6 +323,7 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
         if (cap == ForgeCapabilities.ENERGY)        return lazyEnergyHandler.cast();
         if (cap == ForgeCapabilities.ITEM_HANDLER)  return lazyItemHandler.cast();
         if (cap == ForgeCapabilities.FLUID_HANDLER) return lazyFluidHandler.cast();
+        if (cap == com.jykito.industrialcore.heat.HeatCapability.HEAT) return lazyHeat.cast();
         return super.getCapability(cap, side);
     }
 
@@ -310,6 +333,7 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
         lazyEnergyHandler = LazyOptional.of(() -> energyStorage);
         lazyItemHandler   = LazyOptional.of(() -> automationHandler);
         lazyFluidHandler  = LazyOptional.of(() -> outputTank);
+        lazyHeat          = LazyOptional.of(() -> heatHandler);
     }
 
     @Override
@@ -318,6 +342,7 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
         lazyEnergyHandler.invalidate();
         lazyItemHandler.invalidate();
         lazyFluidHandler.invalidate();
+        lazyHeat.invalidate();
     }
 
     @Override

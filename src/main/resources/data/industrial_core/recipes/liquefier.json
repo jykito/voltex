@@ -1,15 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "GHG",
-    "CMC",
-    "GHG"
+    "ABA",
+    "CDC",
+    "ABA"
   ],
   "key": {
-    "G": { "item": "minecraft:glass" },
-    "H": { "item": "industrial_core:heat_conductor" },
-    "C": { "item": "industrial_core:crystal_plate" },
-    "M": { "item": "industrial_core:machine_casing" }
+    "A": {
+      "item": "minecraft:glass"
+    },
+    "B": {
+      "item": "industrial_core:heat_conductor"
+    },
+    "C": {
+      "item": "industrial_core:crystal_plate"
+    },
+    "D": {
+      "item": "industrial_core:machine_casing"
+    }
   },
   "result": {
     "item": "industrial_core:liquefier",

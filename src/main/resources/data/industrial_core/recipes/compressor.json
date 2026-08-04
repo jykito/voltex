@@ -1,15 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "SSS",
-    "SMS",
-    "PEP"
+    "AAA",
+    "ABA",
+    "CDC"
   ],
   "key": {
-    "S": { "item": "minecraft:smooth_stone" },
-    "M": { "item": "industrial_core:machine_casing" },
-    "P": { "item": "industrial_core:iron_plate" },
-    "E": { "item": "industrial_core:electric_motor" }
+    "A": {
+      "item": "minecraft:smooth_stone"
+    },
+    "B": {
+      "item": "industrial_core:machine_casing"
+    },
+    "C": {
+      "tag": "forge:plates/iron"
+    },
+    "D": {
+      "item": "industrial_core:electric_motor"
+    }
   },
   "result": {
     "item": "industrial_core:compressor",

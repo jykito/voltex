@@ -46,11 +46,12 @@ public class CoalGeneratorMenu extends AbstractContainerMenu {
         addDataSlots(data);
     }
 
+    public int getEnergyStored() { return (data.get(1) << 16) | (data.get(0) & 0xFFFF); }
+    public int getMaxEnergy()    { return (data.get(3) << 16) | (data.get(2) & 0xFFFF); }
+
     public int getScaledEnergy() {
-        int energy = (data.get(1) << 16) | (data.get(0) & 0xFFFF);
-        int maxEnergy = (data.get(3) << 16) | (data.get(2) & 0xFFFF);
-        int progressSize = 42;
-        return maxEnergy != 0 && energy != 0 ? energy * progressSize / maxEnergy : 0;
+        int energy = getEnergyStored(), maxEnergy = getMaxEnergy();
+        return maxEnergy != 0 && energy != 0 ? (int) ((long) energy * 42 / maxEnergy) : 0;
     }
 
     public int getBurnProgress()   { return data.get(4); }

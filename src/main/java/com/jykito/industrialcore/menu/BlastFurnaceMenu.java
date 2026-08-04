@@ -53,10 +53,12 @@ public class BlastFurnaceMenu extends AbstractContainerMenu {
         return Math.min(28, (progress * 28 + maxProgress - 1) / maxProgress);
     }
 
+    public int getHeat()    { return data.get(0); }
+    public int getMaxHeat() { return 4000; }
+
     public int getScaledHeat() {
-        int heat = this.data.get(0);
-        int maxHeat = 4000;
-        return heat != 0 ? Math.min(73, heat * 73 / maxHeat) : 0;
+        int heat = getHeat();
+        return heat != 0 ? Math.min(73, heat * 73 / getMaxHeat()) : 0;
     }
 
     @Override

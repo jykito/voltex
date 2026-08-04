@@ -2,11 +2,8 @@ package com.jykito.industrialcore.screen;
 
 import com.jykito.industrialcore.IndustrialCore;
 import com.jykito.industrialcore.block.ModBlocks;
-import com.jykito.industrialcore.block.custom.logistics.FluidConnectorBlock;
-import com.jykito.industrialcore.block.custom.logistics.ItemConnectorBlock;
-import com.jykito.industrialcore.block.custom.logistics.LogisticsConnectorMode;
-import com.jykito.industrialcore.block.entity.FluidConnectorBlockEntity;
-import com.jykito.industrialcore.block.entity.ItemConnectorBlockEntity;
+import com.jykito.industrialcore.block.custom.logistics.HubFaceMode;
+import com.jykito.industrialcore.block.entity.HubBlockEntity;
 import com.jykito.industrialcore.block.entity.LogisticsNodeBlockEntity;
 import com.jykito.industrialcore.client.LogisticsHighlightRenderer;
 import com.jykito.industrialcore.menu.LogisticsNodeMenu;
@@ -200,7 +197,6 @@ public class LogisticsNodeScreen extends AbstractContainerScreen<LogisticsNodeMe
     private void renderRowContents(GuiGraphics g, int x, int ry, BlockPos linkPos, int idx) {
         if (minecraft == null || minecraft.level == null) return;
         BlockEntity be = minecraft.level.getBlockEntity(linkPos);
-        BlockState linkState = minecraft.level.getBlockState(linkPos);
 
         ItemStack icon = ItemStack.EMPTY;
         String name;
@@ -208,23 +204,16 @@ public class LogisticsNodeScreen extends AbstractContainerScreen<LogisticsNodeMe
         int modeColor;
         int dotColor;
 
-        if (be instanceof ItemConnectorBlockEntity c) {
-            icon = attachedBlockIcon(linkPos, linkState.getValue(ItemConnectorBlock.FACING));
-            boolean push = c.mode == LogisticsConnectorMode.PUSH;
-            name = "Item Connector";
-            modeName = push ? "PUSH" : "PULL";
-            modeColor = push ? COL_PUSH : COL_PULL;
-            dotColor  = c.transferState == 1 ? COL_ACTIVE : COL_IDLE;
-        } else if (be instanceof FluidConnectorBlockEntity c) {
-            icon = attachedBlockIcon(linkPos, linkState.getValue(FluidConnectorBlock.FACING));
-            boolean push = c.mode == LogisticsConnectorMode.PUSH;
-            name = "Fluid Connector";
-            modeName = push ? "PUSH" : "PULL";
-            modeColor = push ? COL_PUSH : COL_PULL;
-            dotColor  = c.transferState == 1 ? COL_ACTIVE : COL_IDLE;
+        if (be instanceof HubBlockEntity h) {
+            icon = new ItemStack((h.fluid ? ModBlocks.FLUID_HUB : ModBlocks.ITEM_HUB).get());
+            name = Component.translatable(h.fluid ? "block.industrial_core.fluid_hub" : "block.industrial_core.item_hub").getString();
+            int af = activeFaces(h);
+            modeName = af + "f";
+            modeColor = h.fluid ? COL_PULL : COL_PUSH;
+            dotColor  = af > 0 ? COL_ACTIVE : COL_IDLE;
         } else if (be instanceof LogisticsNodeBlockEntity) {
             icon = new ItemStack(ModBlocks.LOGISTICS_NODE.get());
-            name = "Logistics Node";
+            name = Component.translatable("block.industrial_core.logistics_node").getString();
             modeName = "NODE";
             modeColor = 0xFFFFAA00;
             dotColor  = COL_ACTIVE;
@@ -248,33 +237,28 @@ public class LogisticsNodeScreen extends AbstractContainerScreen<LogisticsNodeMe
             g.fill(hx, ry + 4 + li * 4, hx + 8, ry + 6 + li * 4, COL_HANDLE);
     }
 
-    private ItemStack attachedBlockIcon(BlockPos connectorPos, Direction facing) {
-        BlockPos targetPos = connectorPos.relative(facing);
-        BlockState target = minecraft.level.getBlockState(targetPos);
-        if (target.isAir()) return ItemStack.EMPTY;
-        return new ItemStack(target.getBlock());
+    private static int activeFaces(HubBlockEntity h) {
+        int n = 0;
+        for (Direction d : Direction.values()) if (h.getMode(d) != HubFaceMode.OFF) n++;
+        return n;
     }
 
     private void renderStats(GuiGraphics g, int x, int y, LogisticsNodeBlockEntity node) {
         List<BlockPos> links = node.linkedPositions;
         int total = links.size();
-        int active = 0, errors = 0;
+        int hubs = 0, errors = 0;
 
         if (minecraft != null && minecraft.level != null) {
             for (BlockPos lp : links) {
                 BlockEntity be = minecraft.level.getBlockEntity(lp);
                 if (be == null) { errors++; continue; }
-                if (be instanceof ItemConnectorBlockEntity c) {
-                    if (c.transferState == 1) active++;
-                } else if (be instanceof FluidConnectorBlockEntity c) {
-                    if (c.transferState == 1) active++;
-                }
+                if (be instanceof HubBlockEntity) hubs++;
             }
         }
 
         int sy = y + STATS_Y + (STATS_H - 9) / 2;
         g.drawString(font, Component.translatable("screen.industrial_core.node.connected", total).getString(), x + STATS_X,       sy, COL_TEXT,                               false);
-        g.drawString(font, Component.translatable("screen.industrial_core.node.active_count", active).getString(), x + STATS_X + 88,  sy, active > 0 ? COL_ACTIVE : COL_IDLE,   false);
+        g.drawString(font, Component.translatable("screen.industrial_core.node.hubs", hubs).getString(),    x + STATS_X + 88,  sy, hubs > 0 ? COL_ACTIVE : COL_IDLE,     false);
         g.drawString(font, Component.translatable("screen.industrial_core.node.errors", errors).getString(),   x + STATS_X + 136, sy, errors > 0 ? COL_ERROR : COL_SUBTEXT, false);
     }
 
@@ -304,24 +288,9 @@ public class LogisticsNodeScreen extends AbstractContainerScreen<LogisticsNodeMe
         BlockEntity be = minecraft.level.getBlockEntity(linkPos);
 
         int r2 = row + 36;
-        if (be instanceof ItemConnectorBlockEntity c) {
-            g.drawString(font, Component.translatable("screen.industrial_core.node.type_items").getString(), px + 4, r2, COL_TEXT, false);
-            boolean push = c.mode == LogisticsConnectorMode.PUSH;
-            g.drawString(font, Component.translatable("screen.industrial_core.node.mode").getString(),  px + 4,  r2 + 12, COL_SUBTEXT, false);
-            g.drawString(font, push ? "PUSH" : "PULL", px + 46, r2 + 12, push ? COL_PUSH : COL_PULL, false);
-            g.drawString(font, Component.translatable("screen.industrial_core.node.status").getString(), px + 4,  r2 + 24, COL_SUBTEXT, false);
-            g.drawString(font, Component.translatable(c.transferState == 1 ? "screen.industrial_core.node.active_state" : "screen.industrial_core.node.waiting").getString(),
-                    px + 46, r2 + 24, c.transferState == 1 ? COL_ACTIVE : COL_IDLE, false);
-            g.drawString(font, Component.translatable("screen.industrial_core.node.filter", Component.translatable(c.filterWhitelist ? "screen.industrial_core.node.whitelist" : "screen.industrial_core.node.blacklist")).getString(),
-                    px + 4, r2 + 36, COL_SUBTEXT, false);
-        } else if (be instanceof FluidConnectorBlockEntity c) {
-            g.drawString(font, Component.translatable("screen.industrial_core.node.type_fluids").getString(), px + 4, r2, COL_TEXT, false);
-            boolean push = c.mode == LogisticsConnectorMode.PUSH;
-            g.drawString(font, Component.translatable("screen.industrial_core.node.mode").getString(),  px + 4,  r2 + 12, COL_SUBTEXT, false);
-            g.drawString(font, push ? "PUSH" : "PULL", px + 46, r2 + 12, push ? COL_PUSH : COL_PULL, false);
-            g.drawString(font, Component.translatable("screen.industrial_core.node.status").getString(), px + 4,  r2 + 24, COL_SUBTEXT, false);
-            g.drawString(font, Component.translatable(c.transferState == 1 ? "screen.industrial_core.node.active_state" : "screen.industrial_core.node.waiting").getString(),
-                    px + 46, r2 + 24, c.transferState == 1 ? COL_ACTIVE : COL_IDLE, false);
+        if (be instanceof HubBlockEntity h) {
+            g.drawString(font, Component.translatable(h.fluid ? "screen.industrial_core.node.type_fluids" : "screen.industrial_core.node.type_items").getString(), px + 4, r2, COL_TEXT, false);
+            g.drawString(font, Component.translatable("screen.industrial_core.node.faces", activeFaces(h)).getString(), px + 4, r2 + 12, COL_SUBTEXT, false);
         } else if (be instanceof LogisticsNodeBlockEntity) {
             g.drawString(font, Component.translatable("screen.industrial_core.node.type_node").getString(),    px + 4, r2,      COL_TEXT,    false);
             g.drawString(font, Component.translatable("screen.industrial_core.node.relay").getString(), px + 4, r2 + 12, COL_SUBTEXT, false);

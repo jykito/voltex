@@ -1,13 +1,17 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "KLK",
-    "KMK"
+    "A A",
+    "B B",
+    "   "
   ],
   "key": {
-    "K": { "item": "industrial_core:kronit" },
-    "L": { "item": "industrial_core:lapotron_crystal" },
-    "M": { "item": "industrial_core:kronium_alloy" }
+    "A": {
+      "item": "industrial_core:heat_resistant_plating"
+    },
+    "B": {
+      "item": "industrial_core:exotic_matter"
+    }
   },
   "result": {
     "item": "industrial_core:plasma_boots",

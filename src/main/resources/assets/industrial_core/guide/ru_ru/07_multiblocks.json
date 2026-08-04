@@ -1,0 +1,246 @@
+{
+  "name": "Мультиблоки",
+  "entries": [
+    {
+      "name": "Шахтёр",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Шахтёр"
+        },
+        {
+          "type": "text",
+          "text": "Автодобыча руды без копания. Куб 3×3×3: ядро в центре, 26 корпусов вокруг. Линза задаёт измерение и пул руды. Питается FE и буровой жижей."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:miner_casing",
+              "O": "industrial_core:miner_core"
+            },
+            "layers": [
+              [
+                "CCC",
+                "CCC",
+                "CCC"
+              ],
+              [
+                "CCC",
+                "COC",
+                "CCC"
+              ],
+              [
+                "CCC",
+                "CCC",
+                "CCC"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:miner_core",
+            "industrial_core:miner_casing",
+            "industrial_core:miner_lens_1",
+            "industrial_core:miner_lens_4"
+          ],
+          "label": "Компоненты"
+        }
+      ]
+    },
+    {
+      "name": "Ядерный реактор",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Реактор (мультиблок)"
+        },
+        {
+          "type": "text",
+          "text": "Тот же куб 3×3×3: ядро-реактор в центре, 26 камер вокруг. Камеры расширяют внутреннюю сетку и подключают охлаждение. Подробности — в главе «Ядерка»."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:reactor_chamber",
+              "R": "industrial_core:nuclear_reactor"
+            },
+            "layers": [
+              [
+                "CCC",
+                "CCC",
+                "CCC"
+              ],
+              [
+                "CCC",
+                "CRC",
+                "CCC"
+              ],
+              [
+                "CCC",
+                "CCC",
+                "CCC"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:nuclear_reactor",
+            "industrial_core:reactor_chamber"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Магнит-ускоритель",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Магнит-ускоритель"
+        },
+        {
+          "type": "text",
+          "text": "Вершина мода — каркас 7×7×8 из структурных блоков с двумя держателями катушек и ядром-электромагнитом. В держатель ставится катушка (медная, сверхпроводниковая или гравитонная), и её тир открывает всё более мощные разгоны."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "S": "industrial_core:structural_block",
+              "H": "industrial_core:coil_holder",
+              "C": "industrial_core:electromagnet_core"
+            },
+            "layers": [
+              [
+                ".SSSSS.",
+                "SSSSSSS",
+                "SSSSSSS",
+                "SSSSSSS",
+                "SSSSSSS",
+                "SSSSSSS",
+                ".SSSSS."
+              ],
+              [
+                "...C...",
+                ".S...S.",
+                "..SSS..",
+                "..SSS..",
+                "..SSS..",
+                ".S...S.",
+                "......."
+              ],
+              [
+                ".......",
+                ".S...S.",
+                ".......",
+                "...H...",
+                ".......",
+                ".S...S.",
+                "......."
+              ],
+              [
+                "S.....S",
+                ".......",
+                ".......",
+                ".......",
+                ".......",
+                ".......",
+                "S.....S"
+              ],
+              [
+                "S.....S",
+                ".......",
+                ".......",
+                ".......",
+                ".......",
+                ".......",
+                "S.....S"
+              ],
+              [
+                "S.....S",
+                ".......",
+                ".......",
+                ".......",
+                ".......",
+                ".......",
+                "S.....S"
+              ],
+              [
+                ".......",
+                ".S...S.",
+                ".......",
+                "...H...",
+                ".......",
+                ".S...S.",
+                "......."
+              ],
+              [
+                ".......",
+                ".S...S.",
+                "..SSS..",
+                "..SSS..",
+                "..SSS..",
+                ".S...S.",
+                "......."
+              ]
+            ]
+          }
+        },
+        {
+          "type": "text",
+          "text": "Разгон копит нестабильность. В резонансной полосе выход удваивается, но при переборе срабатывает квенч-волна, разрушающая базу. Антигравитационные колонны рядом поднимают безопасный порог — ставь их ДО перехода на высокие катушки."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:structural_block",
+            "industrial_core:coil_holder",
+            "industrial_core:electromagnet_core",
+            "industrial_core:antigrav_column"
+          ],
+          "label": "Каркас"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:magnet_copper_coil",
+            "industrial_core:magnet_superconductor_coil",
+            "industrial_core:magnet_graviton_coil"
+          ],
+          "label": "Катушки"
+        }
+      ]
+    },
+    {
+      "name": "Антиграв-колонны",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Антиграв-колонны"
+        },
+        {
+          "type": "text",
+          "text": "Антиграв-колонны питаются ТЕПЛОМ, а не FE. Тепло заводится снизу теплотрубой из термосети: термогенератор греет трубу, а та отдаёт тепло в основание колонны. Колонна копит его в буфере (до 4000) и начинает работать на магнит, когда прогрета (от 200). Чем горячее колонна, тем больше её вклад в стабильность."
+        },
+        {
+          "type": "text",
+          "text": "Каждая полностью прогретая колонна поднимает безопасный порог квенча на 7.5% сверх базовых 50%. В зачёт идут до 8 колонн в радиусе 16 блоков от центра магнита. Ориентиры: 2 колонны держат порог на 65%, 4 — на 80% (нужно для сверхпроводниковой катушки), 6 — на 95%, 7 — полные 100% (нужно для гравитонной). Медной катушке колонны не нужны: её потолок ниже 50%."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:antigrav_column",
+            "industrial_core:heat_pipe",
+            "industrial_core:thermogenerator"
+          ],
+          "label": "Питание теплом"
+        }
+      ]
+    }
+  ]
+}

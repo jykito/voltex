@@ -1,0 +1,206 @@
+{
+  "name": "Materials",
+  "entries": [
+    {
+      "name": "Ores",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Mod Ores"
+        },
+        {
+          "type": "text",
+          "text": "Voltex adds 4 ores: tin, lead, bauxite (for aluminum) and uranium. They generate normally in the Overworld, in stone and deepslate. Crush or smelt them like any ore."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:tin_ore",
+            "industrial_core:lead_ore",
+            "industrial_core:bauxite_ore",
+            "industrial_core:uranium_ore"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Dusts",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Dusts"
+        },
+        {
+          "type": "text",
+          "text": "The Crusher turns ore, raw and ingots into dust; dust smelts back into ingots. Some dusts (lapis, coal, mineral) feed alloys, coolant and drill fluid."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:iron_dust",
+            "industrial_core:copper_dust",
+            "industrial_core:coal_dust",
+            "industrial_core:lapis_dust",
+            "industrial_core:mineral_dust"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Alloys",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Alloys"
+        },
+        {
+          "type": "text",
+          "text": "Bronze smelts in the Electric Furnace. Invar, electrum and hardened steel need the Blast Furnace (1200–2400 heat). Kronium is a high-tech restructor alloy."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:bronze_ingot",
+            "industrial_core:invar_ingot",
+            "industrial_core:electrum_ingot",
+            "industrial_core:hardened_steel_ingot",
+            "industrial_core:kronium_alloy"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Plates",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Plates"
+        },
+        {
+          "type": "text",
+          "text": "The Metal Former (rolling mode) presses ingots into plates — the backbone of casings, cables and armor. Early game: the Hammer by hand."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:iron_plate",
+            "industrial_core:copper_plate",
+            "industrial_core:bronze_plate",
+            "industrial_core:invar_plate"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Wires & Cables",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Wires & Cables"
+        },
+        {
+          "type": "text",
+          "text": "The Metal Former (extruding) draws bare wires; cutters cut them. Insulate a wire with rubber to make a cable. Cable tier sets the FE transfer limit, from copper up to netherite fiber."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:copper_cable",
+            "industrial_core:ferro_cable",
+            "industrial_core:gold_conductor",
+            "industrial_core:netherite_fiber_cable"
+          ],
+          "label": "Cable tiers"
+        }
+      ]
+    },
+    {
+      "name": "Circuits",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Circuits"
+        },
+        {
+          "type": "text",
+          "text": "The textolite board is the base. From it you build the logic board, then the data transfer matrix and the microcontroller. Circuits go into advanced machines, the reactor and the magnet."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:textolite_board",
+            "industrial_core:logic_board",
+            "industrial_core:data_transfer_matrix",
+            "industrial_core:microcontroller"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Resin & Rubber",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Resin & Rubber"
+        },
+        {
+          "type": "text",
+          "text": "The resin tree yields tree resin — gather it by hand or with the Resin Collector. An Extractor or furnace processes resin into rubber, which insulates wires into cables."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:resin_sapling",
+            "industrial_core:tree_resin",
+            "industrial_core:rubber",
+            "industrial_core:resin_collector"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Crystals",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Crystal Chain"
+        },
+        {
+          "type": "text",
+          "text": "Crush amethyst to dust, blast it into a crystal ingot. From it come the crystal plate, fiber and amethyst crystal. Crystals feed the restructor, panels and the magnet."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:amethyst_crystal",
+            "industrial_core:crystal_ingot",
+            "industrial_core:crystal_plate",
+            "industrial_core:crystal_fiber"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Carbon & Composite",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Carbon & Composite"
+        },
+        {
+          "type": "text",
+          "text": "Coal dust becomes carbon fiber, then carbon mesh and the carbon plate. Composite is pressed from metal plates. The carbon-composite ingot is an advanced material for exotica."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:carbon_fiber",
+            "industrial_core:carbon_plate",
+            "industrial_core:composite",
+            "industrial_core:carbon_composite_ingot"
+          ]
+        }
+      ]
+    }
+  ]
+}

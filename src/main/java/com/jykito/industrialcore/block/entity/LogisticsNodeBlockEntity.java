@@ -42,9 +42,8 @@ public class LogisticsNodeBlockEntity extends BlockEntity implements MenuProvide
     public void clearAllLinks(net.minecraft.world.level.Level level) {
         for (BlockPos linked : new HashSet<>(linkedPositions)) {
             BlockEntity be = level.getBlockEntity(linked);
-            if (be instanceof ItemConnectorBlockEntity c)  c.removeLink(worldPosition);
-            else if (be instanceof FluidConnectorBlockEntity c) c.removeLink(worldPosition);
-            else if (be instanceof LogisticsNodeBlockEntity n)  n.removeLink(worldPosition);
+            if (be instanceof LogisticsNodeBlockEntity n)  n.removeLink(worldPosition);
+            else if (be instanceof HubBlockEntity h)       h.removeLink(worldPosition);
         }
         linkedPositions.clear();
         setChanged();

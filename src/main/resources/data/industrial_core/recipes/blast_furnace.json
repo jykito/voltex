@@ -1,14 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "BIB",
-    "BMB",
-    "BIB"
+    "ABA",
+    "ACA",
+    "ADA"
   ],
   "key": {
-    "B": { "item": "minecraft:bricks" },
-    "I": { "item": "industrial_core:iron_plate" },
-    "M": { "item": "industrial_core:machine_casing" }
+    "A": {
+      "item": "minecraft:bricks"
+    },
+    "B": {
+      "tag": "forge:plates/iron"
+    },
+    "C": {
+      "item": "industrial_core:electric_furnace"
+    },
+    "D": {
+      "item": "industrial_core:heat_conductor"
+    }
   },
   "result": {
     "item": "industrial_core:blast_furnace",

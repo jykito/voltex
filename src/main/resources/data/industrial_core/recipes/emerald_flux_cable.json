@@ -1,13 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "WWW",
-    "ERE"
+    "AAA",
+    "BCB",
+    "   "
   ],
   "key": {
-    "W": { "item": "industrial_core:bare_emerald_wire" },
-    "E": { "item": "industrial_core:electrum_plate" },
-    "R": { "item": "industrial_core:rubber" }
+    "A": {
+      "item": "industrial_core:bare_emerald_wire"
+    },
+    "B": {
+      "tag": "forge:plates/electrum"
+    },
+    "C": {
+      "item": "industrial_core:rubber"
+    }
   },
   "result": {
     "item": "industrial_core:emerald_flux_cable",

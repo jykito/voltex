@@ -1,14 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    " D ",
-    " L ",
-    " I "
+    " A ",
+    " B ",
+    " C "
   ],
   "key": {
-    "D": { "item": "industrial_core:data_transfer_matrix" },
-    "L": { "item": "industrial_core:logic_board" },
-    "I": { "item": "minecraft:iron_ingot" }
+    "A": {
+      "item": "industrial_core:textolite_board"
+    },
+    "B": {
+      "item": "industrial_core:copper_cable"
+    },
+    "C": {
+      "tag": "forge:ingots/iron"
+    }
   },
   "result": {
     "item": "industrial_core:logistics_linker",

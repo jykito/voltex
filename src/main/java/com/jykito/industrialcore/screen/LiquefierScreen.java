@@ -56,6 +56,8 @@ public class LiquefierScreen extends AbstractContainerScreen<LiquefierMenu> {
         if (++animTick >= FRAME_TICKS) { animTick = 0; animFrame = (animFrame + 1) % FRAMES; }
         super.render(g, mx, my, pt);
         this.renderTooltip(g, mx, my);
+        Bars.heat(g, font, mx, my, leftPos + HEAT_X, topPos + HEAT_Y, 110, BAR_H,
+                menu.getHeat(), menu.getMaxHeat());
         renderFluidTooltip(g, mx, my);
     }
 

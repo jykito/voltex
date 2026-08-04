@@ -1,15 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "PCP",
-    "CFC",
-    "PMP"
+    "ABA",
+    "BCB",
+    "ADA"
   ],
   "key": {
-    "P": { "item": "industrial_core:iron_plate" },
-    "C": { "item": "industrial_core:bare_copper_wire" },
-    "F": { "item": "minecraft:furnace" },
-    "M": { "item": "industrial_core:machine_casing" }
+    "A": {
+      "tag": "forge:ingots/iron"
+    },
+    "B": {
+      "tag": "forge:dusts/redstone"
+    },
+    "C": {
+      "tag": "forge:components/machine_casing"
+    },
+    "D": {
+      "item": "minecraft:furnace"
+    }
   },
   "result": {
     "item": "industrial_core:electric_furnace",

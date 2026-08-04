@@ -1,15 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    " C ",
-    "TXT",
-    "RRR"
+    " A ",
+    "BCB",
+    "DDD"
   ],
   "key": {
-    "C": { "item": "industrial_core:copper_plate" },
-    "T": { "item": "industrial_core:tin_plate" },
-    "X": { "item": "minecraft:redstone" },
-    "R": { "item": "industrial_core:rubber" }
+    "A": {
+      "tag": "forge:plates/copper"
+    },
+    "B": {
+      "tag": "forge:plates/tin"
+    },
+    "C": {
+      "tag": "forge:dusts/redstone"
+    },
+    "D": {
+      "item": "industrial_core:rubber"
+    }
   },
   "result": {
     "item": "industrial_core:battery",

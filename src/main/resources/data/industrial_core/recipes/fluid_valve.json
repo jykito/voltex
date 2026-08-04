@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "tag": "forge:plates/iron"
+    },
+    "B": {
+      "item": "industrial_core:rubber"
+    },
+    "C": {
+      "tag": "forge:plates/copper"
+    },
+    "D": {
+      "item": "industrial_core:electric_motor"
+    }
+  },
+  "result": {
+    "item": "industrial_core:fluid_valve",
+    "count": 2
+  }
+}

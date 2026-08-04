@@ -5,6 +5,8 @@ import com.jykito.industrialcore.block.custom.MinerCoreBlock;
 import com.jykito.industrialcore.fluid.ModFluids;
 import com.jykito.industrialcore.item.custom.MinerLensItem;
 import com.jykito.industrialcore.item.upgrade.AcceleratorItem;
+import com.jykito.industrialcore.item.upgrade.ParallelModuleItem;
+import com.jykito.industrialcore.item.upgrade.AdvancedParallelModuleItem;
 import com.jykito.industrialcore.menu.MinerCoreMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -41,7 +43,7 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
     public static final int ENERGY_PER_TICK = 1000;
     public static final int FLUID_PER_ORE   = 1000;
     public static final int ENERGY_CAPACITY = 100_000;
-    public static final int FLUID_CAPACITY  = 16_000;
+    public static final int FLUID_CAPACITY  = 128_000;
 
     private static final class DrainableEnergyStorage extends EnergyStorage {
         DrainableEnergyStorage(int capacity, int maxReceive) { super(capacity, maxReceive, 0); }
@@ -57,7 +59,9 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             return switch (slot) {
                 case 0          -> stack.getItem() instanceof MinerLensItem;
-                case 1, 2, 3, 4 -> stack.getItem() instanceof AcceleratorItem;
+                case 1, 2, 3, 4 -> stack.getItem() instanceof AcceleratorItem
+                        || stack.getItem() instanceof ParallelModuleItem
+                        || stack.getItem() instanceof AdvancedParallelModuleItem;
                 default         -> false;
             };
         }
@@ -77,7 +81,7 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
         @Override public boolean isItemValid(int slot, @NotNull ItemStack stack) { return false; }
     };
 
-    private final DrainableEnergyStorage energyStorage = new DrainableEnergyStorage(ENERGY_CAPACITY, 32_768);
+    private final DrainableEnergyStorage energyStorage = new DrainableEnergyStorage(ENERGY_CAPACITY, 131_072);
 
     public final FluidTank fluidTank = new FluidTank(FLUID_CAPACITY) {
         @Override
@@ -172,10 +176,16 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
         }
 
         float timeMultiplier = 1.0f;
+        int moduleParallel = 1;
         for (int s = 1; s <= 4; s++) {
             ItemStack upg = itemHandler.getStackInSlot(s);
-            if (upg.getItem() instanceof AcceleratorItem acc) {
+            Item it = upg.getItem();
+            if (it instanceof AcceleratorItem acc) {
                 for (int c = 0; c < upg.getCount(); c++) timeMultiplier *= acc.getSpeedMultiplier();
+            } else if (it instanceof ParallelModuleItem pm) {
+                moduleParallel = Math.max(moduleParallel, pm.getParallelCount());
+            } else if (it instanceof AdvancedParallelModuleItem adv) {
+                moduleParallel = Math.max(moduleParallel, adv.getParallelCount());
             }
         }
         int effectiveMax = Math.max(1, (int)(BASE_PROGRESS * timeMultiplier));
@@ -193,15 +203,19 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
         boolean hasChanges = false;
         boolean working = false;
         if (canWork) {
-            energyStorage.consume(ENERGY_PER_TICK);
+            // параллель, которую тянет энергия в этот тик (не больше модуля, не больше запаса)
+            int energyParallel = Math.max(1, Math.min(moduleParallel, energyStorage.getEnergyStored() / ENERGY_PER_TICK));
+            energyStorage.consume(energyParallel * ENERGY_PER_TICK);
             progress++;
             working = true;
             hasChanges = true;
 
             if (progress >= effectiveMax) {
-                if (fluidTank.getFluidAmount() >= FLUID_PER_ORE) {
-                    fluidTank.drain(FLUID_PER_ORE, IFluidHandler.FluidAction.EXECUTE);
-                    generateOre(level, (MinerLensItem) lensStack.getItem());
+                // на завершении параллель ограничена ещё и запасом жижи; сколько реально влезло в вывод — столько и списываем
+                int p = Math.min(energyParallel, fluidTank.getFluidAmount() / FLUID_PER_ORE);
+                int produced = p >= 1 ? generateOre(level, (MinerLensItem) lensStack.getItem(), p) : 0;
+                if (produced > 0) {
+                    fluidTank.drain(produced * FLUID_PER_ORE, IFluidHandler.FluidAction.EXECUTE);
                     progress = 0;
                 } else {
                     progress = effectiveMax;
@@ -254,14 +268,19 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
         return true;
     }
 
-    private void generateOre(Level level, MinerLensItem lens) {
+    private int generateOre(Level level, MinerLensItem lens, int max) {
         List<Item> pool = MinerLensItem.buildWeightedPool(lens.getLensType());
-        if (pool.isEmpty()) return;
-        ItemStack ore = new ItemStack(pool.get(level.random.nextInt(pool.size())));
-        for (int i = 0; i < outputHandler.getSlots() && !ore.isEmpty(); i++) {
-            ore = outputHandler.insertItem(i, ore, false);
+        if (pool.isEmpty()) return 0;
+        int produced = 0;
+        for (int n = 0; n < max; n++) {
+            ItemStack ore = new ItemStack(pool.get(level.random.nextInt(pool.size())));
+            for (int i = 0; i < outputHandler.getSlots() && !ore.isEmpty(); i++) {
+                ore = outputHandler.insertItem(i, ore, false);
+            }
+            if (ore.isEmpty()) produced++;
+            else break;  // вывод забит — дальше не мельчим
         }
-
+        return produced;
     }
 
     private boolean isOutputFull() {
@@ -273,6 +292,11 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     private void pushToAdjacentInventories(Level level, BlockPos center) {
+        // выход пуст → нечего толкать, не сканируем 26×6 соседей (поведение идентично)
+        boolean anyOut = false;
+        for (int s = 0; s < outputHandler.getSlots(); s++)
+            if (!outputHandler.getStackInSlot(s).isEmpty()) { anyOut = true; break; }
+        if (!anyOut) return;
 
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy++) {

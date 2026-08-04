@@ -1,13 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    " N ",
-    " N ",
-    " D "
+    " A ",
+    " B ",
+    " C "
   ],
   "key": {
-    "N": { "item": "minecraft:netherite_ingot" },
-    "D": { "item": "minecraft:diamond" }
+    "A": {
+      "item": "minecraft:diamond"
+    },
+    "B": {
+      "tag": "forge:plates/netherite"
+    },
+    "C": {
+      "item": "industrial_core:hardened_steel_ingot"
+    }
   },
   "result": {
     "item": "industrial_core:netherite_drill_tip",

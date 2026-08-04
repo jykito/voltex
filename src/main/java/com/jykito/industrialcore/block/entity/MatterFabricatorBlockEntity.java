@@ -120,9 +120,7 @@ public class MatterFabricatorBlockEntity extends BlockEntity implements MenuProv
             }
         }
 
-        if (state.getValue(MatterFabricatorBlock.LIT) != working) {
-            level.setBlock(pos, state.setValue(MatterFabricatorBlock.LIT, working), 3);
-        }
+        MachineLit.tick(this, level, pos, state, MatterFabricatorBlock.LIT, working);
     }
 
     @Override

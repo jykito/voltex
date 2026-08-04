@@ -1,17 +1,43 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "KDK",
-    "DMD",
-    "KDK"
+  "type": "industrial_core:accelerating",
+  "inputs": [
+    {
+      "item": "industrial_core:machine_casing",
+      "count": 1
+    },
+    {
+      "item": "industrial_core:data_transfer_matrix",
+      "count": 1
+    },
+    {
+      "item": "industrial_core:superconductor_coil",
+      "count": 1
+    },
+    {
+      "item": "industrial_core:manipulator",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:quantum_capacitor",
+      "count": 1
+    },
+    {
+      "item": "industrial_core:kronium_alloy",
+      "count": 1
+    },
+    {
+      "item": "industrial_core:exotic_matter",
+      "count": 2
+    }
   ],
-  "key": {
-    "K": { "item": "industrial_core:kronium_alloy" },
-    "D": { "item": "industrial_core:data_transfer_matrix" },
-    "M": { "item": "industrial_core:machine_casing" }
-  },
   "result": {
     "item": "industrial_core:matter_fabricator",
     "count": 1
-  }
+  },
+  "minTier": 2,
+  "processingTime": 400,
+  "energyCostPerTick": 5000,
+  "minInstab": 60,
+  "bandLo": 62,
+  "bandHi": 70
 }

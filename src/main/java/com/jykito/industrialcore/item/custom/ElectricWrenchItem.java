@@ -110,13 +110,33 @@ public class ElectricWrenchItem extends Item {
     @Override
     public InteractionResult useOn(UseOnContext context) {
         var player = context.getPlayer();
-        if (player == null || !player.isShiftKeyDown()) return InteractionResult.PASS;
+        if (player == null) return InteractionResult.PASS;
 
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
         BlockState state = level.getBlockState(pos);
-        Block block = state.getBlock();
 
+        // обычный ПКМ ключом по теплотрубе — переключить сторону вкл/выкл
+        if (!player.isShiftKeyDown()) {
+            if (state.getBlock() instanceof com.jykito.industrialcore.block.custom.HeatPipeBlock) {
+                if (!level.isClientSide()
+                        && level.getBlockEntity(pos) instanceof com.jykito.industrialcore.block.entity.HeatPipeBlockEntity pipe) {
+                    Direction dir = pickSide(context.getClickLocation(), pos);
+                    boolean nowOff = pipe.toggleDisabled(dir);
+                    com.jykito.industrialcore.block.custom.HeatPipeBlock.recomputeConnections(level, pos);
+                    com.jykito.industrialcore.block.custom.HeatPipeBlock.recomputeConnections(level, pos.relative(dir));
+                    level.playSound(null, pos, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.5f, nowOff ? 0.7f : 1.2f);
+                    player.displayClientMessage(Component.translatable(nowOff
+                            ? "msg.industrial_core.heat_pipe.side_off" : "msg.industrial_core.heat_pipe.side_on")
+                            .withStyle(nowOff ? ChatFormatting.RED : ChatFormatting.GREEN), true);
+                }
+                return InteractionResult.sidedSuccess(level.isClientSide());
+            }
+            return InteractionResult.PASS;
+        }
+
+        // shift → снять блок
+        Block block = state.getBlock();
         ResourceLocation id = ForgeRegistries.BLOCKS.getKey(block);
         if (id == null || !IndustrialCore.MODID.equals(id.getNamespace())) return InteractionResult.PASS;
         BlockEntity be = level.getBlockEntity(pos);
@@ -144,5 +164,16 @@ public class ElectricWrenchItem extends Item {
         }
 
         return InteractionResult.sidedSuccess(level.isClientSide());
+    }
+
+    /** Направление по точке клика: та сторона, куда клик смещён от центра сильнее всего. */
+    private static Direction pickSide(net.minecraft.world.phys.Vec3 loc, BlockPos pos) {
+        double dx = loc.x - pos.getX() - 0.5;
+        double dy = loc.y - pos.getY() - 0.5;
+        double dz = loc.z - pos.getZ() - 0.5;
+        double ax = Math.abs(dx), ay = Math.abs(dy), az = Math.abs(dz);
+        if (ax >= ay && ax >= az) return dx > 0 ? Direction.EAST : Direction.WEST;
+        if (ay >= az) return dy > 0 ? Direction.UP : Direction.DOWN;
+        return dz > 0 ? Direction.SOUTH : Direction.NORTH;
     }
 }

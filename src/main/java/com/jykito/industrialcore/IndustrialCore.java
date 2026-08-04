@@ -39,6 +39,7 @@ public class IndustrialCore {
         ModFluids.register(modEventBus);
         com.jykito.industrialcore.sound.ModSounds.register(modEventBus);
         com.jykito.industrialcore.entity.ModEntities.register(modEventBus);
+        com.jykito.industrialcore.particle.ModParticles.register(modEventBus);
         ModBlocks.register(modEventBus);
         ModItems.register(modEventBus);
         ModFeatures.register(modEventBus);
@@ -51,7 +52,8 @@ public class IndustrialCore {
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new com.jykito.industrialcore.item.custom.NexiteArmorEventHandler());
         MinecraftForge.EVENT_BUS.register(new com.jykito.industrialcore.item.custom.PlasmaArmorEventHandler());
-        net.minecraftforge.fml.ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        net.minecraftforge.fml.ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
+        net.minecraftforge.fml.ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_SPEC);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {

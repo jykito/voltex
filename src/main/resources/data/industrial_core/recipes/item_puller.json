@@ -1,15 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    " P ",
-    "RMR",
-    " C "
+    " A ",
+    "BCB",
+    " D "
   ],
   "key": {
-    "P": { "item": "minecraft:sticky_piston" },
-    "R": { "item": "industrial_core:rubber" },
-    "M": { "item": "industrial_core:electric_motor" },
-    "C": { "item": "industrial_core:copper_cable" }
+    "A": {
+      "item": "minecraft:sticky_piston"
+    },
+    "B": {
+      "item": "industrial_core:rubber"
+    },
+    "C": {
+      "item": "industrial_core:electric_motor"
+    },
+    "D": {
+      "item": "industrial_core:copper_cable"
+    }
   },
   "result": {
     "item": "industrial_core:item_puller",

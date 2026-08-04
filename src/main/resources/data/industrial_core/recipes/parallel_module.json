@@ -1,15 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "AFA",
-    "LDL",
-    "AFA"
+    "ABA",
+    "CDC",
+    "ABA"
   ],
   "key": {
-    "A": { "item": "industrial_core:amethyst_crystal" },
-    "F": { "item": "industrial_core:crystal_fiber" },
-    "L": { "item": "industrial_core:logic_board" },
-    "D": { "item": "industrial_core:data_transfer_matrix" }
+    "A": {
+      "item": "industrial_core:amethyst_crystal"
+    },
+    "B": {
+      "item": "industrial_core:crystal_fiber"
+    },
+    "C": {
+      "item": "industrial_core:logic_board"
+    },
+    "D": {
+      "item": "industrial_core:data_transfer_matrix"
+    }
   },
   "result": {
     "item": "industrial_core:parallel_module",

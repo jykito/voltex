@@ -1,14 +1,26 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "LBL",
-    "BMB",
-    "LBL"
+    "ABA",
+    "CDC",
+    "EBE"
   ],
   "key": {
-    "L": { "item": "minecraft:lapis_lazuli" },
-    "B": { "item": "minecraft:bone_meal" },
-    "M": { "item": "industrial_core:electric_motor" }
+    "A": {
+      "item": "minecraft:glowstone_dust"
+    },
+    "B": {
+      "item": "minecraft:bone_meal"
+    },
+    "C": {
+      "item": "industrial_core:crystal_fiber"
+    },
+    "D": {
+      "item": "industrial_core:electric_motor"
+    },
+    "E": {
+      "tag": "forge:dusts/lapis"
+    }
   },
   "result": {
     "item": "industrial_core:cultivator_biostimulator",

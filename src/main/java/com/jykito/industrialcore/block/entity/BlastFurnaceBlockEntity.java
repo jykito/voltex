@@ -65,6 +65,17 @@ public class BlastFurnaceBlockEntity extends BlockEntity implements MenuProvider
 
     private boolean isReceivingHeat = false;
 
+    private final com.jykito.industrialcore.heat.IHeatHandler heatHandler = new com.jykito.industrialcore.heat.IHeatHandler() {
+        @Override public int getHeat() { return heat; }
+        @Override public int getMaxHeat() { return MAX_HEAT; }
+        @Override public int receiveHeat(int amount, boolean simulate) {
+            int accepted = Math.min(Math.max(0, amount), MAX_HEAT - heat);
+            if (!simulate && accepted > 0) addHeat(accepted);
+            return accepted;
+        }
+    };
+    private LazyOptional<com.jykito.industrialcore.heat.IHeatHandler> lazyHeat = LazyOptional.empty();
+
     protected final ContainerData data;
 
     public BlastFurnaceBlockEntity(BlockPos pos, BlockState state) {
@@ -227,14 +238,13 @@ public class BlastFurnaceBlockEntity extends BlockEntity implements MenuProvider
                     itemHandler.setStackInSlot(2, ItemHandlerHelper.insertItem(dst, itemHandler.getStackInSlot(2), false)));
         }
 
-        if (state.getValue(BlockStateProperties.LIT) != isWorking) {
-            level.setBlock(pos, state.setValue(BlockStateProperties.LIT, isWorking), 3);
-        }
+        MachineLit.tick(this, level, pos, state, BlockStateProperties.LIT, isWorking);
     }
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         if (cap == ForgeCapabilities.ITEM_HANDLER) return lazyItemHandler.cast();
+        if (cap == com.jykito.industrialcore.heat.HeatCapability.HEAT) return lazyHeat.cast();
         return super.getCapability(cap, side);
     }
 
@@ -242,12 +252,14 @@ public class BlastFurnaceBlockEntity extends BlockEntity implements MenuProvider
     public void onLoad() {
         super.onLoad();
         lazyItemHandler = LazyOptional.of(() -> itemHandler);
+        lazyHeat = LazyOptional.of(() -> heatHandler);
     }
 
     @Override
     public void invalidateCaps() {
         super.invalidateCaps();
         lazyItemHandler.invalidate();
+        lazyHeat.invalidate();
     }
 
     @Override

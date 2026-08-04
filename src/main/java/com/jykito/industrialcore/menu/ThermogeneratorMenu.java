@@ -35,10 +35,12 @@ public class ThermogeneratorMenu extends AbstractContainerMenu {
         addDataSlots(data);
     }
 
+    public int getHeat()    { return data.get(0); }
+    public int getMaxHeat() { return 3000; }
+
     public int getScaledHeat(int barWidth) {
-        int heat    = this.data.get(0);
-        int maxHeat = 3000;
-        return heat > 0 ? heat * barWidth / maxHeat : 0;
+        int heat = getHeat();
+        return heat > 0 ? heat * barWidth / getMaxHeat() : 0;
     }
 
     public int getEnergy()         { return (this.data.get(2) << 16) | this.data.get(1); }

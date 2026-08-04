@@ -1,15 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "GGG",
-    "SSS",
-    "CMC"
+    "AAA",
+    "BBB",
+    "CDC"
   ],
   "key": {
-    "G": { "item": "minecraft:glass" },
-    "S": { "item": "industrial_core:silicon" },
-    "C": { "item": "industrial_core:copper_plate" },
-    "M": { "item": "industrial_core:machine_casing" }
+    "A": {
+      "item": "minecraft:glass"
+    },
+    "B": {
+      "item": "industrial_core:silicon"
+    },
+    "C": {
+      "tag": "forge:plates/copper"
+    },
+    "D": {
+      "item": "industrial_core:machine_casing"
+    }
   },
   "result": {
     "item": "industrial_core:solar_panel_t1",

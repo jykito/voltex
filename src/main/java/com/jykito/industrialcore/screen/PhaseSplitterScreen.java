@@ -43,6 +43,8 @@ public class PhaseSplitterScreen extends AbstractContainerScreen<PhaseSplitterMe
         if (++animTick >= FRAME_TICKS) { animTick = 0; animFrame = (animFrame + 1) % FRAMES; }
         super.render(g, mouseX, mouseY, partialTick);
         this.renderTooltip(g, mouseX, mouseY);
+        Bars.energy(g, font, mouseX, mouseY, leftPos + BAR_X, topPos + BAR_Y, 110, BAR_H,
+                menu.getEnergyStored(), menu.getMaxEnergy());
     }
 
     @Override

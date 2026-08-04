@@ -1,13 +1,124 @@
 {
   "variants": {
-    "facing=north,lit=false": { "model": "industrial_core:block/liquefier" },
-    "facing=east,lit=false":  { "model": "industrial_core:block/liquefier", "y": 90 },
-    "facing=south,lit=false": { "model": "industrial_core:block/liquefier", "y": 180 },
-    "facing=west,lit=false":  { "model": "industrial_core:block/liquefier", "y": 270 },
-
-    "facing=north,lit=true":  { "model": "industrial_core:block/liquefier_on" },
-    "facing=east,lit=true":   { "model": "industrial_core:block/liquefier_on", "y": 90 },
-    "facing=south,lit=true":  { "model": "industrial_core:block/liquefier_on", "y": 180 },
-    "facing=west,lit=true":   { "model": "industrial_core:block/liquefier_on", "y": 270 }
+    "lit=false,facing=north": {
+      "model": "industrial_core:block/liquefier"
+    },
+    "lit=true,facing=north,variant=0": {
+      "model": "industrial_core:block/liquefier_on_0"
+    },
+    "lit=true,facing=north,variant=1": {
+      "model": "industrial_core:block/liquefier_on_1"
+    },
+    "lit=true,facing=north,variant=2": {
+      "model": "industrial_core:block/liquefier_on_2"
+    },
+    "lit=true,facing=north,variant=3": {
+      "model": "industrial_core:block/liquefier_on_3"
+    },
+    "lit=true,facing=north,variant=4": {
+      "model": "industrial_core:block/liquefier_on_4"
+    },
+    "lit=true,facing=north,variant=5": {
+      "model": "industrial_core:block/liquefier_on_5"
+    },
+    "lit=true,facing=north,variant=6": {
+      "model": "industrial_core:block/liquefier_on_6"
+    },
+    "lit=false,facing=east": {
+      "model": "industrial_core:block/liquefier",
+      "y": 90
+    },
+    "lit=true,facing=east,variant=0": {
+      "model": "industrial_core:block/liquefier_on_0",
+      "y": 90
+    },
+    "lit=true,facing=east,variant=1": {
+      "model": "industrial_core:block/liquefier_on_1",
+      "y": 90
+    },
+    "lit=true,facing=east,variant=2": {
+      "model": "industrial_core:block/liquefier_on_2",
+      "y": 90
+    },
+    "lit=true,facing=east,variant=3": {
+      "model": "industrial_core:block/liquefier_on_3",
+      "y": 90
+    },
+    "lit=true,facing=east,variant=4": {
+      "model": "industrial_core:block/liquefier_on_4",
+      "y": 90
+    },
+    "lit=true,facing=east,variant=5": {
+      "model": "industrial_core:block/liquefier_on_5",
+      "y": 90
+    },
+    "lit=true,facing=east,variant=6": {
+      "model": "industrial_core:block/liquefier_on_6",
+      "y": 90
+    },
+    "lit=false,facing=south": {
+      "model": "industrial_core:block/liquefier",
+      "y": 180
+    },
+    "lit=true,facing=south,variant=0": {
+      "model": "industrial_core:block/liquefier_on_0",
+      "y": 180
+    },
+    "lit=true,facing=south,variant=1": {
+      "model": "industrial_core:block/liquefier_on_1",
+      "y": 180
+    },
+    "lit=true,facing=south,variant=2": {
+      "model": "industrial_core:block/liquefier_on_2",
+      "y": 180
+    },
+    "lit=true,facing=south,variant=3": {
+      "model": "industrial_core:block/liquefier_on_3",
+      "y": 180
+    },
+    "lit=true,facing=south,variant=4": {
+      "model": "industrial_core:block/liquefier_on_4",
+      "y": 180
+    },
+    "lit=true,facing=south,variant=5": {
+      "model": "industrial_core:block/liquefier_on_5",
+      "y": 180
+    },
+    "lit=true,facing=south,variant=6": {
+      "model": "industrial_core:block/liquefier_on_6",
+      "y": 180
+    },
+    "lit=false,facing=west": {
+      "model": "industrial_core:block/liquefier",
+      "y": 270
+    },
+    "lit=true,facing=west,variant=0": {
+      "model": "industrial_core:block/liquefier_on_0",
+      "y": 270
+    },
+    "lit=true,facing=west,variant=1": {
+      "model": "industrial_core:block/liquefier_on_1",
+      "y": 270
+    },
+    "lit=true,facing=west,variant=2": {
+      "model": "industrial_core:block/liquefier_on_2",
+      "y": 270
+    },
+    "lit=true,facing=west,variant=3": {
+      "model": "industrial_core:block/liquefier_on_3",
+      "y": 270
+    },
+    "lit=true,facing=west,variant=4": {
+      "model": "industrial_core:block/liquefier_on_4",
+      "y": 270
+    },
+    "lit=true,facing=west,variant=5": {
+      "model": "industrial_core:block/liquefier_on_5",
+      "y": 270
+    },
+    "lit=true,facing=west,variant=6": {
+      "model": "industrial_core:block/liquefier_on_6",
+      "y": 270
+    }
   }
 }

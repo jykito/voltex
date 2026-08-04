@@ -1,0 +1,5 @@
+newmtl m_355d7f38-1e85-3db3-d647-ab48ab612d8a
+map_Kd #antigrav_board
+newmtl m_d41e2c0a-7629-a31d-0950-55c5d9c46cd6
+map_Kd #antigrav_pilon
+newmtl none

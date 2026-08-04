@@ -7,7 +7,7 @@
   ],
   "key": {
     "A": {
-      "item": "industrial_core:gold_plate"
+      "tag": "forge:plates/gold"
     },
     "B": {
       "item": "industrial_core:component_heat_vent"
@@ -17,6 +17,7 @@
     }
   },
   "result": {
-    "item": "industrial_core:advanced_heat_vent"
+    "item": "industrial_core:advanced_heat_vent",
+    "count": 1
   }
 }

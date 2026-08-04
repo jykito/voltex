@@ -49,6 +49,8 @@ public class OreWasherScreen extends AbstractContainerScreen<OreWasherMenu> {
         if (++animTick >= FRAME_TICKS) { animTick = 0; animFrame = (animFrame + 1) % FRAMES; }
         super.render(g, mouseX, mouseY, partialTick);
         this.renderTooltip(g, mouseX, mouseY);
+        Bars.energy(g, font, mouseX, mouseY, leftPos + BAR_X, topPos + BAR_Y, 110, BAR_H,
+                menu.getEnergyStored(), menu.getMaxEnergy());
 
         OreWasherBlockEntity entity = (OreWasherBlockEntity) menu.blockEntity;
         renderFluidTooltip(g, mouseX, mouseY, this.leftPos + TANK_X, this.topPos + TANK_Y, TANK_W, TANK_H,

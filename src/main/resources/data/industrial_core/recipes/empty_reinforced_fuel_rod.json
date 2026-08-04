@@ -1,13 +1,17 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    " H ",
-    "HRH",
-    " H "
+    " A ",
+    "ABA",
+    " A "
   ],
   "key": {
-    "H": { "item": "industrial_core:hardened_steel_ingot" },
-    "R": { "item": "industrial_core:empty_fuel_rod" }
+    "A": {
+      "item": "industrial_core:hardened_steel_rod"
+    },
+    "B": {
+      "item": "industrial_core:empty_fuel_rod"
+    }
   },
   "result": {
     "item": "industrial_core:empty_reinforced_fuel_rod",

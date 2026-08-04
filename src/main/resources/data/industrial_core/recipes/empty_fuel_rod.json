@@ -1,12 +1,14 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    " T ",
-    " T ",
-    " T "
+    " A ",
+    " A ",
+    " A "
   ],
   "key": {
-    "T": { "item": "industrial_core:tin_plate" }
+    "A": {
+      "tag": "forge:plates/tin"
+    }
   },
   "result": {
     "item": "industrial_core:empty_fuel_rod",

@@ -1,0 +1,155 @@
+{
+  "name": "Автоматизация",
+  "entries": [
+    {
+      "name": "Логистическая нода",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Логистическая нода"
+        },
+        {
+          "type": "text",
+          "text": "Узел сети: связывает точки в единую логистическую сеть, по которой предметы и жидкости ходят между удалёнными хабами. Сама нода не переносит — она строит граф."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:logistics_node",
+            "industrial_core:logistics_linker"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Хабы",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Хабы предметов и жидкостей"
+        },
+        {
+          "type": "text",
+          "text": "Каждая из 6 граней настраивается: ввод, вывод, оба или выкл. Есть ghost-фильтры (белый список), лимиты и раунд-робин. Переносят локально и по связанной сети."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:item_hub",
+            "industrial_core:fluid_hub"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Линкер",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Линкер"
+        },
+        {
+          "type": "text",
+          "text": "Инструмент связывания. Кликни по ноде, затем по хабу или устройству — они окажутся в одной сети. Так же биндится удалённый пульт магнита."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:logistics_linker"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Толкатели и тянучки",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Толкатели и тянучки"
+        },
+        {
+          "type": "text",
+          "text": "Апгрейды в слот машины: толкатель выталкивает результат, тянучка втягивает вход. Отдельно для предметов и жидкостей — базовая автоматизация без хабов."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:item_pusher",
+            "industrial_core:item_puller",
+            "industrial_core:fluid_pusher",
+            "industrial_core:fluid_puller"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Апгрейды коннектора",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Апгрейды коннектора"
+        },
+        {
+          "type": "text",
+          "text": "Ставятся в грань хаба: ускоряют интервал переноса, повышают объём за такт и дальность. чем выше тир, от T1 до T3, тем быстрее и дальше логистика."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:hub_upgrade_t1",
+            "industrial_core:hub_upgrade_t2",
+            "industrial_core:hub_upgrade_t3"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Улучшения машин",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Улучшения машин"
+        },
+        {
+          "type": "text",
+          "text": "Улучшения ставятся в слоты машины. Ускоритель повышает скорость за счёт FE. Модули параллели обрабатывают несколько операций разом: ×8, ×32 и ×64. Комбинируй под пропускную способность."
+        },
+        {
+          "type": "text",
+          "text": "Свои улучшения есть у доменки (наддув, кислород-буст), взрастителя (биостимулятор, резонатор) и логистики (толкатели, апгрейды коннектора) — смотри их главы."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:accelerator",
+            "industrial_core:parallel_module",
+            "industrial_core:advanced_parallel_module",
+            "industrial_core:quantum_parallel_module"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Хранилища",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Ящики и бочки"
+        },
+        {
+          "type": "text",
+          "text": "Ящики хранят предметы (×3 тира по объёму), бочки — жидкости (от 32k до 512k мб). Простые, дешёвые, легко встраиваются в логистику."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:crate_t1",
+            "industrial_core:crate_t3",
+            "industrial_core:barrel_t1",
+            "industrial_core:barrel_t3"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,14 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "VEV",
-    "EHE",
-    "VEV"
+    "ABA",
+    "BCB",
+    "ABA"
   ],
   "key": {
-    "V": { "item": "industrial_core:invar_plate" },
-    "E": { "item": "industrial_core:electrum_plate" },
-    "H": { "item": "industrial_core:heat_exchanger" }
+    "A": {
+      "tag": "forge:plates/invar"
+    },
+    "B": {
+      "tag": "forge:plates/electrum"
+    },
+    "C": {
+      "item": "industrial_core:heat_exchanger"
+    }
   },
   "result": {
     "item": "industrial_core:advanced_heat_exchanger",

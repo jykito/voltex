@@ -1,12 +1,17 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "PPP",
-    "P P",
-    "PPP"
+    "AAA",
+    "ABA",
+    "AAA"
   ],
   "key": {
-    "P": { "item": "industrial_core:iron_plate" }
+    "A": {
+      "tag": "forge:ingots/iron"
+    },
+    "B": {
+      "tag": "forge:dusts/redstone"
+    }
   },
   "result": {
     "item": "industrial_core:machine_casing",

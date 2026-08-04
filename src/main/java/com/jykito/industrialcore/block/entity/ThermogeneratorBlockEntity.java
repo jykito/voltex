@@ -77,6 +77,13 @@ public class ThermogeneratorBlockEntity extends BlockEntity implements MenuProvi
     private int heat = 0;
     private final int MAX_HEAT = 3000;
 
+    private final com.jykito.industrialcore.heat.IHeatHandler heatHandler = new com.jykito.industrialcore.heat.IHeatHandler() {
+        @Override public int getHeat() { return heat; }
+        @Override public int getMaxHeat() { return MAX_HEAT; }
+        @Override public int receiveHeat(int amount, boolean simulate) { return 0; } // источник: сам греет, не принимает
+    };
+    private LazyOptional<com.jykito.industrialcore.heat.IHeatHandler> lazyHeat = LazyOptional.empty();
+
     protected final ContainerData data;
 
     public ThermogeneratorBlockEntity(BlockPos pos, BlockState state) {
@@ -114,6 +121,7 @@ public class ThermogeneratorBlockEntity extends BlockEntity implements MenuProvi
         super.onLoad();
         lazyEnergyHandler = LazyOptional.of(() -> energyStorage);
         lazyItemHandler = LazyOptional.of(() -> automationHandler);
+        lazyHeat = LazyOptional.of(() -> heatHandler);
     }
 
     @Override
@@ -121,6 +129,7 @@ public class ThermogeneratorBlockEntity extends BlockEntity implements MenuProvi
         super.invalidateCaps();
         lazyEnergyHandler.invalidate();
         lazyItemHandler.invalidate();
+        lazyHeat.invalidate();
     }
 
     @Override
@@ -162,10 +171,10 @@ public class ThermogeneratorBlockEntity extends BlockEntity implements MenuProvi
 
             Direction facing = state.getValue(ThermogeneratorBlock.FACING);
             BlockEntity be = level.getBlockEntity(pos.relative(facing));
-            if (be instanceof BlastFurnaceBlockEntity furnace) {
-                furnace.addHeat(heatOutput);
-            } else if (be instanceof LiquefierBlockEntity liquefier) {
-                liquefier.addHeat(heatOutput);
+            if (be != null) {
+                com.jykito.industrialcore.heat.IHeatHandler heat =
+                        be.getCapability(com.jykito.industrialcore.heat.HeatCapability.HEAT, facing.getOpposite()).resolve().orElse(null);
+                if (heat != null) heat.receiveHeat(heatOutput, false);
             }
         }
 
@@ -183,15 +192,16 @@ public class ThermogeneratorBlockEntity extends BlockEntity implements MenuProvi
             }
         }
 
-        if (state.getValue(BlockStateProperties.LIT) != isWorking) {
-            level.setBlock(pos, state.setValue(BlockStateProperties.LIT, isWorking), 3);
-        }
+        MachineLit.tick(this, level, pos, state, BlockStateProperties.LIT, isWorking);
     }
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         if (cap == ForgeCapabilities.ENERGY) return lazyEnergyHandler.cast();
         if (cap == ForgeCapabilities.ITEM_HANDLER) return lazyItemHandler.cast();
+        if (cap == com.jykito.industrialcore.heat.HeatCapability.HEAT
+                && (side == null || side == getBlockState().getValue(ThermogeneratorBlock.FACING)))
+            return lazyHeat.cast();
         return super.getCapability(cap, side);
     }
 

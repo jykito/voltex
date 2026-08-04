@@ -39,7 +39,7 @@ public class RodFabricatorBlockEntity extends net.minecraft.world.level.block.en
     }
 
     private static final int MAX_ENERGY  = 100_000;
-    private static final int MAX_RECEIVE = 2_000;
+    private static final int MAX_RECEIVE = MAX_ENERGY; // приём = буфер, без потолка на вход
 
     private int maxProgress    = 200;
     private int energyPerTick  = 500;
@@ -225,9 +225,7 @@ public class RodFabricatorBlockEntity extends net.minecraft.world.level.block.en
                     itemHandler.setStackInSlot(2, net.minecraftforge.items.ItemHandlerHelper.insertItem(dst, itemHandler.getStackInSlot(2), false)));
         }
 
-        if (state.getValue(RodFabricatorBlock.LIT) != isWorking) {
-            level.setBlock(pos, state.setValue(RodFabricatorBlock.LIT, isWorking), 3);
-        }
+        MachineLit.tick(this, level, pos, state, RodFabricatorBlock.LIT, isWorking);
 
         if (hasChanges) setChanged();
     }

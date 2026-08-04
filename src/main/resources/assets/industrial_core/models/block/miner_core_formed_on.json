@@ -2,7 +2,7 @@
   "parent": "minecraft:block/orientable",
   "textures": {
     "top":   "industrial_core:block/miner_core_formed_side",
-    "front": "industrial_core:block/miner_core_formed_front_on",
+    "front": "industrial_core:block/miner_core_front_on",
     "side":  "industrial_core:block/miner_core_formed_side"
   }
 }

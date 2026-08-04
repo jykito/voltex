@@ -3,6 +3,8 @@ package com.jykito.industrialcore.menu;
 import com.jykito.industrialcore.block.ModBlocks;
 import com.jykito.industrialcore.block.entity.MinerCoreBlockEntity;
 import com.jykito.industrialcore.item.upgrade.AcceleratorItem;
+import com.jykito.industrialcore.item.upgrade.ParallelModuleItem;
+import com.jykito.industrialcore.item.upgrade.AdvancedParallelModuleItem;
 import com.jykito.industrialcore.item.custom.MinerLensItem;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -40,7 +42,7 @@ public class MinerCoreMenu extends AbstractContainerMenu {
             final int slot = i + 1;
             this.addSlot(new SlotItemHandler(h, slot, 186, upgradeY[i]) {
                 @Override public boolean mayPlace(@NotNull ItemStack stack) {
-                    return stack.getItem() instanceof AcceleratorItem;
+                    return isMinerUpgrade(stack);
                 }
             });
         }
@@ -52,6 +54,11 @@ public class MinerCoreMenu extends AbstractContainerMenu {
             this.addSlot(new Slot(inv, k, 44 + k * 19, 202));
 
         addDataSlots(data);
+    }
+
+    private static boolean isMinerUpgrade(ItemStack s) {
+        var it = s.getItem();
+        return it instanceof AcceleratorItem || it instanceof ParallelModuleItem || it instanceof AdvancedParallelModuleItem;
     }
 
     public int getTotalEnergy()    { return ((data.get(1) & 0xFFFF) << 16) | (data.get(0) & 0xFFFF); }
@@ -93,7 +100,7 @@ public class MinerCoreMenu extends AbstractContainerMenu {
             if (!moveItemStackTo(stack, INV_START, HOTBAR_END, true)) return ItemStack.EMPTY;
         } else if (stack.getItem() instanceof MinerLensItem) {
             if (!moveItemStackTo(stack, 0, 1, false)) return ItemStack.EMPTY;
-        } else if (stack.getItem() instanceof AcceleratorItem) {
+        } else if (isMinerUpgrade(stack)) {
             if (!moveItemStackTo(stack, 1, CONTAINER_END, false)) return ItemStack.EMPTY;
         } else if (index < HOTBAR_START) {
             if (!moveItemStackTo(stack, HOTBAR_START, HOTBAR_END, false)) return ItemStack.EMPTY;

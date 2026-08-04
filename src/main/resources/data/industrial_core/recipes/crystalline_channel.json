@@ -1,13 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "WWW",
-    "FRF"
+    "AAA",
+    "BCB",
+    "   "
   ],
   "key": {
-    "W": { "item": "industrial_core:bare_crystalline_wire" },
-    "F": { "item": "industrial_core:crystal_fiber" },
-    "R": { "item": "industrial_core:rubber" }
+    "A": {
+      "item": "industrial_core:bare_crystalline_wire"
+    },
+    "B": {
+      "item": "industrial_core:crystal_fiber"
+    },
+    "C": {
+      "item": "industrial_core:rubber"
+    }
   },
   "result": {
     "item": "industrial_core:crystalline_channel",

@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=north,up=false,down=false": { "model": "industrial_core:block/thermostation_expander_none" },
+    "facing=north,up=false,down=true":  { "model": "industrial_core:block/thermostation_expander_connect_down" },
+    "facing=north,up=true,down=false":  { "model": "industrial_core:block/thermostation_expander_connect_both" },
+    "facing=north,up=true,down=true":   { "model": "industrial_core:block/thermostation_expander_connect_both" },
+    "facing=east,up=false,down=false": { "model": "industrial_core:block/thermostation_expander_none", "y": 90 },
+    "facing=east,up=false,down=true":  { "model": "industrial_core:block/thermostation_expander_connect_down", "y": 90 },
+    "facing=east,up=true,down=false":  { "model": "industrial_core:block/thermostation_expander_connect_both", "y": 90 },
+    "facing=east,up=true,down=true":   { "model": "industrial_core:block/thermostation_expander_connect_both", "y": 90 },
+    "facing=south,up=false,down=false": { "model": "industrial_core:block/thermostation_expander_none", "y": 180 },
+    "facing=south,up=false,down=true":  { "model": "industrial_core:block/thermostation_expander_connect_down", "y": 180 },
+    "facing=south,up=true,down=false":  { "model": "industrial_core:block/thermostation_expander_connect_both", "y": 180 },
+    "facing=south,up=true,down=true":   { "model": "industrial_core:block/thermostation_expander_connect_both", "y": 180 },
+    "facing=west,up=false,down=false": { "model": "industrial_core:block/thermostation_expander_none", "y": 270 },
+    "facing=west,up=false,down=true":  { "model": "industrial_core:block/thermostation_expander_connect_down", "y": 270 },
+    "facing=west,up=true,down=false":  { "model": "industrial_core:block/thermostation_expander_connect_both", "y": 270 },
+    "facing=west,up=true,down=true":   { "model": "industrial_core:block/thermostation_expander_connect_both", "y": 270 }
+  }
+}

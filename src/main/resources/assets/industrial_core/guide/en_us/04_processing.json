@@ -1,0 +1,282 @@
+{
+  "name": "Processing",
+  "entries": [
+    {
+      "name": "Crusher",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Crusher"
+        },
+        {
+          "type": "text",
+          "text": "Grinds ore, raw and ingots into dust — the core of metal doubling. Also crushes vanilla materials: bones to meal, obsidian and amethyst to dust, and more."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:crusher"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Electric Furnace",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Electric Furnace"
+        },
+        {
+          "type": "text",
+          "text": "Smelts on FE, faster and fuel-free: dust to ingots, ore to metal — like a furnace but more efficient and automatable."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:electric_furnace"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Compressor",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Compressor"
+        },
+        {
+          "type": "text",
+          "text": "Compresses materials: dust and fiber into dense plates, components into blocks. Some advanced parts are made only by pressing."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:compressor"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Metal Former",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Metal Former"
+        },
+        {
+          "type": "text",
+          "text": "Two modes in its GUI: rolling (ingot into plate) and extruding (ingot into bare wire or rod). A key machine for cables and casings."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:metal_former"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Extractor",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Extractor"
+        },
+        {
+          "type": "text",
+          "text": "Extracts material from raw inputs: rubber from resin and logs, resources from by-materials. Gentle processing without crushing."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:extractor"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ore Washer",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Ore Washer"
+        },
+        {
+          "type": "text",
+          "text": "Premium ore processing with water: more dust plus a chance of byproduct metal (nickel, silver, lithium). Needs a water supply."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:ore_washer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Restructor",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Restructor"
+        },
+        {
+          "type": "text",
+          "text": "Molecular transformation: turns one substance into another through a catalyst. The backbone of progression — higher catalyst tiers unlock stronger transmutations."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:restructor",
+            "industrial_core:basic_catalyst",
+            "industrial_core:activated_catalyst",
+            "industrial_core:resonant_catalyst",
+            "industrial_core:universal_catalyst"
+          ],
+          "label": "Catalysts"
+        }
+      ]
+    },
+    {
+      "name": "Fluid Enricher",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Fluid Enricher"
+        },
+        {
+          "type": "text",
+          "text": "Blends an item with a fluid into a new fluid: lapis dust with water makes coolant, and mineral dust with water makes drill fluid."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:fluid_enricher"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Liquefier",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Liquefier"
+        },
+        {
+          "type": "text",
+          "text": "Melts items into a fluid under heat (needs heat from the thermal network). For example, amethyst into molten amethyst — feedstock for capsules and exotica."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:liquefier"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Capsules",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Capsules & Filler"
+        },
+        {
+          "type": "text",
+          "text": "The universal capsule holds 1000 mb of any fluid. The Capsule Filler pumps fluid from a tank into a capsule. Filled capsules go straight into recipes."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:capsule",
+            "industrial_core:capsule_filler"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Phase Splitter",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Phase Splitter"
+        },
+        {
+          "type": "text",
+          "text": "Splits one input into several outputs. Its main use is reprocessing spent reactor rods into plutonium and uranium."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:phase_splitter"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Rod Fabricator",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Rod Fabricator"
+        },
+        {
+          "type": "text",
+          "text": "Assembles reactor fuel rods from empty rods and fuel (uranium, plutonium, MOX). A specialized machine of the nuclear chain."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:rod_fabricator",
+            "industrial_core:graphite_rod"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cultivator",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Cultivator"
+        },
+        {
+          "type": "text",
+          "text": "Grows and duplicates materials with water. An upgrade sets the category: Biostimulator for plants, Crystal Resonator for minerals (e.g., budding amethyst into shards)."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:cultivator",
+            "industrial_core:cultivator_biostimulator",
+            "industrial_core:cultivator_resonator"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Resource Generators",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Resource Generators"
+        },
+        {
+          "type": "text",
+          "text": "Spend FE (and water/lava) on materials: the Stone Generator makes stone, gravel, sand and obsidian; the Lava and Water Generators output fluid to a tank."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:stone_generator",
+            "industrial_core:lava_generator",
+            "industrial_core:water_generator"
+          ]
+        }
+      ]
+    }
+  ]
+}

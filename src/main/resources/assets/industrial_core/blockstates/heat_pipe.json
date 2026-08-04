@@ -1,0 +1,244 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "OR": [
+          {
+            "north": true,
+            "south": false
+          },
+          {
+            "south": true,
+            "north": false
+          },
+          {
+            "east": true,
+            "west": false
+          },
+          {
+            "west": true,
+            "east": false
+          },
+          {
+            "up": true,
+            "down": false
+          },
+          {
+            "down": true,
+            "up": false
+          },
+          {
+            "north": false,
+            "south": false,
+            "east": false,
+            "west": false,
+            "up": false,
+            "down": false
+          },
+          {
+            "north": true,
+            "south": true,
+            "east": true,
+            "west": true
+          },
+          {
+            "north": true,
+            "south": true,
+            "up": true,
+            "down": true
+          },
+          {
+            "east": true,
+            "west": true,
+            "up": true,
+            "down": true
+          }
+        ]
+      },
+      "apply": {
+        "model": "industrial_core:block/heat_pipe_core"
+      }
+    },
+    {
+      "when": {
+        "south": true
+      },
+      "apply": {
+        "model": "industrial_core:block/full_ruka_heat_pipe"
+      }
+    },
+    {
+      "when": {
+        "west": true
+      },
+      "apply": {
+        "model": "industrial_core:block/full_ruka_heat_pipe",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": true
+      },
+      "apply": {
+        "model": "industrial_core:block/full_ruka_heat_pipe",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "east": true
+      },
+      "apply": {
+        "model": "industrial_core:block/full_ruka_heat_pipe",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": true
+      },
+      "apply": {
+        "model": "industrial_core:block/full_ruka_heat_pipe",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "down": true
+      },
+      "apply": {
+        "model": "industrial_core:block/full_ruka_heat_pipe",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "north": true,
+            "south": false,
+            "hot": true
+          },
+          {
+            "south": true,
+            "north": false,
+            "hot": true
+          },
+          {
+            "east": true,
+            "west": false,
+            "hot": true
+          },
+          {
+            "west": true,
+            "east": false,
+            "hot": true
+          },
+          {
+            "up": true,
+            "down": false,
+            "hot": true
+          },
+          {
+            "down": true,
+            "up": false,
+            "hot": true
+          },
+          {
+            "north": false,
+            "south": false,
+            "east": false,
+            "west": false,
+            "up": false,
+            "down": false,
+            "hot": true
+          },
+          {
+            "north": true,
+            "south": true,
+            "east": true,
+            "west": true,
+            "hot": true
+          },
+          {
+            "north": true,
+            "south": true,
+            "up": true,
+            "down": true,
+            "hot": true
+          },
+          {
+            "east": true,
+            "west": true,
+            "up": true,
+            "down": true,
+            "hot": true
+          }
+        ]
+      },
+      "apply": {
+        "model": "industrial_core:block/heat_pipe_core_glow"
+      }
+    },
+    {
+      "when": {
+        "south": true,
+        "hot": true
+      },
+      "apply": {
+        "model": "industrial_core:block/full_ruka_glow"
+      }
+    },
+    {
+      "when": {
+        "west": true,
+        "hot": true
+      },
+      "apply": {
+        "model": "industrial_core:block/full_ruka_glow",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": true,
+        "hot": true
+      },
+      "apply": {
+        "model": "industrial_core:block/full_ruka_glow",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "east": true,
+        "hot": true
+      },
+      "apply": {
+        "model": "industrial_core:block/full_ruka_glow",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": true,
+        "hot": true
+      },
+      "apply": {
+        "model": "industrial_core:block/full_ruka_glow",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "down": true,
+        "hot": true
+      },
+      "apply": {
+        "model": "industrial_core:block/full_ruka_glow",
+        "x": 270
+      }
+    }
+  ]
+}

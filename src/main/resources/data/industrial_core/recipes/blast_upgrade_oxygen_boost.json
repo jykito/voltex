@@ -1,15 +1,26 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "CEC",
-    "HFH",
-    "CEC"
+    "ABA",
+    "CDC",
+    "AEA"
   ],
   "key": {
-    "C": { "item": "industrial_core:composite" },
-    "E": { "item": "industrial_core:advanced_heat_exchanger" },
-    "H": { "item": "industrial_core:heat_conductor" },
-    "F": { "item": "industrial_core:blast_upgrade_forced_air" }
+    "A": {
+      "item": "industrial_core:composite"
+    },
+    "B": {
+      "item": "industrial_core:advanced_heat_vent"
+    },
+    "C": {
+      "item": "industrial_core:heat_exchanger"
+    },
+    "D": {
+      "item": "industrial_core:blast_upgrade_forced_air"
+    },
+    "E": {
+      "item": "industrial_core:condensator"
+    }
   },
   "result": {
     "item": "industrial_core:blast_upgrade_oxygen_boost",

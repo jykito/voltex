@@ -1,11 +1,26 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": ["PBP","RCR","PBP"],
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ABA"
+  ],
   "key": {
-    "P": { "tag": "forge:plates/aluminum" },
-    "B": { "tag": "forge:plates/invar" },
-    "R": { "item": "industrial_core:rubber" },
-    "C": { "item": "industrial_core:barrel_t2" }
+    "A": {
+      "tag": "forge:plates/aluminum"
+    },
+    "B": {
+      "item": "industrial_core:textolite_board"
+    },
+    "C": {
+      "item": "industrial_core:rubber"
+    },
+    "D": {
+      "item": "industrial_core:barrel_t2"
+    }
   },
-  "result": { "item": "industrial_core:barrel_t3", "count": 1 }
+  "result": {
+    "item": "industrial_core:barrel_t3",
+    "count": 1
+  }
 }

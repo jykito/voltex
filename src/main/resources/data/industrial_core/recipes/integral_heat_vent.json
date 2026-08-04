@@ -10,13 +10,14 @@
       "item": "industrial_core:composite"
     },
     "B": {
-      "item": "industrial_core:copper_plate"
+      "tag": "forge:plates/copper"
     },
     "C": {
       "item": "industrial_core:heat_vent"
     }
   },
   "result": {
-    "item": "industrial_core:integral_heat_vent"
+    "item": "industrial_core:integral_heat_vent",
+    "count": 1
   }
 }

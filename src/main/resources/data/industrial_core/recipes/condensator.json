@@ -1,14 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "TLT",
-    "LRL",
-    "TLT"
+    "ABA",
+    "BCB",
+    "ABA"
   ],
   "key": {
-    "T": { "item": "industrial_core:tin_plate" },
-    "L": { "item": "industrial_core:lapis_plate" },
-    "R": { "item": "minecraft:redstone" }
+    "A": {
+      "tag": "forge:plates/tin"
+    },
+    "B": {
+      "tag": "forge:plates/lapis"
+    },
+    "C": {
+      "tag": "forge:dusts/redstone"
+    }
   },
   "result": {
     "item": "industrial_core:condensator",

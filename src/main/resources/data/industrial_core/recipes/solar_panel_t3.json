@@ -16,13 +16,14 @@
       "item": "industrial_core:crystal_fiber"
     },
     "D": {
-      "item": "industrial_core:logic_board"
+      "item": "industrial_core:crystal_plate"
     },
     "E": {
       "item": "industrial_core:electric_motor"
     }
   },
   "result": {
-    "item": "industrial_core:solar_panel_t3"
+    "item": "industrial_core:solar_panel_t3",
+    "count": 1
   }
 }

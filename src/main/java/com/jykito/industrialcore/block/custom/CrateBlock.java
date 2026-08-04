@@ -3,6 +3,8 @@ package com.jykito.industrialcore.block.custom;
 import com.jykito.industrialcore.block.entity.CrateBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -39,6 +41,7 @@ public class CrateBlock extends BaseEntityBlock {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof CrateBlockEntity be) {
+            level.playSound(null, pos, SoundEvents.BARREL_OPEN, SoundSource.BLOCKS, 0.6f, 0.75f);
             NetworkHooks.openScreen((ServerPlayer) player, be, pos);
         }
         return InteractionResult.sidedSuccess(level.isClientSide());

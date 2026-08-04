@@ -68,7 +68,7 @@ public class StoneGeneratorBlockEntity extends BlockEntity implements MenuProvid
         void consume(int amount) { this.energy = Math.max(0, this.energy - amount); }
         void set(int amount)     { this.energy = Math.min(getMaxEnergyStored(), Math.max(0, amount)); }
     }
-    private final GenEnergy energyStorage = new GenEnergy(100_000, 5_000);
+    private final GenEnergy energyStorage = new GenEnergy(100_000, 100_000); // приём = буфер, без потолка на вход
     private LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.empty();
 
     public final FluidTank waterTank = new FluidTank(TANK_CAP, fs -> fs.getFluid() == Fluids.WATER) {
@@ -219,10 +219,7 @@ public class StoneGeneratorBlockEntity extends BlockEntity implements MenuProvid
             });
         }
 
-        if (state.getValue(StoneGeneratorBlock.LIT) != working)
-            level.setBlock(pos, state.setValue(StoneGeneratorBlock.LIT, working), 3);
-
-        setChanged();
+        MachineLit.tick(this, level, pos, state, StoneGeneratorBlock.LIT, working);setChanged();
         if (waterTank.getFluidAmount() != waterBefore || lavaTank.getFluidAmount() != lavaBefore)
             level.sendBlockUpdated(pos, state, state, 3);
     }

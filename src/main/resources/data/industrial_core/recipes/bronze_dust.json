@@ -1,10 +1,18 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    { "item": "industrial_core:tin_dust" },
-    { "item": "industrial_core:copper_dust" },
-    { "item": "industrial_core:copper_dust" },
-    { "item": "industrial_core:copper_dust" }
+    {
+      "tag": "forge:dusts/copper"
+    },
+    {
+      "tag": "forge:dusts/copper"
+    },
+    {
+      "tag": "forge:dusts/copper"
+    },
+    {
+      "tag": "forge:dusts/tin"
+    }
   ],
   "result": {
     "item": "industrial_core:bronze_dust",

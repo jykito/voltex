@@ -84,7 +84,7 @@ public class FluidEnricherBlockEntity extends BlockEntity implements MenuProvide
         void consumeEnergy(int amount) { this.energy = Math.max(0, this.energy - amount); }
         void setEnergy(int amount) { this.energy = Math.min(getMaxEnergyStored(), Math.max(0, amount)); }
     }
-    private final EnricherEnergy energyStorage = new EnricherEnergy(50000, 1000);
+    private final EnricherEnergy energyStorage = new EnricherEnergy(50000, 50000); // приём = буфер, без потолка на вход
     private LazyOptional<EnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
     private final IFluidHandler combinedFluidHandler = new IFluidHandler() {
@@ -112,11 +112,21 @@ public class FluidEnricherBlockEntity extends BlockEntity implements MenuProvide
 
     public final FluidTank inputTank = new FluidTank(8000) {
         @Override
-        protected void onContentsChanged() { recipeCache.markDirty(); setChanged(); }
+        protected void onContentsChanged() {
+            recipeCache.markDirty();
+            setChanged();
+            if (level != null && !level.isClientSide())
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
     };
     public final FluidTank outputTank = new FluidTank(8000) {
         @Override
-        protected void onContentsChanged() { recipeCache.markDirty(); setChanged(); }
+        protected void onContentsChanged() {
+            recipeCache.markDirty();
+            setChanged();
+            if (level != null && !level.isClientSide())
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
     };
 
     protected final ContainerData data;
@@ -152,8 +162,6 @@ public class FluidEnricherBlockEntity extends BlockEntity implements MenuProvide
         if (level.isClientSide) return;
 
         boolean isWorking = false;
-        int inFluidBefore  = inputTank.getFluidAmount();
-        int outFluidBefore = outputTank.getFluidAmount();
 
         Direction fluidPusherDir = null;
         Direction fluidPullerDir = null;
@@ -284,13 +292,9 @@ public class FluidEnricherBlockEntity extends BlockEntity implements MenuProvide
             }
         }
 
-        if (state.getValue(FluidEnricherBlock.LIT) != isWorking) {
-            level.setBlock(pos, state.setValue(FluidEnricherBlock.LIT, isWorking), 3);
-        }
+        MachineLit.tick(this, level, pos, state, FluidEnricherBlock.LIT, isWorking);
 
         setChanged();
-        if (inputTank.getFluidAmount() != inFluidBefore || outputTank.getFluidAmount() != outFluidBefore)
-            level.sendBlockUpdated(pos, state, state, 3);
     }
 
     private FluidEnricherRecipe findRecipe(Level level) {

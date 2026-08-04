@@ -59,11 +59,13 @@ public class ElectricFurnaceMenu extends AbstractContainerMenu {
         return Math.min(24, (progress * 24 + maxProgress - 1) / maxProgress);
     }
 
+    public int getEnergyStored() { return (data.get(1) << 16) | (data.get(0) & 0xFFFF); }
+    public int getMaxEnergy()    { return (data.get(3) << 16) | (data.get(2) & 0xFFFF); }
+
     public int getScaledEnergy(int barWidth) {
-        int energy = (data.get(1) << 16) | (data.get(0) & 0xFFFF);
-        int maxEnergy = (data.get(3) << 16) | (data.get(2) & 0xFFFF);
+        int maxEnergy = getMaxEnergy();
         if (maxEnergy <= 0) return 0;
-        return (int) ((long) energy * barWidth / maxEnergy);
+        return (int) ((long) getEnergyStored() * barWidth / maxEnergy);
     }
 
     @Override

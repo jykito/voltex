@@ -47,6 +47,8 @@ public class PanelCombinerScreen extends AbstractContainerScreen<PanelCombinerMe
         if (++animTick >= FRAME_TICKS) { animTick = 0; currentFrame = (currentFrame + 1) % FRAMES; }
         super.render(g, mx, my, pt);
         renderTooltip(g, mx, my);
+        Bars.energy(g, font, mx, my, leftPos + BAR_X, topPos + BAR_Y, BAR_W, BAR_H,
+                menu.getEnergyStored(), menu.getMaxEnergy());
     }
 
     @Override

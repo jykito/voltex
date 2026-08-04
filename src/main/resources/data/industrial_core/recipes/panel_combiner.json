@@ -1,14 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "SIS",
-    "IMI",
-    "SIS"
+    "ABA",
+    "BCB",
+    "ABA"
   ],
   "key": {
-    "S": { "item": "industrial_core:solar_panel_t3" },
-    "I": { "item": "industrial_core:electrum_plate" },
-    "M": { "item": "industrial_core:machine_casing" }
+    "A": {
+      "item": "industrial_core:solar_panel_t3"
+    },
+    "B": {
+      "tag": "forge:plates/electrum"
+    },
+    "C": {
+      "item": "industrial_core:machine_casing"
+    }
   },
   "result": {
     "item": "industrial_core:panel_combiner",

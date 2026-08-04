@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "BCB",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:copper_cable"
+    },
+    "B": {
+      "item": "industrial_core:textolite_board"
+    },
+    "C": {
+      "item": "industrial_core:hub_upgrade_t1"
+    }
+  },
+  "result": {
+    "item": "industrial_core:hub_upgrade_t2",
+    "count": 1
+  }
+}

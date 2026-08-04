@@ -1,0 +1,206 @@
+{
+  "name": "Материалы",
+  "entries": [
+    {
+      "name": "Руды",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Руды мода"
+        },
+        {
+          "type": "text",
+          "text": "Voltex добавляет 4 руды: олово, свинец, боксит (для алюминия) и уран. Генерируются в Верхнем мире обычным образом, в камне и глубинном сланце. Их можно дробить или плавить, как любую руду."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:tin_ore",
+            "industrial_core:lead_ore",
+            "industrial_core:bauxite_ore",
+            "industrial_core:uranium_ore"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Пыли",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Пыли"
+        },
+        {
+          "type": "text",
+          "text": "Дробилка превращает руду, сырьё и слитки в пыль; пыль плавится в слиток. Часть пылей (лазурит, уголь, минеральная) — сырьё для сплавов, хладагента и буровой жижи."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:iron_dust",
+            "industrial_core:copper_dust",
+            "industrial_core:coal_dust",
+            "industrial_core:lapis_dust",
+            "industrial_core:mineral_dust"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Сплавы",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Сплавы"
+        },
+        {
+          "type": "text",
+          "text": "Бронза плавится в электропечи. Инвар, электрум и закалённая сталь требуют доменной печи (тепло 1200–2400). Крониум — высокотехнологичный сплав из реструктора."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:bronze_ingot",
+            "industrial_core:invar_ingot",
+            "industrial_core:electrum_ingot",
+            "industrial_core:hardened_steel_ingot",
+            "industrial_core:kronium_alloy"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Пластины",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Пластины"
+        },
+        {
+          "type": "text",
+          "text": "Формовщик металла в режиме проката делает пластины из слитков — основу корпусов, кабелей и брони. Ранний вариант: молот вручную."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:iron_plate",
+            "industrial_core:copper_plate",
+            "industrial_core:bronze_plate",
+            "industrial_core:invar_plate"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Провода и кабели",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Провода и кабели"
+        },
+        {
+          "type": "text",
+          "text": "Формовщик в режиме экструзии тянет голые провода, кусачки их режут. Изолируй провод резиной — получишь кабель. Тир кабеля задаёт лимит передачи FE: от меди до незеритового волокна."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:copper_cable",
+            "industrial_core:ferro_cable",
+            "industrial_core:gold_conductor",
+            "industrial_core:netherite_fiber_cable"
+          ],
+          "label": "Тиры кабелей"
+        }
+      ]
+    },
+    {
+      "name": "Схемы",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Схемы"
+        },
+        {
+          "type": "text",
+          "text": "Текстолитовая плата — основа. Из неё собирают логическую плату, затем матрицу передачи данных и микроконтроллер. Схемы нужны продвинутым машинам, реактору и магниту."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:textolite_board",
+            "industrial_core:logic_board",
+            "industrial_core:data_transfer_matrix",
+            "industrial_core:microcontroller"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Смола и резина",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Смола и резина"
+        },
+        {
+          "type": "text",
+          "text": "Смоляное дерево даёт древесную смолу — собирай её вручную или смоляным сборщиком. Экстрактор или печь перерабатывают смолу в резину, которой изолируют провода в кабели."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:resin_sapling",
+            "industrial_core:tree_resin",
+            "industrial_core:rubber",
+            "industrial_core:resin_collector"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Кристаллы",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Кристальная цепь"
+        },
+        {
+          "type": "text",
+          "text": "Аметист дроби в пыль, плавь в доменке в кристаллический слиток. Из него — кристаллическая пластина, волокно и аметистовый кристалл. Кристаллы идут в реструктор, панели и магнит."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:amethyst_crystal",
+            "industrial_core:crystal_ingot",
+            "industrial_core:crystal_plate",
+            "industrial_core:crystal_fiber"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Углерод и композит",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Углерод и композит"
+        },
+        {
+          "type": "text",
+          "text": "Из угольной пыли делают углеволокно, затем углесетку и углепластину. Композит прессуется из металлических пластин. Углекомпозитный слиток — продвинутый материал для экзотики."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:carbon_fiber",
+            "industrial_core:carbon_plate",
+            "industrial_core:composite",
+            "industrial_core:carbon_composite_ingot"
+          ]
+        }
+      ]
+    }
+  ]
+}

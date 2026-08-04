@@ -17,6 +17,19 @@ public class ModSounds {
             () -> SoundEvent.createVariableRangeEvent(
                     new ResourceLocation(IndustrialCore.MODID, "plasma_burst")));
 
+    // Электромагнит-ускоритель: луп-гул работы, пролёт столба, разгон
+    public static final RegistryObject<SoundEvent> MAGNET_HUM = SOUNDS.register("magnet_hum",
+            () -> SoundEvent.createVariableRangeEvent(
+                    new ResourceLocation(IndustrialCore.MODID, "magnet_hum")));
+
+    public static final RegistryObject<SoundEvent> MAGNET_WHOOSH = SOUNDS.register("magnet_whoosh",
+            () -> SoundEvent.createVariableRangeEvent(
+                    new ResourceLocation(IndustrialCore.MODID, "magnet_whoosh")));
+
+    public static final RegistryObject<SoundEvent> MAGNET_POWERUP = SOUNDS.register("magnet_powerup",
+            () -> SoundEvent.createVariableRangeEvent(
+                    new ResourceLocation(IndustrialCore.MODID, "magnet_powerup")));
+
     public static void register(IEventBus eventBus) {
         SOUNDS.register(eventBus);
     }

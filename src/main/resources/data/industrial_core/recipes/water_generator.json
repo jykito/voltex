@@ -1,14 +1,26 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "GPG",
-    "PCP",
-    "GPG"
+    "ABA",
+    "CDC",
+    "AEA"
   ],
   "key": {
-    "G": { "item": "minecraft:glass" },
-    "P": { "item": "industrial_core:iron_plate" },
-    "C": { "item": "industrial_core:machine_casing" }
+    "A": {
+      "item": "minecraft:glass"
+    },
+    "B": {
+      "item": "industrial_core:fluid_valve"
+    },
+    "C": {
+      "item": "industrial_core:electric_motor"
+    },
+    "D": {
+      "item": "industrial_core:machine_casing"
+    },
+    "E": {
+      "tag": "forge:plates/copper"
+    }
   },
   "result": {
     "item": "industrial_core:water_generator",

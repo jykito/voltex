@@ -53,9 +53,11 @@ public abstract class BaseMachineMenu extends AbstractContainerMenu {
         return Math.min(barWidth, (progress * barWidth + maxProgress - 1) / maxProgress);
     }
 
+    public int getEnergyStored() { return (data.get(1) << 16) | (data.get(0) & 0xFFFF); }
+    public int getMaxEnergy()    { return (data.get(3) << 16) | (data.get(2) & 0xFFFF); }
+
     public int getScaledEnergy() {
-        int energy    = (data.get(1) << 16) | (data.get(0) & 0xFFFF);
-        int maxEnergy = (data.get(3) << 16) | (data.get(2) & 0xFFFF);
+        int energy = getEnergyStored(), maxEnergy = getMaxEnergy();
         return maxEnergy != 0 && energy != 0 ? (int)((long) energy * 110 / maxEnergy) : 0;
     }
 

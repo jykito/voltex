@@ -102,7 +102,7 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
         void consume(int amount) { this.energy = Math.max(0, this.energy - amount); }
         void set(int amount)     { this.energy = Math.min(getMaxEnergyStored(), Math.max(0, amount)); }
     }
-    private final CultEnergy energyStorage = new CultEnergy(50_000, 2_000);
+    private final CultEnergy energyStorage = new CultEnergy(50_000, 50_000); // приём = буфер, без потолка на вход
     private LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.empty();
 
     public final FluidTank waterTank = new FluidTank(TANK_CAP, fs -> fs.getFluid() == Fluids.WATER) {
@@ -125,6 +125,7 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
     private LazyOptional<IFluidHandler> lazyFluid = LazyOptional.empty();
 
     private int progress = 0;
+    private ItemStack displayResult = ItemStack.EMPTY; // что рисуется в центре (синкается на клиент для BER)
     private int maxProgress = 100;
     protected final ContainerData data;
 
@@ -176,6 +177,7 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
         }
 
         boolean working = false;
+        ItemStack newDisplay = ItemStack.EMPTY;
         ItemStack cultUp = itemHandler.getStackInSlot(2);
         if (cultUp.getItem() instanceof CultivatorUpgradeItem up) {
             GrowingRecipe.Category category = up.getCategory();
@@ -213,6 +215,7 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
                     energyStorage.consume(fePerTick);
                     progress++;
                     working = true;
+                    newDisplay = result.copy();
                     if (progress >= maxProgress) {
                         waterTank.drain(WATER_PER_RECIPE * actualParallel, IFluidHandler.FluidAction.EXECUTE);
                         if (!keepInput) itemHandler.extractItem(0, inputCount * actualParallel, false);
@@ -248,11 +251,13 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
                     itemHandler.setStackInSlot(1, ItemHandlerHelper.insertItem(dst, itemHandler.getStackInSlot(1), false)));
         }
 
-        if (state.getValue(CultivatorBlock.LIT) != working)
-            level.setBlock(pos, state.setValue(CultivatorBlock.LIT, working), 3);
+        boolean shown = MachineLit.tick(this, level, pos, state, CultivatorBlock.LIT, working);
+        ItemStack want = !shown ? ItemStack.EMPTY : (newDisplay.isEmpty() ? displayResult : newDisplay);
 
         setChanged();
-        if (waterTank.getFluidAmount() != waterBefore)
+        boolean displayChanged = !ItemStack.matches(displayResult, want);
+        if (displayChanged) displayResult = want.isEmpty() ? ItemStack.EMPTY : want.copy();
+        if (waterTank.getFluidAmount() != waterBefore || displayChanged)
             level.sendBlockUpdated(pos, state, state, 3);
     }
 
@@ -308,6 +313,7 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
         tag.putInt("energy", energyStorage.getEnergyStored());
         tag.put("waterTank", waterTank.writeToNBT(new CompoundTag()));
         tag.putInt("progress", progress);
+        tag.put("displayResult", displayResult.save(new CompoundTag()));
         super.saveAdditional(tag);
     }
 
@@ -317,7 +323,10 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
         energyStorage.set(tag.getInt("energy"));
         waterTank.readFromNBT(tag.getCompound("waterTank"));
         progress = tag.getInt("progress");
+        if (tag.contains("displayResult")) displayResult = ItemStack.of(tag.getCompound("displayResult"));
     }
+
+    public ItemStack getDisplayResult() { return displayResult; }
 
     public FluidStack getFluidInTank() { return waterTank.getFluid(); }
     public int getTankCapacity()       { return waterTank.getCapacity(); }

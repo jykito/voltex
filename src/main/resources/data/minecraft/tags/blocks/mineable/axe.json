@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "industrial_core:resin_log"
+    "industrial_core:resin_log",
+    "industrial_core:crate_t1"
   ]
 }

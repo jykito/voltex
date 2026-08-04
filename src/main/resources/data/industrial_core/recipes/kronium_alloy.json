@@ -1,14 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    " K ",
-    "CPC",
-    " K "
+    " A ",
+    "BCB",
+    " A "
   ],
   "key": {
-    "K": { "item": "industrial_core:kronit" },
-    "C": { "item": "industrial_core:crystal_plate" },
-    "P": { "item": "industrial_core:plutonium" }
+    "A": {
+      "item": "industrial_core:kronit"
+    },
+    "B": {
+      "item": "industrial_core:crystal_plate"
+    },
+    "C": {
+      "item": "industrial_core:plutonium"
+    }
   },
   "result": {
     "item": "industrial_core:kronium_alloy",

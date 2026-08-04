@@ -1,16 +1,26 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "GUG",
-    "PCP",
-    "GMG"
+    "ABA",
+    "CDC",
+    "AEA"
   ],
   "key": {
-    "G": { "item": "minecraft:glass" },
-    "U": { "item": "industrial_core:capsule" },
-    "P": { "item": "industrial_core:iron_plate" },
-    "C": { "item": "industrial_core:machine_casing" },
-    "M": { "item": "industrial_core:microcontroller" }
+    "A": {
+      "item": "minecraft:glass"
+    },
+    "B": {
+      "item": "industrial_core:capsule"
+    },
+    "C": {
+      "tag": "forge:plates/iron"
+    },
+    "D": {
+      "item": "industrial_core:machine_casing"
+    },
+    "E": {
+      "item": "industrial_core:crystal_plate"
+    }
   },
   "result": {
     "item": "industrial_core:capsule_filler",

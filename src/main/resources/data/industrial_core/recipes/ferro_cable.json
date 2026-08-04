@@ -1,13 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "WWW",
-    "TRT"
+    "ABA",
+    "CCC",
+    "ABA"
   ],
   "key": {
-    "W": { "item": "industrial_core:bare_ferro_wire" },
-    "T": { "item": "industrial_core:tin_plate" },
-    "R": { "item": "industrial_core:rubber" }
+    "A": {
+      "item": "industrial_core:rubber"
+    },
+    "B": {
+      "tag": "forge:plates/tin"
+    },
+    "C": {
+      "item": "industrial_core:bare_ferro_wire"
+    }
   },
   "result": {
     "item": "industrial_core:ferro_cable",

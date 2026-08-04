@@ -1,0 +1,9 @@
+{
+    "loader": "forge:obj",
+    "model": "industrial_core:models/block/electromagnet_copper_coil.obj",
+    "flip_v": true,
+    "textures": {
+        "electromagnet_copper_coil": "industrial_core:block/electromagnet_copper_coil",
+        "particle": "industrial_core:block/electromagnet_copper_coil"
+    }
+}

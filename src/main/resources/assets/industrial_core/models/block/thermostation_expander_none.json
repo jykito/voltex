@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "industrial_core:block/expander_side",
+    "up": "industrial_core:block/expander_caps",
+    "down": "industrial_core:block/expander_caps",
+    "north": "industrial_core:block/expander_side",
+    "east": "industrial_core:block/expander_side",
+    "south": "industrial_core:block/expander_back",
+    "west": "industrial_core:block/expander_side"
+  }
+}

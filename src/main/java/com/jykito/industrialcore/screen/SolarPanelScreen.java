@@ -39,7 +39,7 @@ public class SolarPanelScreen extends AbstractContainerScreen<SolarPanelMenu> {
     public SolarPanelScreen(SolarPanelMenu menu, Inventory inv, Component title) {
         super(menu, inv, title);
         imageWidth  = 256;
-        imageHeight = 240;
+        imageHeight = 224;
         TEXTURE = new ResourceLocation(IndustrialCore.MODID,
                 "textures/gui/solar_gui_t" + menu.blockEntity.getTierLevel() + ".png");
     }
@@ -57,6 +57,8 @@ public class SolarPanelScreen extends AbstractContainerScreen<SolarPanelMenu> {
         if (++animTick >= FRAME_TICKS) { animTick = 0; currentFrame = (currentFrame + 1) % FRAMES; }
         super.render(g, mx, my, pt);
         renderTooltip(g, mx, my);
+        Bars.energy(g, font, mx, my, leftPos + BAR_X, topPos + BAR_Y, BAR_W, BAR_H,
+                menu.getEnergyStored(), menu.getMaxEnergy());
     }
 
     @Override
@@ -87,7 +89,7 @@ public class SolarPanelScreen extends AbstractContainerScreen<SolarPanelMenu> {
 
         g.pose().pushPose();
         g.pose().translate(tx, ty, 0);
-        g.pose().scale(0.5f, 0.5f, 1f);
+        g.pose().scale(0.6f, 0.6f, 1f);
 
         String panelName = menu.blockEntity.getBlockState().getBlock().getName().getString();
         g.drawString(font, panelName, 0, 0, TEXT_BRIGHT, false);

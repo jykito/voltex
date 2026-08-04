@@ -79,7 +79,7 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
         void consumeEnergy(int amount) { this.energy = Math.max(0, this.energy - amount); }
         void setEnergy(int amount) { this.energy = Math.min(getMaxEnergyStored(), Math.max(0, amount)); }
     }
-    private final WasherEnergy energyStorage = new WasherEnergy(64000, 1024);
+    private final WasherEnergy energyStorage = new WasherEnergy(64000, 64000); // приём = буфер, без потолка на вход
     private LazyOptional<EnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
     public final FluidTank waterTank = new FluidTank(128000, fs -> fs.getFluid() == Fluids.WATER) {
@@ -173,7 +173,7 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
             }
         }
 
-        if (itemPullerDir != null && itemHandler.getStackInSlot(0).isEmpty()) {
+        if (itemPullerDir != null) { // тянем постоянно — insertItem сам добьёт слот 0 до полного
             final Direction d = itemPullerDir;
             BlockEntity neighbor = level.getBlockEntity(pos.relative(d));
             if (neighbor != null) {
@@ -230,9 +230,7 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
             }
         }
 
-        if (state.getValue(OreWasherBlock.LIT) != isWorking) {
-            level.setBlock(pos, state.setValue(OreWasherBlock.LIT, isWorking), 3);
-        }
+        MachineLit.tick(this, level, pos, state, OreWasherBlock.LIT, isWorking);
 
         setChanged();
     }

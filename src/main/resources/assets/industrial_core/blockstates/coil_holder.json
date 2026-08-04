@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "formed=false": { "model": "industrial_core:block/coil_holder" },
+    "formed=true":  { "model": "industrial_core:block/coil_holder" }
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "name": "Тепло",
+  "entries": [
+    {
+      "name": "Тепло как ресурс",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Тепловая сеть"
+        },
+        {
+          "type": "text",
+          "text": "Тепло — отдельный ресурс, не FE. Термогенератор превращает FE в тепло, теплотрубы переносят его, а доменка, сжижитель и термостанция его потребляют."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:thermogenerator",
+            "industrial_core:heat_pipe",
+            "industrial_core:heat_conductor"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Термогенератор",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Термогенератор"
+        },
+        {
+          "type": "text",
+          "text": "Преобразует FE в тепло и подаёт его на блок перед собой. Апгрейды мотора и теплопровода повышают выход. Сердце любой тепловой цепи."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:thermogenerator"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Доменная печь",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Доменная печь"
+        },
+        {
+          "type": "text",
+          "text": "Работает на тепле, а не на FE. Плавит высокотемпературные сплавы: инвар, электрум, закалённую сталь, кристаллический слиток. Апгрейды ускоряют и распараллеливают."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:blast_furnace",
+            "industrial_core:blast_upgrade_forced_air",
+            "industrial_core:blast_upgrade_oxygen_boost"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Теплотрубы",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Теплотрубы"
+        },
+        {
+          "type": "text",
+          "text": "Переносят тепло от генератора к потребителям. T1 имеет малые потери, T2 — без потерь и с большей пропускной способностью. Изоляция снижает утечки."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:heat_pipe",
+            "industrial_core:heat_pipe_t2",
+            "industrial_core:thermal_insulation"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Термостанция",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Термостанция"
+        },
+        {
+          "type": "text",
+          "text": "Вертикальная башня: ядро внизу, расширители сверху, радиаторы сзади. Собирает тепло от нескольких термогенераторов в общий буфер и отдаёт вниз. Перегрев останавливает цикл."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:thermostation_core",
+            "industrial_core:thermostation_expander",
+            "industrial_core:thermostation_radiator"
+          ]
+        }
+      ]
+    }
+  ]
+}

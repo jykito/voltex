@@ -1,14 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "PEP",
-    "EBE",
-    "PEP"
+    "ABA",
+    "BCB",
+    "ABA"
   ],
   "key": {
-    "P": { "item": "industrial_core:plutonium" },
-    "E": { "item": "industrial_core:electrum_plate" },
-    "B": { "item": "industrial_core:basic_catalyst" }
+    "A": {
+      "item": "industrial_core:plutonium"
+    },
+    "B": {
+      "tag": "forge:plates/electrum"
+    },
+    "C": {
+      "item": "industrial_core:basic_catalyst"
+    }
   },
   "result": {
     "item": "industrial_core:activated_catalyst",

@@ -82,7 +82,11 @@ public class FluidGeneratorBlockEntity extends BlockEntity implements MenuProvid
         this.maxProgress = type.processTicks;
         this.energyStorage = new GenEnergy(type.feBuffer, type.feMaxReceive);
         this.outputTank = new FluidTank(type.tankCapacity, fs -> fs.getFluid() == type.fluid) {
-            @Override protected void onContentsChanged() { setChanged(); }
+            @Override protected void onContentsChanged() {
+                setChanged();
+                if (level != null && !level.isClientSide())
+                    level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+            }
         };
         this.data = new ContainerData() {
             @Override public int get(int index) {
@@ -146,12 +150,7 @@ public class FluidGeneratorBlockEntity extends BlockEntity implements MenuProvid
                     FluidUtil.tryFluidTransfer(dst, outputTank, outputTank.getFluidAmount(), true));
         }
 
-        if (state.getValue(FluidGeneratorBlock.LIT) != working)
-            level.setBlock(pos, state.setValue(FluidGeneratorBlock.LIT, working), 3);
-
-        setChanged();
-        if (outputTank.getFluidAmount() != fluidBefore)
-            level.sendBlockUpdated(pos, state, state, 3);
+        MachineLit.tick(this, level, pos, state, FluidGeneratorBlock.LIT, working);setChanged();
     }
 
     @Override public CompoundTag getUpdateTag() { return saveWithoutMetadata(); }
