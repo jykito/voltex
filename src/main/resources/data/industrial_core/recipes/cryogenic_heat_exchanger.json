@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ASA",
+    "SHS",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:cryolite"
+    },
+    "S": {
+      "item": "industrial_core:superconductor_coil"
+    },
+    "H": {
+      "type": "forge:nbt",
+      "item": "industrial_core:capsule",
+      "nbt": "{Fluid:{Amount:1000,FluidName:\"industrial_core:hot_coolant\"}}"
+    },
+    "E": {
+      "item": "industrial_core:advanced_heat_exchanger"
+    }
+  },
+  "result": {
+    "item": "industrial_core:cryogenic_heat_exchanger",
+    "count": 1
+  }
+}

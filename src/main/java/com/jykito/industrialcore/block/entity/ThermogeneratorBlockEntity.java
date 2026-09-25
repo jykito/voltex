@@ -57,7 +57,8 @@ public class ThermogeneratorBlockEntity extends BlockEntity implements MenuProvi
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             return stack.getItem() == com.jykito.industrialcore.item.ModItems.ELECTRIC_MOTOR.get()
                 || stack.getItem() == com.jykito.industrialcore.item.ModItems.HEAT_CONDUCTOR.get()
-                || stack.getItem() == com.jykito.industrialcore.item.ModItems.ADVANCED_HEAT_EXCHANGER.get();
+                || stack.getItem() == com.jykito.industrialcore.item.ModItems.ADVANCED_HEAT_EXCHANGER.get()
+                || stack.getItem() == com.jykito.industrialcore.item.ModItems.CRYOGENIC_HEAT_EXCHANGER.get();
         }
     };
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
@@ -143,6 +144,16 @@ public class ThermogeneratorBlockEntity extends BlockEntity implements MenuProvi
         return new ThermogeneratorMenu(id, inventory, this, this.data);
     }
 
+    /**
+     * Смотрит ли генератор в термостанцию. От этого зависит криогенный теплообменник: он даёт
+     * поток, который в одиночку девать некуда, поэтому работает только на станцию.
+     * Проверяется цель, а не соседство — станция должна быть именно приёмником тепла.
+     */
+    private static boolean feedsThermostation(Level level, BlockPos pos, BlockState state) {
+        BlockEntity target = level.getBlockEntity(pos.relative(state.getValue(ThermogeneratorBlock.FACING)));
+        return target instanceof ThermostationBlockEntity;
+    }
+
     public void tick(Level level, BlockPos pos, BlockState state) {
         if (level.isClientSide) return;
 
@@ -163,6 +174,12 @@ public class ThermogeneratorBlockEntity extends BlockEntity implements MenuProvi
         else if (upgradeSlot.getItem() == ModItems.ADVANCED_HEAT_EXCHANGER.get()) {
             heatOutput = 17;
             energyCost = 2000;
+        }
+        else if (upgradeSlot.getItem() == ModItems.CRYOGENIC_HEAT_EXCHANGER.get() && feedsThermostation(level, pos, state)) {
+            // Криогенный работает ТОЛЬКО в связке со станцией: она буфер и насос, и без неё
+            // такой поток тепла девать некуда. Одиночный термогенератор с ним просто не заводится.
+            heatOutput = 60;
+            energyCost = 4200;
         }
 
         if (energyStorage.getEnergyStored() >= energyCost) {

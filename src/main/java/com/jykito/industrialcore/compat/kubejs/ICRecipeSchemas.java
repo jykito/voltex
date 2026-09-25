@@ -21,7 +21,22 @@ public final class ICRecipeSchemas {
     public static final RecipeSchema BLAST_FURNACE   = blastFurnace();
     public static final RecipeSchema GROWING         = growing();
 
+    public static final RecipeSchema CRYSTALLIZER    = crystallizer();
+
     public static final RecipeSchema MACHINE         = machine();
+
+    /** Затравка необязательна: рецепт может кристаллизовать из одной жидкости. */
+    private static RecipeSchema crystallizer() {
+        RecipeKey<OutputItem> result     = ItemComponents.OUTPUT.key("result");
+        RecipeKey<String>     fluidInput  = StringComponent.ANY.key("fluidInput");
+        RecipeKey<Integer>    fluidAmount = NumberComponent.INT.key("fluidInputAmount").optional(1000);
+        RecipeKey<InputItem>  ingredient  = ItemComponents.INPUT.key("ingredient").defaultOptional();
+        RecipeKey<Integer>    count       = NumberComponent.INT.key("ingredientCount").optional(1);
+        RecipeKey<Integer>    time        = NumberComponent.INT.key("processingTime").optional(200);
+        RecipeKey<Integer>    energy      = NumberComponent.INT.key("energyCostPerTick").optional(40);
+        return new RecipeSchema(result, fluidInput, fluidAmount, ingredient, count, time, energy)
+                .uniqueOutputId(result);
+    }
 
     private static RecipeSchema liquefier() {
         RecipeKey<InputItem> ingredient  = ItemComponents.INPUT.key("ingredient");

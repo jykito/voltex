@@ -10,15 +10,14 @@
         },
         {
           "type": "text",
-          "text": "Voltex adds 4 ores: tin, lead, bauxite (for aluminum) and uranium. They generate normally in the Overworld, in stone and deepslate. Crush or smelt them like any ore."
+          "text": "Voltex adds 3 ores: tin, lead and bauxite (for aluminum). They generate normally in the Overworld, in stone and deepslate. Crush or smelt them like any ore."
         },
         {
           "type": "items",
           "items": [
             "industrial_core:tin_ore",
             "industrial_core:lead_ore",
-            "industrial_core:bauxite_ore",
-            "industrial_core:uranium_ore"
+            "industrial_core:bauxite_ore"
           ]
         }
       ]

@@ -3,7 +3,6 @@
   "values": [
     "#forge:raw_materials/tin",
     "#forge:raw_materials/lead",
-    "#forge:raw_materials/uranium",
     "#forge:raw_materials/aluminum"
   ]
 }

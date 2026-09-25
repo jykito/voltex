@@ -53,6 +53,8 @@ public final class ClientSetup {
             MenuScreens.register(ModMenuTypes.BATTERY_CHARGER_MENU.get(), BatteryChargerScreen::new);
             MenuScreens.register(ModMenuTypes.FLUID_ENRICHER_MENU.get(), FluidEnricherScreen::new);
             MenuScreens.register(ModMenuTypes.LIQUEFIER_MENU.get(), LiquefierScreen::new);
+            MenuScreens.register(ModMenuTypes.CRYSTALLIZER_MENU.get(), CrystallizerScreen::new);
+            MenuScreens.register(ModMenuTypes.CRYO_CHAMBER_MENU.get(), CryoChamberScreen::new);
             MenuScreens.register(ModMenuTypes.FLUID_GENERATOR_MENU.get(), FluidGeneratorScreen::new);
             MenuScreens.register(ModMenuTypes.STONE_GENERATOR_MENU.get(), StoneGeneratorScreen::new);
             MenuScreens.register(ModMenuTypes.CAPSULE_FILLER_MENU.get(), CapsuleFillerScreen::new);
@@ -60,7 +62,6 @@ public final class ClientSetup {
             MenuScreens.register(ModMenuTypes.ORE_WASHER_MENU.get(), OreWasherScreen::new);
             MenuScreens.register(ModMenuTypes.RECIPE_EXPORTER_MENU.get(), RecipeExporterScreen::new);
             MenuScreens.register(ModMenuTypes.MATTER_FABRICATOR_MENU.get(), MatterFabricatorScreen::new);
-            MenuScreens.register(ModMenuTypes.NUCLEAR_REACTOR_MENU.get(), NuclearReactorScreen::new);
             MenuScreens.register(ModMenuTypes.ROD_FABRICATOR_MENU.get(), RodFabricatorScreen::new);
             MenuScreens.register(ModMenuTypes.EXTRACTOR_MENU.get(), ExtractorScreen::new);
             MenuScreens.register(ModMenuTypes.PHASE_SPLITTER_MENU.get(), PhaseSplitterScreen::new);
@@ -89,8 +90,6 @@ public final class ClientSetup {
                 RestructorRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.CULTIVATOR_BE.get(),
                 CultivatorRenderer::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.NUCLEAR_REACTOR_BE.get(),
-                NuclearReactorBER::new);
         event.registerBlockEntityRenderer(ModBlockEntities.MINER_CORE_BE.get(),
                 MinerCoreBER::new);
         event.registerBlockEntityRenderer(ModBlockEntities.LOGISTICS_NODE_BE.get(),
@@ -109,12 +108,8 @@ public final class ClientSetup {
     @SubscribeEvent
     public static void onRegisterAdditionalModels(ModelEvent.RegisterAdditional event) {
         event.register(MinerCoreBER.DRILL_MODEL_RL);
+        event.register(MinerCoreBER.DRILL_GLOW_MODEL_RL);
         event.register(MinerCoreBER.SCREW_MODEL_RL);
-        event.register(NuclearReactorBER.IDLE_MODEL_RL);
-        event.register(NuclearReactorBER.ACTIVE_MODEL_RL);
-        event.register(NuclearReactorBER.EMISSIVE_ACTIVE_MODEL_RL);
-        event.register(HeatPipeBER.CORE_GLOW);
-        event.register(HeatPipeBER.ARM_GLOW);
         event.register(ElectromagnetCoreBER.BODY_MODEL);
         event.register(ElectromagnetCoreBER.PILONS_MODEL);
         event.register(ElectromagnetCoreBER.COIL_MODEL);

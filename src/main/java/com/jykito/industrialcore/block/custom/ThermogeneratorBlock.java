@@ -29,10 +29,33 @@ public class ThermogeneratorBlock extends BaseEntityBlock {
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIT, false));
     }
 
+    /**
+     * Лицо само разворачивается к соседу, который умеет принимать тепло, — тепло уходит только
+     * вперёд, и подгадывать сторону при установке больше не нужно. Цель ищется по капабилити,
+     * а не по конкретному блоку: под правило одинаково подходят термостанция, теплотруба и
+     * машины вроде сжижителя, и новые потребители подхватятся сами.
+     * <p>
+     * Взгляд игрока имеет приоритет: если потребитель есть и там, куда смотришь, и сбоку,
+     * выиграет твой выбор. Если потребителей рядом нет, работает прежнее правило по взгляду.
+     */
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return this.defaultBlockState().setValue(FACING, context.getNearestLookingDirection().getOpposite());
+        Direction look = context.getNearestLookingDirection().getOpposite();
+        Direction target = acceptsHeat(context, look) ? look : null;
+        if (target == null) {
+            for (Direction d : Direction.values()) {
+                if (acceptsHeat(context, d)) { target = d; break; }
+            }
+        }
+        return this.defaultBlockState().setValue(FACING, target != null ? target : look);
+    }
+
+    /** Есть ли за этой стороной то, что примет тепло. */
+    private static boolean acceptsHeat(BlockPlaceContext context, Direction side) {
+        BlockEntity be = context.getLevel().getBlockEntity(context.getClickedPos().relative(side));
+        return be != null
+                && be.getCapability(com.jykito.industrialcore.heat.HeatCapability.HEAT, side.getOpposite()).isPresent();
     }
 
     @Override

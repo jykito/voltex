@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "up": "industrial_core:block/cryo_casing_based",
+    "down": "industrial_core:block/cryo_casing_based",
+    "north": "industrial_core:block/cryo_casing_based",
+    "south": "industrial_core:block/cryo_casing_based",
+    "east": "industrial_core:block/cryo_casing_based",
+    "west": "industrial_core:block/cryo_casing_based",
+    "particle": "industrial_core:block/cryo_casing_based"
+  }
+}

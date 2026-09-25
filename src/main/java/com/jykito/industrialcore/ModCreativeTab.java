@@ -64,6 +64,7 @@ public final class ModCreativeTab {
                         output.accept(ModItems.METAL_FORMER_ITEM.get());
                         output.accept(ModItems.FlUID_ENRICHER.get());
                         output.accept(ModItems.LIQUEFIER_ITEM.get());
+                        output.accept(ModItems.CRYSTALLIZER_ITEM.get());
                         output.accept(ModItems.LAVA_GENERATOR_ITEM.get());
                         output.accept(ModItems.WATER_GENERATOR_ITEM.get());
                         output.accept(ModItems.STONE_GENERATOR_ITEM.get());
@@ -83,8 +84,6 @@ public final class ModCreativeTab {
                         output.accept(ModItems.MINER_LENS_2.get());
                         output.accept(ModItems.MINER_LENS_3.get());
                         output.accept(ModItems.MINER_LENS_4.get());
-                        output.accept(ModItems.REACTOR_CHAMBER_ITEM.get());
-                        output.accept(ModItems.NUCLEAR_REACTOR_ITEM.get());
 
                         output.accept(ModItems.TIN_ORE_ITEM.get());
                         output.accept(ModItems.DEEPSLATE_TIN_ORE_ITEM.get());
@@ -97,14 +96,9 @@ public final class ModCreativeTab {
                         output.accept(ModItems.BAUXITE_ORE_ITEM.get());
                         output.accept(ModItems.DEEPSLATE_BAUXITE_ORE_ITEM.get());
                         output.accept(ModItems.RAW_ALUMINUM.get());
-                        output.accept(ModItems.URANIUM_ORE_ITEM.get());
-                        output.accept(ModItems.DEEPSLATE_URANIUM_ORE_ITEM.get());
-                        output.accept(ModItems.RAW_URANIUM.get());
-                        output.accept(ModItems.RAW_URANIUM_BLOCK_ITEM.get());
 
                         output.accept(ModItems.TIN_INGOT.get());
                         output.accept(ModItems.LEAD_INGOT.get());
-                        output.accept(ModItems.URANIUM_INGOT.get());
                         output.accept(ModItems.KRONIUM_ALLOY.get());
                         output.accept(ModItems.BRONZE_INGOT.get());
                         output.accept(ModItems.COMPOSITE_INGOT.get());
@@ -118,7 +112,6 @@ public final class ModCreativeTab {
                         output.accept(ModItems.TIN_DUST.get());
                         output.accept(ModItems.LEAD_DUST.get());
                         output.accept(ModItems.BRONZE_DUST.get());
-                        output.accept(ModItems.URANIUM_DUST.get());
                         output.accept(ModItems.DIAMOND_DUST.get());
                         output.accept(ModItems.EMERALD_DUST.get());
                         output.accept(ModItems.LAPIS_DUST.get());
@@ -142,7 +135,17 @@ public final class ModCreativeTab {
                         output.accept(ModItems.ELECTRUM_BLOCK_ITEM.get());
                         output.accept(ModItems.LITHIUM_DUST.get());
                         output.accept(ModItems.LITHIUM.get());
-                        output.accept(ModItems.PLUTONIUM.get());
+                        output.accept(ModItems.CRYOLITE.get());
+                        output.accept(ModItems.CRYO_CRYSTAL.get());
+                        output.accept(ModItems.DEPTH_MODULE_2.get());
+                        output.accept(ModItems.DEPTH_MODULE_3.get());
+                        output.accept(ModItems.CRYO_CORE_ITEM.get());
+                        output.accept(ModItems.REFRIGERATION_CHAMBER_ITEM.get());
+                        output.accept(ModItems.CRYO_CASING_ITEM.get());
+                        output.accept(ModItems.CRYO_GLASS_ITEM.get());
+                        output.accept(ModItems.CRYO_ROD.get());
+                        output.accept(ModItems.CRYO_ROD_T2.get());
+                        output.accept(ModItems.CRYO_ROD_T3.get());
 
                         output.accept(ModItems.IRON_PLATE.get());
                         output.accept(ModItems.COPPER_PLATE.get());
@@ -177,6 +180,8 @@ public final class ModCreativeTab {
                         output.accept(ModItems.ELECTRIC_MOTOR.get());
                         output.accept(ModItems.HEAT_CONDUCTOR.get());
                         output.accept(ModItems.ADVANCED_HEAT_EXCHANGER.get());
+                        output.accept(ModItems.CRYOGENIC_HEAT_EXCHANGER.get());
+                        output.accept(ModItems.HEAT_PROBE.get());
 
                         output.accept(ModItems.BARE_COPPER_WIRE.get());
                         output.accept(ModItems.BARE_FERRO_WIRE.get());
@@ -287,14 +292,6 @@ public final class ModCreativeTab {
                         output.accept(ModItems.ENERGY_BACKPACK_T3.get());
 
                         output.accept(ModItems.EMPTY_FUEL_ROD.get());
-                        output.accept(ModItems.EMPTY_REINFORCED_FUEL_ROD.get());
-                        output.accept(ModItems.URANIUM_FUEL_ROD.get());
-                        output.accept(ModItems.DEPLETED_URANIUM_FUEL_ROD.get());
-                        output.accept(ModItems.PLUTONIUM_FUEL_ROD.get());
-                        output.accept(ModItems.DEPLETED_PLUTONIUM_FUEL_ROD.get());
-                        output.accept(ModItems.MOX_FUEL.get());
-                        output.accept(ModItems.MOX_FUEL_ROD.get());
-                        output.accept(ModItems.DEPLETED_MOX_FUEL_ROD.get());
                         output.accept(ModItems.GRAPHITE_ROD.get());
                         output.accept(ModItems.HEAT_VENT.get());
                         output.accept(ModItems.INTEGRAL_HEAT_VENT.get());
@@ -302,18 +299,6 @@ public final class ModCreativeTab {
                         output.accept(ModItems.COMPONENT_HEAT_VENT.get());
                         output.accept(ModItems.ADVANCED_HEAT_VENT.get());
                         output.accept(ModItems.CONDENSATOR.get());
-                        output.accept(ModItems.REACTOR_BLUEPRINT.get());
-                        output.accept(ModItems.REACTOR_SCHEME_U1.get());
-                        output.accept(ModItems.REACTOR_SCHEME_U2.get());
-                        output.accept(ModItems.REACTOR_SCHEME_U3.get());
-                        output.accept(ModItems.REACTOR_SCHEME_P1.get());
-                        output.accept(ModItems.REACTOR_SCHEME_P2.get());
-                        output.accept(ModItems.REACTOR_SCHEME_P3.get());
-                        output.accept(ModItems.REACTOR_SCHEME_P4.get());
-                        output.accept(ModItems.REACTOR_SCHEME_M1.get());
-                        output.accept(ModItems.REACTOR_SCHEME_M2.get());
-                        output.accept(ModItems.REACTOR_SCHEME_M3.get());
-                        output.accept(ModItems.REACTOR_SCHEME_M4.get());
 
                         output.accept(ModItems.PLASMA_HELMET.get());
                         ItemStack fullPlasmaHelmet = new ItemStack(ModItems.PLASMA_HELMET.get());

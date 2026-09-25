@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ACA",
+    "CMC",
+    "ACA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:cryolite"
+    },
+    "C": {
+      "item": "industrial_core:crystal_plate"
+    },
+    "M": {
+      "item": "industrial_core:machine_casing"
+    }
+  },
+  "result": {
+    "item": "industrial_core:depth_module_2",
+    "count": 1
+  }
+}

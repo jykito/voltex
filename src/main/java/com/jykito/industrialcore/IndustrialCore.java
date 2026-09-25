@@ -1,7 +1,6 @@
 package com.jykito.industrialcore;
 
 import com.jykito.industrialcore.block.ModBlocks;
-import com.jykito.industrialcore.compat.DynamicLightsCompat;
 import com.jykito.industrialcore.block.entity.BaseMachineBlockEntity;
 import com.jykito.industrialcore.block.entity.ModBlockEntities;
 import com.jykito.industrialcore.fluid.ModFluids;
@@ -58,7 +57,6 @@ public class IndustrialCore {
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(ModMessages::register);
-        event.enqueueWork(DynamicLightsCompat::init);
     }
 
 @SubscribeEvent

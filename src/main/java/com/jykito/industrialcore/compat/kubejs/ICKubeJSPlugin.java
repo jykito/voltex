@@ -16,6 +16,7 @@ public class ICKubeJSPlugin extends KubeJSPlugin {
     public void registerRecipeSchemas(RegisterRecipeSchemasEvent event) {
         event.namespace(IndustrialCore.MODID)
                 .register("liquefier_recipe",      ICRecipeSchemas.LIQUEFIER)
+                .register("crystallizer_recipe",   ICRecipeSchemas.CRYSTALLIZER)
                 .register("ore_washing_recipe",    ICRecipeSchemas.ORE_WASHING)
                 .register("fluid_enricher_recipe", ICRecipeSchemas.FLUID_ENRICHER)
                 .register("phase_splitter_recipe", ICRecipeSchemas.PHASE_SPLITTER)

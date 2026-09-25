@@ -1,0 +1,91 @@
+{
+	"parent": "minecraft:block/block",
+	"render_type": "minecraft:translucent",
+	"texture_size": [
+		64,
+		64
+	],
+	"textures": {
+		"0": "industrial_core:block/cryo_glass_connect_d",
+		"particle": "industrial_core:block/cryo_glass_connect_d"
+	},
+	"elements": [
+		{
+			"from": [
+				6.343,
+				0,
+				3
+			],
+			"to": [
+				17.657,
+				16,
+				5
+			],
+			"rotation": {
+				"angle": -45,
+				"axis": "y",
+				"origin": [
+					12,
+					8,
+					4
+				]
+			},
+			"faces": {
+				"north": {
+					"uv": [
+						0,
+						0,
+						2.828,
+						4
+					],
+					"texture": "#0"
+				},
+				"east": {
+					"uv": [
+						4,
+						0,
+						4.5,
+						4
+					],
+					"texture": "#0"
+				},
+				"south": {
+					"uv": [
+						0,
+						4,
+						2.828,
+						8
+					],
+					"texture": "#0"
+				},
+				"west": {
+					"uv": [
+						4,
+						4,
+						4.5,
+						8
+					],
+					"texture": "#0"
+				},
+				"up": {
+					"uv": [
+						7.328,
+						0.5,
+						4.5,
+						0
+					],
+					"texture": "#0"
+				},
+				"down": {
+					"uv": [
+						7.328,
+						0.5,
+						4.5,
+						1
+					],
+					"texture": "#0"
+				}
+			}
+		}
+	]
+}

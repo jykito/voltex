@@ -40,7 +40,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvider {
 
-    private static final int TANK_CAP = 128000;
+    // База под работу без модуля: 8 капсул. Под параллели бак растёт сам, см. AdaptiveTank.
+    private static final int TANK_CAP = 8000;
     private static final int FLUID_PER_CAPSULE = 1000;
     private static final int BASE_TIME = 40;
     private static final int BASE_FE_PER_TICK = 80;
@@ -157,6 +158,9 @@ public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvide
                 }
             }
         }
+        if (AdaptiveTank.resize(inputTank, TANK_CAP, parallel))
+            level.sendBlockUpdated(pos, state, state, 3); // шкала бака считается от ёмкости, клиенту нужна новая
+
         maxProgress = Math.max(1, (int) (BASE_TIME * speedMul));
         int fePerTick = Math.max(1, (int) (BASE_FE_PER_TICK * energyMul));
 
@@ -295,6 +299,7 @@ public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvide
         tag.put("inventory", itemHandler.serializeNBT());
         tag.putInt("energy", energyStorage.getEnergyStored());
         tag.put("inputTank", inputTank.writeToNBT(new CompoundTag()));
+        AdaptiveTank.save(tag, "inputTankCapacity", inputTank);
         tag.putInt("progress", progress);
         super.saveAdditional(tag);
     }
@@ -303,6 +308,7 @@ public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvide
         super.load(tag);
         itemHandler.deserializeNBT(tag.getCompound("inventory"));
         energyStorage.set(tag.getInt("energy"));
+        AdaptiveTank.load(tag, "inputTankCapacity", inputTank, TANK_CAP);
         inputTank.readFromNBT(tag.getCompound("inputTank"));
         progress = tag.getInt("progress");
     }

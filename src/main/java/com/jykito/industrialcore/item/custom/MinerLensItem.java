@@ -100,7 +100,6 @@ public class MinerLensItem extends Item {
                 l.add(new Candidate(ModItems.TIN_ORE_ITEM.get(), 9, "tin"));         l.add(new Candidate(ModItems.DEEPSLATE_TIN_ORE_ITEM.get(), 7, "tin"));
                 l.add(new Candidate(ModItems.LEAD_ORE_ITEM.get(), 4, "lead"));       l.add(new Candidate(ModItems.DEEPSLATE_LEAD_ORE_ITEM.get(), 3, "lead"));
                 l.add(new Candidate(ModItems.BAUXITE_ORE_ITEM.get(), 5, "aluminum"));l.add(new Candidate(ModItems.DEEPSLATE_BAUXITE_ORE_ITEM.get(), 2, "aluminum"));
-                l.add(new Candidate(ModItems.URANIUM_ORE_ITEM.get(), 2, "uranium"));l.add(new Candidate(ModItems.DEEPSLATE_URANIUM_ORE_ITEM.get(), 1, "uranium"));
                 l.add(new Candidate(Items.AMETHYST_BLOCK, 6, "amethyst"));
             }
             case NETHER -> {

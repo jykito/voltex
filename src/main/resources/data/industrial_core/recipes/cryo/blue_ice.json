@@ -1,0 +1,14 @@
+{
+  "type": "industrial_core:cryo_recipe",
+  "ingredient": {
+    "item": "minecraft:packed_ice"
+  },
+  "ingredientCount": 1,
+  "requiredStage": 1,
+  "result": {
+    "item": "minecraft:blue_ice",
+    "count": 1
+  },
+  "processingTime": 200,
+  "energyCostPerTick": 60
+}

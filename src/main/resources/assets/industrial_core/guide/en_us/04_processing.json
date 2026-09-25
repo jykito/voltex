@@ -206,7 +206,7 @@
         },
         {
           "type": "text",
-          "text": "Splits one input into several outputs. Its main use is reprocessing spent reactor rods into plutonium and uranium."
+          "text": "Splits one input into several outputs at once, for processing that yields a set of products rather than one."
         },
         {
           "type": "items",
@@ -225,13 +225,14 @@
         },
         {
           "type": "text",
-          "text": "Assembles reactor fuel rods from empty rods and fuel (uranium, plutonium, MOX). A specialized machine of the nuclear chain."
+          "text": "Assembles cryo rods from an empty rod and cryolite, and the higher tiers from a lower rod and a cryo crystal. Rods wear out in the Cryo Chamber, so the fabricator always has work."
         },
         {
           "type": "items",
           "items": [
             "industrial_core:rod_fabricator",
-            "industrial_core:graphite_rod"
+            "industrial_core:cryo_rod",
+            "industrial_core:cryo_rod_t2"
           ]
         }
       ]

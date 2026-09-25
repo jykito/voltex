@@ -1,0 +1,480 @@
+{
+  "variants": {
+    "axis=x,north=false,south=false,east=false,west=false,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight",
+      "y": 90
+    },
+    "axis=x,north=false,south=false,east=false,west=false,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_d",
+      "y": 90
+    },
+    "axis=x,north=false,south=false,east=false,west=false,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight_u",
+      "y": 90
+    },
+    "axis=x,north=false,south=false,east=false,west=false,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_ud",
+      "y": 90
+    },
+    "axis=x,north=false,south=false,east=false,west=true,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight"
+    },
+    "axis=x,north=false,south=false,east=false,west=true,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_d"
+    },
+    "axis=x,north=false,south=false,east=false,west=true,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight_u"
+    },
+    "axis=x,north=false,south=false,east=false,west=true,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_ud"
+    },
+    "axis=x,north=false,south=false,east=true,west=false,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight"
+    },
+    "axis=x,north=false,south=false,east=true,west=false,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_d"
+    },
+    "axis=x,north=false,south=false,east=true,west=false,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight_u"
+    },
+    "axis=x,north=false,south=false,east=true,west=false,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_ud"
+    },
+    "axis=x,north=false,south=false,east=true,west=true,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight"
+    },
+    "axis=x,north=false,south=false,east=true,west=true,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_d"
+    },
+    "axis=x,north=false,south=false,east=true,west=true,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight_u"
+    },
+    "axis=x,north=false,south=false,east=true,west=true,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_ud"
+    },
+    "axis=x,north=false,south=true,east=false,west=false,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight",
+      "y": 90
+    },
+    "axis=x,north=false,south=true,east=false,west=false,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_d",
+      "y": 90
+    },
+    "axis=x,north=false,south=true,east=false,west=false,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight_u",
+      "y": 90
+    },
+    "axis=x,north=false,south=true,east=false,west=false,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_ud",
+      "y": 90
+    },
+    "axis=x,north=false,south=true,east=false,west=true,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner",
+      "y": 180
+    },
+    "axis=x,north=false,south=true,east=false,west=true,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_d",
+      "y": 180
+    },
+    "axis=x,north=false,south=true,east=false,west=true,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner_u",
+      "y": 180
+    },
+    "axis=x,north=false,south=true,east=false,west=true,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_ud",
+      "y": 180
+    },
+    "axis=x,north=false,south=true,east=true,west=false,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner",
+      "y": 90
+    },
+    "axis=x,north=false,south=true,east=true,west=false,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_d",
+      "y": 90
+    },
+    "axis=x,north=false,south=true,east=true,west=false,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner_u",
+      "y": 90
+    },
+    "axis=x,north=false,south=true,east=true,west=false,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_ud",
+      "y": 90
+    },
+    "axis=x,north=false,south=true,east=true,west=true,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner",
+      "y": 90
+    },
+    "axis=x,north=false,south=true,east=true,west=true,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_d",
+      "y": 90
+    },
+    "axis=x,north=false,south=true,east=true,west=true,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner_u",
+      "y": 90
+    },
+    "axis=x,north=false,south=true,east=true,west=true,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_ud",
+      "y": 90
+    },
+    "axis=x,north=true,south=false,east=false,west=false,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight",
+      "y": 90
+    },
+    "axis=x,north=true,south=false,east=false,west=false,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_d",
+      "y": 90
+    },
+    "axis=x,north=true,south=false,east=false,west=false,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight_u",
+      "y": 90
+    },
+    "axis=x,north=true,south=false,east=false,west=false,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_ud",
+      "y": 90
+    },
+    "axis=x,north=true,south=false,east=false,west=true,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner",
+      "y": 270
+    },
+    "axis=x,north=true,south=false,east=false,west=true,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_d",
+      "y": 270
+    },
+    "axis=x,north=true,south=false,east=false,west=true,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner_u",
+      "y": 270
+    },
+    "axis=x,north=true,south=false,east=false,west=true,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_ud",
+      "y": 270
+    },
+    "axis=x,north=true,south=false,east=true,west=false,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner"
+    },
+    "axis=x,north=true,south=false,east=true,west=false,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_d"
+    },
+    "axis=x,north=true,south=false,east=true,west=false,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner_u"
+    },
+    "axis=x,north=true,south=false,east=true,west=false,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_ud"
+    },
+    "axis=x,north=true,south=false,east=true,west=true,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner",
+      "y": 270
+    },
+    "axis=x,north=true,south=false,east=true,west=true,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_d",
+      "y": 270
+    },
+    "axis=x,north=true,south=false,east=true,west=true,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner_u",
+      "y": 270
+    },
+    "axis=x,north=true,south=false,east=true,west=true,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_ud",
+      "y": 270
+    },
+    "axis=x,north=true,south=true,east=false,west=false,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight",
+      "y": 90
+    },
+    "axis=x,north=true,south=true,east=false,west=false,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_d",
+      "y": 90
+    },
+    "axis=x,north=true,south=true,east=false,west=false,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight_u",
+      "y": 90
+    },
+    "axis=x,north=true,south=true,east=false,west=false,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_ud",
+      "y": 90
+    },
+    "axis=x,north=true,south=true,east=false,west=true,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner",
+      "y": 180
+    },
+    "axis=x,north=true,south=true,east=false,west=true,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_d",
+      "y": 180
+    },
+    "axis=x,north=true,south=true,east=false,west=true,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner_u",
+      "y": 180
+    },
+    "axis=x,north=true,south=true,east=false,west=true,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_ud",
+      "y": 180
+    },
+    "axis=x,north=true,south=true,east=true,west=false,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner",
+      "y": 90
+    },
+    "axis=x,north=true,south=true,east=true,west=false,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_d",
+      "y": 90
+    },
+    "axis=x,north=true,south=true,east=true,west=false,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner_u",
+      "y": 90
+    },
+    "axis=x,north=true,south=true,east=true,west=false,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_ud",
+      "y": 90
+    },
+    "axis=x,north=true,south=true,east=true,west=true,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner",
+      "y": 90
+    },
+    "axis=x,north=true,south=true,east=true,west=true,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_d",
+      "y": 90
+    },
+    "axis=x,north=true,south=true,east=true,west=true,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner_u",
+      "y": 90
+    },
+    "axis=x,north=true,south=true,east=true,west=true,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_ud",
+      "y": 90
+    },
+    "axis=z,north=false,south=false,east=false,west=false,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight"
+    },
+    "axis=z,north=false,south=false,east=false,west=false,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_d"
+    },
+    "axis=z,north=false,south=false,east=false,west=false,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight_u"
+    },
+    "axis=z,north=false,south=false,east=false,west=false,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_ud"
+    },
+    "axis=z,north=false,south=false,east=false,west=true,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight"
+    },
+    "axis=z,north=false,south=false,east=false,west=true,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_d"
+    },
+    "axis=z,north=false,south=false,east=false,west=true,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight_u"
+    },
+    "axis=z,north=false,south=false,east=false,west=true,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_ud"
+    },
+    "axis=z,north=false,south=false,east=true,west=false,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight"
+    },
+    "axis=z,north=false,south=false,east=true,west=false,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_d"
+    },
+    "axis=z,north=false,south=false,east=true,west=false,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight_u"
+    },
+    "axis=z,north=false,south=false,east=true,west=false,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_ud"
+    },
+    "axis=z,north=false,south=false,east=true,west=true,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight"
+    },
+    "axis=z,north=false,south=false,east=true,west=true,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_d"
+    },
+    "axis=z,north=false,south=false,east=true,west=true,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight_u"
+    },
+    "axis=z,north=false,south=false,east=true,west=true,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_ud"
+    },
+    "axis=z,north=false,south=true,east=false,west=false,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight",
+      "y": 90
+    },
+    "axis=z,north=false,south=true,east=false,west=false,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_d",
+      "y": 90
+    },
+    "axis=z,north=false,south=true,east=false,west=false,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight_u",
+      "y": 90
+    },
+    "axis=z,north=false,south=true,east=false,west=false,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_ud",
+      "y": 90
+    },
+    "axis=z,north=false,south=true,east=false,west=true,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner",
+      "y": 180
+    },
+    "axis=z,north=false,south=true,east=false,west=true,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_d",
+      "y": 180
+    },
+    "axis=z,north=false,south=true,east=false,west=true,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner_u",
+      "y": 180
+    },
+    "axis=z,north=false,south=true,east=false,west=true,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_ud",
+      "y": 180
+    },
+    "axis=z,north=false,south=true,east=true,west=false,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner",
+      "y": 90
+    },
+    "axis=z,north=false,south=true,east=true,west=false,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_d",
+      "y": 90
+    },
+    "axis=z,north=false,south=true,east=true,west=false,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner_u",
+      "y": 90
+    },
+    "axis=z,north=false,south=true,east=true,west=false,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_ud",
+      "y": 90
+    },
+    "axis=z,north=false,south=true,east=true,west=true,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner",
+      "y": 90
+    },
+    "axis=z,north=false,south=true,east=true,west=true,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_d",
+      "y": 90
+    },
+    "axis=z,north=false,south=true,east=true,west=true,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner_u",
+      "y": 90
+    },
+    "axis=z,north=false,south=true,east=true,west=true,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_ud",
+      "y": 90
+    },
+    "axis=z,north=true,south=false,east=false,west=false,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight",
+      "y": 90
+    },
+    "axis=z,north=true,south=false,east=false,west=false,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_d",
+      "y": 90
+    },
+    "axis=z,north=true,south=false,east=false,west=false,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight_u",
+      "y": 90
+    },
+    "axis=z,north=true,south=false,east=false,west=false,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_ud",
+      "y": 90
+    },
+    "axis=z,north=true,south=false,east=false,west=true,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner",
+      "y": 270
+    },
+    "axis=z,north=true,south=false,east=false,west=true,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_d",
+      "y": 270
+    },
+    "axis=z,north=true,south=false,east=false,west=true,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner_u",
+      "y": 270
+    },
+    "axis=z,north=true,south=false,east=false,west=true,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_ud",
+      "y": 270
+    },
+    "axis=z,north=true,south=false,east=true,west=false,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner"
+    },
+    "axis=z,north=true,south=false,east=true,west=false,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_d"
+    },
+    "axis=z,north=true,south=false,east=true,west=false,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner_u"
+    },
+    "axis=z,north=true,south=false,east=true,west=false,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_ud"
+    },
+    "axis=z,north=true,south=false,east=true,west=true,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner",
+      "y": 270
+    },
+    "axis=z,north=true,south=false,east=true,west=true,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_d",
+      "y": 270
+    },
+    "axis=z,north=true,south=false,east=true,west=true,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner_u",
+      "y": 270
+    },
+    "axis=z,north=true,south=false,east=true,west=true,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_ud",
+      "y": 270
+    },
+    "axis=z,north=true,south=true,east=false,west=false,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight",
+      "y": 90
+    },
+    "axis=z,north=true,south=true,east=false,west=false,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_d",
+      "y": 90
+    },
+    "axis=z,north=true,south=true,east=false,west=false,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_straight_u",
+      "y": 90
+    },
+    "axis=z,north=true,south=true,east=false,west=false,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_straight_ud",
+      "y": 90
+    },
+    "axis=z,north=true,south=true,east=false,west=true,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner",
+      "y": 180
+    },
+    "axis=z,north=true,south=true,east=false,west=true,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_d",
+      "y": 180
+    },
+    "axis=z,north=true,south=true,east=false,west=true,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner_u",
+      "y": 180
+    },
+    "axis=z,north=true,south=true,east=false,west=true,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_ud",
+      "y": 180
+    },
+    "axis=z,north=true,south=true,east=true,west=false,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner",
+      "y": 90
+    },
+    "axis=z,north=true,south=true,east=true,west=false,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_d",
+      "y": 90
+    },
+    "axis=z,north=true,south=true,east=true,west=false,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner_u",
+      "y": 90
+    },
+    "axis=z,north=true,south=true,east=true,west=false,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_ud",
+      "y": 90
+    },
+    "axis=z,north=true,south=true,east=true,west=true,up=false,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner",
+      "y": 90
+    },
+    "axis=z,north=true,south=true,east=true,west=true,up=false,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_d",
+      "y": 90
+    },
+    "axis=z,north=true,south=true,east=true,west=true,up=true,down=false": {
+      "model": "industrial_core:block/cryo_glass_corner_u",
+      "y": 90
+    },
+    "axis=z,north=true,south=true,east=true,west=true,up=true,down=true": {
+      "model": "industrial_core:block/cryo_glass_corner_ud",
+      "y": 90
+    }
+  }
+}

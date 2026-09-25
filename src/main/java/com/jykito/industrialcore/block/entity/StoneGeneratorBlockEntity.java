@@ -41,7 +41,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class StoneGeneratorBlockEntity extends BlockEntity implements MenuProvider {
 
-    private static final int TANK_CAP = 64000;
+    // База под работу без модуля. Под параллели баки растут сами, см. AdaptiveTank.
+    private static final int TANK_CAP = 8000;
     private static final int FE_PER_TICK = 200;
 
     private final ItemStackHandler itemHandler = new ItemStackHandler(5) {
@@ -176,6 +177,11 @@ public class StoneGeneratorBlockEntity extends BlockEntity implements MenuProvid
                 }
             }
         }
+        // Оба бака растут: партия ×64 берёт в 64 раза больше и воды, и лавы.
+        boolean resized = AdaptiveTank.resize(waterTank, TANK_CAP, parallel);
+        resized        |= AdaptiveTank.resize(lavaTank,  TANK_CAP, parallel);
+        if (resized) level.sendBlockUpdated(pos, state, state, 3);
+
         maxProgress = Math.max(1, (int) (m.processTicks * speedMul));
         int fePerTick = Math.max(1, (int) (FE_PER_TICK * energyMul));
 
@@ -263,6 +269,8 @@ public class StoneGeneratorBlockEntity extends BlockEntity implements MenuProvid
         tag.putInt("energy", energyStorage.getEnergyStored());
         tag.put("waterTank", waterTank.writeToNBT(new CompoundTag()));
         tag.put("lavaTank", lavaTank.writeToNBT(new CompoundTag()));
+        AdaptiveTank.save(tag, "waterTankCapacity", waterTank);
+        AdaptiveTank.save(tag, "lavaTankCapacity",  lavaTank);
         tag.putInt("progress", progress);
         tag.putInt("mode", mode);
         tag.putBoolean("running", running);
@@ -273,6 +281,8 @@ public class StoneGeneratorBlockEntity extends BlockEntity implements MenuProvid
         super.load(tag);
         itemHandler.deserializeNBT(tag.getCompound("inventory"));
         energyStorage.set(tag.getInt("energy"));
+        AdaptiveTank.load(tag, "waterTankCapacity", waterTank, TANK_CAP);
+        AdaptiveTank.load(tag, "lavaTankCapacity",  lavaTank,  TANK_CAP);
         waterTank.readFromNBT(tag.getCompound("waterTank"));
         lavaTank.readFromNBT(tag.getCompound("lavaTank"));
         progress = tag.getInt("progress");

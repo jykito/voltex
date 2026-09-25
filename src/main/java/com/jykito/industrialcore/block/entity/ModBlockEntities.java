@@ -86,6 +86,16 @@ public class ModBlockEntities {
                     BlockEntityType.Builder.of(com.jykito.industrialcore.block.entity.LiquefierBlockEntity::new,
                             ModBlocks.LIQUEFIER.get()).build(null));
 
+    public static final RegistryObject<BlockEntityType<CryoCasingBlockEntity>> CRYO_CASING_BE =
+            BLOCK_ENTITIES.register("cryo_casing_be", () ->
+                    BlockEntityType.Builder.of(CryoCasingBlockEntity::new,
+                            ModBlocks.CRYO_CASING.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<CrystallizerBlockEntity>> CRYSTALLIZER_BE =
+            BLOCK_ENTITIES.register("crystallizer_be", () ->
+                    BlockEntityType.Builder.of(CrystallizerBlockEntity::new,
+                            ModBlocks.CRYSTALLIZER.get()).build(null));
+
     public static final RegistryObject<BlockEntityType<FluidGeneratorBlockEntity>> LAVA_GENERATOR_BE =
             BLOCK_ENTITIES.register("lava_generator_be", () ->
                     BlockEntityType.Builder.of((pos, state) -> new FluidGeneratorBlockEntity(
@@ -112,16 +122,6 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("cultivator_be", () ->
                     BlockEntityType.Builder.of(CultivatorBlockEntity::new,
                             ModBlocks.CULTIVATOR.get()).build(null));
-
-    public static final RegistryObject<BlockEntityType<NuclearReactorBlockEntity>> NUCLEAR_REACTOR_BE =
-            BLOCK_ENTITIES.register("nuclear_reactor_be", () ->
-                    BlockEntityType.Builder.of(NuclearReactorBlockEntity::new,
-                            ModBlocks.NUCLEAR_REACTOR.get()).build(null));
-
-    public static final RegistryObject<BlockEntityType<ReactorChamberBlockEntity>> REACTOR_CHAMBER_BE =
-            BLOCK_ENTITIES.register("reactor_chamber_be", () ->
-                    BlockEntityType.Builder.of(ReactorChamberBlockEntity::new,
-                            ModBlocks.REACTOR_CHAMBER.get()).build(null));
 
     public static final RegistryObject<BlockEntityType<RodFabricatorBlockEntity>> ROD_FABRICATOR_BE =
             BLOCK_ENTITIES.register("rod_fabricator_be", () ->
@@ -187,6 +187,11 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("distant_controller_be", () ->
                     BlockEntityType.Builder.of(DistantControllerBlockEntity::new,
                             ModBlocks.DISTANT_CONTROLLER.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<CryoCoreBlockEntity>> CRYO_CORE_BE =
+            BLOCK_ENTITIES.register("cryo_core_be", () ->
+                    BlockEntityType.Builder.of(CryoCoreBlockEntity::new,
+                            ModBlocks.CRYO_CORE.get()).build(null));
 
     public static final RegistryObject<BlockEntityType<ThermostationBlockEntity>> THERMOSTATION_BE =
             BLOCK_ENTITIES.register("thermostation_be", () ->

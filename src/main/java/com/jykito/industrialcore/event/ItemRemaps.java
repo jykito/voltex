@@ -2,7 +2,12 @@ package com.jykito.industrialcore.event;
 
 import com.jykito.industrialcore.IndustrialCore;
 import com.jykito.industrialcore.item.ModItems;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -10,6 +15,8 @@ import net.minecraftforge.registries.MissingMappingsEvent;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Пересылка старых registry-ID предметов на новые при переименовании. Без этого Форж
@@ -18,7 +25,6 @@ import java.util.Map;
  *
  * ⚠ При КАЖДОМ переименовании предмета (смене registry-ID) добавлять строку в {@link #REMAP}.
  *   Записи держать НАВСЕГДА — старые сейвы всплывают долго, ремап дешёвый.
- *   Для блоков, если понадобится, — отдельная таблица + свой цикл по ForgeRegistries.Keys.BLOCKS.
  */
 // ВАЖНО: MissingMappingsEvent в Forge 1.20.1 — FORGE-шина (НЕ mod-bus, как было в старом Forge)
 @Mod.EventBusSubscriber(modid = IndustrialCore.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -35,13 +41,59 @@ public class ItemRemaps {
             Map.entry("connector_upgrade_t3", ModItems.HUB_UPGRADE_T3)
     );
 
+    // 2026-09: ядерка вырезана (2.1.0). Урановая руда уже лежит в сгенерированных мирах —
+    // превращаем её в породу, иначе жилы станут пустотами под землёй. Предмет руды туда же.
+    private static final Map<String, Supplier<Block>> BLOCK_REMAP = Map.of(
+            "uranium_ore",           () -> Blocks.STONE,
+            "deepslate_uranium_ore", () -> Blocks.DEEPSLATE
+    );
+    private static final Map<String, Supplier<Item>> VANILLA_ITEM_REMAP = Map.of(
+            "uranium_ore",           () -> Items.STONE,
+            "deepslate_uranium_ore", () -> Items.DEEPSLATE
+    );
+
+    /**
+     * Удалено осознанно и без замены (2026-09, ядерка). Помечаем как ignore, чтобы Форж не
+     * показывал экран о пропавших записях — игрок предупреждён чейнджлогом 2.1.0.
+     */
+    private static final Set<String> REMOVED = Set.of(
+            // блоки (и их предметы)
+            "nuclear_reactor", "reactor_chamber", "raw_uranium_block",
+            // предметы
+            "raw_uranium", "uranium_dust", "uranium_ingot", "plutonium", "mox_fuel",
+            "empty_reinforced_fuel_rod", "uranium_fuel_rod", "plutonium_fuel_rod", "mox_fuel_rod",
+            "depleted_uranium_fuel_rod", "depleted_plutonium_fuel_rod", "depleted_mox_fuel_rod",
+            "reactor_blueprint",
+            "reactor_scheme_u1", "reactor_scheme_u2", "reactor_scheme_u3",
+            "reactor_scheme_p1", "reactor_scheme_p2", "reactor_scheme_p3", "reactor_scheme_p4",
+            "reactor_scheme_m1", "reactor_scheme_m2", "reactor_scheme_m3", "reactor_scheme_m4",
+            // блок-сущности и меню реактора
+            "nuclear_reactor_be", "reactor_chamber_be", "nuclear_reactor_menu"
+    );
+
     @SubscribeEvent
     public static void onMissingMappings(MissingMappingsEvent event) {
         for (var mapping : event.getMappings(ForgeRegistries.Keys.ITEMS, IndustrialCore.MODID)) {
-            RegistryObject<Item> replacement = REMAP.get(mapping.getKey().getPath());
-            if (replacement != null) {
-                mapping.remap(replacement.get());
-            }
+            String path = mapping.getKey().getPath();
+            RegistryObject<Item> replacement = REMAP.get(path);
+            if (replacement != null) { mapping.remap(replacement.get()); continue; }
+            Supplier<Item> vanilla = VANILLA_ITEM_REMAP.get(path);
+            if (vanilla != null) { mapping.remap(vanilla.get()); continue; }
+            if (REMOVED.contains(path)) mapping.ignore();
+        }
+        for (var mapping : event.getMappings(ForgeRegistries.Keys.BLOCKS, IndustrialCore.MODID)) {
+            String path = mapping.getKey().getPath();
+            Supplier<Block> block = BLOCK_REMAP.get(path);
+            if (block != null) { mapping.remap(block.get()); continue; }
+            if (REMOVED.contains(path)) mapping.ignore();
+        }
+        ignoreRemoved(event, ForgeRegistries.Keys.BLOCK_ENTITY_TYPES);
+        ignoreRemoved(event, ForgeRegistries.Keys.MENU_TYPES);
+    }
+
+    private static <T> void ignoreRemoved(MissingMappingsEvent event, ResourceKey<? extends Registry<T>> key) {
+        for (var mapping : event.getMappings(key, IndustrialCore.MODID)) {
+            if (REMOVED.contains(mapping.getKey().getPath())) mapping.ignore();
         }
     }
 }

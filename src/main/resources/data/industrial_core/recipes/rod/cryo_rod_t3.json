@@ -1,0 +1,19 @@
+{
+  "type": "industrial_core:rod_fabrication_recipe",
+  "result": {
+    "item": "industrial_core:cryo_rod_t3",
+    "count": 1
+  },
+  "ingredient1": {
+    "item": "industrial_core:cryo_rod_t2"
+  },
+  "ingredient2": {
+    "type": "forge:nbt",
+    "item": "industrial_core:capsule",
+    "nbt": "{Fluid:{Amount:1000,FluidName:\"industrial_core:superfluid_condensate\"}}"
+  },
+  "count1": 1,
+  "count2": 1,
+  "processingTime": 600,
+  "energyCostPerTick": 1600
+}

@@ -43,6 +43,12 @@ public class ModMenuTypes {
     public static final RegistryObject<MenuType<LiquefierMenu>> LIQUEFIER_MENU =
             MENUS.register("liquefier_menu", () -> IForgeMenuType.create(LiquefierMenu::new));
 
+    public static final RegistryObject<MenuType<CryoChamberMenu>> CRYO_CHAMBER_MENU =
+            MENUS.register("cryo_chamber_menu", () -> IForgeMenuType.create(CryoChamberMenu::new));
+
+    public static final RegistryObject<MenuType<CrystallizerMenu>> CRYSTALLIZER_MENU =
+            MENUS.register("crystallizer_menu", () -> IForgeMenuType.create(CrystallizerMenu::new));
+
     public static final RegistryObject<MenuType<FluidGeneratorMenu>> FLUID_GENERATOR_MENU =
             MENUS.register("fluid_generator_menu", () -> IForgeMenuType.create(FluidGeneratorMenu::new));
 
@@ -63,9 +69,6 @@ public class ModMenuTypes {
 
     public static final RegistryObject<MenuType<MatterFabricatorMenu>> MATTER_FABRICATOR_MENU =
             MENUS.register("matter_fabricator_menu", () -> IForgeMenuType.create(MatterFabricatorMenu::new));
-
-    public static final RegistryObject<MenuType<NuclearReactorMenu>> NUCLEAR_REACTOR_MENU =
-            MENUS.register("nuclear_reactor_menu", () -> IForgeMenuType.create(NuclearReactorMenu::new));
 
     public static final RegistryObject<MenuType<RodFabricatorMenu>> ROD_FABRICATOR_MENU =
             MENUS.register("rod_fabricator_menu", () -> IForgeMenuType.create(RodFabricatorMenu::new));

@@ -82,7 +82,10 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
     private final WasherEnergy energyStorage = new WasherEnergy(64000, 64000); // приём = буфер, без потолка на вход
     private LazyOptional<EnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
-    public final FluidTank waterTank = new FluidTank(128000, fs -> fs.getFluid() == Fluids.WATER) {
+    // База под работу без модуля: 8 промывок. Под параллели бак растёт сам, см. AdaptiveTank.
+    private static final int TANK_BASE = 8000;
+
+    public final FluidTank waterTank = new FluidTank(TANK_BASE, fs -> fs.getFluid() == Fluids.WATER) {
         @Override protected void onContentsChanged() {
             recipeCache.markDirty();
             setChanged();
@@ -161,6 +164,9 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
                 parallelCount = Math.max(parallelCount, adv.getParallelCount());
             }
         }
+
+        if (AdaptiveTank.resize(waterTank, TANK_BASE, parallelCount))
+            level.sendBlockUpdated(pos, state, state, 3); // шкала бака считается от ёмкости, клиенту нужна новая
 
         if (fluidPullerDir != null && waterTank.getSpace() > 0) {
             final Direction d = fluidPullerDir;
@@ -334,6 +340,7 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
         tag.put("inventory", itemHandler.serializeNBT());
         tag.putInt("energy", energyStorage.getEnergyStored());
         tag.put("waterTank", waterTank.writeToNBT(new CompoundTag()));
+        AdaptiveTank.save(tag, "waterTankCapacity", waterTank);
         tag.putInt("progress", progress);
         super.saveAdditional(tag);
     }
@@ -343,6 +350,7 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
         super.load(tag);
         itemHandler.deserializeNBT(tag.getCompound("inventory"));
         energyStorage.setEnergy(tag.getInt("energy"));
+        AdaptiveTank.load(tag, "waterTankCapacity", waterTank, TANK_BASE);
         waterTank.readFromNBT(tag.getCompound("waterTank"));
         progress = tag.getInt("progress");
     }

@@ -43,8 +43,11 @@ public class ThermogeneratorMenu extends AbstractContainerMenu {
         return heat > 0 ? heat * barWidth / getMaxHeat() : 0;
     }
 
-    public int getEnergy()         { return (this.data.get(2) << 16) | this.data.get(1); }
-    public int getMaxEnergy()      { return (this.data.get(4) << 16) | this.data.get(3); }
+    // Маска обязательна: ContainerData едет по сети как short, поэтому младшая половина
+    // больше 32767 приезжает отрицательной и без & 0xFFFF заливает единицами старшие биты.
+    // Сейчас буфер 20000 и до этого не доходит, но на любом росте ёмкости экран бы поехал.
+    public int getEnergy()         { return (this.data.get(2) << 16) | (this.data.get(1) & 0xFFFF); }
+    public int getMaxEnergy()      { return (this.data.get(4) << 16) | (this.data.get(3) & 0xFFFF); }
     public int getGenerationRate() { return this.data.get(5); }
 
     @Override

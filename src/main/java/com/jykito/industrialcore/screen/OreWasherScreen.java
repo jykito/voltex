@@ -94,7 +94,7 @@ public class OreWasherScreen extends AbstractContainerScreen<OreWasherMenu> {
 
     private void renderFluidTank(GuiGraphics g, FluidStack fluidStack, int capacity, int x, int y, int width, int height) {
         if (fluidStack.isEmpty()) return;
-        int fluidHeight = (int) ((float) fluidStack.getAmount() / capacity * height);
+        int fluidHeight = Math.min(height, (int) ((float) fluidStack.getAmount() / capacity * height));
         if (fluidHeight <= 0) return;
 
         IClientFluidTypeExtensions clientFluid = IClientFluidTypeExtensions.of(fluidStack.getFluid());

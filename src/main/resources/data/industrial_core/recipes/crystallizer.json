@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:glass"
+    },
+    "B": {
+      "item": "industrial_core:crystal_plate"
+    },
+    "C": {
+      "item": "industrial_core:aluminum_plate"
+    },
+    "D": {
+      "item": "industrial_core:machine_casing"
+    }
+  },
+  "result": {
+    "item": "industrial_core:crystallizer",
+    "count": 1
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ACA",
+    "CMC",
+    "ACA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:cryo_crystal"
+    },
+    "C": {
+      "item": "industrial_core:superconductor_coil"
+    },
+    "M": {
+      "item": "industrial_core:depth_module_2"
+    }
+  },
+  "result": {
+    "item": "industrial_core:depth_module_3",
+    "count": 1
+  }
+}

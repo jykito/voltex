@@ -79,7 +79,9 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
     private final LiquefierEnergy energyStorage = new LiquefierEnergy(50000, 50000); // приём = буфер, без потолка на вход
     private LazyOptional<EnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
-    public final FluidTank outputTank = new FluidTank(8000) {
+    private static final int TANK_BASE = 8000;
+
+    public final FluidTank outputTank = new FluidTank(TANK_BASE) {
         @Override protected void onContentsChanged() {
             recipeCache.markDirty();
             setChanged();
@@ -177,6 +179,9 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
                 }
             }
         }
+
+        if (AdaptiveTank.resize(outputTank, TANK_BASE, parallel))
+            level.sendBlockUpdated(pos, state, state, 3); // шкала бака считается от ёмкости, клиенту нужна новая
 
         LiquefierRecipe recipe = findRecipe(level);
         this.maxProgress = recipe != null ? Math.max(1, (int)(recipe.getProcessingTime() * timeMultiplier)) : 200;
@@ -350,6 +355,7 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
         tag.put("inventory", itemHandler.serializeNBT());
         tag.putInt("energy", energyStorage.getEnergyStored());
         tag.put("outputTank", outputTank.writeToNBT(new CompoundTag()));
+        AdaptiveTank.save(tag, "outputTankCapacity", outputTank);
         tag.putInt("progress", progress);
         tag.putInt("heat", heat);
         super.saveAdditional(tag);
@@ -360,6 +366,7 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
         super.load(tag);
         itemHandler.deserializeNBT(tag.getCompound("inventory"));
         energyStorage.setEnergy(tag.getInt("energy"));
+        AdaptiveTank.load(tag, "outputTankCapacity", outputTank, TANK_BASE);
         outputTank.readFromNBT(tag.getCompound("outputTank"));
         progress = tag.getInt("progress");
         heat = tag.getInt("heat");

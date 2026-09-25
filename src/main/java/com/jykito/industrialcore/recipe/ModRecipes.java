@@ -93,6 +93,22 @@ public class ModRecipes {
     public static final RegistryObject<RecipeSerializer<LiquefierRecipe>> LIQUEFIER_SERIALIZER =
             SERIALIZERS.register("liquefier_recipe", () -> LiquefierRecipe.Serializer.INSTANCE);
 
+    public static final RegistryObject<RecipeType<CryoRecipe>> CRYO_FREEZING_TYPE =
+            RECIPE_TYPES.register("cryo_freezing", () -> new RecipeType<CryoRecipe>() {
+                @Override public String toString() { return "cryo_freezing"; }
+            });
+
+    public static final RegistryObject<RecipeSerializer<CryoRecipe>> CRYO_SERIALIZER =
+            SERIALIZERS.register("cryo_recipe", () -> CryoRecipe.Serializer.INSTANCE);
+
+    public static final RegistryObject<RecipeType<CrystallizerRecipe>> CRYSTALLIZING_TYPE =
+            RECIPE_TYPES.register("crystallizing", () -> new RecipeType<CrystallizerRecipe>() {
+                @Override public String toString() { return "crystallizing"; }
+            });
+
+    public static final RegistryObject<RecipeSerializer<CrystallizerRecipe>> CRYSTALLIZER_SERIALIZER =
+            SERIALIZERS.register("crystallizer_recipe", () -> CrystallizerRecipe.Serializer.INSTANCE);
+
     public static final RegistryObject<RecipeType<OreWashingRecipe>> ORE_WASHING_TYPE =
             RECIPE_TYPES.register("ore_washing", () -> new RecipeType<OreWashingRecipe>() {
                 @Override public String toString() { return "ore_washing"; }

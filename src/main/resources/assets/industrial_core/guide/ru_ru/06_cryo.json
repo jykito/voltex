@@ -1,0 +1,184 @@
+{
+  "name": "Холод",
+  "entries": [
+    {
+      "name": "Криокамера",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Криокамера"
+        },
+        {
+          "type": "text",
+          "text": "Холод здесь производится теплом — как в газовом холодильнике. Камера не сбрасывает жар, а потребляет его: тепло для неё топливо. Мультиблок 5×5×5 — пол и потолок из корпуса, стены из криопанелей, внутри колонна холодильных камер, спереди ядро."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "K": "industrial_core:cryo_casing",
+              "G": "industrial_core:cryo_glass",
+              "F": "industrial_core:refrigeration_chamber",
+              "R": "industrial_core:cryo_core"
+            },
+            "layers": [
+              [
+                "KKRKK",
+                "KKKKK",
+                "KKKKK",
+                "KKKKK",
+                "KKKKK"
+              ],
+              [
+                "GGGGG",
+                "G...G",
+                "G.F.G",
+                "G...G",
+                "GGGGG"
+              ],
+              [
+                "GGGGG",
+                "G...G",
+                "G.F.G",
+                "G...G",
+                "GGGGG"
+              ],
+              [
+                "GGGGG",
+                "G...G",
+                "G.F.G",
+                "G...G",
+                "GGGGG"
+              ],
+              [
+                "KKKKK",
+                "KKKKK",
+                "KKKKK",
+                "KKKKK",
+                "KKKKK"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "text",
+          "text": "Ядро стоит в переднем ряду пола и задаёт направление всей постройки — камера собирается в любую сторону света одинаково. Тепло принимает ЛЮБОЙ блок корпуса, так что подводить трубы можно к полу и потолку в нескольких точках сразу."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:cryo_core",
+            "industrial_core:cryo_casing",
+            "industrial_core:cryo_glass",
+            "industrial_core:refrigeration_chamber"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Глубина",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Глубина и ступени"
+        },
+        {
+          "type": "text",
+          "text": "Камера — не станок, а установка: она копит ГЛУБИНУ. Глубина идёт за притоком тепла и встаёт ровно на нём, поэтому ступени читаются прямо в тепле за тик: 200, 800 и 1800. Набирается она минутами устойчивой подачи и теряется втрое быстрее, так что камеру не выключают."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:cryo_core",
+            "industrial_core:heat_pipe_t2",
+            "industrial_core:thermostation_core"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Модули глубины",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Модули глубины"
+        },
+        {
+          "type": "text",
+          "text": "Модуль в ядре задаёт потолок: без него камера не пойдёт глубже первой ступени, сколько тепла ни лей. Модуль III делается из модуля II и криокристалла, а криокристалл — продукт второй ступени. То есть глубже пускают только того, кто уже поработал ступенью ниже."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:depth_module_2",
+            "industrial_core:depth_module_3",
+            "industrial_core:cryo_crystal"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Криостержни",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Криостержни"
+        },
+        {
+          "type": "text",
+          "text": "Три стержня в ядре ускоряют работу — от четверти до двойной скорости. Они изнашиваются, и тем быстрее, чем глубже стоит камера: на третьей ступени в девять раз быстрее, чем на первой. Глубина стоит не только тепла."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:cryo_rod",
+            "industrial_core:cryo_rod_t2",
+            "industrial_core:cryo_rod_t3"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Кристаллизатор",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Кристаллизатор"
+        },
+        {
+          "type": "text",
+          "text": "Единственная машина, которая идёт из жидкости в предмет. Хладагент с алюминиевой пылью даёт криолит — основу всей ветки: из него панели, корпус, стержни и модули."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:crystallizer",
+            "industrial_core:cryolite",
+            "industrial_core:aluminum_dust"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Хладагент",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Хладагент и отработка"
+        },
+        {
+          "type": "text",
+          "text": "Камере нужен хладагент — он проходит насквозь и выходит горячим. Отработку выкачивай: забитый бак останавливает работу. Она не мусор, а сырьё для поздних сборок, начиная с криогенного теплообменника."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:capsule",
+            "industrial_core:capsule_filler",
+            "industrial_core:cryogenic_heat_exchanger"
+          ]
+        }
+      ]
+    }
+  ]
+}

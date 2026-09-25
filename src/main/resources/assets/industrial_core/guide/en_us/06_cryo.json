@@ -1,0 +1,184 @@
+{
+  "name": "Cryogenics",
+  "entries": [
+    {
+      "name": "Cryo Chamber",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Cryo Chamber"
+        },
+        {
+          "type": "text",
+          "text": "Here cold is produced by heat, like in a gas refrigerator. The chamber does not dump heat, it consumes it: heat is its fuel. A 5×5×5 multiblock: casing floor and ceiling, cryo panels for walls, a column of refrigeration chambers inside and the core at the front."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "K": "industrial_core:cryo_casing",
+              "G": "industrial_core:cryo_glass",
+              "F": "industrial_core:refrigeration_chamber",
+              "R": "industrial_core:cryo_core"
+            },
+            "layers": [
+              [
+                "KKRKK",
+                "KKKKK",
+                "KKKKK",
+                "KKKKK",
+                "KKKKK"
+              ],
+              [
+                "GGGGG",
+                "G...G",
+                "G.F.G",
+                "G...G",
+                "GGGGG"
+              ],
+              [
+                "GGGGG",
+                "G...G",
+                "G.F.G",
+                "G...G",
+                "GGGGG"
+              ],
+              [
+                "GGGGG",
+                "G...G",
+                "G.F.G",
+                "G...G",
+                "GGGGG"
+              ],
+              [
+                "KKKKK",
+                "KKKKK",
+                "KKKKK",
+                "KKKKK",
+                "KKKKK"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "text",
+          "text": "The core sits in the front row of the floor and sets the orientation of the whole build — the chamber assembles the same way in any direction. ANY casing block accepts heat, so pipes can be routed into the floor and ceiling at several points at once."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:cryo_core",
+            "industrial_core:cryo_casing",
+            "industrial_core:cryo_glass",
+            "industrial_core:refrigeration_chamber"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Depth",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Depth and Stages"
+        },
+        {
+          "type": "text",
+          "text": "The chamber is an installation, not a machine: it accumulates DEPTH. Depth follows the heat inflow and settles exactly on it, so the stages read directly in heat per tick: 200, 800 and 1800. It builds over minutes of steady supply and drops three times faster, so the chamber is never switched off."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:cryo_core",
+            "industrial_core:heat_pipe_t2",
+            "industrial_core:thermostation_core"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Depth Modules",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Depth Modules"
+        },
+        {
+          "type": "text",
+          "text": "The module in the core sets the ceiling: without one the chamber will not go past stage one, however much heat you feed it. Module III is built from Module II and a cryo crystal, and the crystal is a stage-two product. Only those who worked a stage below are let deeper."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:depth_module_2",
+            "industrial_core:depth_module_3",
+            "industrial_core:cryo_crystal"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cryo Rods",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Cryo Rods"
+        },
+        {
+          "type": "text",
+          "text": "Three rods in the core speed the work up, from a quarter to double. They wear out, and the deeper the chamber sits the faster: nine times faster on stage three than on stage one. Depth costs more than heat alone."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:cryo_rod",
+            "industrial_core:cryo_rod_t2",
+            "industrial_core:cryo_rod_t3"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Crystallizer",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Crystallizer"
+        },
+        {
+          "type": "text",
+          "text": "The only machine that goes from fluid to item. Coolant with aluminum dust yields cryolite, the base of the whole branch: panels, casing, rods and modules all come from it."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:crystallizer",
+            "industrial_core:cryolite",
+            "industrial_core:aluminum_dust"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Coolant",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Coolant and Spent Coolant"
+        },
+        {
+          "type": "text",
+          "text": "The chamber needs coolant: it passes through and comes out hot. Pump the spent coolant out, a full tank halts the work. It is not waste but a component of late builds, starting with the Cryogenic Heat Exchanger."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:capsule",
+            "industrial_core:capsule_filler",
+            "industrial_core:cryogenic_heat_exchanger"
+          ]
+        }
+      ]
+    }
+  ]
+}

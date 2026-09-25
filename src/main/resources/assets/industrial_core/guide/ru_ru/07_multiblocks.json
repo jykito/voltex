@@ -51,38 +51,60 @@
       ]
     },
     {
-      "name": "Ядерный реактор",
+      "name": "Криокамера",
       "elements": [
         {
           "type": "header",
-          "text": "Реактор (мультиблок)"
+          "text": "Криокамера (мультиблок)"
         },
         {
           "type": "text",
-          "text": "Тот же куб 3×3×3: ядро-реактор в центре, 26 камер вокруг. Камеры расширяют внутреннюю сетку и подключают охлаждение. Подробности — в главе «Ядерка»."
+          "text": "Куб 5×5×5: пол и потолок целиком из корпуса, стены из криопанелей, внутри полость с колонной холодильных камер. Ядро стоит в переднем ряду пола и задаёт направление всей постройки. Подробности — в главе «Холод»."
         },
         {
           "type": "multiblock",
           "pattern": {
             "key": {
-              "C": "industrial_core:reactor_chamber",
-              "R": "industrial_core:nuclear_reactor"
+              "K": "industrial_core:cryo_casing",
+              "G": "industrial_core:cryo_glass",
+              "F": "industrial_core:refrigeration_chamber",
+              "R": "industrial_core:cryo_core"
             },
             "layers": [
               [
-                "CCC",
-                "CCC",
-                "CCC"
+                "KKRKK",
+                "KKKKK",
+                "KKKKK",
+                "KKKKK",
+                "KKKKK"
               ],
               [
-                "CCC",
-                "CRC",
-                "CCC"
+                "GGGGG",
+                "G...G",
+                "G.F.G",
+                "G...G",
+                "GGGGG"
               ],
               [
-                "CCC",
-                "CCC",
-                "CCC"
+                "GGGGG",
+                "G...G",
+                "G.F.G",
+                "G...G",
+                "GGGGG"
+              ],
+              [
+                "GGGGG",
+                "G...G",
+                "G.F.G",
+                "G...G",
+                "GGGGG"
+              ],
+              [
+                "KKKKK",
+                "KKKKK",
+                "KKKKK",
+                "KKKKK",
+                "KKKKK"
               ]
             ]
           }
@@ -90,8 +112,10 @@
         {
           "type": "items",
           "items": [
-            "industrial_core:nuclear_reactor",
-            "industrial_core:reactor_chamber"
+            "industrial_core:cryo_core",
+            "industrial_core:cryo_casing",
+            "industrial_core:cryo_glass",
+            "industrial_core:refrigeration_chamber"
           ]
         }
       ]

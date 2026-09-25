@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "AAA",
+    "AAA"
+  ],
+  "key": {
+    "A": {
+      "tag": "forge:ingots/silver"
+    }
+  },
+  "result": {
+    "item": "industrial_core:silver_block",
+    "count": 1
+  }
+}

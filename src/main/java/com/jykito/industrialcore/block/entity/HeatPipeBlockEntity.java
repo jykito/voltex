@@ -62,49 +62,171 @@ public class HeatPipeBlockEntity extends BlockEntity {
         return super.getCapability(cap, side);
     }
 
+    /**
+     * Тик, на котором сеть уже посчитана. Обработка идёт СЕТЬЮ, а не по соседям, поэтому первая
+     * же труба считает всю сеть, а остальные в этот тик пропускают ход.
+     */
+    private long networkTick = -1;
+
+    /**
+     * Теплосеть считается целиком, одним котлом.
+     * <p>
+     * Раньше труба знала только шесть соседей и растекалась по градиенту, как теплопроводность.
+     * Из-за симметрии приходилось передавать соседу лишь ПОЛОВИНУ разницы, иначе трубы гоняли бы
+     * тепло друг в друга. Побочный эффект был неприятный: чтобы держать поток F, между трубами
+     * нужен был перепад 2F, перепады складывались по трассе и упирались в размер буфера. Линия
+     * из пяти труб физически не могла протащить больше 500 в тик, сколько бы веток ты ни развёл.
+     * <p>
+     * Теперь переливов между трубами нет вовсе. Всё тепло сети — общий котёл, и он раздаётся
+     * потребителям по {@code THROUGHPUT} на каждое соединение. Длина трассы перестала значить
+     * что-либо, «512 на соединение» стало буквальной правдой, а осцилляции неоткуда взяться.
+     * <p>
+     * По стоимости это дешевле прежнего: раньше каждая труба каждый тик лезла к шести соседям
+     * за капабилити, теперь сеть обходится один раз.
+     */
     public static void serverTick(Level level, BlockPos pos, BlockState state, HeatPipeBlockEntity pipe) {
-        int h = pipe.buffer.getHeat();
-        // статик-свечение: переключаем blockstate hot с гистерезисом (toggle редкий → ремеш только на нагрев/остывание)
-        boolean hot = state.getValue(HeatPipeBlock.HOT);
-        if (!hot && h >= HOT_ON) level.setBlock(pos, state.setValue(HeatPipeBlock.HOT, true), 2);
-        else if (hot && h <= HOT_OFF) level.setBlock(pos, state.setValue(HeatPipeBlock.HOT, false), 2);
-        if (h <= 0) return;
-        boolean changed = false;
+        long now = level.getGameTime();
+        if (pipe.networkTick == now) return;   // сеть уже посчитана другой трубой в этот тик
 
         ensurePipeBlocks();
-        boolean t2 = state.is(PIPE_T2); // T2: без потерь + выше пропуск
 
-        // утечка в среду — потеря на расстоянии (T2 — без потерь)
-        int leak = t2 ? 0 : h / 800; // ~0.125%/тик у T1
-        if (leak > 0) { pipe.buffer.extract(leak); h -= leak; changed = true; }
+        java.util.List<HeatPipeBlockEntity> members = new java.util.ArrayList<>();
+        java.util.List<IHeatHandler> sinks = new java.util.ArrayList<>();
+        java.util.List<Integer> sinkRates = new java.util.ArrayList<>();
 
-        // проводимость: труба↔труба — уравнивание (диффузия, без осцилляции);
-        //               труба→потребитель — НАСОС (наполняем машину до полного, темпом пропуска)
-        int tp = t2 ? THROUGHPUT_T2 : THROUGHPUT;
-        for (Direction d : Direction.values()) {
-            if (h <= 0) break;
-            if (pipe.disabled[d.get3DDataValue()]) continue; // отключённая сторона не проводит
-            pipe.scratch.setWithOffset(pos, d);
-            BlockEntity nbe = level.getBlockEntity(pipe.scratch);
-            if (nbe == null) continue;
-            IHeatHandler n = nbe.getCapability(HeatCapability.HEAT, d.getOpposite()).resolve().orElse(null);
-            if (n == null) continue;
-            BlockState ns = nbe.getBlockState();   // состояние уже лежит в найденной сущности, второй раз чанк не трогаем
-            boolean nbrPipe = ns.getBlock() instanceof HeatPipeBlock;  // оба тира — этот класс, реестр не нужен
-            int flow;
-            if (nbrPipe) {
-                int nh = n.getHeat();
-                if (nh >= h) continue;
-                flow = Math.min((h - nh) / 2, tp);   // между трубами — уравнивание
-            } else {
-                flow = Math.min(h, tp);               // в потребителя — насос (до пропуска, машина сама режет по свободному месту)
+        collectNetwork(level, pipe, now, members, sinks, sinkRates);
+
+        // 1. утечка: она у каждой трубы своя, T2 не течёт
+        int pool = 0;
+        for (HeatPipeBlockEntity m : members) {
+            int h = m.buffer.getHeat();
+            if (h > 0 && !m.getBlockState().is(PIPE_T2)) {
+                int leak = h / 800;                    // ~0.125%/тик у T1
+                if (leak > 0) { m.buffer.extract(leak); h -= leak; }
             }
-            if (flow <= 0) continue;
-            int accepted = n.receiveHeat(flow, false);
-            if (accepted > 0) { pipe.buffer.extract(accepted); h -= accepted; changed = true; }
+            pool += h;
         }
 
-        if (changed) pipe.setChanged();
+        // 2. раздача потребителям: сперва поровну, потом остаток по кругу — чтобы одна машина
+        //    в начале списка не выгребала весь котёл, пока остальные стоят
+        int before = pool;
+        if (pool > 0 && !sinks.isEmpty()) {
+            int n = sinks.size();
+            int[] given = new int[n];
+            int share = pool / n;
+            for (int i = 0; i < n && pool > 0; i++) {
+                int want = Math.min(sinkRates.get(i), Math.min(share, pool));
+                if (want <= 0) continue;
+                int acc = sinks.get(i).receiveHeat(want, false);
+                given[i] = acc; pool -= acc;
+            }
+            for (int i = 0; i < n && pool > 0; i++) {
+                int want = Math.min(sinkRates.get(i) - given[i], pool);
+                if (want <= 0) continue;
+                pool -= sinks.get(i).receiveHeat(want, false);
+            }
+        }
+        boolean flowing = before - pool > 0;
+
+        // Сводка за тик — её читает тепловой щуп. Считаем здесь, потому что сеть уже обойдена
+        // и все числа под рукой; отдельный обход ради диагностики был бы чистой тратой.
+        int capacity = 0;
+        for (int r : sinkRates) capacity += r;
+        Survey survey = new Survey(members.size(), before, sinks.size(), before - pool, capacity);
+
+        // 3. остаток раскладываем по трубам поровну — сеть должна выглядеть однородной
+        int n = members.size();
+        int each = pool / n, rem = pool % n;
+        for (int i = 0; i < n; i++) {
+            HeatPipeBlockEntity m = members.get(i);
+            int val = each + (i < rem ? 1 : 0);
+            if (m.buffer.getHeat() != val) { m.buffer.setHeat(val); m.setChanged(); }
+            m.updateGlow(level, val, flowing);
+            m.survey = survey;
+        }
+    }
+
+    /**
+     * Что сеть сделала за последний тик. Живёт только в памяти: диагностика, не состояние мира.
+     *
+     * @param pipes     труб в сети
+     * @param pool      тепла было в котле до раздачи
+     * @param sinks     сколько соединений с потребителями
+     * @param delivered сколько реально раздали
+     * @param capacity  сколько МОГЛИ бы раздать (сумма пропусков по соединениям)
+     */
+    public record Survey(int pipes, int pool, int sinks, int delivered, int capacity) {}
+
+    private Survey survey = new Survey(0, 0, 0, 0, 0);
+
+    public Survey getSurvey() { return survey; }
+
+    /** Обход связной сети вширь: заодно собирает потребителей на её границе. */
+    private static void collectNetwork(Level level, HeatPipeBlockEntity start, long now,
+                                       java.util.List<HeatPipeBlockEntity> members,
+                                       java.util.List<IHeatHandler> sinks,
+                                       java.util.List<Integer> sinkRates) {
+        java.util.ArrayDeque<HeatPipeBlockEntity> queue = new java.util.ArrayDeque<>();
+        start.networkTick = now;
+        queue.add(start);
+        members.add(start);
+
+        while (!queue.isEmpty()) {
+            HeatPipeBlockEntity cur = queue.poll();
+            BlockState cs = cur.getBlockState();
+            int tp = cs.is(PIPE_T2) ? THROUGHPUT_T2 : THROUGHPUT;
+
+            for (Direction d : Direction.values()) {
+                // Сторона без соединения ничего не проводит, а знает об этом блокстейт — значит
+                // в чанк за соседом идти незачем. Прямая труба соединена двумя сторонами из шести.
+                if (!cs.getValue(HeatPipeBlock.PROPERTY_BY_DIRECTION.get(d))) continue;
+                if (cur.disabled[d.get3DDataValue()]) continue;
+
+                cur.scratch.setWithOffset(cur.worldPosition, d);
+                // Обход идёт вширь и может уйти далеко, поэтому за границу загруженного не лезем:
+                // иначе длинная трасса тянула бы за собой чанки.
+                if (!level.isLoaded(cur.scratch)) continue;
+                BlockEntity nbe = level.getBlockEntity(cur.scratch);
+                if (nbe == null) continue;
+
+                if (nbe instanceof HeatPipeBlockEntity nb) {
+                    if (nb.networkTick == now) continue;                       // уже в сети
+                    if (nb.disabled[d.getOpposite().get3DDataValue()]) continue; // сосед закрыл свою сторону
+                    nb.networkTick = now;
+                    members.add(nb);
+                    queue.add(nb);
+                    continue;
+                }
+
+                IHeatHandler sink = nbe.getCapability(HeatCapability.HEAT, d.getOpposite()).resolve().orElse(null);
+                if (sink == null) continue;
+                sinks.add(sink);
+                sinkRates.add(tp);   // пропуск задаёт труба, которая касается потребителя
+            }
+        }
+    }
+
+    /** Тиков свечения после последней передачи — чтобы линия не мигала между тиками. */
+    private int glowGrace = 0;
+
+    /**
+     * Свечение по ПОТОКУ, а не по остатку.
+     * <p>
+     * Раньше труба светилась от накопленного тепла, но с сетевой раздачей потребитель выгребает
+     * котёл до нуля — работающая на полную линия оставалась тёмной, а светилась только та, у
+     * которой тепло девать некуда. Теперь горит то, по чему тепло идёт.
+     * <p>
+     * Грейс в двадцать тиков нужен, чтобы редкие пустые тики не дёргали блокстейт: каждое
+     * переключение это ремеш чанка.
+     */
+    private void updateGlow(Level level, int heat, boolean flowing) {
+        if (flowing) glowGrace = 20; else if (glowGrace > 0) glowGrace--;
+
+        BlockState st = getBlockState();
+        boolean hot = st.getValue(HeatPipeBlock.HOT);
+        boolean want = glowGrace > 0 || heat >= HOT_ON;
+        if (!want && hot && heat > HOT_OFF) return;   // остывает — держим до нижнего порога
+        if (want != hot) level.setBlock(worldPosition, st.setValue(HeatPipeBlock.HOT, want), 2);
     }
 
     /** Клиент: плавно тянем показываемый нагрев к синхронизированному значению (убирает «ступеньки»). */

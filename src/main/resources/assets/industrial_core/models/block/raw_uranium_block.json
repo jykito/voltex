@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "industrial_core:block/raw_uranium_block"
-  }
-}

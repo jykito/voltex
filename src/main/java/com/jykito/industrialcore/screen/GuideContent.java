@@ -24,7 +24,11 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.Property;
+import org.jetbrains.annotations.Nullable;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.slf4j.Logger;
@@ -278,7 +282,43 @@ public final class GuideContent {
                 }
             }
         }
+        connectNeighbours(poss, states);
         return new Multiblock(states, poss, sx, sy, sz);
+    }
+
+    /**
+     * Досчитывает соединения внутри превью.
+     * <p>
+     * Схема даёт только «какой блок где», а вид соединяемых блоков — панелей, корпуса, труб —
+     * живёт в булевых свойствах сторон. С {@code defaultBlockState} они все выключены, поэтому
+     * панели выходили прямыми, смотрели в одну сторону и не гнулись на углах.
+     * <p>
+     * Правило простое: сторона включается, если по соседству стоит ТОТ ЖЕ блок. Для панелей и
+     * корпуса это ровно их собственное правило, а для превью большего и не нужно — мир вокруг
+     * схемы всё равно не показывается.
+     */
+    private static void connectNeighbours(List<BlockPos> poss, List<BlockState> states) {
+        Map<BlockPos, Block> occupied = new HashMap<>();
+        for (int i = 0; i < poss.size(); i++) occupied.put(poss.get(i), states.get(i).getBlock());
+
+        for (int i = 0; i < states.size(); i++) {
+            BlockState st = states.get(i);
+            BlockPos p = poss.get(i);
+            for (Direction d : Direction.values()) {
+                BooleanProperty prop = sideProperty(st, d);
+                if (prop == null) continue;
+                st = st.setValue(prop, occupied.get(p.relative(d)) == st.getBlock());
+            }
+            states.set(i, st);
+        }
+    }
+
+    /** Булево свойство стороны по её имени: «north», «up» и так далее. Нет такого — блок не соединяемый. */
+    @Nullable
+    private static BooleanProperty sideProperty(BlockState st, Direction d) {
+        for (Property<?> pr : st.getProperties())
+            if (pr instanceof BooleanProperty bp && bp.getName().equals(d.getName())) return bp;
+        return null;
     }
 
     private static ItemStack stackOf(String id) {

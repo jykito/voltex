@@ -66,14 +66,17 @@ public class IndustrialCoreJeiPlugin implements IModPlugin {
     public static final RecipeType<LiquefierRecipe> LIQUEFYING =
             RecipeType.create(IndustrialCore.MODID, "liquefying", LiquefierRecipe.class);
 
+    public static final RecipeType<com.jykito.industrialcore.recipe.CryoRecipe> CRYO_FREEZING =
+            RecipeType.create(IndustrialCore.MODID, "cryo_freezing", com.jykito.industrialcore.recipe.CryoRecipe.class);
+
+    public static final RecipeType<com.jykito.industrialcore.recipe.CrystallizerRecipe> CRYSTALLIZING =
+            RecipeType.create(IndustrialCore.MODID, "crystallizing", com.jykito.industrialcore.recipe.CrystallizerRecipe.class);
+
     public static final RecipeType<PhaseSplitterRecipe> PHASE_SPLITTING =
             RecipeType.create(IndustrialCore.MODID, "phase_splitting", PhaseSplitterRecipe.class);
 
     public static final RecipeType<MinerLensRecipe> MINER_LENS =
             RecipeType.create(IndustrialCore.MODID, "miner_lens", MinerLensRecipe.class);
-
-    public static final RecipeType<ReactorSchemeRecipe> REACTOR_SCHEME =
-            RecipeType.create(IndustrialCore.MODID, "reactor_scheme", ReactorSchemeRecipe.class);
 
     public static final RecipeType<GrowingRecipe> GROWING_PLANT =
             RecipeType.create(IndustrialCore.MODID, "growing_plant", GrowingRecipe.class);
@@ -179,6 +182,14 @@ public class IndustrialCoreJeiPlugin implements IModPlugin {
                         new ItemStack(ModBlocks.LIQUEFIER.get()),
                         Component.translatable("block.industrial_core.liquefier")),
 
+                new CryoChamberJeiCategory(gui, CRYO_FREEZING,
+                        new ItemStack(ModBlocks.CRYO_CORE.get()),
+                        Component.translatable("block.industrial_core.cryo_core")),
+
+                new CrystallizerJeiCategory(gui, CRYSTALLIZING,
+                        new ItemStack(ModBlocks.CRYSTALLIZER.get()),
+                        Component.translatable("block.industrial_core.crystallizer")),
+
                 new PhaseSplitterRecipeCategory(gui, PHASE_SPLITTING,
                         new ItemStack(ModBlocks.PHASE_SPLITTER.get()),
                         Component.translatable("block.industrial_core.phase_splitter")),
@@ -186,10 +197,6 @@ public class IndustrialCoreJeiPlugin implements IModPlugin {
                 new MinerLensCategory(gui, MINER_LENS,
                         new ItemStack(ModBlocks.MINER_CORE.get()),
                         Component.translatable("jei.industrial_core.miner_lens")),
-
-new ReactorSchemeCategory(gui, REACTOR_SCHEME,
-                        new ItemStack(ModBlocks.NUCLEAR_REACTOR.get()),
-                        Component.translatable("jei.industrial_core.reactor_scheme")),
 
                 new GrowingJeiCategory(gui, GROWING_PLANT,
                         new ItemStack(ModItems.CULTIVATOR_BIOSTIMULATOR.get()),
@@ -238,6 +245,8 @@ new ReactorSchemeCategory(gui, REACTOR_SCHEME,
         registration.addRecipes(ORE_WASHING,    rm.getAllRecipesFor(ModRecipes.ORE_WASHING_TYPE.get()));
 
         registration.addRecipes(LIQUEFYING, rm.getAllRecipesFor(ModRecipes.LIQUEFYING_TYPE.get()));
+        registration.addRecipes(CRYSTALLIZING, rm.getAllRecipesFor(ModRecipes.CRYSTALLIZING_TYPE.get()));
+        registration.addRecipes(CRYO_FREEZING, rm.getAllRecipesFor(ModRecipes.CRYO_FREEZING_TYPE.get()));
 
         registration.addRecipes(PHASE_SPLITTING, rm.getAllRecipesFor(ModRecipes.PHASE_SPLITTING_TYPE.get()));
 
@@ -262,13 +271,6 @@ new ReactorSchemeCategory(gui, REACTOR_SCHEME,
             }
         }
         registration.addRecipes(MINER_LENS, lensRecipes);
-
-        java.util.List<ReactorSchemeRecipe> schemeRecipes = new java.util.ArrayList<>();
-        for (com.jykito.industrialcore.reactor.ReactorSchemes.Scheme s
-                : com.jykito.industrialcore.reactor.ReactorSchemes.SCHEMES) {
-            schemeRecipes.add(new ReactorSchemeRecipe(s));
-        }
-        registration.addRecipes(REACTOR_SCHEME, schemeRecipes);
 
         java.util.List<GrowingRecipe> growingAll = new java.util.ArrayList<>(rm.getAllRecipesFor(ModRecipes.GROWING_TYPE.get()));
         var plantsTag = net.minecraftforge.registries.ForgeRegistries.ITEMS.tags()
@@ -335,6 +337,8 @@ new ReactorSchemeCategory(gui, REACTOR_SCHEME,
         recipeArea(registration, com.jykito.industrialcore.screen.FluidEnricherScreen.class,   134,42,37,26, FLUID_ENRICHER);
         recipeArea(registration, com.jykito.industrialcore.screen.OreWasherScreen.class,       111,54,27,14, ORE_WASHING);
         recipeArea(registration, com.jykito.industrialcore.screen.LiquefierScreen.class,       105,47,33,28, LIQUEFYING);
+        recipeArea(registration, com.jykito.industrialcore.screen.CrystallizerScreen.class,    115,60,23,16, CRYSTALLIZING);
+        recipeArea(registration, com.jykito.industrialcore.screen.CryoChamberScreen.class,     112,37,32,12, CRYO_FREEZING);
         recipeArea(registration, com.jykito.industrialcore.screen.PhaseSplitterScreen.class,   108,45,32,46, PHASE_SPLITTING);
         recipeArea(registration, com.jykito.industrialcore.screen.StoneGeneratorScreen.class,  125,66,6,9,   STONE_GEN);
         recipeArea(registration, com.jykito.industrialcore.screen.FluidGeneratorScreen.class,  103,89,50,6, FLUID_GEN);
@@ -408,9 +412,10 @@ new ReactorSchemeCategory(gui, REACTOR_SCHEME,
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.FLUID_ENRICHER.get()),   FLUID_ENRICHER);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.ORE_WASHER.get()),        ORE_WASHING);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.LIQUEFIER.get()),          LIQUEFYING);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.CRYSTALLIZER.get()),      CRYSTALLIZING);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.CRYO_CORE.get()),         CRYO_FREEZING);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.PHASE_SPLITTER.get()),   PHASE_SPLITTING);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.MINER_CORE.get()), MINER_LENS);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.NUCLEAR_REACTOR.get()), REACTOR_SCHEME);
         registration.addRecipeCatalyst(new ItemStack(ModItems.MINER_LENS_1.get()), MINER_LENS);
         registration.addRecipeCatalyst(new ItemStack(ModItems.MINER_LENS_2.get()), MINER_LENS);
         registration.addRecipeCatalyst(new ItemStack(ModItems.MINER_LENS_3.get()), MINER_LENS);

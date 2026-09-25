@@ -6,7 +6,9 @@
       "count": 1
     },
     {
-      "item": "industrial_core:plutonium",
+      "type": "forge:nbt",
+      "item": "industrial_core:capsule",
+      "nbt": "{Fluid:{Amount:1000,FluidName:\"industrial_core:superfluid_condensate\"}}",
       "count": 1
     },
     {

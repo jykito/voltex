@@ -124,6 +124,35 @@ public class ModFluids {
             MOLTEN_AMETHYST_FLUID_TYPE, SOURCE_MOLTEN_AMETHYST, FLOWING_MOLTEN_AMETHYST)
             .bucket(ForgeRegistries.ITEMS.getDelegateOrThrow(net.minecraft.world.item.Items.AIR));
 
+    // Сверхтекучий конденсат — вершина криоветки. Вязкость почти нулевая (в том и смысл
+    // сверхтекучести), плотность как у сжиженного газа, температура около 4 K.
+    // Тон почти белый с голубым: рядом с бирюзовым хладагентом читается как «настолько
+    // холодное, что потеряло цвет», и ни с одной из четырёх занятых жидкостей не путается.
+    public static final RegistryObject<FluidType> SUPERFLUID_CONDENSATE_FLUID_TYPE = FLUID_TYPES.register("superfluid_condensate_fluid",
+            () -> new FluidType(FluidType.Properties.create().density(200).viscosity(100).temperature(4)) {
+                @Override
+                public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
+                    consumer.accept(new IClientFluidTypeExtensions() {
+                        private static final ResourceLocation STILL = new ResourceLocation("block/water_still");
+                        private static final ResourceLocation FLOW  = new ResourceLocation("block/water_flow");
+
+                        @Override public ResourceLocation getStillTexture()   { return STILL; }
+                        @Override public ResourceLocation getFlowingTexture() { return FLOW;  }
+                        @Override public int getTintColor()                    { return 0xFFCCF2FF; }
+                    });
+                }
+            });
+
+    public static final RegistryObject<FlowingFluid> SOURCE_SUPERFLUID_CONDENSATE = FLUIDS.register("superfluid_condensate",
+            () -> new ForgeFlowingFluid.Source(ModFluids.SUPERFLUID_CONDENSATE_PROPERTIES));
+
+    public static final RegistryObject<FlowingFluid> FLOWING_SUPERFLUID_CONDENSATE = FLUIDS.register("superfluid_condensate_flowing",
+            () -> new ForgeFlowingFluid.Flowing(ModFluids.SUPERFLUID_CONDENSATE_PROPERTIES));
+
+    private static final ForgeFlowingFluid.Properties SUPERFLUID_CONDENSATE_PROPERTIES = new ForgeFlowingFluid.Properties(
+            SUPERFLUID_CONDENSATE_FLUID_TYPE, SOURCE_SUPERFLUID_CONDENSATE, FLOWING_SUPERFLUID_CONDENSATE)
+            .bucket(ForgeRegistries.ITEMS.getDelegateOrThrow(net.minecraft.world.item.Items.AIR));
+
     public static void register(IEventBus eventBus) {
         FLUID_TYPES.register(eventBus);
         FLUIDS.register(eventBus);

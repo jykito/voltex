@@ -1,0 +1,28 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "lit": false
+      },
+      "apply": {
+        "model": "industrial_core:block/refrigeration_chamber"
+      }
+    },
+    {
+      "when": {
+        "lit": true
+      },
+      "apply": {
+        "model": "industrial_core:block/refrigeration_chamber_on"
+      }
+    },
+    {
+      "when": {
+        "lit": true
+      },
+      "apply": {
+        "model": "industrial_core:block/refrigeration_chamber_glow"
+      }
+    }
+  ]
+}

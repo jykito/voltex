@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "industrial_core:block/cryo_core_bottom",
+    "bottom": "industrial_core:block/cryo_core_bottom",
+    "side": "industrial_core:block/cryo_core_side",
+    "front": "industrial_core:block/cryo_core_front_on_anim"
+  }
+}

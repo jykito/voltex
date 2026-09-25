@@ -3,9 +3,6 @@
     import com.jykito.industrialcore.IndustrialCore;
     import com.jykito.industrialcore.block.ModBlocks;
     import com.jykito.industrialcore.item.custom.EnergyBackpackItem;
-    import com.jykito.industrialcore.item.custom.ReactorComponentItem;
-    import com.jykito.industrialcore.item.custom.ReactorFuelRodItem;
-    import com.jykito.industrialcore.item.custom.ReactorSchemeItem;
     import com.jykito.industrialcore.item.upgrade.*;
     import net.minecraft.network.chat.Component;
     import net.minecraft.world.item.BlockItem;
@@ -68,6 +65,9 @@
 
         public static final RegistryObject<Item> LIQUEFIER_ITEM = ITEMS.register("liquefier",
                 () -> new BlockItem(ModBlocks.LIQUEFIER.get(), new Item.Properties()));
+
+        public static final RegistryObject<Item> CRYSTALLIZER_ITEM = ITEMS.register("crystallizer",
+                () -> new BlockItem(ModBlocks.CRYSTALLIZER.get(), new Item.Properties()));
 
         public static final RegistryObject<Item> ORE_WASHER_ITEM = ITEMS.register("ore_washer",
                 () -> new BlockItem(ModBlocks.ORE_WASHER.get(), new Item.Properties()));
@@ -285,11 +285,48 @@
         public static final RegistryObject<Item> RESTRUCTOR_ITEM = ITEMS.register("restructor",
                 () -> new BlockItem(ModBlocks.RESTRUCTOR.get(), new Item.Properties()));
 
-        public static final RegistryObject<Item> MOX_FUEL = ITEMS.register("mox_fuel",
+        // ── Криоветка ──
+        // Криолит — основание ветки, кристаллизуется из хладагента.
+        // Криостержни — теплообменники криокамеры: задают СКОРОСТЬ обработки (глубину задаёт
+        // тепловой поток, объём партии — размер камеры) и изнашиваются тем быстрее, чем глубже.
+        // Разрешение на глубину. Ставится в ядро камеры, не тратится. Старший перекрывает младший,
+        // поэтому слот один: что вставил, до той ступени и пустят.
+        public static final RegistryObject<Item> DEPTH_MODULE_2 = ITEMS.register("depth_module_2",
+                () -> new com.jykito.industrialcore.item.custom.DepthModuleItem(2, new Item.Properties()));
+
+        public static final RegistryObject<Item> DEPTH_MODULE_3 = ITEMS.register("depth_module_3",
+                () -> new com.jykito.industrialcore.item.custom.DepthModuleItem(3, new Item.Properties()));
+
+        /** Продукт второй ступени криокамеры: из него растут стержни T2. */
+        public static final RegistryObject<Item> CRYO_CRYSTAL = ITEMS.register("cryo_crystal",
                 () -> new Item(new Item.Properties()));
 
-        public static final RegistryObject<Item> PLUTONIUM = ITEMS.register("plutonium",
+        public static final RegistryObject<Item> CRYOLITE = ITEMS.register("cryolite",
                 () -> new Item(new Item.Properties()));
+
+        public static final RegistryObject<Item> CRYO_GLASS_ITEM = ITEMS.register("cryo_glass",
+                () -> new BlockItem(ModBlocks.CRYO_GLASS.get(), new Item.Properties()));
+
+        public static final RegistryObject<Item> CRYO_CASING_ITEM = ITEMS.register("cryo_casing",
+                () -> new BlockItem(ModBlocks.CRYO_CASING.get(), new Item.Properties()));
+
+        public static final RegistryObject<Item> CRYO_CORE_ITEM = ITEMS.register("cryo_core",
+                () -> new BlockItem(ModBlocks.CRYO_CORE.get(), new Item.Properties()));
+
+        public static final RegistryObject<Item> REFRIGERATION_CHAMBER_ITEM = ITEMS.register("refrigeration_chamber",
+                () -> new BlockItem(ModBlocks.REFRIGERATION_CHAMBER.get(), new Item.Properties()));
+
+        // Криостержни изнашиваются в камере, поэтому у них прочность: полоска в слоте показывает
+        // остаток без всякого лишнего UI. Тир даёт и скорость, и живучесть — чинить нельзя,
+        // это расходник, а не инструмент.
+        public static final RegistryObject<Item> CRYO_ROD = ITEMS.register("cryo_rod",
+                () -> new Item(new Item.Properties().durability(1024).setNoRepair()));
+
+        public static final RegistryObject<Item> CRYO_ROD_T2 = ITEMS.register("cryo_rod_t2",
+                () -> new Item(new Item.Properties().durability(2048).setNoRepair()));
+
+        public static final RegistryObject<Item> CRYO_ROD_T3 = ITEMS.register("cryo_rod_t3",
+                () -> new Item(new Item.Properties().durability(4096).setNoRepair()));
 
         public static final RegistryObject<Item> PHASE_SPLITTER_ITEM = ITEMS.register("phase_splitter",
                 () -> new BlockItem(ModBlocks.PHASE_SPLITTER.get(), new Item.Properties()));
@@ -311,12 +348,16 @@
                 () -> new Item(new Item.Properties()));
 
         public static final RegistryObject<Item> ADVANCED_HEAT_EXCHANGER = ITEMS.register("advanced_heat_exchanger",
-                () -> new ReactorComponentItem(ReactorComponentItem.ComponentType.ADVANCED_EXCHANGER, 200,
-                        "tooltip.industrial_core.advanced_heat_exchanger", new Item.Properties().durability(2000)));
+                () -> new Item(new Item.Properties()));
+
+        public static final RegistryObject<Item> HEAT_PROBE = ITEMS.register("heat_probe",
+                () -> new com.jykito.industrialcore.item.custom.HeatProbeItem(new Item.Properties().stacksTo(1)));
+
+        public static final RegistryObject<Item> CRYOGENIC_HEAT_EXCHANGER = ITEMS.register("cryogenic_heat_exchanger",
+                () -> new Item(new Item.Properties()));
 
         public static final RegistryObject<Item> INTEGRAL_HEAT_VENT = ITEMS.register("integral_heat_vent",
-                () -> new ReactorComponentItem(ReactorComponentItem.ComponentType.INTEGRAL_VENT, 30,
-                        "tooltip.industrial_core.integral_heat_vent", new Item.Properties().durability(2000)));
+                () -> new Item(new Item.Properties()));
 
         public static final RegistryObject<Item> BATTERY = ITEMS.register("battery",
                 () -> new BatteryItem(new Item.Properties().stacksTo(1), 10000, 1000));
@@ -521,25 +562,10 @@
         public static final RegistryObject<Item> UNIVERSAL_CAPSULE = ITEMS.register("capsule",
                 () -> new UniversalCapsuleItem(new Item.Properties()));
 
-        public static final RegistryObject<Item> URANIUM_FUEL_ROD = ITEMS.register("uranium_fuel_rod",
-                () -> new ReactorFuelRodItem(10_000, 30, () -> ModItems.DEPLETED_URANIUM_FUEL_ROD.get(), new Item.Properties().durability(960)));
-
-        public static final RegistryObject<Item> NUCLEAR_REACTOR_ITEM = ITEMS.register("nuclear_reactor",
-                () -> new com.jykito.industrialcore.item.custom.TooltipBlockItem(ModBlocks.NUCLEAR_REACTOR.get(), new Item.Properties(), "tooltip.industrial_core.nuclear_reactor"));
-
-        public static final RegistryObject<Item> URANIUM_ORE_ITEM = ITEMS.register("uranium_ore",
-                () -> new BlockItem(ModBlocks.URANIUM_ORE.get(), new Item.Properties()));
-        public static final RegistryObject<Item> DEEPSLATE_URANIUM_ORE_ITEM = ITEMS.register("deepslate_uranium_ore",
-                () -> new BlockItem(ModBlocks.DEEPSLATE_URANIUM_ORE.get(), new Item.Properties()));
-        public static final RegistryObject<Item> RAW_URANIUM = ITEMS.register("raw_uranium",
-                () -> new Item(new Item.Properties()));
         public static final RegistryObject<Item> RAW_TIN_BLOCK_ITEM = ITEMS.register("raw_tin_block",
                 () -> new BlockItem(ModBlocks.RAW_TIN_BLOCK.get(), new Item.Properties()));
         public static final RegistryObject<Item> RAW_LEAD_BLOCK_ITEM = ITEMS.register("raw_lead_block",
                 () -> new BlockItem(ModBlocks.RAW_LEAD_BLOCK.get(), new Item.Properties()));
-        public static final RegistryObject<Item> RAW_URANIUM_BLOCK_ITEM = ITEMS.register("raw_uranium_block",
-                () -> new BlockItem(ModBlocks.RAW_URANIUM_BLOCK.get(), new Item.Properties()));
-
         public static final RegistryObject<Item> INVAR_BLOCK_ITEM = ITEMS.register("invar_block",
                 () -> new BlockItem(ModBlocks.INVAR_BLOCK.get(), new Item.Properties()));
         public static final RegistryObject<Item> ELECTRUM_BLOCK_ITEM = ITEMS.register("electrum_block",
@@ -548,77 +574,23 @@
                 () -> new BlockItem(ModBlocks.NICKEL_BLOCK.get(), new Item.Properties()));
         public static final RegistryObject<Item> SILVER_BLOCK_ITEM = ITEMS.register("silver_block",
                 () -> new BlockItem(ModBlocks.SILVER_BLOCK.get(), new Item.Properties()));
-        public static final RegistryObject<Item> URANIUM_INGOT = ITEMS.register("uranium_ingot",
-                () -> new Item(new Item.Properties()));
-        public static final RegistryObject<Item> URANIUM_DUST = ITEMS.register("uranium_dust",
-                () -> new Item(new Item.Properties()));
-
         public static final RegistryObject<Item> KRONIUM_ALLOY = ITEMS.register("kronium_alloy",
                 () -> new Item(new Item.Properties()));
 
         public static final RegistryObject<Item> EMPTY_FUEL_ROD = ITEMS.register("empty_fuel_rod",
                 () -> new Item(new Item.Properties()));
-        public static final RegistryObject<Item> EMPTY_REINFORCED_FUEL_ROD = ITEMS.register("empty_reinforced_fuel_rod",
-                () -> new Item(new Item.Properties()));
-        public static final RegistryObject<Item> DEPLETED_URANIUM_FUEL_ROD = ITEMS.register("depleted_uranium_fuel_rod",
-                () -> new Item(new Item.Properties()));
-        public static final RegistryObject<Item> DEPLETED_PLUTONIUM_FUEL_ROD = ITEMS.register("depleted_plutonium_fuel_rod",
-                () -> new Item(new Item.Properties()));
-        public static final RegistryObject<Item> DEPLETED_MOX_FUEL_ROD = ITEMS.register("depleted_mox_fuel_rod",
-                () -> new Item(new Item.Properties()));
-
-        public static final RegistryObject<Item> PLUTONIUM_FUEL_ROD = ITEMS.register("plutonium_fuel_rod",
-                () -> new ReactorFuelRodItem(25_000, 50, () -> DEPLETED_PLUTONIUM_FUEL_ROD.get(), new Item.Properties().durability(480)));
-        public static final RegistryObject<Item> MOX_FUEL_ROD = ITEMS.register("mox_fuel_rod",
-                () -> new ReactorFuelRodItem(100_000, 100, () -> DEPLETED_MOX_FUEL_ROD.get(), new Item.Properties().durability(720)));
         public static final RegistryObject<Item> GRAPHITE_ROD = ITEMS.register("graphite_rod",
-                () -> new ReactorComponentItem(ReactorComponentItem.ComponentType.GRAPHITE, 5,
-                        "tooltip.industrial_core.graphite_rod", new Item.Properties().durability(1000)));
+                () -> new Item(new Item.Properties()));
         public static final RegistryObject<Item> HEAT_VENT = ITEMS.register("heat_vent",
-                () -> new ReactorComponentItem(ReactorComponentItem.ComponentType.HEAT_VENT, 40,
-                        "tooltip.industrial_core.heat_vent", new Item.Properties().durability(2000)));
+                () -> new Item(new Item.Properties()));
         public static final RegistryObject<Item> HEAT_EXCHANGER = ITEMS.register("heat_exchanger",
-                () -> new ReactorComponentItem(ReactorComponentItem.ComponentType.HEAT_EXCHANGER, 100,
-                        "tooltip.industrial_core.heat_exchanger", new Item.Properties().durability(2000)));
+                () -> new Item(new Item.Properties()));
         public static final RegistryObject<Item> COMPONENT_HEAT_VENT = ITEMS.register("component_heat_vent",
-                () -> new ReactorComponentItem(ReactorComponentItem.ComponentType.COMPONENT_VENT, 100,
-                        "tooltip.industrial_core.component_heat_vent", new Item.Properties().durability(2000)));
+                () -> new Item(new Item.Properties()));
         public static final RegistryObject<Item> ADVANCED_HEAT_VENT = ITEMS.register("advanced_heat_vent",
-                () -> new ReactorComponentItem(ReactorComponentItem.ComponentType.ADVANCED_VENT, 250,
-                        "tooltip.industrial_core.advanced_heat_vent", new Item.Properties().durability(1000)));
+                () -> new Item(new Item.Properties()));
         public static final RegistryObject<Item> CONDENSATOR = ITEMS.register("condensator",
-                () -> new ReactorComponentItem(ReactorComponentItem.ComponentType.CONDENSATOR, 0, 500_000,
-                        "tooltip.industrial_core.condensator", new Item.Properties()));
-        public static final RegistryObject<Item> REACTOR_BLUEPRINT = ITEMS.register("reactor_blueprint",
-                () -> new com.jykito.industrialcore.item.custom.ReactorBlueprintItem(
-                        new Item.Properties().stacksTo(1)));
-
-        public static final RegistryObject<Item> REACTOR_SCHEME_U1 = ITEMS.register("reactor_scheme_u1",
-                () -> new ReactorSchemeItem(0, new Item.Properties().stacksTo(1)));
-        public static final RegistryObject<Item> REACTOR_SCHEME_U2 = ITEMS.register("reactor_scheme_u2",
-                () -> new ReactorSchemeItem(1, new Item.Properties().stacksTo(1)));
-        public static final RegistryObject<Item> REACTOR_SCHEME_U3 = ITEMS.register("reactor_scheme_u3",
-                () -> new ReactorSchemeItem(2, new Item.Properties().stacksTo(1)));
-        public static final RegistryObject<Item> REACTOR_SCHEME_P1 = ITEMS.register("reactor_scheme_p1",
-                () -> new ReactorSchemeItem(3, new Item.Properties().stacksTo(1)));
-        public static final RegistryObject<Item> REACTOR_SCHEME_P2 = ITEMS.register("reactor_scheme_p2",
-                () -> new ReactorSchemeItem(4, new Item.Properties().stacksTo(1)));
-        public static final RegistryObject<Item> REACTOR_SCHEME_P3 = ITEMS.register("reactor_scheme_p3",
-                () -> new ReactorSchemeItem(5, new Item.Properties().stacksTo(1)));
-        public static final RegistryObject<Item> REACTOR_SCHEME_P4 = ITEMS.register("reactor_scheme_p4",
-                () -> new ReactorSchemeItem(6, new Item.Properties().stacksTo(1)));
-        public static final RegistryObject<Item> REACTOR_SCHEME_M1 = ITEMS.register("reactor_scheme_m1",
-                () -> new ReactorSchemeItem(7, new Item.Properties().stacksTo(1)));
-        public static final RegistryObject<Item> REACTOR_SCHEME_M2 = ITEMS.register("reactor_scheme_m2",
-                () -> new ReactorSchemeItem(8, new Item.Properties().stacksTo(1)));
-        public static final RegistryObject<Item> REACTOR_SCHEME_M3 = ITEMS.register("reactor_scheme_m3",
-                () -> new ReactorSchemeItem(9, new Item.Properties().stacksTo(1)));
-        public static final RegistryObject<Item> REACTOR_SCHEME_M4 = ITEMS.register("reactor_scheme_m4",
-                () -> new ReactorSchemeItem(10, new Item.Properties().stacksTo(1)));
-
-        public static final RegistryObject<Item> REACTOR_CHAMBER_ITEM = ITEMS.register("reactor_chamber",
-                () -> new BlockItem(ModBlocks.REACTOR_CHAMBER.get(), new Item.Properties()));
-
+                () -> new Item(new Item.Properties()));
         public static final RegistryObject<Item> ROD_FABRICATOR_ITEM = ITEMS.register("rod_fabricator",
                 () -> new BlockItem(ModBlocks.ROD_FABRICATOR.get(), new Item.Properties()));
 

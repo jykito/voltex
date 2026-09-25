@@ -1,0 +1,196 @@
+{
+  "variants": {
+    "north=false,south=false,east=false,west=false,up=false,down=false": {
+      "model": "industrial_core:block/cryo_casing_solo"
+    },
+    "north=false,south=false,east=false,west=false,up=false,down=true": {
+      "model": "industrial_core:block/cryo_casing_d"
+    },
+    "north=false,south=false,east=false,west=false,up=true,down=false": {
+      "model": "industrial_core:block/cryo_casing_u"
+    },
+    "north=false,south=false,east=false,west=false,up=true,down=true": {
+      "model": "industrial_core:block/cryo_casing_ud"
+    },
+    "north=false,south=false,east=false,west=true,up=false,down=false": {
+      "model": "industrial_core:block/cryo_casing_w"
+    },
+    "north=false,south=false,east=false,west=true,up=false,down=true": {
+      "model": "industrial_core:block/cryo_casing_wd"
+    },
+    "north=false,south=false,east=false,west=true,up=true,down=false": {
+      "model": "industrial_core:block/cryo_casing_wu"
+    },
+    "north=false,south=false,east=false,west=true,up=true,down=true": {
+      "model": "industrial_core:block/cryo_casing_wud"
+    },
+    "north=false,south=false,east=true,west=false,up=false,down=false": {
+      "model": "industrial_core:block/cryo_casing_e"
+    },
+    "north=false,south=false,east=true,west=false,up=false,down=true": {
+      "model": "industrial_core:block/cryo_casing_ed"
+    },
+    "north=false,south=false,east=true,west=false,up=true,down=false": {
+      "model": "industrial_core:block/cryo_casing_eu"
+    },
+    "north=false,south=false,east=true,west=false,up=true,down=true": {
+      "model": "industrial_core:block/cryo_casing_eud"
+    },
+    "north=false,south=false,east=true,west=true,up=false,down=false": {
+      "model": "industrial_core:block/cryo_casing_ew"
+    },
+    "north=false,south=false,east=true,west=true,up=false,down=true": {
+      "model": "industrial_core:block/cryo_casing_ewd"
+    },
+    "north=false,south=false,east=true,west=true,up=true,down=false": {
+      "model": "industrial_core:block/cryo_casing_ewu"
+    },
+    "north=false,south=false,east=true,west=true,up=true,down=true": {
+      "model": "industrial_core:block/cryo_casing_ewud"
+    },
+    "north=false,south=true,east=false,west=false,up=false,down=false": {
+      "model": "industrial_core:block/cryo_casing_s"
+    },
+    "north=false,south=true,east=false,west=false,up=false,down=true": {
+      "model": "industrial_core:block/cryo_casing_sd"
+    },
+    "north=false,south=true,east=false,west=false,up=true,down=false": {
+      "model": "industrial_core:block/cryo_casing_su"
+    },
+    "north=false,south=true,east=false,west=false,up=true,down=true": {
+      "model": "industrial_core:block/cryo_casing_sud"
+    },
+    "north=false,south=true,east=false,west=true,up=false,down=false": {
+      "model": "industrial_core:block/cryo_casing_sw"
+    },
+    "north=false,south=true,east=false,west=true,up=false,down=true": {
+      "model": "industrial_core:block/cryo_casing_swd"
+    },
+    "north=false,south=true,east=false,west=true,up=true,down=false": {
+      "model": "industrial_core:block/cryo_casing_swu"
+    },
+    "north=false,south=true,east=false,west=true,up=true,down=true": {
+      "model": "industrial_core:block/cryo_casing_swud"
+    },
+    "north=false,south=true,east=true,west=false,up=false,down=false": {
+      "model": "industrial_core:block/cryo_casing_se"
+    },
+    "north=false,south=true,east=true,west=false,up=false,down=true": {
+      "model": "industrial_core:block/cryo_casing_sed"
+    },
+    "north=false,south=true,east=true,west=false,up=true,down=false": {
+      "model": "industrial_core:block/cryo_casing_seu"
+    },
+    "north=false,south=true,east=true,west=false,up=true,down=true": {
+      "model": "industrial_core:block/cryo_casing_seud"
+    },
+    "north=false,south=true,east=true,west=true,up=false,down=false": {
+      "model": "industrial_core:block/cryo_casing_sew"
+    },
+    "north=false,south=true,east=true,west=true,up=false,down=true": {
+      "model": "industrial_core:block/cryo_casing_sewd"
+    },
+    "north=false,south=true,east=true,west=true,up=true,down=false": {
+      "model": "industrial_core:block/cryo_casing_sewu"
+    },
+    "north=false,south=true,east=true,west=true,up=true,down=true": {
+      "model": "industrial_core:block/cryo_casing_sewud"
+    },
+    "north=true,south=false,east=false,west=false,up=false,down=false": {
+      "model": "industrial_core:block/cryo_casing_n"
+    },
+    "north=true,south=false,east=false,west=false,up=false,down=true": {
+      "model": "industrial_core:block/cryo_casing_nd"
+    },
+    "north=true,south=false,east=false,west=false,up=true,down=false": {
+      "model": "industrial_core:block/cryo_casing_nu"
+    },
+    "north=true,south=false,east=false,west=false,up=true,down=true": {
+      "model": "industrial_core:block/cryo_casing_nud"
+    },
+    "north=true,south=false,east=false,west=true,up=false,down=false": {
+      "model": "industrial_core:block/cryo_casing_nw"
+    },
+    "north=true,south=false,east=false,west=true,up=false,down=true": {
+      "model": "industrial_core:block/cryo_casing_nwd"
+    },
+    "north=true,south=false,east=false,west=true,up=true,down=false": {
+      "model": "industrial_core:block/cryo_casing_nwu"
+    },
+    "north=true,south=false,east=false,west=true,up=true,down=true": {
+      "model": "industrial_core:block/cryo_casing_nwud"
+    },
+    "north=true,south=false,east=true,west=false,up=false,down=false": {
+      "model": "industrial_core:block/cryo_casing_ne"
+    },
+    "north=true,south=false,east=true,west=false,up=false,down=true": {
+      "model": "industrial_core:block/cryo_casing_ned"
+    },
+    "north=true,south=false,east=true,west=false,up=true,down=false": {
+      "model": "industrial_core:block/cryo_casing_neu"
+    },
+    "north=true,south=false,east=true,west=false,up=true,down=true": {
+      "model": "industrial_core:block/cryo_casing_neud"
+    },
+    "north=true,south=false,east=true,west=true,up=false,down=false": {
+      "model": "industrial_core:block/cryo_casing_new"
+    },
+    "north=true,south=false,east=true,west=true,up=false,down=true": {
+      "model": "industrial_core:block/cryo_casing_newd"
+    },
+    "north=true,south=false,east=true,west=true,up=true,down=false": {
+      "model": "industrial_core:block/cryo_casing_newu"
+    },
+    "north=true,south=false,east=true,west=true,up=true,down=true": {
+      "model": "industrial_core:block/cryo_casing_newud"
+    },
+    "north=true,south=true,east=false,west=false,up=false,down=false": {
+      "model": "industrial_core:block/cryo_casing_ns"
+    },
+    "north=true,south=true,east=false,west=false,up=false,down=true": {
+      "model": "industrial_core:block/cryo_casing_nsd"
+    },
+    "north=true,south=true,east=false,west=false,up=true,down=false": {
+      "model": "industrial_core:block/cryo_casing_nsu"
+    },
+    "north=true,south=true,east=false,west=false,up=true,down=true": {
+      "model": "industrial_core:block/cryo_casing_nsud"
+    },
+    "north=true,south=true,east=false,west=true,up=false,down=false": {
+      "model": "industrial_core:block/cryo_casing_nsw"
+    },
+    "north=true,south=true,east=false,west=true,up=false,down=true": {
+      "model": "industrial_core:block/cryo_casing_nswd"
+    },
+    "north=true,south=true,east=false,west=true,up=true,down=false": {
+      "model": "industrial_core:block/cryo_casing_nswu"
+    },
+    "north=true,south=true,east=false,west=true,up=true,down=true": {
+      "model": "industrial_core:block/cryo_casing_nswud"
+    },
+    "north=true,south=true,east=true,west=false,up=false,down=false": {
+      "model": "industrial_core:block/cryo_casing_nse"
+    },
+    "north=true,south=true,east=true,west=false,up=false,down=true": {
+      "model": "industrial_core:block/cryo_casing_nsed"
+    },
+    "north=true,south=true,east=true,west=false,up=true,down=false": {
+      "model": "industrial_core:block/cryo_casing_nseu"
+    },
+    "north=true,south=true,east=true,west=false,up=true,down=true": {
+      "model": "industrial_core:block/cryo_casing_nseud"
+    },
+    "north=true,south=true,east=true,west=true,up=false,down=false": {
+      "model": "industrial_core:block/cryo_casing_nsew"
+    },
+    "north=true,south=true,east=true,west=true,up=false,down=true": {
+      "model": "industrial_core:block/cryo_casing_nsewd"
+    },
+    "north=true,south=true,east=true,west=true,up=true,down=false": {
+      "model": "industrial_core:block/cryo_casing_nsewu"
+    },
+    "north=true,south=true,east=true,west=true,up=true,down=true": {
+      "model": "industrial_core:block/cryo_casing_nsewud"
+    }
+  }
+}

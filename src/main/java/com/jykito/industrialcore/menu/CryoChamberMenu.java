@@ -1,0 +1,112 @@
+package com.jykito.industrialcore.menu;
+
+import com.jykito.industrialcore.block.ModBlocks;
+import com.jykito.industrialcore.block.entity.CryoCoreBlockEntity;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.*;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.items.SlotItemHandler;
+import org.jetbrains.annotations.NotNull;
+
+public class CryoChamberMenu extends AbstractContainerMenu {
+
+    /** Слоты камеры: вход, выход, три криостержня, модуль глубины. */
+    private static final int MACHINE_SLOTS = 6;
+    private static final int INV_END = MACHINE_SLOTS + 36;
+
+    public final CryoCoreBlockEntity blockEntity;
+    private final ContainerData data;
+
+    public CryoChamberMenu(int containerId, Inventory inv, FriendlyByteBuf buf) {
+        this(containerId, inv, inv.player.level().getBlockEntity(buf.readBlockPos()), new SimpleContainerData(10));
+    }
+
+    public CryoChamberMenu(int containerId, Inventory inv, BlockEntity entity, ContainerData data) {
+        super(ModMenuTypes.CRYO_CHAMBER_MENU.get(), containerId);
+        this.blockEntity = (CryoCoreBlockEntity) entity;
+        this.data = data;
+
+        var h = this.blockEntity.getItemHandler();
+
+        this.addSlot(new SlotItemHandler(h, 0, 92, 35));
+        this.addSlot(new SlotItemHandler(h, 1, 148, 35) {
+            @Override public boolean mayPlace(@NotNull ItemStack stack) { return false; }
+        });
+        for (int r = 0; r < 3; r++)
+            this.addSlot(new SlotItemHandler(h, 2 + r, 97 + r * 23, 75));
+        this.addSlot(new SlotItemHandler(h, 5, 120, 55));   // модуль глубины
+
+        // координаты инвентаря те же, что у магнита: окно такой же высоты
+        for (int i = 0; i < 3; i++)
+            for (int j = 0; j < 9; j++)
+                this.addSlot(new Slot(inv, j + i * 9 + 9, 44 + j * 19, 143 + i * 19));
+        for (int k = 0; k < 9; k++)
+            this.addSlot(new Slot(inv, k, 44 + k * 19, 206));
+
+        addDataSlots(data);
+    }
+
+    public int getEnergyStored() { return (data.get(3) << 16) | (data.get(2) & 0xFFFF); }
+    public int getMaxEnergy()    { return (data.get(5) << 16) | (data.get(4) & 0xFFFF); }
+    public int getDepth()        { return data.get(6); }
+    public int getHeatInflow()   { return data.get(7); }
+    public boolean isFormed()    { return data.get(8) != 0; }
+    /** До какой ступени пускает вставленный модуль. */
+    public int getAllowedStage() { return data.get(9); }
+
+    /** Ступень по глубине — то, что решает, какие рецепты вообще доступны. */
+    public int getStage() {
+        int d = getDepth();
+        if (d >= CryoCoreBlockEntity.depthForStage(3)) return 3;
+        if (d >= CryoCoreBlockEntity.depthForStage(2)) return 2;
+        if (d >= CryoCoreBlockEntity.depthForStage(1)) return 1;
+        return 0;
+    }
+
+    public int getScaledProgress(int barWidth) {
+        int progress = data.get(0), maxProgress = data.get(1);
+        if (maxProgress == 0 || progress == 0) return 0;
+        return Math.min(barWidth, (progress * barWidth + maxProgress - 1) / maxProgress);
+    }
+
+    public int getScaledEnergy(int barWidth) {
+        int energy = getEnergyStored(), maxEnergy = getMaxEnergy();
+        return maxEnergy != 0 && energy != 0 ? (int)((long) energy * barWidth / maxEnergy) : 0;
+    }
+
+    public int getScaledDepth(int barWidth) {
+        int d = getDepth();
+        return d <= 0 ? 0 : Math.min(barWidth, d * barWidth / CryoCoreBlockEntity.MAX_DEPTH);
+    }
+
+    @Override
+    public ItemStack quickMoveStack(Player player, int index) {
+        Slot sourceSlot = slots.get(index);
+        if (sourceSlot == null || !sourceSlot.hasItem()) return ItemStack.EMPTY;
+        ItemStack sourceStack = sourceSlot.getItem();
+        ItemStack copyStack = sourceStack.copy();
+
+        if (index < MACHINE_SLOTS) {
+            if (!moveItemStackTo(sourceStack, MACHINE_SLOTS, INV_END, true)) return ItemStack.EMPTY;
+        } else {
+            // Стержни едут в свои слоты, всё остальное во вход.
+            if (!moveItemStackTo(sourceStack, 2, MACHINE_SLOTS, false)
+                    && !moveItemStackTo(sourceStack, 0, 1, false))
+                return ItemStack.EMPTY;
+        }
+
+        if (sourceStack.getCount() == 0) sourceSlot.set(ItemStack.EMPTY);
+        else sourceSlot.setChanged();
+        sourceSlot.onTake(player, sourceStack);
+        return copyStack;
+    }
+
+    @Override
+    public boolean stillValid(Player player) {
+        return stillValid(ContainerLevelAccess.create(blockEntity.getLevel(), blockEntity.getBlockPos()),
+                player, ModBlocks.CRYO_CORE.get());
+    }
+}

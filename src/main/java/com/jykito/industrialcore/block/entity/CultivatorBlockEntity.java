@@ -51,7 +51,8 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
     public static final TagKey<Item> GROWABLE_PLANTS =
             ItemTags.create(new ResourceLocation("industrial_core", "growable_plants"));
 
-    private static final int TANK_CAP = 128000;
+    // База под работу без модуля: 8 циклов. Под параллели бак растёт сам, см. AdaptiveTank.
+    private static final int TANK_CAP = 8000;
     private static final int WATER_PER_RECIPE = 1000;
 
     private final com.jykito.industrialcore.recipe.CachedRecipe<GrowingRecipe> recipeCache =
@@ -175,6 +176,9 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
                 }
             }
         }
+
+        if (AdaptiveTank.resize(waterTank, TANK_CAP, parallel))
+            level.sendBlockUpdated(pos, state, state, 3); // шкала бака считается от ёмкости, клиенту нужна новая
 
         boolean working = false;
         ItemStack newDisplay = ItemStack.EMPTY;
@@ -312,6 +316,7 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
         tag.put("inventory", itemHandler.serializeNBT());
         tag.putInt("energy", energyStorage.getEnergyStored());
         tag.put("waterTank", waterTank.writeToNBT(new CompoundTag()));
+        AdaptiveTank.save(tag, "waterTankCapacity", waterTank);
         tag.putInt("progress", progress);
         tag.put("displayResult", displayResult.save(new CompoundTag()));
         super.saveAdditional(tag);
@@ -321,6 +326,7 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
         super.load(tag);
         itemHandler.deserializeNBT(tag.getCompound("inventory"));
         energyStorage.set(tag.getInt("energy"));
+        AdaptiveTank.load(tag, "waterTankCapacity", waterTank, TANK_CAP);
         waterTank.readFromNBT(tag.getCompound("waterTank"));
         progress = tag.getInt("progress");
         if (tag.contains("displayResult")) displayResult = ItemStack.of(tag.getCompound("displayResult"));

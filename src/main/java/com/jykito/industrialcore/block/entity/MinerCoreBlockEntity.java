@@ -43,7 +43,8 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
     public static final int ENERGY_PER_TICK = 1000;
     public static final int FLUID_PER_ORE   = 1000;
     public static final int ENERGY_CAPACITY = 100_000;
-    public static final int FLUID_CAPACITY  = 128_000;
+    // База под работу без модуля: 8 руд. Под параллели бак растёт сам, см. AdaptiveTank.
+    public static final int FLUID_CAPACITY  = 8_000;
 
     private static final class DrainableEnergyStorage extends EnergyStorage {
         DrainableEnergyStorage(int capacity, int maxReceive) { super(capacity, maxReceive, 0); }
@@ -188,6 +189,9 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
                 moduleParallel = Math.max(moduleParallel, adv.getParallelCount());
             }
         }
+        if (AdaptiveTank.resize(fluidTank, FLUID_CAPACITY, moduleParallel))
+            level.sendBlockUpdated(pos, state, state, 3); // шкала бака считается от ёмкости, клиенту нужна новая
+
         int effectiveMax = Math.max(1, (int)(BASE_PROGRESS * timeMultiplier));
         this.maxProgress = effectiveMax;
 
@@ -389,6 +393,7 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
         tag.putInt("progress", progress);
         tag.putInt("energy", energyStorage.getEnergyStored());
         tag.put("fluidTank", fluidTank.writeToNBT(new CompoundTag()));
+        AdaptiveTank.save(tag, "fluidTankCapacity", fluidTank);
         tag.putBoolean("isStructureValid", isStructureValid);
         super.saveAdditional(tag);
     }
@@ -400,6 +405,7 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
         outputHandler.deserializeNBT(tag.getCompound("output"));
         progress = tag.getInt("progress");
         energyStorage.setStored(tag.getInt("energy"));
+        AdaptiveTank.load(tag, "fluidTankCapacity", fluidTank, FLUID_CAPACITY);
         fluidTank.readFromNBT(tag.getCompound("fluidTank"));
         isStructureValid = tag.getBoolean("isStructureValid");
         if (isStructureValid) {

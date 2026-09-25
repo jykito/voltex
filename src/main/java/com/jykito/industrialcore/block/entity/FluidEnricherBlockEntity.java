@@ -53,9 +53,13 @@ public class FluidEnricherBlockEntity extends BlockEntity implements MenuProvide
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             return switch (slot) {
                 case 0 -> stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).isPresent();
+                // 1 и 5 — выходы. Разрешены, потому что машина кладёт туда результат
+                // через этот же insertItem; закрыты они в automationHandler.
+                case 1, 5 -> true;
+                case 2, 3 -> isReagent(stack);
                 case 4 -> stack.getItem() == ModItems.UNIVERSAL_CAPSULE.get();
                 case 6, 7, 8, 9 -> stack.getItem() instanceof com.jykito.industrialcore.item.upgrade.MachineUpgradeItem;
-                default -> super.isItemValid(slot, stack);
+                default -> false;
             };
         }
     };
@@ -66,11 +70,13 @@ public class FluidEnricherBlockEntity extends BlockEntity implements MenuProvide
         @Override public int getSlots() { return itemHandler.getSlots(); }
         @Override public @NotNull ItemStack getStackInSlot(int slot) { return itemHandler.getStackInSlot(slot); }
         @Override public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-            if (slot >= 6) return stack;
+            // извне пишем только во входы: 1 и 5 — выходы, 6-9 — улучшения
+            if (slot != 0 && slot != 2 && slot != 3 && slot != 4) return stack;
             return itemHandler.insertItem(slot, stack, simulate);
         }
         @Override public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
-            if (slot != 1 && slot != 5) return ItemStack.EMPTY;
+            // выходы плюс слоты реагентов, чтобы застрявшее сырьё можно было выкачать трубой
+            if (slot != 1 && slot != 5 && slot != 2 && slot != 3) return ItemStack.EMPTY;
             return itemHandler.extractItem(slot, amount, simulate);
         }
         @Override public int getSlotLimit(int slot) { return itemHandler.getSlotLimit(slot); }
@@ -110,7 +116,9 @@ public class FluidEnricherBlockEntity extends BlockEntity implements MenuProvide
     };
     private LazyOptional<IFluidHandler> lazyFluidHandler = LazyOptional.empty();
 
-    public final FluidTank inputTank = new FluidTank(8000) {
+    private static final int TANK_BASE = 8000;
+
+    public final FluidTank inputTank = new FluidTank(TANK_BASE) {
         @Override
         protected void onContentsChanged() {
             recipeCache.markDirty();
@@ -119,7 +127,7 @@ public class FluidEnricherBlockEntity extends BlockEntity implements MenuProvide
                 level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
         }
     };
-    public final FluidTank outputTank = new FluidTank(8000) {
+    public final FluidTank outputTank = new FluidTank(TANK_BASE) {
         @Override
         protected void onContentsChanged() {
             recipeCache.markDirty();
@@ -193,6 +201,11 @@ public class FluidEnricherBlockEntity extends BlockEntity implements MenuProvide
                 parallel = Math.max(parallel, adv.getParallelCount());
             }
         }
+
+        // Оба бака растут: партия ×64 и берёт, и отдаёт в 64 раза больше.
+        boolean resized = AdaptiveTank.resize(inputTank,  TANK_BASE, parallel);
+        resized        |= AdaptiveTank.resize(outputTank, TANK_BASE, parallel);
+        if (resized) level.sendBlockUpdated(pos, state, state, 3);
 
         FluidEnricherRecipe currentRecipe = findRecipe(level);
         int baseTime   = currentRecipe != null ? currentRecipe.getProcessingTime()    : 100;
@@ -295,6 +308,18 @@ public class FluidEnricherBlockEntity extends BlockEntity implements MenuProvide
         MachineLit.tick(this, level, pos, state, FluidEnricherBlock.LIT, isWorking);
 
         setChanged();
+    }
+
+    /** Годится ли предмет в слот реагента: он должен быть ингредиентом хоть одного рецепта обогатителя. */
+    private boolean isReagent(ItemStack stack) {
+        if (stack.isEmpty()) return false;
+        Level lvl = this.level;
+        if (lvl == null) return true; // до привязки к миру рецептов не спросить, не мешаем загрузке сейва
+        for (FluidEnricherRecipe r : lvl.getRecipeManager().getAllRecipesFor(ModRecipes.FLUID_ENRICHER_TYPE.get())) {
+            if (r.getItemIngredient().test(stack)) return true;
+            if (r.hasSecondReagent() && r.getItemIngredient2().test(stack)) return true;
+        }
+        return false;
     }
 
     private FluidEnricherRecipe findRecipe(Level level) {
@@ -465,6 +490,8 @@ public class FluidEnricherBlockEntity extends BlockEntity implements MenuProvide
         tag.putInt("energy", energyStorage.getEnergyStored());
         tag.put("inputTank", inputTank.writeToNBT(new CompoundTag()));
         tag.put("outputTank", outputTank.writeToNBT(new CompoundTag()));
+        AdaptiveTank.save(tag, "inputTankCapacity",  inputTank);
+        AdaptiveTank.save(tag, "outputTankCapacity", outputTank);
         tag.putInt("progress", progress);
         super.saveAdditional(tag);
     }
@@ -474,6 +501,8 @@ public class FluidEnricherBlockEntity extends BlockEntity implements MenuProvide
         super.load(tag);
         itemHandler.deserializeNBT(tag.getCompound("inventory"));
         energyStorage.setEnergy(tag.getInt("energy"));
+        AdaptiveTank.load(tag, "inputTankCapacity",  inputTank,  TANK_BASE);
+        AdaptiveTank.load(tag, "outputTankCapacity", outputTank, TANK_BASE);
         inputTank.readFromNBT(tag.getCompound("inputTank"));
         outputTank.readFromNBT(tag.getCompound("outputTank"));
         progress = tag.getInt("progress");

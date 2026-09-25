@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "up": "industrial_core:block/cryo_casing_lud_connections",
+    "down": "industrial_core:block/cryo_casing_lud_connections",
+    "north": "industrial_core:block/cryo_casing_r_connections",
+    "south": "industrial_core:block/cryo_casing_l_connections",
+    "east": "industrial_core:block/cryo_casing_rl_connections",
+    "west": "industrial_core:block/cryo_casing_rl_connections",
+    "particle": "industrial_core:block/cryo_casing_lud_connections"
+  }
+}

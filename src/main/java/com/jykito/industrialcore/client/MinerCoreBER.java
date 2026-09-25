@@ -31,6 +31,13 @@ public class MinerCoreBER implements BlockEntityRenderer<MinerCoreBlockEntity> {
 
     public static final ResourceLocation DRILL_MODEL_RL =
             new ResourceLocation("industrial_core", "block/drill_3_ber");
+    /**
+     * Слой свечения бура: та же геометрия, но текстура, где всё несветящееся стёрто в прозрачность.
+     * Рисуется вторым проходом на полной яркости, поэтому светятся только оставленные пиксели,
+     * а сам бур живёт на настоящем свете мира. Раскладка обязана совпадать с {@code drill_3}.
+     */
+    public static final ResourceLocation DRILL_GLOW_MODEL_RL =
+            new ResourceLocation("industrial_core", "block/drill_3_glow_ber");
     public static final ResourceLocation SCREW_MODEL_RL =
             new ResourceLocation("industrial_core", "block/screw_ber");
 
@@ -45,8 +52,10 @@ public class MinerCoreBER implements BlockEntityRenderer<MinerCoreBlockEntity> {
 
         var mc = Minecraft.getInstance();
         BakedModel drillModel = mc.getModelManager().getModel(DRILL_MODEL_RL);
+        BakedModel glowModel  = mc.getModelManager().getModel(DRILL_GLOW_MODEL_RL);
         BakedModel screwModel = mc.getModelManager().getModel(SCREW_MODEL_RL);
         if (drillModel == mc.getModelManager().getMissingModel()) return;
+        boolean hasGlow = glowModel != mc.getModelManager().getMissingModel();
 
         Direction facing = state.getValue(MinerCoreBlock.FACING);
         float yDeg = switch (facing) {
@@ -68,7 +77,9 @@ public class MinerCoreBER implements BlockEntityRenderer<MinerCoreBlockEntity> {
         ps.mulPose(Axis.YP.rotationDegrees(yDeg));
         ps.translate(0.5, -1.5, -0.5);
         ps.scale(2f, 2f, 2f);
-        renderQuads(drillModel, ps, buf.getBuffer(rt), overlay);
+        // Корпус живёт на свете мира, поверх него тем же трансформом ложится слой свечения.
+        renderQuads(drillModel, ps, buf.getBuffer(rt), light, overlay);
+        if (hasGlow) renderQuads(glowModel, ps, buf.getBuffer(rt), LightTexture.FULL_BRIGHT, overlay);
         ps.popPose();
 
         if (screwModel != mc.getModelManager().getMissingModel()) {
@@ -81,16 +92,16 @@ public class MinerCoreBER implements BlockEntityRenderer<MinerCoreBlockEntity> {
             ps.translate(0.012f, 0.806f, 1.076f);
             ps.translate(0.5, -1.5, -0.5);
             ps.scale(2f, 2f, 2f);
-            renderQuads(screwModel, ps, buf.getBuffer(rt), overlay);
+            renderQuads(screwModel, ps, buf.getBuffer(rt), light, overlay);
             ps.popPose();
         }
     }
 
     private static void renderQuads(BakedModel model, PoseStack ps,
-                                    VertexConsumer vc, int overlay) {
+                                    VertexConsumer vc, int light, int overlay) {
         PoseStack.Pose pose = ps.last();
         for (BakedQuad quad : allQuads(model)) {
-            vc.putBulkData(pose, quad, 1f, 1f, 1f, LightTexture.FULL_BRIGHT, overlay);
+            vc.putBulkData(pose, quad, 1f, 1f, 1f, light, overlay);
         }
     }
 

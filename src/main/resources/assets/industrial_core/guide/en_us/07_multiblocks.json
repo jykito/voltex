@@ -51,38 +51,60 @@
       ]
     },
     {
-      "name": "Nuclear Reactor",
+      "name": "Cryo Chamber",
       "elements": [
         {
           "type": "header",
-          "text": "Reactor (multiblock)"
+          "text": "Cryo Chamber (multiblock)"
         },
         {
           "type": "text",
-          "text": "The same 3×3×3 cube: reactor core in the center, 26 chambers around. Chambers expand the internal grid and hook up cooling. Details in the Nuclear chapter."
+          "text": "A 5×5×5 cube: floor and ceiling entirely of casing, walls of cryo panels, a hollow inside with a column of refrigeration chambers. The core sits in the front row of the floor and sets the orientation of the whole build. Details in the Cryogenics chapter."
         },
         {
           "type": "multiblock",
           "pattern": {
             "key": {
-              "C": "industrial_core:reactor_chamber",
-              "R": "industrial_core:nuclear_reactor"
+              "K": "industrial_core:cryo_casing",
+              "G": "industrial_core:cryo_glass",
+              "F": "industrial_core:refrigeration_chamber",
+              "R": "industrial_core:cryo_core"
             },
             "layers": [
               [
-                "CCC",
-                "CCC",
-                "CCC"
+                "KKRKK",
+                "KKKKK",
+                "KKKKK",
+                "KKKKK",
+                "KKKKK"
               ],
               [
-                "CCC",
-                "CRC",
-                "CCC"
+                "GGGGG",
+                "G...G",
+                "G.F.G",
+                "G...G",
+                "GGGGG"
               ],
               [
-                "CCC",
-                "CCC",
-                "CCC"
+                "GGGGG",
+                "G...G",
+                "G.F.G",
+                "G...G",
+                "GGGGG"
+              ],
+              [
+                "GGGGG",
+                "G...G",
+                "G.F.G",
+                "G...G",
+                "GGGGG"
+              ],
+              [
+                "KKKKK",
+                "KKKKK",
+                "KKKKK",
+                "KKKKK",
+                "KKKKK"
               ]
             ]
           }
@@ -90,8 +112,10 @@
         {
           "type": "items",
           "items": [
-            "industrial_core:nuclear_reactor",
-            "industrial_core:reactor_chamber"
+            "industrial_core:cryo_core",
+            "industrial_core:cryo_casing",
+            "industrial_core:cryo_glass",
+            "industrial_core:refrigeration_chamber"
           ]
         }
       ]

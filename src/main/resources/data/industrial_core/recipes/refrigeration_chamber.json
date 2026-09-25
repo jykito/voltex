@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ACA",
+    "CVC",
+    "ACA"
+  ],
+  "key": {
+    "A": {
+      "tag": "forge:plates/aluminum"
+    },
+    "C": {
+      "item": "industrial_core:cryolite"
+    },
+    "V": {
+      "item": "industrial_core:condensator"
+    }
+  },
+  "result": {
+    "item": "industrial_core:refrigeration_chamber",
+    "count": 1
+  }
+}

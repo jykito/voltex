@@ -1,9 +1,0 @@
-{
-  "type": "minecraft:smelting",
-  "ingredient": {
-    "tag": "forge:raw_materials/uranium"
-  },
-  "result": "industrial_core:uranium_ingot",
-  "experience": 1.5,
-  "cookingtime": 400
-}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "AAA",
+    "AAA"
+  ],
+  "key": {
+    "A": {
+      "tag": "forge:ingots/invar"
+    }
+  },
+  "result": {
+    "item": "industrial_core:invar_block",
+    "count": 1
+  }
+}

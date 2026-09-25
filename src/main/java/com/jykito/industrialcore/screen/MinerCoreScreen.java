@@ -99,7 +99,7 @@ public class MinerCoreScreen extends AbstractContainerScreen<MinerCoreMenu> {
 
     private void renderFluid(GuiGraphics g, FluidStack stack, int capacity, int x, int y, int width, int height) {
         if (stack.isEmpty() || capacity <= 0) return;
-        int fluidHeight = (int)((float) stack.getAmount() / capacity * height);
+        int fluidHeight = Math.min(height, (int) ((float) stack.getAmount() / capacity * height));
         if (fluidHeight <= 0) return;
         IClientFluidTypeExtensions ext = IClientFluidTypeExtensions.of(stack.getFluid());
         TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(ext.getStillTexture(stack));

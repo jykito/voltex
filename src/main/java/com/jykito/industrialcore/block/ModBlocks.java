@@ -50,9 +50,6 @@ public class ModBlocks {
     public static final RegistryObject<Block> RAW_LEAD_BLOCK = BLOCKS.register("raw_lead_block",
             () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_GRAY).strength(5.0f, 6.0f).requiresCorrectToolForDrops()));
 
-    public static final RegistryObject<Block> RAW_URANIUM_BLOCK = BLOCKS.register("raw_uranium_block",
-            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(5.0f, 6.0f).requiresCorrectToolForDrops()));
-
     public static final RegistryObject<Block> INVAR_BLOCK = BLOCKS.register("invar_block",
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)));
     public static final RegistryObject<Block> ELECTRUM_BLOCK = BLOCKS.register("electrum_block",
@@ -156,6 +153,11 @@ public class ModBlocks {
                     .requiresCorrectToolForDrops().strength(5.0f)
                     .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.LiquefierBlock.LIT) ? 1 : 0)));
 
+    public static final RegistryObject<Block> CRYSTALLIZER = BLOCKS.register("crystallizer",
+            () -> new com.jykito.industrialcore.block.custom.CrystallizerBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
+                    .requiresCorrectToolForDrops().strength(5.0f)
+                    .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.CrystallizerBlock.LIT) ? 1 : 0)));
+
     public static final RegistryObject<Block> LAVA_GENERATOR = BLOCKS.register("lava_generator",
             () -> new com.jykito.industrialcore.block.custom.FluidGeneratorBlock(
                     com.jykito.industrialcore.block.entity.FluidGeneratorType.LAVA,
@@ -185,21 +187,6 @@ public class ModBlocks {
                     BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops().strength(5.0f).noOcclusion()
                             .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.CultivatorBlock.LIT) ? 1 : 0)));
 
-    public static final RegistryObject<Block> NUCLEAR_REACTOR = BLOCKS.register("nuclear_reactor",
-            () -> new NuclearReactorBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
-                    .requiresCorrectToolForDrops()
-                    .strength(6.0f, 10.0f)
-                    .noOcclusion()
-                    .lightLevel(state -> state.getValue(NuclearReactorBlock.LIT) ? 15 : 0)));
-
-    public static final RegistryObject<Block> URANIUM_ORE = BLOCKS.register("uranium_ore",
-            () -> new DropExperienceBlock(BlockBehaviour.Properties.copy(Blocks.STONE)
-                    .strength(4f).requiresCorrectToolForDrops(), UniformInt.of(2, 5)));
-
-    public static final RegistryObject<Block> DEEPSLATE_URANIUM_ORE = BLOCKS.register("deepslate_uranium_ore",
-            () -> new DropExperienceBlock(BlockBehaviour.Properties.copy(Blocks.DEEPSLATE)
-                    .strength(5.5f, 3f).requiresCorrectToolForDrops(), UniformInt.of(3, 7)));
-
     public static final RegistryObject<Block> EXTRACTOR = BLOCKS.register("extractor",
             () -> new ExtractorBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
                     .requiresCorrectToolForDrops()
@@ -225,11 +212,6 @@ public class ModBlocks {
                     BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops().strength(5.0f).noOcclusion()
                             .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.MinerCoreBlock.LIT) ? 12 : 0)));
 
-    public static final RegistryObject<Block> REACTOR_CHAMBER = BLOCKS.register("reactor_chamber",
-            () -> new com.jykito.industrialcore.block.ReactorChamberBlock(
-                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
-                            .requiresCorrectToolForDrops().strength(6.0f, 10.0f)));
-
     public static final RegistryObject<Block> LOGISTICS_NODE = BLOCKS.register("logistics_node",
             () -> new LogisticsNodeBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion().strength(2.0f)));
 
@@ -238,6 +220,28 @@ public class ModBlocks {
 
     public static final RegistryObject<Block> FLUID_HUB = BLOCKS.register("fluid_hub",
             () -> new com.jykito.industrialcore.block.custom.logistics.HubBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion().strength(2.0f)));
+
+    // ── Криокамера ──
+    // Свойства от стекла: бьётся быстро, света не глушит, инструмент не требует.
+    // noOcclusion обязателен — иначе движок сочтёт панель сплошным кубом, срежет соседние
+    // грани и внутри камеры будет темно.
+    // Кладка читается цельной плитой: рамка не в текстуре, а брусками по рёбрам,
+    // которые гасятся соседом. Occlusion НЕ снимаем — ядро полноценный куб.
+    public static final RegistryObject<Block> CRYO_CASING = BLOCKS.register("cryo_casing",
+            () -> new com.jykito.industrialcore.block.custom.CryoCasingBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(2.0f)));
+
+    public static final RegistryObject<Block> CRYO_CORE = BLOCKS.register("cryo_core",
+            () -> new com.jykito.industrialcore.block.custom.CryoCoreBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(3.0f)));
+
+    public static final RegistryObject<Block> REFRIGERATION_CHAMBER = BLOCKS.register("refrigeration_chamber",
+            () -> new com.jykito.industrialcore.block.custom.RefrigerationChamberBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(2.5f)));
+
+    public static final RegistryObject<Block> CRYO_GLASS = BLOCKS.register("cryo_glass",
+            () -> new com.jykito.industrialcore.block.custom.CryoGlassBlock(
+                    BlockBehaviour.Properties.copy(Blocks.GLASS).noOcclusion()));
 
     public static final RegistryObject<Block> HEAT_PIPE = BLOCKS.register("heat_pipe",
             () -> new com.jykito.industrialcore.block.custom.HeatPipeBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(1.5f).noOcclusion()));
