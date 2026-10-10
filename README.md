@@ -2,8 +2,10 @@
 
 Voltex is a tech mod for Minecraft 1.20.1 (Forge). It adds machines, FE energy generation and storage, cables and fluid handling, item and fluid logistics, a heat network, late-game multiblock machines built from ports, nanites, an industrial miner, a cryo chamber, an electromagnet, a full line of solar panels, two armor sets with energy weapons and a number of optional machines.
 
-Downloads, screenshots and the full description are on CurseForge:
-https://www.curseforge.com/minecraft/mc-mods/voltex
+Downloads, screenshots and the full description:
+
+- CurseForge: https://www.curseforge.com/minecraft/mc-mods/voltex
+- Modrinth: https://modrinth.com/mod/voltex
 
 ## Dependencies
 
@@ -37,4 +39,4 @@ Jade is a compile-only dependency loaded from `libs/`, which is not part of this
 
 The source is published for viewing and learning. All rights reserved. See [LICENSE.txt](LICENSE.txt).
 
-You may not redistribute, reupload or reuse the code, assets or textures in other projects without written permission. Including the mod in a modpack is fine when it is obtained from the official CurseForge page and credited. Bug reports and feedback are welcome.
+You may not redistribute, reupload or reuse the code, assets or textures in other projects without written permission. Including the mod in a modpack is fine when it is obtained from the official CurseForge or Modrinth page and credited. Bug reports and feedback are welcome.
