@@ -29,7 +29,8 @@ public class MachineTypeRecipeSerializer implements RecipeSerializer<MachineReci
         int processingTime = GsonHelper.getAsInt(json, "processingTime", 200);
         int energyCost     = GsonHelper.getAsInt(json, "energyCost", 50);
         String catalystId  = json.has("catalyst") ? GsonHelper.getAsString(json, "catalyst") : null;
-        return new MachineRecipe(id, input, inputCount, output, processingTime, energyCost, catalystId, type.get());
+        return new MachineRecipe(id, input, inputCount, output, processingTime, energyCost, catalystId, type.get())
+                .lateOnly(GsonHelper.getAsBoolean(json, "lateOnly", false));
     }
 
     @Override
@@ -40,7 +41,8 @@ public class MachineTypeRecipeSerializer implements RecipeSerializer<MachineReci
         int processingTime = buf.readInt();
         int energyCost     = buf.readInt();
         String catalystId  = buf.readBoolean() ? buf.readUtf() : null;
-        return new MachineRecipe(id, input, inputCount, output, processingTime, energyCost, catalystId, type.get());
+        return new MachineRecipe(id, input, inputCount, output, processingTime, energyCost, catalystId, type.get())
+                .lateOnly(buf.readBoolean());
     }
 
     @Override
@@ -53,5 +55,6 @@ public class MachineTypeRecipeSerializer implements RecipeSerializer<MachineReci
         String cat = recipe.getCatalystId();
         buf.writeBoolean(cat != null);
         if (cat != null) buf.writeUtf(cat);
+        buf.writeBoolean(recipe.isLateOnly());
     }
 }

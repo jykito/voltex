@@ -19,7 +19,7 @@ The in-game guide is built into the mod and needs nothing extra.
 
 Machine recipes use the `industrial_core:machine_recipe` type with a `machine_type` field, plus `processingTime` and `energyCost`. Those two numbers are what JEI shows and what the machine uses, so changing them in the recipe is all that is needed to retune a machine. The Restructor is the exception: it has no processing time, and `processingTime` in its recipes is ignored.
 
-Two machines have their own recipe types: `industrial_core:assembling` for the Industrial Assembler and `industrial_core:bioreactor_recipe` for the Bioreactor. These two have no KubeJS schema yet, so add them as JSON.
+KubeJS schemas cover every machine, including the Industrial Assembler (`industrial_core:assembling`), Bioreactor (`bioreactor_recipe`), Electromagnet (`accelerating`) and Cryo Chamber (`cryo_recipe`). Late-game machines run the recipes of the matching small machine; recipes for their Industrial mode are marked `lateOnly`. Full reference with examples: https://github.com/jykito/voltex-docs/blob/main/KUBEJS_RECIPES.md
 
 Ore generation is defined in JSON under `data/industrial_core/worldgen` and can be overridden with a datapack. KubeJS integration lives in `compat/kubejs`, and `api/` holds the extension points for solar panel tiers and Restructor recipes.
 

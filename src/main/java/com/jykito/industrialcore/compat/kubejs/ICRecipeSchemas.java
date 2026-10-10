@@ -1,17 +1,127 @@
 package com.jykito.industrialcore.compat.kubejs;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.fluid.InputFluid;
+import dev.latvian.mods.kubejs.fluid.OutputFluid;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
+import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.component.BooleanComponent;
+import dev.latvian.mods.kubejs.recipe.component.FluidComponents;
 import dev.latvian.mods.kubejs.recipe.component.ItemComponents;
 import dev.latvian.mods.kubejs.recipe.component.NumberComponent;
 import dev.latvian.mods.kubejs.recipe.component.StringComponent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
+import net.minecraft.world.item.crafting.Ingredient;
 
 public final class ICRecipeSchemas {
 
     private ICRecipeSchemas() {}
+
+    /**
+     * Рецепт со списком входов, где у каждого входа своё количество прямо в объекте: {"item": ..., "count": 4}
+     * (так читают сборщик и электромагнит). Обычный RecipeJS пишет ингредиент без количества.
+     */
+    public static class CountedInputsRecipeJS extends RecipeJS {
+        @Override
+        public JsonElement writeInputItem(InputItem value) {
+            JsonElement j = value.ingredient.toJson();
+            JsonObject o;
+            if (j.isJsonObject()) o = j.getAsJsonObject().deepCopy();
+            else {   // несколько вариантов ингредиента — массив; в объект с количеством он ложится составным ингредиентом Forge
+                o = new JsonObject();
+                o.addProperty("type", "forge:compound");
+                o.add("children", j);
+            }
+            if (value.count > 1) o.addProperty("count", value.count);
+            return o;
+        }
+
+        @Override
+        public InputItem readInputItem(Object from) {
+            if (from instanceof JsonObject o && o.has("count")) {
+                JsonObject c = o.deepCopy();
+                int n = c.remove("count").getAsInt();
+                return InputItem.of(Ingredient.fromJson(c), n);
+            }
+            return super.readInputItem(from);
+        }
+    }
+
+    public static final RecipeSchema ASSEMBLING      = assembling();
+    public static final RecipeSchema ACCELERATING    = accelerating();
+    public static final RecipeSchema BIOREACTOR      = bioreactor();
+    public static final RecipeSchema CRYO            = cryo();
+
+    /** Промышленный сборщик: много входов с количеством, необязательная жидкость на входе и выходе. */
+    private static RecipeSchema assembling() {
+        RecipeKey<OutputItem>  result      = ItemComponents.OUTPUT.key("result");
+        RecipeKey<InputItem[]> inputs      = ItemComponents.INPUT_ARRAY.key("inputs");
+        RecipeKey<InputFluid>  fluid       = FluidComponents.INPUT.key("fluid").defaultOptional();
+        RecipeKey<OutputFluid> fluidResult = FluidComponents.OUTPUT.key("fluidResult").defaultOptional();
+        RecipeKey<Integer>     time        = NumberComponent.INT.key("processingTime").optional(200);
+        RecipeKey<Integer>     energy      = NumberComponent.INT.key("energyCostPerTick").optional(1000);
+        return new RecipeSchema(CountedInputsRecipeJS.class, CountedInputsRecipeJS::new, result, inputs, fluid, fluidResult, time, energy)
+                .uniqueOutputId(result);
+    }
+
+    /** Электромагнит: входы с количеством, тир магнита, окно нестабильности; lateOnly — только промышленный электромагнит. */
+    private static RecipeSchema accelerating() {
+        RecipeKey<OutputItem>  result    = ItemComponents.OUTPUT.key("result");
+        RecipeKey<InputItem[]> inputs    = ItemComponents.INPUT_ARRAY.key("inputs");
+        RecipeKey<InputFluid>  fluid     = FluidComponents.INPUT.key("fluid").defaultOptional();
+        RecipeKey<Integer>     minTier   = NumberComponent.INT.key("minTier").optional(1);
+        RecipeKey<Integer>     time      = NumberComponent.INT.key("processingTime").optional(200);
+        RecipeKey<Integer>     energy    = NumberComponent.INT.key("energyCostPerTick").optional(1000);
+        RecipeKey<Float>       minInstab = NumberComponent.FLOAT.key("minInstab").optional(0f);
+        RecipeKey<Float>       bandLo    = NumberComponent.FLOAT.key("bandLo").optional(0f);
+        RecipeKey<Float>       bandHi    = NumberComponent.FLOAT.key("bandHi").optional(0f);
+        RecipeKey<Boolean>     lateOnly  = lateOnly();
+        return new RecipeSchema(CountedInputsRecipeJS.class, CountedInputsRecipeJS::new,
+                result, inputs, fluid, minTier, time, energy, minInstab, bandLo, bandHi, lateOnly)
+                .uniqueOutputId(result);
+    }
+
+    /** Биореактор: основной вход + необязательная добавка, вода и порог тепла. */
+    private static RecipeSchema bioreactor() {
+        RecipeKey<OutputItem> result        = ItemComponents.OUTPUT.key("result");
+        RecipeKey<InputItem>  ingredient    = ItemComponents.INPUT.key("ingredient");
+        RecipeKey<InputItem>  additive      = ItemComponents.INPUT.key("additive").defaultOptional();
+        RecipeKey<Integer>    inputCount    = NumberComponent.INT.key("inputCount").optional(1);
+        RecipeKey<Integer>    additiveCount = NumberComponent.INT.key("additiveCount").optional(1);
+        RecipeKey<Integer>    waterAmount   = NumberComponent.INT.key("waterAmount").optional(250);
+        RecipeKey<Integer>    heat          = NumberComponent.INT.key("requiredHeat").optional(800);
+        RecipeKey<Integer>    time          = NumberComponent.INT.key("processingTime").optional(400);
+        RecipeKey<Integer>    energy        = NumberComponent.INT.key("energyCostPerTick").optional(60);
+        return new RecipeSchema(result, ingredient, additive, inputCount, additiveCount, waterAmount, heat, time, energy)
+                .uniqueOutputId(result);
+    }
+
+    /**
+     * Криокамера: результат-предмет необязателен (конденсат — только жидкость), поэтому конструкторы заданы явно:
+     * (ингредиент), (результат, ингредиент), (результат, ингредиент, стадия); жидкость — .fluidResult(id).fluidResultAmount(mB).
+     */
+    private static RecipeSchema cryo() {
+        RecipeKey<OutputItem> result      = ItemComponents.OUTPUT.key("result").defaultOptional();
+        RecipeKey<InputItem>  ingredient  = ItemComponents.INPUT.key("ingredient");
+        RecipeKey<Integer>    stage       = NumberComponent.INT.key("requiredStage").optional(1);
+        RecipeKey<Integer>    count       = NumberComponent.INT.key("ingredientCount").optional(1);
+        RecipeKey<String>     fluidResult = StringComponent.ANY.key("fluidResult").defaultOptional();
+        RecipeKey<Integer>    fluidAmount = NumberComponent.INT.key("fluidResultAmount").optional(0);
+        RecipeKey<Integer>    time        = NumberComponent.INT.key("processingTime").optional(400);
+        RecipeKey<Integer>    energy      = NumberComponent.INT.key("energyCostPerTick").optional(100);
+        return new RecipeSchema(result, ingredient, stage, count, fluidResult, fluidAmount, time, energy)
+                .constructor(ingredient)
+                .constructor(result, ingredient)
+                .constructor(result, ingredient, stage);
+    }
+
+    /** Пометка «только для лейт-машины» (её промышленный режим): малая машина такой рецепт не видит. */
+    private static RecipeKey<Boolean> lateOnly() {
+        return BooleanComponent.BOOLEAN.key("lateOnly").optional(false);
+    }
 
     public static final RecipeSchema LIQUEFIER       = liquefier();
     public static final RecipeSchema ORE_WASHING     = oreWashing();
@@ -61,7 +171,7 @@ public final class ICRecipeSchemas {
         RecipeKey<Float>      byproductChance  = NumberComponent.FLOAT.key("byproductChance").optional(1.0f);
         RecipeKey<Integer>    time             = NumberComponent.INT.key("processingTime").optional(200);
         RecipeKey<Integer>    energy           = NumberComponent.INT.key("energyCostPerTick").optional(40);
-        return new RecipeSchema(result, ingredient, inputCount, waterAmount, resultChance, byproduct, byproductChance, time, energy)
+        return new RecipeSchema(result, ingredient, inputCount, waterAmount, resultChance, byproduct, byproductChance, time, energy, lateOnly())
                 .uniqueOutputId(result);
     }
 
@@ -76,7 +186,7 @@ public final class ICRecipeSchemas {
         RecipeKey<Integer>   itemCount2   = NumberComponent.INT.key("itemCount2").optional(1);
         RecipeKey<Integer>   time         = NumberComponent.INT.key("processingTime").optional(100);
         RecipeKey<Integer>   energy       = NumberComponent.INT.key("energyCostPerTick").optional(50);
-        return new RecipeSchema(ingredient, fluidInput, fluidOutput, itemCount, fluidInAmt, fluidOutAmt, ingredient2, itemCount2, time, energy);
+        return new RecipeSchema(ingredient, fluidInput, fluidOutput, itemCount, fluidInAmt, fluidOutAmt, ingredient2, itemCount2, time, energy, lateOnly());
     }
 
     private static RecipeSchema phaseSplitter() {
@@ -111,7 +221,7 @@ public final class ICRecipeSchemas {
         RecipeKey<Integer>    fuelCount        = NumberComponent.INT.key("fuelCount").optional(1);
         RecipeKey<Integer>    time             = NumberComponent.INT.key("processingTime").optional(300);
         RecipeKey<Integer>    heat             = NumberComponent.INT.key("requiredHeat").optional(2400);
-        return new RecipeSchema(result, ingredient, fuel, ingredientCount, fuelCount, time, heat)
+        return new RecipeSchema(result, ingredient, fuel, ingredientCount, fuelCount, time, heat, lateOnly())
                 .uniqueOutputId(result);
     }
 
@@ -134,7 +244,7 @@ public final class ICRecipeSchemas {
         RecipeKey<Integer>    time        = NumberComponent.INT.key("processingTime").optional(200);
         RecipeKey<Integer>    energy      = NumberComponent.INT.key("energyCost").optional(50);
         RecipeKey<String>     catalyst    = StringComponent.ANY.key("catalyst").defaultOptional();
-        return new RecipeSchema(result, ingredient, inputCount, time, energy, catalyst)
+        return new RecipeSchema(result, ingredient, inputCount, time, energy, catalyst, lateOnly())
                 .uniqueOutputId(result);
     }
 }

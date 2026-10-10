@@ -23,6 +23,10 @@ public class ICKubeJSPlugin extends KubeJSPlugin {
                 .register("rod_fabrication_recipe", ICRecipeSchemas.ROD_FABRICATION)
                 .register("blast_furnace_recipe",  ICRecipeSchemas.BLAST_FURNACE)
                 .register("growing_recipe",        ICRecipeSchemas.GROWING)
+                .register("assembling",            ICRecipeSchemas.ASSEMBLING)
+                .register("accelerating",          ICRecipeSchemas.ACCELERATING)
+                .register("bioreactor_recipe",     ICRecipeSchemas.BIOREACTOR)
+                .register("cryo_recipe",           ICRecipeSchemas.CRYO)
 
                 .register("crushing",               ICRecipeSchemas.MACHINE)
                 .register("compressing",            ICRecipeSchemas.MACHINE)

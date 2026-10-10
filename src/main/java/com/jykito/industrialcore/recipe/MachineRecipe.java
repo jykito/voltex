@@ -40,6 +40,9 @@ public class MachineRecipe implements Recipe<SimpleContainer> {
 
     public boolean isLateOnly() { return lateOnly; }
 
+    /** Для типовых сериализаторов (crushing, rolling, ... — через них идёт KubeJS): пометка «только лейт». */
+    MachineRecipe lateOnly(boolean v) { this.lateOnly = v; return this; }
+
     @Override
     public boolean matches(SimpleContainer pContainer, Level pLevel) {
         if (lateOnly) return false;
