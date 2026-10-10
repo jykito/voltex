@@ -1,6 +1,7 @@
 package com.jykito.industrialcore.block.entity;
 
 import com.jykito.industrialcore.block.custom.MatterFabricatorBlock;
+import com.jykito.industrialcore.energy.MachineEnergy;
 import com.jykito.industrialcore.item.ModItems;
 import com.jykito.industrialcore.item.upgrade.DirectionalUpgradeItem;
 import com.jykito.industrialcore.menu.MatterFabricatorMenu;
@@ -20,7 +21,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -57,13 +57,7 @@ public class MatterFabricatorBlockEntity extends BlockEntity implements MenuProv
 
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
-    private static class FabricatorEnergy extends EnergyStorage {
-        FabricatorEnergy(int capacity, int maxReceive) { super(capacity, maxReceive, 0); }
-        @Override public boolean canExtract() { return false; }
-        void consume(int amount) { this.energy = Math.max(0, this.energy - amount); }
-        void setEnergy(int amount) { this.energy = Math.min(getMaxEnergyStored(), Math.max(0, amount)); }
-    }
-    private final FabricatorEnergy energyStorage = new FabricatorEnergy(BUFFER, MAX_RECEIVE);
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(BUFFER, MAX_RECEIVE);
     private LazyOptional<IEnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
     protected final ContainerData data = new ContainerData() {
@@ -94,7 +88,7 @@ public class MatterFabricatorBlockEntity extends BlockEntity implements MenuProv
                 || (out.is(ModItems.EXOTIC_MATTER.get()) && out.getCount() < out.getMaxStackSize());
 
         if (energyStorage.getEnergyStored() >= COST && hasSpace) {
-            energyStorage.consume(COST);
+            energyStorage.consumeEnergy(COST);
             if (out.isEmpty()) itemHandler.setStackInSlot(0, new ItemStack(ModItems.EXOTIC_MATTER.get()));
             else out.grow(1);
             working = true;

@@ -3,20 +3,26 @@
   "pattern": [
     "ABA",
     "CDC",
-    "ABA"
+    "EFE"
   ],
   "key": {
     "A": {
       "item": "minecraft:glass"
     },
     "B": {
-      "item": "industrial_core:crystal_plate"
+      "item": "industrial_core:fluid_valve"
     },
     "C": {
-      "item": "industrial_core:aluminum_plate"
+      "item": "industrial_core:heat_exchanger"
     },
     "D": {
-      "item": "industrial_core:machine_casing"
+      "tag": "forge:components/machine_casing"
+    },
+    "E": {
+      "tag": "forge:plates/aluminum"
+    },
+    "F": {
+      "item": "industrial_core:logic_board"
     }
   },
   "result": {

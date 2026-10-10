@@ -1,0 +1,9 @@
+{
+    "loader": "forge:obj",
+    "model": "industrial_core:models/block/antigrav_pilon.obj",
+    "flip_v": true,
+    "textures": {
+        "antigrav_pilon": "industrial_core:block/antigrav_pilon_current",
+        "particle": "industrial_core:block/antigrav_pilon_current"
+    }
+}

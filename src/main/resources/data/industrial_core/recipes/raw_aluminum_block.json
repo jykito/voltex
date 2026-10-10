@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "AAA",
+    "AAA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:raw_aluminum"
+    }
+  },
+  "result": {
+    "item": "industrial_core:raw_aluminum_block",
+    "count": 1
+  }
+}

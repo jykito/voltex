@@ -2,8 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "ABA",
-    "BCB",
-    "ABA"
+    "ACA"
   ],
   "key": {
     "A": {
@@ -13,7 +12,7 @@
       "item": "industrial_core:heat_conductor"
     },
     "C": {
-      "item": "industrial_core:machine_casing"
+      "tag": "forge:components/machine_casing"
     }
   },
   "result": {

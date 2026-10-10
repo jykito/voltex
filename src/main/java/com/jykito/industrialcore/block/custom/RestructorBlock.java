@@ -29,8 +29,16 @@ public class RestructorBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
+    /** T2: три линии, вход вдвое дешевле (см. RestructorBlockEntity). */
+    private final boolean t2;
+
     public RestructorBlock(Properties properties) {
+        this(properties, false);
+    }
+
+    public RestructorBlock(Properties properties, boolean t2) {
         super(properties);
+        this.t2 = t2;
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(LIT, false));
@@ -50,12 +58,12 @@ public class RestructorBlock extends BaseEntityBlock {
 
     @Nullable @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new RestructorBlockEntity(pos, state);
+        return t2 ? RestructorBlockEntity.t2(pos, state) : new RestructorBlockEntity(pos, state);
     }
 
     @Nullable @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return createTickerHelper(type, ModBlockEntities.RESTRUCTOR_BE.get(),
+        return createTickerHelper(type, t2 ? ModBlockEntities.RESTRUCTOR_T2_BE.get() : ModBlockEntities.RESTRUCTOR_BE.get(),
                 (lvl, pos, st, be) -> ((RestructorBlockEntity) be).tick(lvl, pos, st));
     }
 

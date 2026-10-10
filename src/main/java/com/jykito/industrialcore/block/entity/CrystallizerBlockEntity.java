@@ -1,11 +1,10 @@
 package com.jykito.industrialcore.block.entity;
 
 import com.jykito.industrialcore.block.custom.CrystallizerBlock;
-import com.jykito.industrialcore.item.upgrade.AcceleratorItem;
-import com.jykito.industrialcore.item.upgrade.AdvancedParallelModuleItem;
-import com.jykito.industrialcore.item.upgrade.DirectionalUpgradeItem;
+import com.jykito.industrialcore.energy.MachineEnergy;
 import com.jykito.industrialcore.item.upgrade.MachineUpgradeItem;
-import com.jykito.industrialcore.item.upgrade.ParallelModuleItem;
+import com.jykito.industrialcore.item.upgrade.MachineUpgrades;
+import com.jykito.industrialcore.item.upgrade.UpgradeTargets;
 import com.jykito.industrialcore.menu.CrystallizerMenu;
 import com.jykito.industrialcore.recipe.CachedRecipe;
 import com.jykito.industrialcore.recipe.CrystallizerRecipe;
@@ -31,7 +30,6 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.IItemHandler;
@@ -63,7 +61,7 @@ public class CrystallizerBlockEntity extends BlockEntity implements MenuProvider
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             return switch (slot) {
                 case SLOT_SEED, SLOT_OUTPUT -> !(stack.getItem() instanceof MachineUpgradeItem);
-                default -> stack.getItem() instanceof MachineUpgradeItem;
+                default -> UpgradeTargets.works(getBlockState().getBlock(), stack);
             };
         }
     };
@@ -88,12 +86,7 @@ public class CrystallizerBlockEntity extends BlockEntity implements MenuProvider
 
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
-    private static class CrystallizerEnergy extends EnergyStorage {
-        CrystallizerEnergy(int capacity) { super(capacity, capacity, 0); } // приём = буфер, без потолка на вход
-        void consumeEnergy(int amount) { this.energy = Math.max(0, this.energy - amount); }
-        void setEnergy(int amount) { this.energy = Math.min(getMaxEnergyStored(), Math.max(0, amount)); }
-    }
-    private final CrystallizerEnergy energyStorage = new CrystallizerEnergy(ENERGY_CAPACITY);
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(ENERGY_CAPACITY, ENERGY_CAPACITY);
     private LazyOptional<EnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
     public final FluidTank inputTank = new FluidTank(TANK_BASE) {
@@ -138,48 +131,24 @@ public class CrystallizerBlockEntity extends BlockEntity implements MenuProvider
     public void tick(Level level, BlockPos pos, BlockState state) {
         if (level.isClientSide()) return;
 
-        float timeMultiplier = 1.0f, energyMultiplier = 1.0f;
-        int parallel = 1;
+        MachineUpgrades upg = MachineUpgrades.scan(itemHandler, SLOT_UPGRADE_FIRST, SLOT_UPGRADE_LAST);
         // Выталкивателя жидкости нет намеренно: бак только приёмный, выливать из машины нечего.
-        Direction fluidPullDir = null, itemPullDir = null, itemPushDir = null;
-        for (int s = SLOT_UPGRADE_FIRST; s <= SLOT_UPGRADE_LAST; s++) {
-            ItemStack up = itemHandler.getStackInSlot(s);
-            if (up.isEmpty()) continue;
-            if (up.getItem() instanceof AcceleratorItem acc) {
-                for (int c = 0; c < up.getCount(); c++) {
-                    timeMultiplier   *= acc.getSpeedMultiplier();
-                    energyMultiplier *= acc.getEnergyMultiplier();
-                }
-            } else if (up.getItem() instanceof ParallelModuleItem pm) {
-                parallel = Math.max(parallel, pm.getParallelCount());
-            } else if (up.getItem() instanceof AdvancedParallelModuleItem adv) {
-                parallel = Math.max(parallel, adv.getParallelCount());
-            } else if (up.getItem() instanceof DirectionalUpgradeItem dir) {
-                Direction d = DirectionalUpgradeItem.getStoredDirection(up);
-                if (d != null) switch (dir.getMode()) {
-                    case FLUID_PULL -> fluidPullDir = d;
-                    case ITEM_PULL  -> itemPullDir  = d;
-                    case ITEM_PUSH  -> itemPushDir  = d;
-                    default -> { }
-                }
-            }
-        }
 
-        if (AdaptiveTank.resize(inputTank, TANK_BASE, parallel)) {
+        if (AdaptiveTank.resize(inputTank, TANK_BASE, upg.parallel())) {
             setChanged();
             level.sendBlockUpdated(pos, state, state, 3); // шкала бака считается от ёмкости, клиенту нужна новая
         }
 
-        if (fluidPullDir != null) pullFluid(level, pos, fluidPullDir);
-        if (itemPullDir  != null) pullSeed(level, pos, itemPullDir);
+        if (upg.fluidPull() != null) MachineIO.pullFluid(level, pos, upg.fluidPull(), inputTank);
+        if (upg.itemPull()  != null) MachineIO.pullItems(level, pos, upg.itemPull(), itemHandler, SLOT_SEED);
 
         CrystallizerRecipe recipe = findRecipe(level);
-        this.maxProgress = recipe != null ? Math.max(1, (int)(recipe.getProcessingTime() * timeMultiplier)) : 200;
+        this.maxProgress = recipe != null ? upg.scaleTime(recipe.getProcessingTime()) : 200;
 
         boolean working = false;
         if (recipe != null) {
-            int actualParallel = Math.max(1, Math.min(parallel, maxRuns(recipe)));
-            int cost = Math.max(1, (int)(recipe.getEnergyCostPerTick() * energyMultiplier));
+            int actualParallel = Math.max(1, Math.min(upg.parallel(), maxRuns(recipe)));
+            int cost = upg.scaleEnergy(recipe.getEnergyCostPerTick());
             if (energyStorage.getEnergyStored() >= cost) {
                 energyStorage.consumeEnergy(cost);
                 progress++;
@@ -195,48 +164,9 @@ public class CrystallizerBlockEntity extends BlockEntity implements MenuProvider
 
         MachineLit.tick(this, level, pos, state, CrystallizerBlock.LIT, working);
 
-        if (itemPushDir != null) pushOutput(level, pos, itemPushDir);
+        if (upg.itemPush() != null) MachineIO.pushItems(level, pos, upg.itemPush(), itemHandler, SLOT_OUTPUT);
 
         setChanged();
-    }
-
-    /** Качает жидкость из соседа в свой бак — так апгрейд стоит в самой машине, а не в чужой. */
-    private void pullFluid(Level level, BlockPos pos, Direction d) {
-        if (inputTank.getSpace() <= 0) return;
-        BlockEntity n = level.getBlockEntity(pos.relative(d));
-        if (n == null) return;
-        n.getCapability(ForgeCapabilities.FLUID_HANDLER, d.getOpposite()).ifPresent(src ->
-                FluidUtil.tryFluidTransfer(inputTank, src, inputTank.getSpace(), true));
-    }
-
-    /** Затягивает затравку из соседа. */
-    private void pullSeed(Level level, BlockPos pos, Direction d) {
-        BlockEntity n = level.getBlockEntity(pos.relative(d));
-        if (n == null) return;
-        n.getCapability(ForgeCapabilities.ITEM_HANDLER, d.getOpposite()).ifPresent(src -> {
-            for (int i = 0; i < src.getSlots(); i++) {
-                ItemStack sim = src.extractItem(i, 64, true);
-                if (sim.isEmpty()) continue;
-                int accepted = sim.getCount() - itemHandler.insertItem(SLOT_SEED, sim, true).getCount();
-                if (accepted > 0) {
-                    itemHandler.insertItem(SLOT_SEED, src.extractItem(i, accepted, false), false);
-                    return;
-                }
-            }
-        });
-    }
-
-    private void pushOutput(Level level, BlockPos pos, Direction d) {
-        ItemStack out = itemHandler.getStackInSlot(SLOT_OUTPUT);
-        if (out.isEmpty()) return;
-        BlockEntity n = level.getBlockEntity(pos.relative(d));
-        if (n == null) return;
-        n.getCapability(ForgeCapabilities.ITEM_HANDLER, d.getOpposite()).ifPresent(dst -> {
-            ItemStack left = out.copy();
-            for (int i = 0; i < dst.getSlots() && !left.isEmpty(); i++)
-                left = dst.insertItem(i, left, false);
-            itemHandler.extractItem(SLOT_OUTPUT, out.getCount() - left.getCount(), false);
-        });
     }
 
     @Nullable

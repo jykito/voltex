@@ -1,6 +1,9 @@
 package com.jykito.industrialcore.block.entity;
 
 import com.jykito.industrialcore.block.ElectricFurnaceBlock;
+import com.jykito.industrialcore.energy.MachineEnergy;
+import com.jykito.industrialcore.item.upgrade.MachineUpgrades;
+import com.jykito.industrialcore.item.upgrade.UpgradeTargets;
 import com.jykito.industrialcore.menu.ElectricFurnaceMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -21,7 +24,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -31,14 +33,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvider {
-    private static class FurnaceEnergyStorage extends EnergyStorage {
-        FurnaceEnergyStorage() { super(64000, 64000, 0); } // буфер 64k, без лимита на вход
-        void setEnergy(int amount) { this.energy = amount; }
 
-        void consumeEnergy(int amount) { this.energy = Math.max(0, this.energy - amount); }
-    }
-
-    private final FurnaceEnergyStorage energyStorage = new FurnaceEnergyStorage();
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(64000, 64000);
     private LazyOptional<IEnergyStorage> energyOptional = LazyOptional.empty();
 
     private final com.jykito.industrialcore.recipe.CachedRecipe<SmeltingRecipe> recipeCache =
@@ -54,7 +50,7 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             if (slot == 0) return !(stack.getItem() instanceof com.jykito.industrialcore.item.upgrade.MachineUpgradeItem);
-            if (slot >= 2 && slot <= 5) return stack.getItem() instanceof com.jykito.industrialcore.item.upgrade.MachineUpgradeItem;
+            if (slot >= 2 && slot <= 5) return UpgradeTargets.works(getBlockState().getBlock(), stack);
             return false;
         }
     };
@@ -78,8 +74,9 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
 
     public int progress = 0;
     public int maxProgress = 100;
-    private static final int BASE_MAX_PROGRESS = 100;
-    private static final int BASE_ENERGY_PER_TICK = 20;
+    // ванильный cookingtime не используется: время и расход у электропечи свои (их же берёт промышленная печь)
+    public static final int BASE_MAX_PROGRESS = 100;
+    public static final int BASE_ENERGY_PER_TICK = 20;
 
     protected final ContainerData data;
 
@@ -126,56 +123,13 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
     public static void tick(Level level, BlockPos pos, BlockState state, ElectricFurnaceBlockEntity entity) {
         if (level.isClientSide()) return;
 
-        float timeMultiplier   = 1.0f;
-        float energyMultiplier = 1.0f;
-        int parallelCount      = 1;
-        Direction itemPusherDir = null;
-        Direction itemPullerDir = null;
-        for (int s = 2; s <= 5; s++) {
-            ItemStack upgrade = entity.itemHandler.getStackInSlot(s);
-            if (upgrade.isEmpty()) continue;
-            if (upgrade.getItem() instanceof com.jykito.industrialcore.item.upgrade.DirectionalUpgradeItem dir) {
-                Direction d = com.jykito.industrialcore.item.upgrade.DirectionalUpgradeItem.getStoredDirection(upgrade);
-                if (d != null) switch (dir.getMode()) {
-                    case ITEM_PUSH -> itemPusherDir = d;
-                    case ITEM_PULL -> itemPullerDir = d;
-                    default -> {} // печь без жидкостей — FLUID_* игнор
-                }
-            } else if (upgrade.getItem() instanceof com.jykito.industrialcore.item.upgrade.AcceleratorItem acc) {
-                for (int c = 0; c < upgrade.getCount(); c++) {
-                    timeMultiplier   *= acc.getSpeedMultiplier();
-                    energyMultiplier *= acc.getEnergyMultiplier();
-                }
-            } else if (upgrade.getItem() instanceof com.jykito.industrialcore.item.upgrade.ParallelModuleItem pm) {
-                parallelCount = Math.max(parallelCount, pm.getParallelCount());
-            } else if (upgrade.getItem() instanceof com.jykito.industrialcore.item.upgrade.AdvancedParallelModuleItem adv) {
-                parallelCount = Math.max(parallelCount, adv.getParallelCount());
-            }
-        }
+        MachineUpgrades upg = MachineUpgrades.scan(entity.itemHandler, 2, 5);
 
         // Затягиватель: тянем предметы из соседа во входной слот (0)
-        if (itemPullerDir != null) {
-            final Direction pullDir = itemPullerDir;
-            BlockEntity neighbor = level.getBlockEntity(pos.relative(pullDir));
-            if (neighbor != null) {
-                neighbor.getCapability(ForgeCapabilities.ITEM_HANDLER, pullDir.getOpposite()).ifPresent(nh -> {
-                    for (int i = 0; i < nh.getSlots(); i++) {
-                        ItemStack extracted = nh.extractItem(i, 64, true);
-                        if (extracted.isEmpty()) continue;
-                        ItemStack remaining = entity.itemHandler.insertItem(0, extracted.copy(), true);
-                        int inserted = extracted.getCount() - remaining.getCount();
-                        if (inserted > 0) {
-                            entity.itemHandler.insertItem(0, nh.extractItem(i, inserted, false), false);
-                            entity.setChanged();
-                            break;
-                        }
-                    }
-                });
-            }
-        }
+        if (upg.itemPull() != null && MachineIO.pullItems(level, pos, upg.itemPull(), entity.itemHandler, 0)) entity.setChanged();
 
-        entity.maxProgress = Math.max(1, (int) (BASE_MAX_PROGRESS * timeMultiplier));
-        int energyCost     = Math.max(1, (int) (BASE_ENERGY_PER_TICK * energyMultiplier));
+        entity.maxProgress = upg.scaleTime(BASE_MAX_PROGRESS);
+        int energyCost     = upg.scaleEnergy(BASE_ENERGY_PER_TICK);
 
         boolean hasEnergy = entity.energyStorage.getEnergyStored() >= energyCost;
         boolean hasRecipe = entity.hasValidRecipe();
@@ -186,7 +140,7 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
             setLit(entity, level, pos, state, true);
 
             if (entity.progress >= entity.maxProgress) {
-                entity.craftItem(parallelCount);
+                entity.craftItem(upg.parallel());
             }
         } else {
             entity.progress = 0;
@@ -194,21 +148,7 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
         }
 
         // Выталкиватель: выталкиваем готовый предмет из выходного слота (1) в соседа
-        if (itemPusherDir != null) {
-            final Direction pushDir = itemPusherDir;
-            BlockEntity neighbor = level.getBlockEntity(pos.relative(pushDir));
-            if (neighbor != null) {
-                neighbor.getCapability(ForgeCapabilities.ITEM_HANDLER, pushDir.getOpposite()).ifPresent(nh -> {
-                    ItemStack output = entity.itemHandler.getStackInSlot(1);
-                    if (output.isEmpty()) return;
-                    ItemStack remaining = net.minecraftforge.items.ItemHandlerHelper.insertItem(nh, output.copy(), false);
-                    if (remaining.getCount() < output.getCount()) {
-                        entity.itemHandler.setStackInSlot(1, remaining.isEmpty() ? ItemStack.EMPTY : remaining);
-                        entity.setChanged();
-                    }
-                });
-            }
-        }
+        if (upg.itemPush() != null && MachineIO.pushItems(level, pos, upg.itemPush(), entity.itemHandler, 1)) entity.setChanged();
     }
 
     @Nullable

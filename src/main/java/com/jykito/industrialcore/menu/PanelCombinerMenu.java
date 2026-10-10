@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class PanelCombinerMenu extends AbstractContainerMenu {
+public class PanelCombinerMenu extends MachineMenu {
 
     public final PanelCombinerBlockEntity blockEntity;
     private final ContainerData data;
@@ -27,7 +27,7 @@ public class PanelCombinerMenu extends AbstractContainerMenu {
     public static final int HOTBAR_Y      = 216;
 
     public PanelCombinerMenu(int id, Inventory inv, FriendlyByteBuf buf) {
-        this(id, inv, inv.player.level().getBlockEntity(buf.readBlockPos()), new SimpleContainerData(8));
+        this(id, inv, inv.player.level().getBlockEntity(buf.readBlockPos()), new SimpleContainerData(10));
     }
 
     public PanelCombinerMenu(int id, Inventory inv, BlockEntity entity, ContainerData data) {
@@ -53,10 +53,15 @@ public class PanelCombinerMenu extends AbstractContainerMenu {
             addSlot(new Slot(inv, k, INV_START_X + k * INV_STEP, HOTBAR_Y));
     }
 
-    public int getEnergyStored()   { return (data.get(1) << 16) | (data.get(0) & 0xFFFF); }
-    public int getMaxEnergy()      { return (data.get(3) << 16) | (data.get(2) & 0xFFFF); }
-    public int getCurrentGen()     { return (data.get(5) << 16) | (data.get(4) & 0xFFFF); }
-    public int getCurrentOutput()  { return (data.get(7) << 16) | (data.get(6) & 0xFFFF); }
+    public int getEnergyStored()   { return unpack(data.get(0), data.get(1)); }
+    public int getMaxEnergy()      { return unpack(data.get(2), data.get(3)); }
+    /** Генерация может быть больше int, поэтому идёт четырьмя ячейками. */
+    public long getCurrentGen() {
+        long lo = unpack(data.get(4), data.get(5)) & 0xFFFFFFFFL;
+        long hi = unpack(data.get(6), data.get(7));
+        return (hi << 32) | lo;
+    }
+    public int getCurrentOutput()  { return unpack(data.get(8), data.get(9)); }
 
     public int getScaledEnergy(int barWidth) {
         int max = getMaxEnergy();

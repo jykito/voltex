@@ -117,6 +117,14 @@ public class ModRecipes {
     public static final RegistryObject<RecipeSerializer<OreWashingRecipe>> ORE_WASHING_SERIALIZER =
             SERIALIZERS.register("ore_washing_recipe", () -> OreWashingRecipe.Serializer.INSTANCE);
 
+    public static final RegistryObject<RecipeType<BioreactorRecipe>> BIOREACTOR_TYPE =
+            RECIPE_TYPES.register("bioreactor", () -> new RecipeType<BioreactorRecipe>() {
+                @Override public String toString() { return "bioreactor"; }
+            });
+
+    public static final RegistryObject<RecipeSerializer<BioreactorRecipe>> BIOREACTOR_SERIALIZER =
+            SERIALIZERS.register("bioreactor_recipe", () -> BioreactorRecipe.Serializer.INSTANCE);
+
     public static final RegistryObject<RecipeType<GrowingRecipe>> GROWING_TYPE =
             RECIPE_TYPES.register("growing", () -> new RecipeType<GrowingRecipe>() {
                 @Override public String toString() { return "growing"; }
@@ -147,6 +155,15 @@ public class ModRecipes {
 
     public static final RegistryObject<RecipeSerializer<AcceleratorRecipe>> ACCELERATOR_SERIALIZER =
             SERIALIZERS.register("accelerating", () -> AcceleratorRecipe.Serializer.INSTANCE);
+
+    /** Промышленный сборщик: много входов + жидкость → один результат. */
+    public static final RegistryObject<RecipeType<AssemblingRecipe>> ASSEMBLING_TYPE =
+            RECIPE_TYPES.register("assembling", () -> new RecipeType<AssemblingRecipe>() {
+                @Override public String toString() { return "assembling"; }
+            });
+
+    public static final RegistryObject<RecipeSerializer<AssemblingRecipe>> ASSEMBLING_SERIALIZER =
+            SERIALIZERS.register("assembling", () -> AssemblingRecipe.Serializer.INSTANCE);
 
     public static void register(IEventBus eventBus) {
         RECIPE_TYPES.register(eventBus);

@@ -6,9 +6,7 @@
       "count": 2
     },
     {
-      "type": "forge:nbt",
-      "item": "industrial_core:capsule",
-      "nbt": "{Fluid:{Amount:1000,FluidName:\"industrial_core:superfluid_condensate\"}}",
+      "item": "industrial_core:condensate_ampoule",
       "count": 4
     },
     {

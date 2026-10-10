@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class BatteryChargerMenu extends AbstractContainerMenu {
+public class BatteryChargerMenu extends MachineMenu {
     public final BatteryChargerBlockEntity blockEntity;
     private final ContainerData data;
 
@@ -28,29 +28,20 @@ public class BatteryChargerMenu extends AbstractContainerMenu {
             this.addSlot(new SlotItemHandler(iItemHandler, 0, 120, 62));
         });
 
-        for (int i = 0; i < 3; ++i) {
-            for (int j = 0; j < 9; ++j) {
-                this.addSlot(new Slot(inv, j + i * 9 + 9, 43 + j * 19, 134 + i * 19));
-            }
-        }
-        for (int k = 0; k < 9; ++k) {
-            this.addSlot(new Slot(inv, k, 43 + k * 19, 197));
-        }
+        addPlayerInventory(inv, 43, 134);
         addDataSlots(data);
     }
 
     public int getEnergy() {
-        return (this.data.get(1) << 16) | (this.data.get(0) & 0xFFFF);
+        return unpack(data.get(0), data.get(1));
     }
 
     public int getMaxEnergy() {
-        return (this.data.get(3) << 16) | (this.data.get(2) & 0xFFFF);
+        return unpack(data.get(2), data.get(3));
     }
 
     public int getScaledEnergy() {
-        int energy = getEnergy();
-        int maxEnergy = getMaxEnergy();
-        return maxEnergy != 0 && energy != 0 ? (int)((long) energy * 110 / maxEnergy) : 0;
+        return scale(getEnergy(), getMaxEnergy(), 110);
     }
 
     public int getScaledCharge(int barHeight) {

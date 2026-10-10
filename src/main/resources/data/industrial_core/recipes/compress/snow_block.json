@@ -1,0 +1,14 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:compressing",
+  "ingredient": {
+    "item": "minecraft:snowball"
+  },
+  "inputCount": 4,
+  "result": {
+    "item": "minecraft:snow_block",
+    "count": 1
+  },
+  "processingTime": 70,
+  "energyCost": 40
+}

@@ -7,19 +7,19 @@
   ],
   "key": {
     "A": {
-      "item": "minecraft:glass"
+      "item": "industrial_core:carbon_plate"
     },
     "B": {
-      "item": "industrial_core:electric_motor"
-    },
-    "C": {
-      "item": "industrial_core:silicon"
-    },
-    "D": {
       "item": "industrial_core:textolite_board"
     },
-    "E": {
+    "C": {
       "item": "industrial_core:solar_panel_t1"
+    },
+    "D": {
+      "item": "industrial_core:silicon"
+    },
+    "E": {
+      "item": "industrial_core:electric_motor"
     }
   },
   "result": {

@@ -1,8 +1,10 @@
 {
-  "parent": "minecraft:block/orientable",
+  "parent": "minecraft:block/orientable_with_bottom",
   "textures": {
-    "top": "industrial_core:block/electric_furnace_top",
-    "front": "industrial_core:block/electric_furnace_front_on",
-    "side": "industrial_core:block/electric_furnace_side"
+    "top": "industrial_core:block/machine/electric_furnace_top",
+    "bottom": "industrial_core:block/machine/electric_furnace_bottom",
+    "side": "industrial_core:block/machine/electric_furnace_side",
+    "front": "industrial_core:block/machine/electric_furnace_front_on",
+    "particle": "industrial_core:block/machine/electric_furnace_side"
   }
 }

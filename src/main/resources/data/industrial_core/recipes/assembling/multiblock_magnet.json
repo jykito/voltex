@@ -1,0 +1,74 @@
+{
+  "type": "industrial_core:assembling",
+  "inputs": [
+    {
+      "item": "industrial_core:electromagnet_core"
+    },
+    {
+      "item": "industrial_core:magnet_superconductor_coil",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:magnet_copper_coil",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:coil_holder",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:antigrav_column",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:structural_block",
+      "count": 32
+    },
+    {
+      "item": "industrial_core:superconductor_coil",
+      "count": 8
+    },
+    {
+      "item": "industrial_core:kronium_alloy",
+      "count": 16
+    },
+    {
+      "item": "industrial_core:exotic_matter",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:star_shard",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:mechanism_block",
+      "count": 8
+    },
+    {
+      "item": "industrial_core:control_unit",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:servo_drive",
+      "count": 8
+    },
+    {
+      "item": "industrial_core:armor_sheet",
+      "count": 64
+    },
+    {
+      "item": "industrial_core:quantum_capacitor",
+      "count": 4
+    }
+  ],
+  "fluid": {
+    "fluid": "industrial_core:mechanical_alloy",
+    "amount": 32000
+  },
+  "result": {
+    "item": "industrial_core:multiblock_magnet",
+    "count": 1
+  },
+  "processingTime": 1200,
+  "energyCostPerTick": 16000
+}

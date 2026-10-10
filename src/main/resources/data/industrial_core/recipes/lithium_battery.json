@@ -2,15 +2,21 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     " A ",
-    "ABA",
-    " A "
+    "BCB",
+    " D "
   ],
   "key": {
     "A": {
-      "item": "industrial_core:lithium"
+      "tag": "forge:plates/aluminum"
     },
     "B": {
+      "item": "industrial_core:lithium"
+    },
+    "C": {
       "item": "industrial_core:battery"
+    },
+    "D": {
+      "tag": "forge:ingots/nickel"
     }
   },
   "result": {

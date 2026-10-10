@@ -1,0 +1,14 @@
+{
+  "type": "industrial_core:ore_washing_recipe",
+  "ingredient": {
+    "item": "minecraft:dirt"
+  },
+  "inputCount": 1,
+  "waterAmount": 1000,
+  "result": {
+    "item": "minecraft:clay_ball",
+    "count": 2
+  },
+  "processingTime": 200,
+  "energyCostPerTick": 40
+}

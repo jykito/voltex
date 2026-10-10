@@ -1,5 +1,6 @@
 package com.jykito.industrialcore.item.upgrade;
 
+import com.jykito.industrialcore.block.ModBlocks;
 import com.jykito.industrialcore.recipe.GrowingRecipe;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -38,5 +39,6 @@ public class CultivatorUpgradeItem extends MachineUpgradeItem {
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable(mode.tooltipKey).withStyle(ChatFormatting.GREEN));
         tooltip.add(Component.translatable("tooltip.industrial_core.cultivator_only").withStyle(ChatFormatting.DARK_GRAY));
+        UpgradeTargets.append(tooltip, ModBlocks.CULTIVATOR);
     }
 }

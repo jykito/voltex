@@ -18,118 +18,43 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
 
+/**
+ * Окно узла логистики: слева связи списком (порядок = приоритет, перетаскивание за ручку), справа карта сверху вокруг
+ * узла (1 пиксель = 1 блок, север вверху, дальние связи прижаты к краю), внизу подробности выбранной связи и подсветка
+ * её блока в мире. Текстура logistics_node_gui из tools/gui_gen/build_hub_guis.ps1, в ней только неподвижное.
+ */
 @OnlyIn(Dist.CLIENT)
 public class LogisticsNodeScreen extends AbstractContainerScreen<LogisticsNodeMenu> {
 
-    private static final ResourceLocation TEXTURE_BG    = new ResourceLocation(IndustrialCore.MODID, "textures/gui/logistics_node_bg.png");
-    private static final ResourceLocation TEXTURE_PANEL = new ResourceLocation(IndustrialCore.MODID, "textures/gui/logistics_node_panel.png");
-    private static final ResourceLocation TEXTURE_ROWS  = new ResourceLocation(IndustrialCore.MODID, "textures/gui/logistics_node_rows.png");
+    private static final ResourceLocation TEX = new ResourceLocation(IndustrialCore.MODID, "textures/gui/logistics_node_gui.png");
+    private static final int TEX_W = 256, TEX_H = 315;
 
-    private static final int GUI_W        = 200;
-    private static final int GUI_H        = 180;
-    private static final int PANEL_W      = 118;
-    private static final int PANEL_H      = 180;
-    private static final int ROW_H        = 20;
-    private static final int VISIBLE_ROWS = 6;
+    private static final int LIST_X = 15, LIST_Y = 28, ROW_W = 124, ROW_H = 19, ROW_STEP = 20, VISIBLE_ROWS = 6;
+    private static final int HANDLE_X = LIST_X + ROW_W - 11, NAME_W = 76;
+    private static final int MAP_X = 144, MAP_Y = 28, MAP_W = 97, MAP_H = 121, MAP_CX = MAP_X + 48, MAP_CY = MAP_Y + 60;
+    private static final int MAP_RX = 44, MAP_RZ = 56;
+    private static final int DET_X = 15, DET_Y = 151, DET_W = 226, BTN_W = 68, BTN_H = 15;
+    private static final long HIGHLIGHT_MS = 5000L;
 
-    private static final int TITLE_X  = 5;
-    private static final int TITLE_Y  = 5;
-    private static final int TITLE_W  = 190;
-    private static final int TITLE_H  = 10;
-    private static final int LIST_X   = 3;
-    private static final int LIST_Y   = 18;
-    private static final int LIST_W   = 194;
-    private static final int STATS_X  = 5;
-    private static final int STATS_Y  = 158;
-    private static final int STATS_W  = 190;
-    private static final int STATS_H  = 17;
-
-    private static final int ROW_U_NORMAL_A = 0;
-    private static final int ROW_U_NORMAL_B = 194;
-    private static final int ROW_U_SELECTED = 388;
-    private static final int ROW_U_DRAG     = 582;
-    private static final int ROWS_TEX_W     = 776;
-
-    private static final int HIGHLIGHT_BTN_X = 96;
-    private static final int HIGHLIGHT_BTN_Y = 18;
-    private static final int HIGHLIGHT_BTN_W = 12;
-    private static final int HIGHLIGHT_BTN_H = 12;
-    private static final long HIGHLIGHT_MS   = 5000L;
-
-    private static final int COL_TEXT    = 0xFFDDDDDD;
-    private static final int COL_SUBTEXT = 0xFF888888;
-    private static final int COL_PUSH    = 0xFF44CC44;
-    private static final int COL_PULL    = 0xFF44AAFF;
-    private static final int COL_ACTIVE  = 0xFF44FF44;
-    private static final int COL_IDLE    = 0xFF777777;
-    private static final int COL_ERROR   = 0xFFFF5555;
-    private static final int COL_HANDLE  = 0xFF666666;
+    private static final int COL_TEXT = 0xFFE8E8E8, COL_SUB = 0xFF9A9A9A, COL_DIM = 0xFF7A7A7A, COL_ERR = 0xFFFF7A6B;
+    private static final int COL_ITEM = 0xFFFF7F1E, COL_FLUID = 0xFF2F6BFF, COL_NODE = 0xFF33D6F0, COL_BAD = 0xFFFF5555;
+    private static final int COL_EDGE = 0xFF0B0B0B;
 
     private int scrollOffset = 0;
     private int selectedIndex = -1;
-
-    private boolean dragging    = false;
-    private int dragFromIndex   = -1;
-    private int dragCurrentY    = 0;
-
-    private boolean panelOnRight = true;
-
-    private static final java.util.Map<BlockPos, Boolean> PANEL_SIDE_MEMORY = new java.util.HashMap<>();
-    private static final String SIDES_FILE = "config/ic3_panel_sides.json";
-    private static boolean sidesLoaded = false;
+    private boolean dragging = false;
+    private int dragFromIndex = -1;
+    private int dragCurrentY = 0;
 
     public LogisticsNodeScreen(LogisticsNodeMenu menu, Inventory inv, Component title) {
         super(menu, inv, title);
-        this.imageWidth  = GUI_W;
-        this.imageHeight = GUI_H;
-    }
-
-    @Override
-    protected void init() {
-        super.init();
-        loadPanelSides();
-        panelOnRight = PANEL_SIDE_MEMORY.getOrDefault(menu.nodePos, true);
-    }
-
-    private static void loadPanelSides() {
-        if (sidesLoaded) return;
-        sidesLoaded = true;
-        try {
-            java.io.File f = new java.io.File(
-                net.minecraft.client.Minecraft.getInstance().gameDirectory, SIDES_FILE);
-            if (!f.exists()) return;
-            com.google.gson.JsonObject json = new com.google.gson.Gson().fromJson(
-                new java.io.FileReader(f), com.google.gson.JsonObject.class);
-            if (json == null) return;
-            for (var entry : json.entrySet()) {
-                String[] p = entry.getKey().split(",");
-                PANEL_SIDE_MEMORY.put(
-                    new BlockPos(Integer.parseInt(p[0]), Integer.parseInt(p[1]), Integer.parseInt(p[2])),
-                    entry.getValue().getAsBoolean()
-                );
-            }
-        } catch (Exception ignored) {}
-    }
-
-    private static void savePanelSides() {
-        try {
-            java.io.File f = new java.io.File(
-                net.minecraft.client.Minecraft.getInstance().gameDirectory, SIDES_FILE);
-            com.google.gson.JsonObject json = new com.google.gson.JsonObject();
-            for (var entry : PANEL_SIDE_MEMORY.entrySet()) {
-                BlockPos p = entry.getKey();
-                json.addProperty(p.getX() + "," + p.getY() + "," + p.getZ(), entry.getValue());
-            }
-            try (var w = new java.io.FileWriter(f)) {
-                new com.google.gson.GsonBuilder().setPrettyPrinting().create().toJson(json, w);
-            }
-        } catch (Exception ignored) {}
+        this.imageWidth = 256;
+        this.imageHeight = 196;
     }
 
     private LogisticsNodeBlockEntity getNode() {
@@ -138,103 +63,20 @@ public class LogisticsNodeScreen extends AbstractContainerScreen<LogisticsNodeMe
         return be instanceof LogisticsNodeBlockEntity n ? n : null;
     }
 
-    @Override
-    public void render(GuiGraphics g, int mx, int my, float partial) {
-        renderBackground(g);
-        super.render(g, mx, my, partial);
+    /** Что стоит на конце связи: цвет метки, иконка, имя, пояснение. */
+    private record Link(int color, ItemStack icon, Component name, Component detail, boolean error) {}
 
-        if (selectedIndex >= 0) {
-            LogisticsNodeBlockEntity node = getNode();
-            if (node != null && selectedIndex < node.linkedPositions.size()) {
-                renderSidePanel(g, getPanelX(), topPos, node.linkedPositions.get(selectedIndex));
-            }
-        }
-    }
-
-    @Override
-    protected void renderBg(GuiGraphics g, float partial, int mx, int my) {
-        int x = leftPos, y = topPos;
-
-        g.blit(TEXTURE_BG, x, y, 0, 0, GUI_W, GUI_H, GUI_W, GUI_H);
-
-        LogisticsNodeBlockEntity node = getNode();
-        if (node == null) {
-            g.drawString(font, Component.translatable("screen.industrial_core.node.not_found").getString(), x + LIST_X + 4, y + LIST_Y + 6, COL_ERROR, false);
-            return;
-        }
-
-        List<BlockPos> links = node.linkedPositions;
-        int total = links.size();
-
-        for (int i = 0; i < VISIBLE_ROWS; i++) {
-            int idx = i + scrollOffset;
-            if (idx >= total) break;
-            if (dragging && idx == dragFromIndex) continue;
-
-            int ry = y + LIST_Y + i * ROW_H;
-            int uRow;
-            if (idx == selectedIndex)    uRow = ROW_U_SELECTED;
-            else if (i % 2 == 0)         uRow = ROW_U_NORMAL_A;
-            else                         uRow = ROW_U_NORMAL_B;
-            g.blit(TEXTURE_ROWS, x + LIST_X, ry, uRow, 0, LIST_W, ROW_H, ROWS_TEX_W, ROW_H);
-            renderRowContents(g, x, ry, links.get(idx), idx);
-        }
-
-        if (total == 0) {
-            g.drawString(font, Component.translatable("screen.industrial_core.node.no_links").getString(),   x + LIST_X + 4, y + LIST_Y + 6,  COL_SUBTEXT, false);
-            g.drawString(font, Component.translatable("screen.industrial_core.node.use_linker").getString(), x + LIST_X + 4, y + LIST_Y + 18, COL_SUBTEXT, false);
-        }
-
-        if (dragging && dragFromIndex >= 0 && dragFromIndex < total) {
-            int ry = dragCurrentY - ROW_H / 2;
-            g.blit(TEXTURE_ROWS, x + LIST_X, ry, ROW_U_DRAG, 0, LIST_W, ROW_H, ROWS_TEX_W, ROW_H);
-            renderRowContents(g, x, ry, links.get(dragFromIndex), dragFromIndex);
-        }
-
-        renderStats(g, x, y, node);
-    }
-
-    private void renderRowContents(GuiGraphics g, int x, int ry, BlockPos linkPos, int idx) {
-        if (minecraft == null || minecraft.level == null) return;
-        BlockEntity be = minecraft.level.getBlockEntity(linkPos);
-
-        ItemStack icon = ItemStack.EMPTY;
-        String name;
-        String modeName;
-        int modeColor;
-        int dotColor;
-
-        if (be instanceof HubBlockEntity h) {
-            icon = new ItemStack((h.fluid ? ModBlocks.FLUID_HUB : ModBlocks.ITEM_HUB).get());
-            name = Component.translatable(h.fluid ? "block.industrial_core.fluid_hub" : "block.industrial_core.item_hub").getString();
-            int af = activeFaces(h);
-            modeName = af + "f";
-            modeColor = h.fluid ? COL_PULL : COL_PUSH;
-            dotColor  = af > 0 ? COL_ACTIVE : COL_IDLE;
-        } else if (be instanceof LogisticsNodeBlockEntity) {
-            icon = new ItemStack(ModBlocks.LOGISTICS_NODE.get());
-            name = Component.translatable("block.industrial_core.logistics_node").getString();
-            modeName = "NODE";
-            modeColor = 0xFFFFAA00;
-            dotColor  = COL_ACTIVE;
-        } else {
-            name = be != null ? "Unknown" : "Unloaded";
-            modeName = "?";
-            modeColor = COL_SUBTEXT;
-            dotColor  = COL_ERROR;
-        }
-
-        if (!icon.isEmpty())
-            g.renderItem(icon, x + LIST_X + 1, ry + 2);
-
-        g.drawString(font, "#" + (idx + 1),         x + LIST_X + 19,  ry + 6, COL_SUBTEXT, false);
-        g.drawString(font, truncate(name, 84),       x + LIST_X + 33,  ry + 6, COL_TEXT,    false);
-        g.drawString(font, modeName,                 x + LIST_X + 122, ry + 6, modeColor,   false);
-        g.fill(x + LIST_X + 170, ry + 7, x + LIST_X + 175, ry + 12, dotColor);
-
-        int hx = x + LIST_X + LIST_W - 11;
-        for (int li = 0; li < 3; li++)
-            g.fill(hx, ry + 4 + li * 4, hx + 8, ry + 6 + li * 4, COL_HANDLE);
+    private Link link(BlockPos p) {
+        BlockEntity be = minecraft == null || minecraft.level == null ? null : minecraft.level.getBlockEntity(p);
+        if (be instanceof HubBlockEntity h)
+            return new Link(h.fluid ? COL_FLUID : COL_ITEM, new ItemStack((h.fluid ? ModBlocks.FLUID_HUB : ModBlocks.ITEM_HUB).get()),
+                    Component.translatable(h.fluid ? "block.industrial_core.fluid_hub" : "block.industrial_core.item_hub"),
+                    Component.translatable("screen.industrial_core.node.faces", activeFaces(h)), false);
+        if (be instanceof LogisticsNodeBlockEntity)
+            return new Link(COL_NODE, new ItemStack(ModBlocks.LOGISTICS_NODE.get()), Component.translatable("block.industrial_core.logistics_node"),
+                    Component.translatable("screen.industrial_core.node.relay"), false);
+        Component n = Component.translatable(be != null ? "screen.industrial_core.node.unknown" : "screen.industrial_core.node.unloaded");
+        return new Link(COL_BAD, ItemStack.EMPTY, n, Component.empty(), true);
     }
 
     private static int activeFaces(HubBlockEntity h) {
@@ -243,172 +85,208 @@ public class LogisticsNodeScreen extends AbstractContainerScreen<LogisticsNodeMe
         return n;
     }
 
-    private void renderStats(GuiGraphics g, int x, int y, LogisticsNodeBlockEntity node) {
-        List<BlockPos> links = node.linkedPositions;
-        int total = links.size();
-        int hubs = 0, errors = 0;
-
-        if (minecraft != null && minecraft.level != null) {
-            for (BlockPos lp : links) {
-                BlockEntity be = minecraft.level.getBlockEntity(lp);
-                if (be == null) { errors++; continue; }
-                if (be instanceof HubBlockEntity) hubs++;
-            }
-        }
-
-        int sy = y + STATS_Y + (STATS_H - 9) / 2;
-        g.drawString(font, Component.translatable("screen.industrial_core.node.connected", total).getString(), x + STATS_X,       sy, COL_TEXT,                               false);
-        g.drawString(font, Component.translatable("screen.industrial_core.node.hubs", hubs).getString(),    x + STATS_X + 88,  sy, hubs > 0 ? COL_ACTIVE : COL_IDLE,     false);
-        g.drawString(font, Component.translatable("screen.industrial_core.node.errors", errors).getString(),   x + STATS_X + 136, sy, errors > 0 ? COL_ERROR : COL_SUBTEXT, false);
-    }
-
-    private int getPanelX() {
-        return panelOnRight ? leftPos + GUI_W + 2 : leftPos - PANEL_W - 2;
-    }
-
-    private void renderSidePanel(GuiGraphics g, int px, int py, BlockPos linkPos) {
-        g.blit(TEXTURE_PANEL, px, py, 0, 0, PANEL_W, PANEL_H, PANEL_W, PANEL_H);
-
-        if (LogisticsHighlightRenderer.highlightPos != null
-                && LogisticsHighlightRenderer.highlightPos.equals(linkPos)
-                && System.currentTimeMillis() < LogisticsHighlightRenderer.highlightEndMs) {
-            g.fill(px + HIGHLIGHT_BTN_X,     py + HIGHLIGHT_BTN_Y,
-                   px + HIGHLIGHT_BTN_X + HIGHLIGHT_BTN_W, py + HIGHLIGHT_BTN_Y + HIGHLIGHT_BTN_H,
-                   0x7744FF44);
-        }
-
-        g.drawCenteredString(font, Component.translatable("screen.industrial_core.node.details").getString(), px + PANEL_W / 2, py + 5, COL_TEXT);
-
-        int row = py + 15 + 4;
-        g.drawString(font, "X: " + linkPos.getX(), px + 4, row,      COL_SUBTEXT, false);
-        g.drawString(font, "Y: " + linkPos.getY(), px + 4, row + 10, COL_SUBTEXT, false);
-        g.drawString(font, "Z: " + linkPos.getZ(), px + 4, row + 20, COL_SUBTEXT, false);
-
-        if (minecraft == null || minecraft.level == null) return;
-        BlockEntity be = minecraft.level.getBlockEntity(linkPos);
-
-        int r2 = row + 36;
-        if (be instanceof HubBlockEntity h) {
-            g.drawString(font, Component.translatable(h.fluid ? "screen.industrial_core.node.type_fluids" : "screen.industrial_core.node.type_items").getString(), px + 4, r2, COL_TEXT, false);
-            g.drawString(font, Component.translatable("screen.industrial_core.node.faces", activeFaces(h)).getString(), px + 4, r2 + 12, COL_SUBTEXT, false);
-        } else if (be instanceof LogisticsNodeBlockEntity) {
-            g.drawString(font, Component.translatable("screen.industrial_core.node.type_node").getString(),    px + 4, r2,      COL_TEXT,    false);
-            g.drawString(font, Component.translatable("screen.industrial_core.node.relay").getString(), px + 4, r2 + 12, COL_SUBTEXT, false);
-        } else {
-            g.drawString(font, Component.translatable(be != null ? "screen.industrial_core.node.unknown" : "screen.industrial_core.node.unloaded").getString(), px + 4, r2, COL_ERROR, false);
-        }
-    }
-
-    private String truncate(String s, int maxPx) {
-        if (font.width(s) <= maxPx) return s;
-        while (s.length() > 1 && font.width(s + "...") > maxPx)
-            s = s.substring(0, s.length() - 1);
-        return s + "...";
-    }
+    private int distance(BlockPos p) { return (int) Math.round(Math.sqrt(p.distSqr(menu.nodePos))); }
 
     @Override
-    protected void renderLabels(GuiGraphics g, int mx, int my) {
-        int titleCenterX = TITLE_X + TITLE_W / 2;
-        int titleY = TITLE_Y + (TITLE_H - 9) / 2;
-        g.drawCenteredString(font, title, titleCenterX, titleY, COL_TEXT);
-
+    public void render(GuiGraphics g, int mx, int my, float partial) {
+        renderBackground(g);
+        super.render(g, mx, my, partial);
         LogisticsNodeBlockEntity node = getNode();
-        boolean online = node != null && !node.linkedPositions.isEmpty();
-        g.fill(TITLE_X + TITLE_W - 6, TITLE_Y + 2, TITLE_X + TITLE_W - 1, TITLE_Y + 7,
-                online ? COL_ACTIVE : COL_ERROR);
+        if (node == null || dragging) return;
+        int i = markerAt(node.linkedPositions, mx, my);
+        if (i >= 0) {
+            BlockPos p = node.linkedPositions.get(i);
+            Link l = link(p);
+            g.renderComponentTooltip(font, List.of(Component.literal("#" + (i + 1) + " ").append(l.name()),
+                    Component.translatable("screen.industrial_core.node.distance", distance(p)).withStyle(s -> s.withColor(COL_SUB & 0xFFFFFF))), mx, my);
+        }
     }
 
+    @Override protected void renderLabels(GuiGraphics g, int mx, int my) {}
+
     @Override
-    public boolean mouseClicked(double mx, double my, int button) {
-        if (selectedIndex >= 0) {
-            int px = getPanelX();
-
-            if (mx >= px + HIGHLIGHT_BTN_X && mx < px + HIGHLIGHT_BTN_X + HIGHLIGHT_BTN_W
-                    && my >= topPos + HIGHLIGHT_BTN_Y && my < topPos + HIGHLIGHT_BTN_Y + HIGHLIGHT_BTN_H) {
-                LogisticsNodeBlockEntity node = getNode();
-                if (node != null && selectedIndex < node.linkedPositions.size()) {
-                    BlockPos target = node.linkedPositions.get(selectedIndex);
-                    boolean active = target.equals(LogisticsHighlightRenderer.highlightPos)
-                            && System.currentTimeMillis() < LogisticsHighlightRenderer.highlightEndMs;
-                    if (active) {
-                        LogisticsHighlightRenderer.highlightPos = null;
-                    } else {
-                        LogisticsHighlightRenderer.highlightPos   = target;
-                        LogisticsHighlightRenderer.highlightEndMs = System.currentTimeMillis() + HIGHLIGHT_MS;
-                    }
-                }
-                return true;
-            }
-
-            if (mx >= px && mx < px + PANEL_W && my >= topPos && my < topPos + 15) {
-                panelOnRight = !panelOnRight;
-                PANEL_SIDE_MEMORY.put(menu.nodePos, panelOnRight);
-                savePanelSides();
-                return true;
-            }
-        }
-
-        LogisticsNodeBlockEntity node = getNode();
-        if (node == null) return super.mouseClicked(mx, my, button);
-
-        List<BlockPos> links = node.linkedPositions;
+    protected void renderBg(GuiGraphics g, float partial, int mx, int my) {
         int x = leftPos, y = topPos;
+        g.blit(TEX, x, y, 0, 0, imageWidth, imageHeight, TEX_W, TEX_H);
+        g.drawString(font, title, x + 23, y + 13, 0xFFE0E0E0, false);
+
+        LogisticsNodeBlockEntity node = getNode();
+        if (node == null) {
+            g.drawString(font, Component.translatable("screen.industrial_core.node.not_found"), x + LIST_X + 4, y + LIST_Y + 6, COL_ERR, false);
+            return;
+        }
+        List<BlockPos> links = node.linkedPositions;
+        Component count = Component.translatable("screen.industrial_core.node.links_count", links.size());
+        g.drawString(font, count, x + 226 - font.width(count), y + 13, COL_SUB, false);
+        g.fill(x + 229, y + 14, x + 234, y + 19, COL_EDGE);   // в сети, если есть связи
+        g.fill(x + 230, y + 15, x + 233, y + 18, links.isEmpty() ? COL_BAD : 0xFF44FF44);
+        if (selectedIndex >= links.size()) selectedIndex = -1;
 
         for (int i = 0; i < VISIBLE_ROWS; i++) {
             int idx = i + scrollOffset;
             if (idx >= links.size()) break;
+            if (dragging && idx == dragFromIndex) continue;
+            renderRow(g, y + LIST_Y + i * ROW_STEP, links.get(idx), idx, idx == selectedIndex, i % 2 == 1);
+        }
+        if (links.isEmpty()) {
+            g.drawString(font, Component.translatable("screen.industrial_core.node.no_links"), x + LIST_X + 4, y + LIST_Y + 6, COL_SUB, false);
+            g.drawString(font, Component.translatable("screen.industrial_core.node.use_linker"), x + LIST_X + 4, y + LIST_Y + 18, COL_DIM, false);
+        }
+        renderMap(g, links);
+        renderDetails(g, node, links);
+        if (dragging && dragFromIndex >= 0 && dragFromIndex < links.size())
+            renderRow(g, dragCurrentY - ROW_H / 2, links.get(dragFromIndex), dragFromIndex, true, false);
+    }
 
-            int ry = y + LIST_Y + i * ROW_H;
-            if (my < ry || my >= ry + ROW_H) continue;
+    private void renderRow(GuiGraphics g, int ry, BlockPos p, int idx, boolean sel, boolean odd) {
+        int x = leftPos + LIST_X;
+        Link l = link(p);
+        g.fill(x, ry, x + ROW_W, ry + ROW_H, sel ? 0xFFE8E8E8 : COL_EDGE);
+        g.fill(x + 1, ry + 1, x + ROW_W - 1, ry + ROW_H - 1, sel ? 0xFF2C2C2C : odd ? 0xFF202020 : 0xFF232323);
+        g.fill(x + 1, ry + 1, x + 3, ry + ROW_H - 1, l.color());
+        g.drawString(font, "#" + (idx + 1), x + 5, ry + 6, COL_DIM, false);
+        if (!l.icon().isEmpty()) g.renderItem(l.icon(), x + 15, ry + 1);
+        g.drawString(font, truncate(l.name().getString(), NAME_W), x + 34, ry + 2, l.error() ? COL_ERR : COL_TEXT, false);
+        g.drawString(font, Component.translatable("screen.industrial_core.node.distance", distance(p)), x + 34, ry + 10, COL_DIM, false);
+        for (int k = 0; k < 3; k++) g.fill(leftPos + HANDLE_X, ry + 6 + k * 3, leftPos + HANDLE_X + 7, ry + 7 + k * 3, 0xFF666666);
+    }
 
-            if (mx >= x + GUI_W - 14 && mx < x + GUI_W - 1) {
+    /** Точка метки связи на карте; дальние прижаты к краю по направлению. */
+    private int[] markerPos(BlockPos p) {
+        int dx = p.getX() - menu.nodePos.getX(), dz = p.getZ() - menu.nodePos.getZ();
+        boolean far = Math.abs(dx) > MAP_RX || Math.abs(dz) > MAP_RZ;
+        if (far) {
+            double k = Math.min(dx == 0 ? Double.MAX_VALUE : (double) MAP_RX / Math.abs(dx), dz == 0 ? Double.MAX_VALUE : (double) MAP_RZ / Math.abs(dz));
+            dx = (int) Math.round(dx * k);
+            dz = (int) Math.round(dz * k);
+        }
+        return new int[]{leftPos + MAP_CX + dx, topPos + MAP_CY + dz, far ? 1 : 0};
+    }
+
+    private void renderMap(GuiGraphics g, List<BlockPos> links) {
+        int x = leftPos, y = topPos;
+        g.drawString(font, Component.translatable("screen.industrial_core.node.north"), x + MAP_CX - 2, y + MAP_Y + 3, 0xFF5A6066, false);
+        g.drawString(font, Component.translatable("screen.industrial_core.node.distance", 16), x + MAP_X + 3, y + MAP_Y + MAP_H - 11, 0xFF5A6066, false);
+        g.fill(x + MAP_CX - 2, y + MAP_CY - 2, x + MAP_CX + 3, y + MAP_CY + 3, COL_EDGE);
+        g.fill(x + MAP_CX - 1, y + MAP_CY - 1, x + MAP_CX + 2, y + MAP_CY + 2, COL_NODE);
+        for (int i = 0; i < links.size(); i++) {
+            int[] m = markerPos(links.get(i));
+            if (i == selectedIndex) g.fill(m[0] - 3, m[1] - 3, m[0] + 4, m[1] + 4, 0xFFE8E8E8);
+            g.fill(m[0] - 2, m[1] - 2, m[0] + 3, m[1] + 3, COL_EDGE);
+            g.fill(m[0] - 1, m[1] - 1, m[0] + 2, m[1] + 2, link(links.get(i)).color());
+            String n = String.valueOf(i + 1);
+            int lx = m[0] + 4 + font.width(n) > x + MAP_X + MAP_W - 2 ? m[0] - 3 - font.width(n) : m[0] + 4;   // номер не вылезает за карту
+            g.drawString(font, n, lx, m[1] - 9, m[2] == 1 ? COL_ERR : 0xFFCFCFCF, true);
+        }
+    }
+
+    private void renderDetails(GuiGraphics g, LogisticsNodeBlockEntity node, List<BlockPos> links) {
+        int x = leftPos + DET_X, y = topPos + DET_Y;
+        if (selectedIndex < 0) {   // ничего не выбрано — сводка по связям
+            int hubs = 0, errors = 0;
+            for (BlockPos p : links) { Link l = link(p); if (l.error()) errors++; else if (l.color() != COL_NODE) hubs++; }
+            g.drawString(font, Component.translatable("screen.industrial_core.node.hubs", hubs), x, y + 8, hubs > 0 ? 0xFF44FF44 : COL_SUB, false);
+            g.drawString(font, Component.translatable("screen.industrial_core.node.errors", errors), x + 70, y + 8, errors > 0 ? COL_ERR : COL_SUB, false);
+            return;
+        }
+        BlockPos p = links.get(selectedIndex);
+        Link l = link(p);
+        if (!l.icon().isEmpty()) g.renderItem(l.icon(), x, y + 4);
+        g.drawString(font, truncate("#" + (selectedIndex + 1) + " " + l.name().getString(), DET_W - BTN_W - 24), x + 20, y + 4, l.error() ? COL_ERR : COL_TEXT, false);
+        g.drawString(font, "X " + p.getX() + "  Y " + p.getY() + "  Z " + p.getZ(), x + 20, y + 14, COL_SUB, false);
+        Component d = Component.translatable("screen.industrial_core.node.distance", distance(p));
+        if (!l.detail().getString().isEmpty()) d = d.copy().append("  ·  ").append(l.detail());
+        g.drawString(font, d, x + 20, y + 24, COL_SUB, false);
+
+        boolean on = p.equals(LogisticsHighlightRenderer.highlightPos) && System.currentTimeMillis() < LogisticsHighlightRenderer.highlightEndMs;
+        int bx = x + DET_W - BTN_W, by = y + 6;
+        g.fill(bx, by, bx + BTN_W, by + BTN_H, COL_EDGE);
+        g.fill(bx + 1, by + 1, bx + BTN_W - 1, by + BTN_H - 1, on ? 0xFF2E7C88 : 0xFF1D4F58);
+        Component bl = Component.translatable("screen.industrial_core.node.highlight");
+        g.drawString(font, bl, bx + (BTN_W - font.width(bl)) / 2, by + 4, 0xFFFFFFFF, true);
+    }
+
+    private int markerAt(List<BlockPos> links, int mx, int my) {
+        for (int i = links.size() - 1; i >= 0; i--) {
+            int[] m = markerPos(links.get(i));
+            if (Math.abs(mx - m[0]) <= 3 && Math.abs(my - m[1]) <= 3) return i;
+        }
+        return -1;
+    }
+
+    private String truncate(String s, int maxPx) {
+        if (font.width(s) <= maxPx) return s;
+        while (s.length() > 1 && font.width(s + "...") > maxPx) s = s.substring(0, s.length() - 1);
+        return s + "...";
+    }
+
+    private static boolean hit(double mx, double my, int x, int y, int w, int h) { return mx >= x && mx < x + w && my >= y && my < y + h; }
+
+    @Override
+    public boolean mouseClicked(double mx, double my, int button) {
+        LogisticsNodeBlockEntity node = getNode();
+        if (node == null || button != 0) return super.mouseClicked(mx, my, button);
+        List<BlockPos> links = node.linkedPositions;
+
+        // подсветка выбранной связи в мире на 5 с, повторный клик гасит
+        if (selectedIndex >= 0 && selectedIndex < links.size()
+                && hit(mx, my, leftPos + DET_X + DET_W - BTN_W, topPos + DET_Y + 6, BTN_W, BTN_H)) {
+            BlockPos target = links.get(selectedIndex);
+            boolean active = target.equals(LogisticsHighlightRenderer.highlightPos) && System.currentTimeMillis() < LogisticsHighlightRenderer.highlightEndMs;
+            if (active) LogisticsHighlightRenderer.highlightPos = null;
+            else {
+                LogisticsHighlightRenderer.highlightPos = target;
+                LogisticsHighlightRenderer.highlightEndMs = System.currentTimeMillis() + HIGHLIGHT_MS;
+            }
+            return true;
+        }
+        for (int i = 0; i < VISIBLE_ROWS; i++) {
+            int idx = i + scrollOffset;
+            if (idx >= links.size()) break;
+            int ry = topPos + LIST_Y + i * ROW_STEP;
+            if (!hit(mx, my, leftPos + LIST_X, ry, ROW_W, ROW_H)) continue;
+            if (mx >= leftPos + HANDLE_X - 2) {   // ручка — перетащить (порядок = приоритет)
                 dragging = true;
                 dragFromIndex = idx;
-                dragCurrentY  = (int) my;
-                return true;
-            }
-
-            if (mx >= x + 1 && mx < x + GUI_W - 14) {
-                selectedIndex = (selectedIndex == idx) ? -1 : idx;
-                return true;
-            }
+                dragCurrentY = (int) my;
+            } else selectedIndex = selectedIndex == idx ? -1 : idx;
+            return true;
+        }
+        int m = markerAt(links, (int) mx, (int) my);
+        if (m >= 0) {
+            selectedIndex = m;
+            if (m < scrollOffset) scrollOffset = m;
+            else if (m >= scrollOffset + VISIBLE_ROWS) scrollOffset = m - VISIBLE_ROWS + 1;
+            return true;
         }
         return super.mouseClicked(mx, my, button);
     }
 
     @Override
     public boolean mouseDragged(double mx, double my, int button, double dx, double dy) {
-        if (dragging) {
-            dragCurrentY = (int) my;
-            return true;
-        }
+        if (dragging) { dragCurrentY = (int) my; return true; }
         return super.mouseDragged(mx, my, button, dx, dy);
     }
 
     @Override
     public boolean mouseReleased(double mx, double my, int button) {
-        if (dragging) {
-            LogisticsNodeBlockEntity node = getNode();
-            if (node != null && dragFromIndex >= 0) {
-                int x = leftPos, y = topPos;
-                int toIndex = dragFromIndex;
-                for (int i = 0; i < VISIBLE_ROWS; i++) {
-                    int ry = y + LIST_Y + i * ROW_H;
-                    if (my >= ry && my < ry + ROW_H) {
-                        toIndex = i + scrollOffset;
-                        break;
-                    }
-                }
-                int maxIdx = node.linkedPositions.size() - 1;
-                toIndex = Math.max(0, Math.min(maxIdx, toIndex));
-                if (toIndex != dragFromIndex)
-                    ModMessages.sendToServer(new NodeReorderPacket(menu.nodePos, dragFromIndex, toIndex));
+        if (!dragging) return super.mouseReleased(mx, my, button);
+        LogisticsNodeBlockEntity node = getNode();
+        if (node != null && dragFromIndex >= 0) {
+            int toIndex = dragFromIndex;
+            for (int i = 0; i < VISIBLE_ROWS; i++) {
+                int ry = topPos + LIST_Y + i * ROW_STEP;
+                if (my >= ry && my < ry + ROW_STEP) { toIndex = i + scrollOffset; break; }
             }
-            dragging = false;
-            dragFromIndex = -1;
-            return true;
+            toIndex = Math.max(0, Math.min(node.linkedPositions.size() - 1, toIndex));
+            if (toIndex != dragFromIndex) {
+                ModMessages.sendToServer(new NodeReorderPacket(menu.nodePos, dragFromIndex, toIndex));
+                if (selectedIndex == dragFromIndex) selectedIndex = toIndex;
+            }
         }
-        return super.mouseReleased(mx, my, button);
+        dragging = false;
+        dragFromIndex = -1;
+        return true;
     }
 
     @Override

@@ -36,7 +36,7 @@ public class FluidEnricherJeiCategory implements IRecipeCategory<FluidEnricherRe
     private static final int TANK_W = 16, TANK_H = 64, GLASS_U = 114, GLASS_V = 90;
     private static final int R1_X = 69, R1_Y = 9, R2_X = 69, R2_Y = 31;
     private static final int EBAR_X = 44, EBAR_Y = 64, EBAR_W = 66;
-    private static final int PROG_GX = 30, PROG_GY = 17, PROG_W = 92, PROG_H = 22, PROG_U = 4, PROG_V = 127;
+    private static final int PROG_GX = 54, PROG_GY = 15, PROG_W = 46, PROG_H = 26, PROG_U = 44, PROG_V = 123;
     private static final int INFO_X = 48, INFO_Y = 49;
 
     private final RecipeType<FluidEnricherRecipe> recipeType;

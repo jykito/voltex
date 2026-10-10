@@ -1,15 +1,21 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "AAA",
     "ABA",
-    "AAA"
+    "CDC",
+    "ABA"
   ],
   "key": {
     "A": {
-      "tag": "forge:ingots/iron"
+      "tag": "forge:plates/iron"
     },
     "B": {
+      "tag": "forge:ingots/iron"
+    },
+    "C": {
+      "item": "industrial_core:bare_copper_wire"
+    },
+    "D": {
       "tag": "forge:dusts/redstone"
     }
   },

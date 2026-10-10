@@ -1,0 +1,196 @@
+{
+  "variants": {
+    "north=false,south=false,east=false,west=false,up=false,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_solo"
+    },
+    "north=false,south=false,east=false,west=false,up=false,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_d"
+    },
+    "north=false,south=false,east=false,west=false,up=true,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_u"
+    },
+    "north=false,south=false,east=false,west=false,up=true,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_ud"
+    },
+    "north=false,south=false,east=false,west=true,up=false,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_w"
+    },
+    "north=false,south=false,east=false,west=true,up=false,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_wd"
+    },
+    "north=false,south=false,east=false,west=true,up=true,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_wu"
+    },
+    "north=false,south=false,east=false,west=true,up=true,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_wud"
+    },
+    "north=false,south=false,east=true,west=false,up=false,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_e"
+    },
+    "north=false,south=false,east=true,west=false,up=false,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_ed"
+    },
+    "north=false,south=false,east=true,west=false,up=true,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_eu"
+    },
+    "north=false,south=false,east=true,west=false,up=true,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_eud"
+    },
+    "north=false,south=false,east=true,west=true,up=false,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_ew"
+    },
+    "north=false,south=false,east=true,west=true,up=false,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_ewd"
+    },
+    "north=false,south=false,east=true,west=true,up=true,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_ewu"
+    },
+    "north=false,south=false,east=true,west=true,up=true,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_ewud"
+    },
+    "north=false,south=true,east=false,west=false,up=false,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_s"
+    },
+    "north=false,south=true,east=false,west=false,up=false,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_sd"
+    },
+    "north=false,south=true,east=false,west=false,up=true,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_su"
+    },
+    "north=false,south=true,east=false,west=false,up=true,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_sud"
+    },
+    "north=false,south=true,east=false,west=true,up=false,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_sw"
+    },
+    "north=false,south=true,east=false,west=true,up=false,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_swd"
+    },
+    "north=false,south=true,east=false,west=true,up=true,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_swu"
+    },
+    "north=false,south=true,east=false,west=true,up=true,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_swud"
+    },
+    "north=false,south=true,east=true,west=false,up=false,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_se"
+    },
+    "north=false,south=true,east=true,west=false,up=false,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_sed"
+    },
+    "north=false,south=true,east=true,west=false,up=true,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_seu"
+    },
+    "north=false,south=true,east=true,west=false,up=true,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_seud"
+    },
+    "north=false,south=true,east=true,west=true,up=false,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_sew"
+    },
+    "north=false,south=true,east=true,west=true,up=false,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_sewd"
+    },
+    "north=false,south=true,east=true,west=true,up=true,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_sewu"
+    },
+    "north=false,south=true,east=true,west=true,up=true,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_sewud"
+    },
+    "north=true,south=false,east=false,west=false,up=false,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_n"
+    },
+    "north=true,south=false,east=false,west=false,up=false,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_nd"
+    },
+    "north=true,south=false,east=false,west=false,up=true,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_nu"
+    },
+    "north=true,south=false,east=false,west=false,up=true,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_nud"
+    },
+    "north=true,south=false,east=false,west=true,up=false,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_nw"
+    },
+    "north=true,south=false,east=false,west=true,up=false,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_nwd"
+    },
+    "north=true,south=false,east=false,west=true,up=true,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_nwu"
+    },
+    "north=true,south=false,east=false,west=true,up=true,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_nwud"
+    },
+    "north=true,south=false,east=true,west=false,up=false,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_ne"
+    },
+    "north=true,south=false,east=true,west=false,up=false,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_ned"
+    },
+    "north=true,south=false,east=true,west=false,up=true,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_neu"
+    },
+    "north=true,south=false,east=true,west=false,up=true,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_neud"
+    },
+    "north=true,south=false,east=true,west=true,up=false,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_new"
+    },
+    "north=true,south=false,east=true,west=true,up=false,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_newd"
+    },
+    "north=true,south=false,east=true,west=true,up=true,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_newu"
+    },
+    "north=true,south=false,east=true,west=true,up=true,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_newud"
+    },
+    "north=true,south=true,east=false,west=false,up=false,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_ns"
+    },
+    "north=true,south=true,east=false,west=false,up=false,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_nsd"
+    },
+    "north=true,south=true,east=false,west=false,up=true,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_nsu"
+    },
+    "north=true,south=true,east=false,west=false,up=true,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_nsud"
+    },
+    "north=true,south=true,east=false,west=true,up=false,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_nsw"
+    },
+    "north=true,south=true,east=false,west=true,up=false,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_nswd"
+    },
+    "north=true,south=true,east=false,west=true,up=true,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_nswu"
+    },
+    "north=true,south=true,east=false,west=true,up=true,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_nswud"
+    },
+    "north=true,south=true,east=true,west=false,up=false,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_nse"
+    },
+    "north=true,south=true,east=true,west=false,up=false,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_nsed"
+    },
+    "north=true,south=true,east=true,west=false,up=true,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_nseu"
+    },
+    "north=true,south=true,east=true,west=false,up=true,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_nseud"
+    },
+    "north=true,south=true,east=true,west=true,up=false,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_nsew"
+    },
+    "north=true,south=true,east=true,west=true,up=false,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_nsewd"
+    },
+    "north=true,south=true,east=true,west=true,up=true,down=false": {
+      "model": "industrial_core:block/multiblock_casing_advanced_nsewu"
+    },
+    "north=true,south=true,east=true,west=true,up=true,down=true": {
+      "model": "industrial_core:block/multiblock_casing_advanced_nsewud"
+    }
+  }
+}

@@ -3,14 +3,14 @@
   "pattern": [
     "AAA",
     "BCB",
-    "CDC"
+    "DDD"
   ],
   "key": {
     "A": {
       "item": "minecraft:glass"
     },
     "B": {
-      "item": "industrial_core:amethyst_crystal"
+      "tag": "forge:plates/diamond"
     },
     "C": {
       "item": "industrial_core:crystal_plate"

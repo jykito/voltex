@@ -15,6 +15,8 @@ import org.jetbrains.annotations.Nullable;
 public class BlastFurnaceRecipe implements Recipe<SimpleContainer> {
 
     private final ResourceLocation id;
+    /** Рецепт только для лейт-машины (её промышленный режим); малая машина его не видит. */
+    private boolean lateOnly;
     private final Ingredient ingredient;
     private final int ingredientCount;
     private final Ingredient fuel;
@@ -37,8 +39,11 @@ public class BlastFurnaceRecipe implements Recipe<SimpleContainer> {
         this.requiredHeat    = requiredHeat;
     }
 
+    public boolean isLateOnly() { return lateOnly; }
+
     @Override
     public boolean matches(SimpleContainer container, Level level) {
+        if (lateOnly) return false;
         if (level.isClientSide()) return false;
         return ingredientSlot(container.getItem(0), container.getItem(1)) >= 0;
     }
@@ -87,7 +92,9 @@ public class BlastFurnaceRecipe implements Recipe<SimpleContainer> {
             ItemStack  result         = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
             int        processingTime = GsonHelper.getAsInt(json, "processingTime", 300);
             int        requiredHeat   = GsonHelper.getAsInt(json, "requiredHeat", 2400);
-            return new BlastFurnaceRecipe(id, ingredient, ingredientCount, fuel, fuelCount, result, processingTime, requiredHeat);
+            BlastFurnaceRecipe recipe__ = new BlastFurnaceRecipe(id, ingredient, ingredientCount, fuel, fuelCount, result, processingTime, requiredHeat);
+            recipe__.lateOnly = GsonHelper.getAsBoolean(json, "lateOnly", false);
+            return recipe__;
         }
 
         @Override
@@ -99,7 +106,9 @@ public class BlastFurnaceRecipe implements Recipe<SimpleContainer> {
             ItemStack  result         = buf.readItem();
             int        processingTime = buf.readInt();
             int        requiredHeat   = buf.readInt();
-            return new BlastFurnaceRecipe(id, ingredient, ingredientCount, fuel, fuelCount, result, processingTime, requiredHeat);
+            BlastFurnaceRecipe recipe__ = new BlastFurnaceRecipe(id, ingredient, ingredientCount, fuel, fuelCount, result, processingTime, requiredHeat);
+            recipe__.lateOnly = buf.readBoolean();
+            return recipe__;
         }
 
         @Override
@@ -111,6 +120,7 @@ public class BlastFurnaceRecipe implements Recipe<SimpleContainer> {
             buf.writeItem(r.result);
             buf.writeInt(r.processingTime);
             buf.writeInt(r.requiredHeat);
+            buf.writeBoolean(r.lateOnly);
         }
     }
 }

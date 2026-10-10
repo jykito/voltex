@@ -1,7 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "ABA",
+    "AAA",
     "BCB",
     "DED"
   ],
@@ -10,7 +10,7 @@
       "item": "minecraft:flint"
     },
     "B": {
-      "tag": "forge:ingots/iron"
+      "tag": "forge:plates/iron"
     },
     "C": {
       "tag": "forge:components/machine_casing"
@@ -19,7 +19,7 @@
       "item": "minecraft:cobblestone"
     },
     "E": {
-      "tag": "forge:dusts/redstone"
+      "item": "industrial_core:copper_solenoid"
     }
   },
   "result": {

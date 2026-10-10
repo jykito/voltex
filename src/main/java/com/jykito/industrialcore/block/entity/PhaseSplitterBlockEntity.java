@@ -1,6 +1,9 @@
 package com.jykito.industrialcore.block.entity;
 
+import com.jykito.industrialcore.energy.MachineEnergy;
 import com.jykito.industrialcore.item.upgrade.*;
+import com.jykito.industrialcore.item.upgrade.MachineUpgrades;
+import com.jykito.industrialcore.item.upgrade.UpgradeTargets;
 import com.jykito.industrialcore.menu.PhaseSplitterMenu;
 import com.jykito.industrialcore.recipe.ModRecipes;
 import com.jykito.industrialcore.recipe.PhaseSplitterRecipe;
@@ -25,7 +28,6 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,7 +49,7 @@ public class PhaseSplitterBlockEntity extends BlockEntity implements MenuProvide
             if (slot >= 1 && slot <= 3) return false;
             if (slot >= 4 && slot <= 7) {
 
-                return stack.getItem() instanceof MachineUpgradeItem;
+                return UpgradeTargets.works(getBlockState().getBlock(), stack);
             }
             return false;
         }
@@ -79,8 +81,8 @@ public class PhaseSplitterBlockEntity extends BlockEntity implements MenuProvide
         }));
     }
 
-    protected final BaseMachineBlockEntity.MachineEnergyStorage energyStorage =
-            new BaseMachineBlockEntity.MachineEnergyStorage(200_000, 200_000); // приём = буфер, без потолка на вход
+    protected final MachineEnergy energyStorage =
+            MachineEnergy.consumer(200_000, 200_000); // приём = буфер, без потолка на вход
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
     private LazyOptional<IEnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
@@ -123,54 +125,9 @@ public class PhaseSplitterBlockEntity extends BlockEntity implements MenuProvide
     public void tick(Level level, BlockPos pos, BlockState state) {
         if (level.isClientSide) return;
 
-        float timeMultiplier   = 1.0f;
-        float energyMultiplier = 1.0f;
-        Direction itemPusherDir = null;
-        Direction itemPullerDir = null;
-        int parallelCount = 1;
+        MachineUpgrades upg = MachineUpgrades.scan(itemHandler, 4, 7);
 
-        for (int s = 4; s <= 7; s++) {
-            ItemStack upgrade = itemHandler.getStackInSlot(s);
-            if (upgrade.isEmpty()) continue;
-            if (upgrade.getItem() instanceof AcceleratorItem acc) {
-                for (int c = 0; c < upgrade.getCount(); c++) {
-                    timeMultiplier   *= acc.getSpeedMultiplier();
-                    energyMultiplier *= acc.getEnergyMultiplier();
-                }
-            } else if (upgrade.getItem() instanceof DirectionalUpgradeItem dir) {
-                Direction d = DirectionalUpgradeItem.getStoredDirection(upgrade);
-                if (d != null) {
-                    switch (dir.getMode()) {
-                        case ITEM_PUSH -> itemPusherDir = d;
-                        case ITEM_PULL -> itemPullerDir = d;
-                        default -> {}
-                    }
-                }
-            } else if (upgrade.getItem() instanceof ParallelModuleItem pm) {
-                parallelCount = Math.max(parallelCount, pm.getParallelCount());
-            } else if (upgrade.getItem() instanceof AdvancedParallelModuleItem adv) {
-                parallelCount = Math.max(parallelCount, adv.getParallelCount());
-            }
-        }
-
-        if (itemPullerDir != null) { // тянем постоянно — insertItem сам добьёт слот 0 до полного
-            final Direction dir = itemPullerDir;
-            BlockEntity neighbor = level.getBlockEntity(pos.relative(dir));
-            if (neighbor != null) {
-                neighbor.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite()).ifPresent(nh -> {
-                    for (int i = 0; i < nh.getSlots(); i++) {
-                        ItemStack sim = nh.extractItem(i, 64, true);
-                        if (sim.isEmpty() || !itemHandler.isItemValid(0, sim)) continue;
-                        int accepted = sim.getCount() - itemHandler.insertItem(0, sim, true).getCount();
-                        if (accepted > 0) {
-                            itemHandler.insertItem(0, nh.extractItem(i, accepted, false), false);
-                            setChanged();
-                            break;
-                        }
-                    }
-                });
-            }
-        }
+        if (upg.itemPull() != null && MachineIO.pullItems(level, pos, upg.itemPull(), itemHandler, 0)) setChanged();
 
         boolean hasChanges = false;
         boolean isWorking  = false;
@@ -181,13 +138,13 @@ public class PhaseSplitterBlockEntity extends BlockEntity implements MenuProvide
             PhaseSplitterRecipe r = recipe.get();
             ItemStack o1 = r.getOutput1(), o2 = r.getOutput2(), o3 = r.getOutput3();
             int inputAvail = itemHandler.getStackInSlot(0).getCount() / r.getInputCount();
-            int actualParallel = Math.max(1, Math.min(parallelCount, inputAvail));
+            int actualParallel = Math.max(1, Math.min(upg.parallel(), inputAvail));
 
             while (actualParallel > 1 && !canFitOutputs(o1, o2, o3, actualParallel)) actualParallel--;
 
             if (canFitOutputs(o1, o2, o3, actualParallel)) {
-                this.maxProgress      = Math.max(1, (int)(r.getProcessingTime() * timeMultiplier));
-                this.energyCostPerTick = Math.max(1, (int)(r.getEnergyCost()    * energyMultiplier));
+                this.maxProgress      = upg.scaleTime(r.getProcessingTime());
+                this.energyCostPerTick = upg.scaleEnergy(r.getEnergyCost());
 
                 if (energyStorage.getEnergyStored() >= energyCostPerTick) {
                     energyStorage.consumeEnergy(energyCostPerTick);
@@ -202,24 +159,7 @@ public class PhaseSplitterBlockEntity extends BlockEntity implements MenuProvide
             if (progress > 0) { progress = 0; hasChanges = true; }
         }
 
-        if (itemPusherDir != null) {
-            for (int outSlot = 1; outSlot <= 3; outSlot++) {
-                ItemStack output = itemHandler.getStackInSlot(outSlot);
-                if (output.isEmpty()) continue;
-                final Direction dir = itemPusherDir;
-                final int slot = outSlot;
-                BlockEntity neighbor = level.getBlockEntity(pos.relative(dir));
-                if (neighbor != null) {
-                    neighbor.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite()).ifPresent(nh -> {
-                        ItemStack remaining = ItemHandlerHelper.insertItem(nh, output.copy(), false);
-                        if (remaining.getCount() < output.getCount()) {
-                            itemHandler.setStackInSlot(slot, remaining.isEmpty() ? ItemStack.EMPTY : remaining);
-                            setChanged();
-                        }
-                    });
-                }
-            }
-        }
+        if (upg.itemPush() != null && MachineIO.pushItems(level, pos, upg.itemPush(), itemHandler, 1, 2, 3)) setChanged();
 
         MachineLit.tick(this, level, pos, state, BlockStateProperties.LIT, isWorking);
 

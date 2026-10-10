@@ -1,8 +1,9 @@
 {
   "parent": "minecraft:block/cube_bottom_top",
   "textures": {
-    "top": "industrial_core:block/ore_washer_top",
-    "bottom": "industrial_core:block/ore_washer_bottom",
-    "side": "industrial_core:block/ore_washer_side"
+    "top": "industrial_core:block/machine/ore_washer_top",
+    "bottom": "industrial_core:block/machine/ore_washer_bottom",
+    "side": "industrial_core:block/machine/ore_washer_side",
+    "particle": "industrial_core:block/machine/ore_washer_side"
   }
 }

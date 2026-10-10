@@ -5,12 +5,17 @@
       "name": "Шахтёр",
       "elements": [
         {
-          "type": "header",
-          "text": "Шахтёр"
+          "type": "card",
+          "icon": "industrial_core:miner_core",
+          "title": "Шахтёр"
         },
         {
           "type": "text",
-          "text": "Автодобыча руды без копания. Куб 3×3×3: ядро в центре, 26 корпусов вокруг. Линза задаёт измерение и пул руды. Питается FE и буровой жижей."
+          "text": "Добывает руду сам, копать не нужно. Это куб 3×3×3: ядро в центре и 26 корпусов вокруг."
+        },
+        {
+          "type": "text",
+          "text": "Какую руду он добывает, задаёт **линза** в ядре. Работает на энергии и буровой жидкости."
         },
         {
           "type": "multiblock",
@@ -35,7 +40,8 @@
                 "CCC",
                 "CCC"
               ]
-            ]
+            ],
+            "model": "miner"
           }
         },
         {
@@ -45,8 +51,178 @@
             "industrial_core:miner_casing",
             "industrial_core:miner_lens_1",
             "industrial_core:miner_lens_4"
-          ],
-          "label": "Компоненты"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Промышленный шахтёр",
+      "id": "industrial_miner",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:industrial_miner_core",
+          "title": "Промышленный шахтёр"
+        },
+        {
+          "type": "text",
+          "text": "Большой шахтёр 5×5. Сам он мир не копает: добывает то, что нашли **буровые маяки**. Блоки остаются на месте, жилы не кончаются."
+        },
+        {
+          "type": "text",
+          "text": "Строится из каркаса, ядро ставится в середину передней стены лицом наружу. Структурная палочка соберёт его сама."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "F": "industrial_core:industrial_miner_frame",
+              "K": "industrial_core:industrial_miner_core"
+            },
+            "layers": [
+              [
+                "F...F",
+                ".....",
+                ".....",
+                ".....",
+                "F...F"
+              ],
+              [
+                "FFFFF",
+                "FFFFF",
+                "FFFFF",
+                "FFFFF",
+                "FFFFF"
+              ],
+              [
+                "FFKFF",
+                "F...F",
+                "F...F",
+                "F...F",
+                "FFFFF"
+              ],
+              [
+                "FFFFF",
+                "FFFFF",
+                "FFFFF",
+                "FFFFF",
+                "FFFFF"
+              ],
+              [
+                ".....",
+                ".....",
+                "..F..",
+                ".....",
+                "....."
+              ],
+              [
+                ".....",
+                ".....",
+                "..F..",
+                ".....",
+                "....."
+              ]
+            ],
+            "model": "industrial_miner"
+          }
+        },
+        {
+          "type": "text",
+          "text": "Раз в 5 секунд выдаёт до 64 блоков руды, поровну со всех включённых маяков. На каждый блок уходит 50 000 FE и 250 мБ буровой жидкости. Энергию, жидкость и трубы для выхода можно подключать к любому блоку каркаса."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Цикл",
+              "value": "5 с"
+            },
+            {
+              "key": "Руды за цикл",
+              "value": "до 64"
+            },
+            {
+              "key": "Энергия",
+              "value": "50 000 FE на руду"
+            },
+            {
+              "key": "Буровая жидкость",
+              "value": "250 мБ на руду"
+            },
+            {
+              "key": "Маяков",
+              "value": "до 4"
+            },
+            {
+              "key": "Выход",
+              "value": "27 слотов"
+            }
+          ]
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:industrial_miner_core",
+            "industrial_core:industrial_miner_frame",
+            "industrial_core:drill_beacon"
+          ]
+        },
+        {
+          "type": "links",
+          "label": "Смотри также",
+          "links": [
+            {
+              "text": "Буровой маяк",
+              "to": "drill_beacon"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Буровой маяк",
+      "id": "drill_beacon",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:drill_beacon",
+          "title": "Буровой маяк"
+        },
+        {
+          "type": "text",
+          "text": "Ставишь там, где хочешь добывать. За 10 секунд маяк просматривает 3×3 чанка вокруг себя, от дна мира до своей высоты, и считает руду."
+        },
+        {
+          "type": "text",
+          "text": "В окне маяка выбираешь слой по высоте. Какая руда и сколько её в этом слое, такой и будет добыча."
+        },
+        {
+          "type": "text",
+          "text": "Без линзы маяк работает только в верхнем мире. Для Незера или Края ставишь маяк там и кладёшь ему линзу этого мира, измеренческая подходит везде. Шахтёр при этом может стоять дома."
+        },
+        {
+          "type": "text",
+          "text": "Привязываешь линкером: клик по маяку, потом по ядру шахтёра. К одному шахтёру до четырёх маяков, каждый можно выключить в его окне."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:drill_beacon",
+            "industrial_core:miner_lens_1",
+            "industrial_core:miner_lens_2",
+            "industrial_core:miner_lens_3",
+            "industrial_core:miner_lens_4"
+          ]
+        },
+        {
+          "type": "links",
+          "label": "Смотри также",
+          "links": [
+            {
+              "text": "Промышленный шахтёр",
+              "to": "industrial_miner"
+            }
+          ]
         }
       ]
     },
@@ -54,12 +230,13 @@
       "name": "Криокамера",
       "elements": [
         {
-          "type": "header",
-          "text": "Криокамера (мультиблок)"
+          "type": "card",
+          "icon": "industrial_core:cryo_core",
+          "title": "Криокамера"
         },
         {
           "type": "text",
-          "text": "Куб 5×5×5: пол и потолок целиком из корпуса, стены из криопанелей, внутри полость с колонной холодильных камер. Ядро стоит в переднем ряду пола и задаёт направление всей постройки. Подробности — в главе «Холод»."
+          "text": "Куб 5×5×5: пол и потолок из корпуса, стены из криопанелей, внутри колонна холодильных камер. Ядро стоит в переднем ряду пола. Как она работает, подробно описано в главе «Холод»."
         },
         {
           "type": "multiblock",
@@ -124,12 +301,13 @@
       "name": "Магнит-ускоритель",
       "elements": [
         {
-          "type": "header",
-          "text": "Магнит-ускоритель"
+          "type": "card",
+          "icon": "industrial_core:structural_block",
+          "title": "Магнит-ускоритель"
         },
         {
           "type": "text",
-          "text": "Вершина мода — каркас 7×7×8 из структурных блоков с двумя держателями катушек и ядром-электромагнитом. В держатель ставится катушка (медная, сверхпроводниковая или гравитонная), и её тир открывает всё более мощные разгоны."
+          "text": "Самая большая машина мода: каркас 7×7×8 из структурных блоков, два держателя катушек и ядро-электромагнит."
         },
         {
           "type": "multiblock",
@@ -212,12 +390,17 @@
                 ".S...S.",
                 "......."
               ]
-            ]
+            ],
+            "model": "magnet"
           }
         },
         {
           "type": "text",
-          "text": "Разгон копит нестабильность. В резонансной полосе выход удваивается, но при переборе срабатывает квенч-волна, разрушающая базу. Антигравитационные колонны рядом поднимают безопасный порог — ставь их ДО перехода на высокие катушки."
+          "text": "В держатели ставится катушка: медная, сверхпроводниковая или гравитонная. Чем лучше катушка, тем более сильные разгоны доступны."
+        },
+        {
+          "type": "tip",
+          "text": "При разгоне копится **нестабильность**. В резонансной полосе выход удваивается, но если перебрать, ударит квенч-волна и разнесёт базу. Ставь антиграв-колонны **до того**, как перейдёшь на сильные катушки."
         },
         {
           "type": "items",
@@ -244,16 +427,34 @@
       "name": "Антиграв-колонны",
       "elements": [
         {
-          "type": "header",
-          "text": "Антиграв-колонны"
+          "type": "card",
+          "icon": "industrial_core:antigrav_column",
+          "title": "Антиграв-колонны"
         },
         {
           "type": "text",
-          "text": "Антиграв-колонны питаются ТЕПЛОМ, а не FE. Тепло заводится снизу теплотрубой из термосети: термогенератор греет трубу, а та отдаёт тепло в основание колонны. Колонна копит его в буфере (до 4000) и начинает работать на магнит, когда прогрета (от 200). Чем горячее колонна, тем больше её вклад в стабильность."
+          "text": "Колонны работают на **тепле**, а не на энергии. Подведи к основанию колонны теплотрубу от термогенератора. Колонна копит тепло (до 4000) и начинает помогать магниту, когда прогреется до 200."
         },
         {
           "type": "text",
-          "text": "Каждая полностью прогретая колонна поднимает безопасный порог квенча на 7.5% сверх базовых 50%. В зачёт идут до 8 колонн в радиусе 16 блоков от центра магнита. Ориентиры: 2 колонны держат порог на 65%, 4 — на 80% (нужно для сверхпроводниковой катушки), 6 — на 95%, 7 — полные 100% (нужно для гравитонной). Медной катушке колонны не нужны: её потолок ниже 50%."
+          "text": "Каждая прогретая колонна поднимает безопасный порог магнита на 7,5% сверх базовых 50%. Считаются до восьми колонн в радиусе 16 блоков от центра магнита."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Медная катушка",
+              "value": "колонны не нужны"
+            },
+            {
+              "key": "Сверхпроводниковая",
+              "value": "нужно 4 колонны (порог 80%)"
+            },
+            {
+              "key": "Гравитонная",
+              "value": "нужно 7 колонн (порог 100%)"
+            }
+          ]
         },
         {
           "type": "items",
@@ -261,8 +462,1420 @@
             "industrial_core:antigrav_column",
             "industrial_core:heat_pipe",
             "industrial_core:thermogenerator"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Дистанционный контроллер",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:distant_controller",
+          "title": "Дистанционный контроллер"
+        },
+        {
+          "type": "text",
+          "text": "Работающий магнит затягивает всё вокруг, а у самого ядра убивает. Поле растёт вместе с нестабильностью, так что на разгоне к ядру лучше не подходить, а окно ядра всё равно нужно."
+        },
+        {
+          "type": "text",
+          "text": "Для этого есть **дистанционный контроллер**. Поставь его в безопасном месте и свяжи с ядром **линкером**, не дальше 64 блоков. Клик по контроллеру открывает окно ядра, а на его экране видно, что сейчас разгоняется и какая нестабильность."
+        },
+        {
+          "type": "tip",
+          "text": "Окно остаётся открытым, пока ты стоишь не дальше 8 блоков от контроллера. С промышленным электромагнитом контроллер не работает."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:distant_controller",
+            "industrial_core:logistics_linker"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Фазозахват",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:phase_lock_upgrade",
+          "title": "Фазозахват"
+        },
+        {
+          "type": "text",
+          "text": "Улучшение для ядра магнита, ставится в его слот улучшения. Пока оно стоит, нестабильность сама держится на резонансной цели, даже когда цель дрейфует, и выход стабильно удваивается без ручной подстройки. Ест 400 FE за тик."
+        },
+        {
+          "type": "tip",
+          "text": "Выше безопасного порога Фазозахват нестабильность не поднимет. Без антиграв-колонн порог 50%, и на высокие полосы он не выйдет. В промышленном электромагните он не нужен и не ставится."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:phase_lock_upgrade"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Лейт-мультиблоки",
+      "id": "late_overview",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_casing",
+          "title": "Лейт-мультиблоки",
+          "subtitle": "Большие версии обычных машин"
+        },
+        {
+          "type": "text",
+          "text": "Это те же машины, что ты строил раньше, только большие. Они делают всё то же самое, но не по одной штуке, а пачкой: за один цикл до **64** предметов, а с улучшениями и больше."
+        },
+        {
+          "type": "text",
+          "text": "Собираются из **обшивки**, **структурного стекла** и **блоков механизма** вокруг ядра. У ядра нет слотов: всё, что машине нужно, ты кладёшь во входной порт, готовое забираешь из выходного, а энергию подаёшь в энергоразъём."
+        },
+        {
+          "type": "tip",
+          "text": "Форма у каждой машины своя и строгая. Поменять можно только две вещи: вместо любой обшивки поставить **порт**, а вместо блока механизма поставить **блок улучшения**."
+        },
+        {
+          "type": "text",
+          "text": "Если машина не запускается, открой ядро. Там написано, что не так: какого порта не хватает или какой блок стоит не на своём месте и где именно."
+        },
+        {
+          "type": "itemlist",
+          "items": [
+            {
+              "id": "industrial_core:multiblock_casing",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:structural_glass",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:mechanism_block",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:multiblock_input_port",
+              "count": 1
+            }
           ],
-          "label": "Питание теплом"
+          "label": "Из чего строятся"
+        },
+        {
+          "type": "links",
+          "label": "Смотри также",
+          "links": [
+            {
+              "text": "Порты",
+              "to": "late_ports"
+            },
+            {
+              "text": "Блоки улучшений",
+              "to": "late_upgrades"
+            },
+            {
+              "text": "Структурная палочка",
+              "to": "late_wand"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Порты",
+      "id": "late_ports",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_input_port",
+          "title": "Порты мультиблока",
+          "subtitle": "Ставятся вместо любой обшивки",
+          "tags": [
+            {
+              "text": "Вход",
+              "color": "#FF5A00"
+            },
+            {
+              "text": "Выход",
+              "color": "#5100FF"
+            },
+            {
+              "text": "Энергия",
+              "color": "#00FFCC"
+            },
+            {
+              "text": "Тепло",
+              "color": "#FFD000"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Во **входной порт** кладёшь то, что машина будет обрабатывать. Из **выходного** забираешь готовое. В **энергоразъём** подводишь кабель. Портов можно поставить сколько угодно, машина берёт из всех."
+        },
+        {
+          "type": "text",
+          "text": "Кнопкой в окне порта выбираешь, что он принимает: предметы, жидкость или и то, и другое. Ещё одна кнопка включает автообмен: тогда вход сам тянет из соседних сундуков и труб, а выход сам выталкивает готовое."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Без улучшения",
+              "value": "9 слотов, бак на 16 вёдер, разъём на 1M FE"
+            },
+            {
+              "key": "С базовым",
+              "value": "18 слотов, 64 ведра, 10M FE"
+            },
+            {
+              "key": "С продвинутым",
+              "value": "27 слотов, 256 вёдер, 100M FE"
+            }
+          ]
+        },
+        {
+          "type": "tip",
+          "text": "Если в рецепте есть и предметы, и жидкость, а подаёшь ты их из автокрафта одним заходом, ставь порт в режим **предметы + жидкость**. Режим меняется, только пока порт пустой."
+        },
+        {
+          "type": "text",
+          "text": "**Тепловой порт** нужен машинам, которые работают от тепла. Подведи к нему теплотрубу, и он будет держать тепло, пока оно подаётся. Перестанет подаваться, и порт понемногу остынет."
+        },
+        {
+          "type": "itemlist",
+          "items": [
+            {
+              "id": "industrial_core:multiblock_input_port",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:multiblock_output_port",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:multiblock_energy_port",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:multiblock_heat_port",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:port_upgrade_basic",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:port_upgrade_advanced",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "type": "links",
+          "label": "Смотри также",
+          "links": [
+            {
+              "text": "Лейт-мультиблоки",
+              "to": "late_overview"
+            },
+            {
+              "text": "Блоки улучшений",
+              "to": "late_upgrades"
+            },
+            {
+              "text": "МЭ-порты",
+              "to": "late_me_ports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "МЭ-порты",
+      "id": "late_me_ports",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:me_input_port",
+          "title": "МЭ-порты",
+          "subtitle": "Для сети Applied Energistics 2",
+          "tags": [
+            {
+              "text": "Вход",
+              "color": "#FF5A00"
+            },
+            {
+              "text": "Выход",
+              "color": "#5100FF"
+            },
+            {
+              "text": "Шаблоны",
+              "color": "#C86BF0"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Если в сборке есть **Applied Energistics 2**, лейт-машину можно подключить прямо к МЭ-сети. МЭ-порты ставятся вместо обшивки, как обычные порты, и занимают канал. Без AE2 этих портов нет."
+        },
+        {
+          "type": "text",
+          "text": "**МЭ-порт входа** работает как интерфейс: в его клетках задаёшь, что и сколько держать, он сам берёт это из сети, а лишнее отдаёт обратно. **МЭ-порт выхода** сразу отправляет всё готовое в сеть."
+        },
+        {
+          "type": "text",
+          "text": "**МЭ-порт шаблонов** держит шаблоны обработки, как поставщик шаблонов, и машина становится частью автокрафта. Сеть кладёт в порт всё, что нужно по шаблону, разом, а результат возвращается через МЭ-порт выхода."
+        },
+        {
+          "type": "tip",
+          "text": "С соседними сундуками МЭ-порты не меняются, всё идёт через сеть. Улучшения портов работают как у обычных: больше рядов и баки побольше."
+        },
+        {
+          "type": "itemlist",
+          "items": [
+            {
+              "id": "industrial_core:me_input_port",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:me_output_port",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:me_pattern_port",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "type": "links",
+          "label": "Смотри также",
+          "links": [
+            {
+              "text": "Порты",
+              "to": "late_ports"
+            },
+            {
+              "text": "Лейт-мультиблоки",
+              "to": "late_overview"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Блоки улучшений",
+      "id": "late_upgrades",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:mechanism_parallel_3",
+          "title": "Блоки улучшений",
+          "subtitle": "Ставятся вместо блока механизма",
+          "tags": [
+            {
+              "text": "Параллель",
+              "color": "#C86BF0"
+            },
+            {
+              "text": "Скорость",
+              "color": "#FF8A4A"
+            },
+            {
+              "text": "Экономия",
+              "color": "#5CF4FF"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Слотов для улучшений у больших машин нет. Вместо этого любой **блок механизма** внутри можно заменить блоком улучшения. Машина заметит замену сама, ничего нажимать не нужно."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Параллель I",
+              "value": "ещё 16 предметов за цикл"
+            },
+            {
+              "key": "Параллель II",
+              "value": "ещё 32"
+            },
+            {
+              "key": "Параллель III",
+              "value": "ещё 64"
+            },
+            {
+              "key": "Скорость",
+              "value": "цикл короче на 15%, энергии на 15% больше"
+            },
+            {
+              "key": "Энергоэффективность",
+              "value": "энергии на 10% меньше"
+            }
+          ]
+        },
+        {
+          "type": "tip",
+          "text": "Скорость и экономию удобно ставить вместе. Две скорости и три экономии дают цикл на 30% короче при том же расходе энергии."
+        },
+        {
+          "type": "itemlist",
+          "items": [
+            {
+              "id": "industrial_core:mechanism_parallel_1",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:mechanism_parallel_2",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:mechanism_parallel_3",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:mechanism_speed",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:mechanism_efficiency",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:mechanism_block",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "type": "links",
+          "label": "Смотри также",
+          "links": [
+            {
+              "text": "Лейт-мультиблоки",
+              "to": "late_overview"
+            },
+            {
+              "text": "Порты",
+              "to": "late_ports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Структурная палочка",
+      "id": "late_wand",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:structure_wand",
+          "title": "Структурная палочка",
+          "subtitle": "Достраивает мультиблок за тебя"
+        },
+        {
+          "type": "text",
+          "text": "Поставь ядро и кликни по нему палочкой: она достроит всю машину по схеме. В выживании блоки берутся из твоего инвентаря, а если чего-то не хватит, палочка напишет в чат, чего именно. Докинь недостающее и кликни ещё раз."
+        },
+        {
+          "type": "text",
+          "text": "Чужие блоки палочка не ломает, а то, что уже стоит правильно, не трогает. Порты и блоки улучшений тоже останутся на месте."
+        },
+        {
+          "type": "tip",
+          "text": "Порты палочка не ставит: куда какой порт, решаешь ты."
+        },
+        {
+          "type": "links",
+          "label": "Смотри также",
+          "links": [
+            {
+              "text": "Лейт-мультиблоки",
+              "to": "late_overview"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Второй тир",
+      "id": "late_tier2",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_casing_advanced",
+          "title": "Второй тир",
+          "subtitle": "Тёмная обшивка для новых машин"
+        },
+        {
+          "type": "text",
+          "text": "Часть больших машин строится не из обычной обшивки, а из **продвинутой**, и стекло у них своё, **продвинутое**. Обычная обшивка в такую машину не подойдёт, как и продвинутая в старые. Какая нужна, видно на схеме в записи машины."
+        },
+        {
+          "type": "text",
+          "text": "Порты те же самые. Поставишь порт рядом с продвинутой обшивкой, и он сам потемнеет под неё. Работает он при этом так же."
+        },
+        {
+          "type": "itemlist",
+          "items": [
+            {
+              "id": "industrial_core:multiblock_casing_advanced",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:structural_glass_advanced",
+              "count": 1
+            }
+          ],
+          "label": "Из чего строятся"
+        },
+        {
+          "type": "links",
+          "label": "Смотри также",
+          "links": [
+            {
+              "text": "Промышленный сжижитель",
+              "to": "late_liquefier"
+            },
+            {
+              "text": "Промышленная доменная печь",
+              "to": "late_blast"
+            },
+            {
+              "text": "Промышленный электромагнит",
+              "to": "late_magnet"
+            },
+            {
+              "text": "Порты",
+              "to": "late_ports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Промышленный дробитель",
+      "id": "late_crusher",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_macerator",
+          "title": "Промышленный дробитель",
+          "subtitle": "Большая дробилка, 5×5×4",
+          "tags": [
+            {
+              "text": "Дробление",
+              "color": "#02E2DB"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Мелет всё то же, что обычная дробилка, только пачкой. Кладёшь руду во входной порт, через цикл в выходном лежит пыль на всю пачку сразу."
+        },
+        {
+          "type": "text",
+          "text": "Ядро стоит в стеклянном поясе, на крыше кольцо-воронка, а внутри девять блоков механизма квадратом."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing",
+              "G": "industrial_core:structural_glass",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_macerator",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port"
+            },
+            "layers": [
+              [
+                "CCCCC",
+                "CCCCC",
+                "CCCCC",
+                "CCCCC",
+                "CCCCC"
+              ],
+              [
+                "CGKGC",
+                "CMMMI",
+                "GMMMG",
+                "CMMMO",
+                "CCCCE"
+              ],
+              [
+                "CCCCC",
+                "CCCCC",
+                "CCCCC",
+                "CCCCC",
+                "CCCCC"
+              ],
+              [
+                ".....",
+                ".CCC.",
+                ".C.C.",
+                ".CCC.",
+                "....."
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "Смотри также",
+          "links": [
+            {
+              "text": "Лейт-мультиблоки",
+              "to": "late_overview"
+            },
+            {
+              "text": "Порты",
+              "to": "late_ports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Промышленный промыватель",
+      "id": "late_washer",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_washer",
+          "title": "Промышленный промыватель",
+          "subtitle": "Большой промыватель руды, 5×5×4",
+          "tags": [
+            {
+              "text": "Вода",
+              "color": "#62B2FF"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Моет руду так же, как обычный промыватель. Руду клади во входной порт с предметами, а воду заливай в порт, который принимает жидкость. Промытое забираешь из выходного."
+        },
+        {
+          "type": "text",
+          "text": "Побочные продукты выпадают так же, как у маленькой машины: шанс бросается на каждую руду в пачке отдельно, поэтому из 64 руд выйдет примерно столько побочки, сколько вышло бы по одной."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing",
+              "G": "industrial_core:structural_glass",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_washer",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port"
+            },
+            "layers": [
+              [
+                "CCCCC",
+                "CCCCC",
+                "CCCCC",
+                "CCCCC",
+                "CCCCC"
+              ],
+              [
+                "CGKGC",
+                "CMMMI",
+                "CMMMG",
+                "CMMMO",
+                "CCCCE"
+              ],
+              [
+                "CCCCC",
+                "CGGGC",
+                "CGGGC",
+                "CGGGC",
+                "CCCCC"
+              ],
+              [
+                "CCCCC",
+                "C...C",
+                "C...C",
+                "C...C",
+                "CCCCC"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "Смотри также",
+          "links": [
+            {
+              "text": "Порты",
+              "to": "late_ports"
+            },
+            {
+              "text": "Блоки улучшений",
+              "to": "late_upgrades"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Промышленная печь",
+      "id": "late_furnace",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_furnace",
+          "title": "Промышленная печь",
+          "subtitle": "Большая электропечь, 5×3×5",
+          "tags": [
+            {
+              "text": "Плавка",
+              "color": "#FF8A2E"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Плавит всё, что плавит электропечь, но пачкой: кладёшь стак во входной порт, и он переплавляется за один цикл."
+        },
+        {
+          "type": "text",
+          "text": "Это высокая башня с окном 3×3 на лицевой стороне. Ядро стоит в нижнем ряду окна, а за стеклом видна колонна из девяти блоков механизма."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing",
+              "G": "industrial_core:structural_glass",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_furnace",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port"
+            },
+            "layers": [
+              [
+                "CCCCC",
+                "CCCCC",
+                "CCCCC"
+              ],
+              [
+                "CGKGC",
+                "CMMMI",
+                "CCCCO"
+              ],
+              [
+                "CGGGC",
+                "CMMME",
+                "CCCCC"
+              ],
+              [
+                "CGGGC",
+                "CMMMC",
+                "CCCCC"
+              ],
+              [
+                "CCCCC",
+                "CCCCC",
+                "CCCCC"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "Смотри также",
+          "links": [
+            {
+              "text": "Лейт-мультиблоки",
+              "to": "late_overview"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Промышленный компрессор",
+      "id": "late_compressor",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_compressor",
+          "title": "Промышленный компрессор",
+          "subtitle": "Большой компрессор, 3×5×5",
+          "tags": [
+            {
+              "text": "Сжатие",
+              "color": "#C86BF0"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Сжимает то же, что обычный компрессор, только пачкой. Узкий, с ядром на торце и длинным окном на боку, за которым столбом стоят блоки механизма."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing",
+              "G": "industrial_core:structural_glass",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_compressor",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port"
+            },
+            "layers": [
+              [
+                "CCC",
+                "CCC",
+                "CCC",
+                "CCC",
+                "CCC"
+              ],
+              [
+                "CKC",
+                "CMI",
+                "CMO",
+                "CME",
+                "CCC"
+              ],
+              [
+                "CGC",
+                "GMC",
+                "GMC",
+                "GMC",
+                "CCC"
+              ],
+              [
+                "CGC",
+                "GMC",
+                "GMC",
+                "GMC",
+                "CCC"
+              ],
+              [
+                "CCC",
+                "CCC",
+                "CCC",
+                "CCC",
+                "CCC"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "Смотри также",
+          "links": [
+            {
+              "text": "Лейт-мультиблоки",
+              "to": "late_overview"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Промышленный прокатный стан",
+      "id": "late_rolling",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_rolling_mill",
+          "title": "Промышленный прокатный стан",
+          "subtitle": "Большой формовщик, 7×4×3",
+          "tags": [
+            {
+              "text": "Прокатка",
+              "color": "#7CDC55"
+            },
+            {
+              "text": "Волочение",
+              "color": "#7CDC55"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Работает как формовщик и тоже в двух режимах. На **прокатке** из слитков выходят пластины, на **волочении** из пластин выходит проволока, а ещё стержни и волокно."
+        },
+        {
+          "type": "text",
+          "text": "Режим переключается кликом по строке «Режим» в окне ядра. Если переключить посреди работы, текущая пачка просто начнётся заново, ничего не пропадёт."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing",
+              "G": "industrial_core:structural_glass",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_rolling_mill",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port"
+            },
+            "layers": [
+              [
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC"
+              ],
+              [
+                "CGGKGGC",
+                "CMMMMMI",
+                "CMMMMMO",
+                "CCCCCCE"
+              ],
+              [
+                "CCCCCCC",
+                "CGGGGGC",
+                "CGGGGGC",
+                "CCCCCCC"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "Смотри также",
+          "links": [
+            {
+              "text": "Лейт-мультиблоки",
+              "to": "late_overview"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Промышленный сборщик",
+      "id": "late_assembler",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_crafter",
+          "title": "Промышленный сборщик",
+          "subtitle": "Главная машина лейта, 7×7×3",
+          "tags": [
+            {
+              "text": "Сборка",
+              "color": "#FFC45C"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "В нём собираются ядра остальных больших машин и другие дорогие вещи. Кладёшь во входной порт нужные предметы, если рецепту нужна жидкость, заливаешь её, и через цикл забираешь результат. Иногда результат тоже жидкость."
+        },
+        {
+          "type": "text",
+          "text": "Самый крупный из лейт-мультиблоков: внутри кольцо из 16 блоков механизма, сверху стеклянная крыша."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing",
+              "G": "industrial_core:structural_glass",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_crafter",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port"
+            },
+            "layers": [
+              [
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC"
+              ],
+              [
+                "CGGKGGC",
+                "CMMMMMI",
+                "CMCCCMO",
+                "CMCCCME",
+                "CMCCCMC",
+                "CMMMMMC",
+                "CCCCCCC"
+              ],
+              [
+                "CCCCCCC",
+                "CGGGGGC",
+                "CGCCCGC",
+                "CGCCCGC",
+                "CGCCCGC",
+                "CGGGGGC",
+                "CCCCCCC"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "Смотри также",
+          "links": [
+            {
+              "text": "Лейт-мультиблоки",
+              "to": "late_overview"
+            },
+            {
+              "text": "Блоки улучшений",
+              "to": "late_upgrades"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Промышленный сжижитель",
+      "id": "late_liquefier",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_liquefier",
+          "title": "Промышленный сжижитель",
+          "subtitle": "Большой сжижитель, 6×3×6",
+          "tags": [
+            {
+              "text": "Тепло",
+              "color": "#FFD000"
+            },
+            {
+              "text": "Второй тир",
+              "color": "#C42A20"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Плавит в жидкость всё то же, что обычный сжижитель, только пачкой. Кладёшь слитки или другие предметы во входной порт, а расплав забираешь из выходного порта, переключённого на жидкость."
+        },
+        {
+          "type": "text",
+          "text": "Кроме энергии ему нужно **тепло**. Поставь на обшивку тепловой порт и подведи к нему теплотрубу. Пока в порту тепла меньше, чем нужно рецепту, машина ждёт. Сколько тепла есть и сколько нужно, написано в окне ядра. Тепло не расходуется, его нужно просто держать."
+        },
+        {
+          "type": "text",
+          "text": "Слева высокая башня, где всё плавится, справа низкая ванна под стеклянной крышкой. Ядро стоит в лицевой стороне башни. Строится из продвинутой обшивки и продвинутого стекла."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing_advanced",
+              "G": "industrial_core:structural_glass_advanced",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_liquefier",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port",
+              "H": "industrial_core:multiblock_heat_port"
+            },
+            "layers": [
+              [
+                "ECCCCC",
+                "CCCCCC",
+                "CCCCCC"
+              ],
+              [
+                "CGCCKC",
+                "OMMCMC",
+                "CCCCCC"
+              ],
+              [
+                "GGGCGC",
+                "GGGGMG",
+                "GGGCGC"
+              ],
+              [
+                "...CGC",
+                "...IMG",
+                "...CGC"
+              ],
+              [
+                "...CGC",
+                "...HMG",
+                "...CGC"
+              ],
+              [
+                "...CCC",
+                "...CCC",
+                "...CCC"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "Смотри также",
+          "links": [
+            {
+              "text": "Второй тир",
+              "to": "late_tier2"
+            },
+            {
+              "text": "Порты",
+              "to": "late_ports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Промышленная доменная печь",
+      "id": "late_blast",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_blast_furnace",
+          "title": "Промышленная доменная печь",
+          "subtitle": "Большая доменка, 7×5×4",
+          "tags": [
+            {
+              "text": "Тепло",
+              "color": "#FFD000"
+            },
+            {
+              "text": "Второй тир",
+              "color": "#C42A20"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Плавит всё то же, что обычная доменная печь, только пачкой: сплавы и закалённую сталь. Кладёшь во входной порт то, что плавишь, и топливо, а готовые слитки забираешь из выходного."
+        },
+        {
+          "type": "text",
+          "text": "Кроме энергии ей нужно **тепло**. Поставь на обшивку тепловой порт и подведи к нему теплотрубу. Пока в порту тепла меньше, чем нужно рецепту, печь ждёт. Сколько есть и сколько нужно, видно в окне ядра. Тепло не расходуется, его нужно просто держать."
+        },
+        {
+          "type": "text",
+          "text": "Это тоннель: широкий низ в семь блоков, внутри двадцать блоков механизма, кверху печь сужается к стеклянному гребню. Ядро стоит в стеклянном поясе спереди. Строится из продвинутой обшивки и продвинутого стекла."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Энергия",
+              "value": "40 FE за тик на каждую плавку"
+            },
+            {
+              "key": "Тепло",
+              "value": "от 1 200 до 3 200, по рецепту"
+            },
+            {
+              "key": "Плавок за цикл",
+              "value": "до 64"
+            }
+          ]
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing_advanced",
+              "G": "industrial_core:structural_glass_advanced",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_blast_furnace",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port",
+              "H": "industrial_core:multiblock_heat_port"
+            },
+            "layers": [
+              [
+                "CCICOCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCECCC"
+              ],
+              [
+                "CGGKGGC",
+                "CMMMMMC",
+                "CMMMMMC",
+                "CMMMMMC",
+                "CCCHCCC"
+              ],
+              [
+                ".......",
+                "CCCCCCC",
+                "CMMMMMC",
+                "CCCCCCC",
+                "......."
+              ],
+              [
+                ".......",
+                ".......",
+                "CGGGGGC",
+                ".......",
+                "......."
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "Смотри также",
+          "links": [
+            {
+              "text": "Второй тир",
+              "to": "late_tier2"
+            },
+            {
+              "text": "Промышленный сжижитель",
+              "to": "late_liquefier"
+            },
+            {
+              "text": "Порты",
+              "to": "late_ports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Промышленный обогатитель",
+      "id": "late_enricher",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_fluid_enricher",
+          "title": "Промышленный обогатитель",
+          "subtitle": "Большой обогатитель жидкостей, 9×5×3",
+          "tags": [
+            {
+              "text": "Обогащение",
+              "color": "#F06AB8"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Делает то же, что обычный обогатитель жидкостей, только пачкой. Жидкость заливаешь в порт, который принимает жидкость, реагенты кладёшь во входной порт с предметами, а готовую жидкость забираешь из выходного порта, переключённого на жидкость."
+        },
+        {
+          "type": "text",
+          "text": "По бокам стоят два круглых стеклянных бака, между ними низкий смеситель с ядром. Углы у баков не проверяются: их можно оставить пустыми или поставить туда что угодно."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing",
+              "G": "industrial_core:structural_glass",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_fluid_enricher",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port"
+            },
+            "layers": [
+              [
+                ".I.CCC.O.",
+                "CCCCCCCCC",
+                ".C.CCC.C."
+              ],
+              [
+                ".G.GKG.G.",
+                "GMGMMMGMG",
+                ".G.CEC.G."
+              ],
+              [
+                ".G.CCC.G.",
+                "GMGCGCGMG",
+                ".G.CCC.G."
+              ],
+              [
+                ".G.....G.",
+                "GMG...GMG",
+                ".G.....G."
+              ],
+              [
+                ".C.....C.",
+                "CCC...CCI",
+                ".C.....C."
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "Смотри также",
+          "links": [
+            {
+              "text": "Лейт-мультиблоки",
+              "to": "late_overview"
+            },
+            {
+              "text": "Порты",
+              "to": "late_ports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Промышленный электромагнит",
+      "id": "late_magnet",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_magnet",
+          "title": "Промышленный электромагнит",
+          "subtitle": "Поздний магнит, 7×9×7",
+          "tags": [
+            {
+              "text": "Ускорение",
+              "color": "#5560F0"
+            },
+            {
+              "text": "Второй тир",
+              "color": "#C42A20"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Делает то же, что обычный электромагнит, но без колонн, нестабильности и полос. Кладёшь во входной порт то, что нужно рецепту, подаёшь энергию и забираешь результат из выходного. Работает пачкой, как остальные большие машины."
+        },
+        {
+          "type": "text",
+          "text": "Это башня. На плите стоит постамент с ядром и четыре стойки по углам, выше тонкий стеклянный ствол, голова из девяти блоков механизма под стеклянным куполом и корона. Плита выступает перед ядром на два блока. Строится из продвинутой обшивки и продвинутого стекла."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing_advanced",
+              "G": "industrial_core:structural_glass_advanced",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_magnet",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port",
+              "H": "industrial_core:multiblock_heat_port"
+            },
+            "layers": [
+              [
+                ".CICOC.",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                ".CCECC."
+              ],
+              [
+                ".......",
+                ".C...C.",
+                "..CKC..",
+                "..CCC..",
+                "..CCC..",
+                ".C...C.",
+                "......."
+              ],
+              [
+                ".......",
+                ".G...G.",
+                "...G...",
+                "..GMG..",
+                "...G...",
+                ".G...G.",
+                "......."
+              ],
+              [
+                ".......",
+                ".C...C.",
+                "...G...",
+                "..GMG..",
+                "...G...",
+                ".C...C.",
+                "......."
+              ],
+              [
+                ".......",
+                ".......",
+                "...C...",
+                "..CMC..",
+                "...C...",
+                ".......",
+                "......."
+              ],
+              [
+                ".......",
+                "...C...",
+                "...C...",
+                ".CCMCC.",
+                "...C...",
+                "...C...",
+                "......."
+              ],
+              [
+                ".......",
+                "..CCC..",
+                ".CMMMC.",
+                ".CMMMC.",
+                ".CMMMC.",
+                "..CCC..",
+                "......."
+              ],
+              [
+                ".......",
+                "..C.C..",
+                ".CGGGC.",
+                "..GGG..",
+                ".CGGGC.",
+                "..C.C..",
+                "......."
+              ],
+              [
+                ".......",
+                "..C.C..",
+                ".C...C.",
+                ".......",
+                ".C...C.",
+                "..C.C..",
+                "......."
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "Смотри также",
+          "links": [
+            {
+              "text": "Второй тир",
+              "to": "late_tier2"
+            },
+            {
+              "text": "Порты",
+              "to": "late_ports"
+            }
+          ]
         }
       ]
     }

@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
-public class LiquefierMenu extends AbstractContainerMenu {
+public class LiquefierMenu extends MachineMenu {
 
     public final LiquefierBlockEntity blockEntity;
     private final ContainerData data;
@@ -36,33 +36,28 @@ public class LiquefierMenu extends AbstractContainerMenu {
         this.addSlot(new SlotItemHandler(h, 4, 184, 65));
         this.addSlot(new SlotItemHandler(h, 5, 184, 83));
 
-        for (int i = 0; i < 3; i++)
-            for (int j = 0; j < 9; j++)
-                this.addSlot(new Slot(inv, j + i * 9 + 9, 43 + j * 19, 134 + i * 19));
-        for (int k = 0; k < 9; k++)
-            this.addSlot(new Slot(inv, k, 43 + k * 19, 197));
+        addPlayerInventory(inv, 43, 134);
 
         addDataSlots(data);
     }
 
     public int getEnergyStored() {
-        return (data.get(3) << 16) | (data.get(2) & 0xFFFF);
+        return unpack(data.get(2), data.get(3));
     }
 
     public int getMaxEnergy() {
-        return (data.get(5) << 16) | (data.get(4) & 0xFFFF);
+        return unpack(data.get(4), data.get(5));
     }
 
     public int getScaledProgress() {
         int progress    = data.get(0);
         int maxProgress = data.get(1);
-        if (maxProgress == 0 || progress == 0) return 0;
-        return Math.min(33, (progress * 33 + maxProgress - 1) / maxProgress);
+        return scaleProgress(progress, maxProgress, 33);
     }
 
     public int getScaledEnergy() {
-        int energy    = (data.get(3) << 16) | (data.get(2) & 0xFFFF);
-        int maxEnergy = (data.get(5) << 16) | (data.get(4) & 0xFFFF);
+        int energy    = unpack(data.get(2), data.get(3));
+        int maxEnergy = unpack(data.get(4), data.get(5));
         return maxEnergy != 0 && energy != 0 ? (int)((long) energy * 110 / maxEnergy) : 0;
     }
 

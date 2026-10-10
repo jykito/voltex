@@ -3,14 +3,14 @@
   "pattern": [
     "ABA",
     "CDC",
-    "ABA"
+    "A A"
   ],
   "key": {
     "A": {
       "tag": "forge:plates/aluminum"
     },
     "B": {
-      "item": "industrial_core:textolite_board"
+      "item": "industrial_core:logic_board"
     },
     "C": {
       "item": "industrial_core:electric_motor"

@@ -1,0 +1,12 @@
+{
+  "type": "industrial_core:liquefier_recipe",
+  "ingredient": {
+    "item": "industrial_core:amethyst_dust"
+  },
+  "itemCount": 1,
+  "requiredHeat": 600,
+  "fluid": "industrial_core:molten_amethyst",
+  "fluidAmount": 144,
+  "processingTime": 120,
+  "energyCostPerTick": 40
+}

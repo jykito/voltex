@@ -1,6 +1,12 @@
 package com.jykito.industrialcore.item.custom;
 
 import com.jykito.industrialcore.block.entity.DistantControllerBlockEntity;
+import com.jykito.industrialcore.block.entity.DrillBeaconBlockEntity;
+import com.jykito.industrialcore.block.entity.IndustrialMinerCoreBlockEntity;
+import com.jykito.industrialcore.block.entity.IndustrialMinerFrameBlockEntity;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import com.jykito.industrialcore.block.entity.ElectromagnetCoreBlockEntity;
 import com.jykito.industrialcore.block.entity.HubBlockEntity;
 import com.jykito.industrialcore.block.entity.LogisticsNodeBlockEntity;
@@ -23,6 +29,8 @@ import java.util.List;
 public class LogisticsLinkerItem extends Item {
 
     private static final String KEY_SOURCE = "source";
+    /** Измерение и род источника: связка «буровой маяк → промышленный шахтёр» работает между измерениями. */
+    private static final String KEY_SOURCE_DIM = "source_dim", KEY_SOURCE_KIND = "source_kind";
 
     public LogisticsLinkerItem(Properties props) { super(props); }
 
@@ -40,7 +48,7 @@ public class LogisticsLinkerItem extends Item {
         if (player.isShiftKeyDown()) {
             if (!level.isClientSide()) {
                 if (tag.contains(KEY_SOURCE)) {
-                    tag.remove(KEY_SOURCE);
+                    clearSource(tag);
                     player.displayClientMessage(msg("msg.industrial_core.linker.cancelled", ChatFormatting.YELLOW), true);
                 } else {
                     BlockEntity be = level.getBlockEntity(pos);
@@ -54,12 +62,15 @@ public class LogisticsLinkerItem extends Item {
         }
 
         BlockEntity be = level.getBlockEntity(pos);
+        if (be instanceof IndustrialMinerFrameBlockEntity frame && frame.core() != null) { be = frame.core(); pos = be.getBlockPos(); }   // каркас = его ядро
         if (!isLinkable(be)) return InteractionResult.PASS;
 
         if (!tag.contains(KEY_SOURCE)) {
 
             if (!level.isClientSide()) {
                 tag.putLong(KEY_SOURCE, pos.asLong());
+                tag.putString(KEY_SOURCE_DIM, level.dimension().location().toString());
+                tag.putString(KEY_SOURCE_KIND, be instanceof DrillBeaconBlockEntity ? "beacon" : be instanceof IndustrialMinerCoreBlockEntity ? "miner" : "other");
                 player.displayClientMessage(msg("msg.industrial_core.linker.source_selected", ChatFormatting.AQUA), true);
             }
             return InteractionResult.sidedSuccess(level.isClientSide());
@@ -67,9 +78,18 @@ public class LogisticsLinkerItem extends Item {
 
         if (!level.isClientSide()) {
             BlockPos srcPos = BlockPos.of(tag.getLong(KEY_SOURCE));
+            ResourceKey<Level> srcDim = tag.contains(KEY_SOURCE_DIM)
+                    ? ResourceKey.create(Registries.DIMENSION, new ResourceLocation(tag.getString(KEY_SOURCE_DIM))) : level.dimension();
+
+            if (linkSite(level, player, tag, be, srcPos, srcDim)) return InteractionResult.sidedSuccess(level.isClientSide());
+            if (!srcDim.equals(level.dimension())) {
+                clearSource(tag);
+                player.displayClientMessage(msg("msg.industrial_core.linker.source_invalid", ChatFormatting.RED), true);
+                return InteractionResult.FAIL;
+            }
 
             if (srcPos.equals(pos)) {
-                tag.remove(KEY_SOURCE);
+                clearSource(tag);
                 player.displayClientMessage(msg("msg.industrial_core.linker.selection_reset", ChatFormatting.GRAY), true);
                 return InteractionResult.sidedSuccess(level.isClientSide());
             }
@@ -81,7 +101,7 @@ public class LogisticsLinkerItem extends Item {
 
             BlockEntity srcBe = level.getBlockEntity(srcPos);
             if (!isLinkable(srcBe)) {
-                tag.remove(KEY_SOURCE);
+                clearSource(tag);
                 player.displayClientMessage(msg("msg.industrial_core.linker.source_invalid", ChatFormatting.RED), true);
                 return InteractionResult.FAIL;
             }
@@ -95,7 +115,7 @@ public class LogisticsLinkerItem extends Item {
                   : be    instanceof ElectromagnetCoreBlockEntity kt ? kt : null;
             if (ctrl != null && linkCore != null) {
                 ctrl.setLinkedCore(linkCore.getBlockPos());
-                tag.remove(KEY_SOURCE);
+                clearSource(tag);
                 player.displayClientMessage(msg("msg.industrial_core.linker.connected", ChatFormatting.GREEN), true);
                 return InteractionResult.sidedSuccess(level.isClientSide());
             }
@@ -107,10 +127,44 @@ public class LogisticsLinkerItem extends Item {
 
             addLink(srcBe, pos);
             addLink(be, srcPos);
-            tag.remove(KEY_SOURCE);
+            clearSource(tag);
             player.displayClientMessage(msg("msg.industrial_core.linker.connected", ChatFormatting.GREEN), true);
         }
         return InteractionResult.sidedSuccess(level.isClientSide());
+    }
+
+    private static void clearSource(CompoundTag tag) {
+        tag.remove(KEY_SOURCE); tag.remove(KEY_SOURCE_DIM); tag.remove(KEY_SOURCE_KIND);
+    }
+
+    /**
+     * Буровой маяк ↔ промышленный шахтёр. В одном измерении — в любом порядке; маяк в другом измерении выбирают
+     * первым, потом кликают по шахтёру (его позицию нельзя проверить в чужом измерении). Дальность не ограничена.
+     * Возвращает true, если клик относился к этой связке и уже обработан.
+     */
+    private static boolean linkSite(Level level, Player player, CompoundTag tag, BlockEntity be, BlockPos srcPos, ResourceKey<Level> srcDim) {
+        String kind = tag.getString(KEY_SOURCE_KIND);
+        IndustrialMinerCoreBlockEntity miner;
+        ResourceKey<Level> siteDim;
+        BlockPos sitePos;
+        if (be instanceof IndustrialMinerCoreBlockEntity m && kind.equals("beacon")) {
+            miner = m; siteDim = srcDim; sitePos = srcPos;
+        } else if (be instanceof DrillBeaconBlockEntity && kind.equals("miner")) {
+            if (!srcDim.equals(level.dimension()) || !(level.getBlockEntity(srcPos) instanceof IndustrialMinerCoreBlockEntity m)) {
+                clearSource(tag);
+                player.displayClientMessage(msg("msg.industrial_core.linker.site_order", ChatFormatting.YELLOW), true);
+                return true;
+            }
+            miner = m; siteDim = level.dimension(); sitePos = be.getBlockPos();
+        } else return false;
+        clearSource(tag);
+        switch (miner.addSite(siteDim, sitePos)) {
+            case ADDED -> player.displayClientMessage(Component.translatable("msg.industrial_core.linker.site_added",
+                    sitePos.getX(), sitePos.getY(), sitePos.getZ()).withStyle(ChatFormatting.GREEN), true);
+            case EXISTS -> player.displayClientMessage(msg("msg.industrial_core.linker.site_exists", ChatFormatting.YELLOW), true);
+            case FULL -> player.displayClientMessage(msg("msg.industrial_core.linker.site_full", ChatFormatting.RED), true);
+        }
+        return true;
     }
 
     public static boolean hasSource(ItemStack stack) {
@@ -132,7 +186,9 @@ public class LogisticsLinkerItem extends Item {
     private static boolean isLinkable(BlockEntity be) {
         return isLogistics(be)
                 || be instanceof DistantControllerBlockEntity
-                || be instanceof ElectromagnetCoreBlockEntity;
+                || be instanceof ElectromagnetCoreBlockEntity
+                || be instanceof DrillBeaconBlockEntity
+                || be instanceof IndustrialMinerCoreBlockEntity;
     }
 
     private static boolean isItemSide(BlockEntity be) {

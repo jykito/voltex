@@ -1,5 +1,6 @@
 package com.jykito.industrialcore.item.upgrade;
 
+import com.jykito.industrialcore.block.ModBlocks;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -36,5 +37,6 @@ public class HubUpgradeItem extends Item {
                 .withStyle(ChatFormatting.AQUA));
         tooltip.add(Component.translatable("tooltip.industrial_core.connector_fluid", maxMb)
                 .withStyle(ChatFormatting.AQUA));
+        UpgradeTargets.append(tooltip, ModBlocks.ITEM_HUB, ModBlocks.FLUID_HUB);
     }
 }

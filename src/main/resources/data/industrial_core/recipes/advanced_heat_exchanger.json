@@ -1,16 +1,15 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "ABA",
-    "BCB",
-    "ABA"
+    "AAA",
+    "BCB"
   ],
   "key": {
     "A": {
-      "tag": "forge:plates/invar"
+      "tag": "forge:plates/electrum"
     },
     "B": {
-      "tag": "forge:plates/electrum"
+      "tag": "forge:plates/invar"
     },
     "C": {
       "item": "industrial_core:heat_exchanger"

@@ -1,5 +1,6 @@
 package com.jykito.industrialcore.item.upgrade;
 
+import com.jykito.industrialcore.block.ModBlocks;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -41,5 +42,6 @@ public class BlastUpgradeItem extends MachineUpgradeItem {
         if (type.parallel > 1)
             tooltip.add(Component.translatable("tooltip.industrial_core.parallel_count", type.parallel).withStyle(ChatFormatting.GOLD));
         tooltip.add(Component.translatable("tooltip.industrial_core.blast_upgrade_only").withStyle(ChatFormatting.DARK_GRAY));
+        UpgradeTargets.append(tooltip, ModBlocks.BLAST_FURNACE);
     }
 }

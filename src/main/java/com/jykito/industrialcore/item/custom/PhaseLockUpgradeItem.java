@@ -1,5 +1,7 @@
 package com.jykito.industrialcore.item.custom;
 
+import com.jykito.industrialcore.block.ModBlocks;
+import com.jykito.industrialcore.item.upgrade.UpgradeTargets;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -20,5 +22,6 @@ public class PhaseLockUpgradeItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("tooltip.industrial_core.phase_lock_upgrade").withStyle(ChatFormatting.GRAY));
+        UpgradeTargets.append(tooltip, ModBlocks.ELECTROMAGNET_CORE);
     }
 }

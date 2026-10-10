@@ -5,12 +5,13 @@
       "name": "Coal Generator",
       "elements": [
         {
-          "type": "header",
-          "text": "Coal Generator"
+          "type": "card",
+          "icon": "industrial_core:coal_generator",
+          "title": "Coal Generator"
         },
         {
           "type": "text",
-          "text": "Your starter FE source. Burns any fuel; a coal block runs longer and stronger. Pushes energy to neighboring machines and cables on all sides."
+          "text": "Your first generator. It burns any fuel; a coal block burns longer and gives more. It pushes power out on every side by itself, so put machines and cables right next to it."
         },
         {
           "type": "items",
@@ -24,12 +25,17 @@
       "name": "Solar Panels",
       "elements": [
         {
-          "type": "header",
-          "text": "Solar Panels"
+          "type": "card",
+          "icon": "industrial_core:solar_panel_t1",
+          "title": "Solar Panels"
         },
         {
           "type": "text",
-          "text": "Passive FE under open sky. Full output by day, a quarter at night. 10 tiers: each is far stronger with a bigger buffer, from the silicon T1 to the Dyson panel T10."
+          "text": "They run on their own as long as they see open sky. Full output by day, a quarter at night."
+        },
+        {
+          "type": "text",
+          "text": "There are ten tiers and each is far stronger than the last. The first is made of silicon, and the tenth, the Dyson panel, is the most powerful generator in the mod."
         },
         {
           "type": "items",
@@ -38,8 +44,7 @@
             "industrial_core:solar_panel_t4",
             "industrial_core:solar_panel_t7",
             "industrial_core:solar_panel_t10"
-          ],
-          "label": "Tier steps"
+          ]
         }
       ]
     },
@@ -47,12 +52,13 @@
       "name": "Panel Combiner",
       "elements": [
         {
-          "type": "header",
-          "text": "Panel Combiner"
+          "type": "card",
+          "icon": "industrial_core:panel_combiner",
+          "title": "Panel Combiner"
         },
         {
           "type": "text",
-          "text": "Holds up to 18 solar panels as items and sums their output into one big buffer with unlimited output. A compact solar farm under the sky."
+          "text": "Instead of laying out a field of panels, put them in the **combiner**: it holds up to 18 panels and outputs their combined power from one block. The combiner itself must see the sky."
         },
         {
           "type": "items",
@@ -66,19 +72,60 @@
       "name": "Cables",
       "elements": [
         {
-          "type": "header",
-          "text": "Cables & Transfer"
+          "type": "card",
+          "icon": "industrial_core:copper_cable",
+          "title": "Cables"
         },
         {
           "type": "text",
-          "text": "Cables carry FE. Tier sets the per-tick transfer cap: copper is basic, then ferro, gold, crystalline, emerald, heavy, and netherite fiber (practically unlimited)."
+          "text": "Cables carry power from generators to machines. Each one has a limit on how much it passes per tick. In order: copper, ferro, gold, crystalline, emerald, heavy, and netherite fiber, which has almost no limit."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Copper cable",
+              "value": "4,096 FE/t"
+            },
+            {
+              "key": "Ferro cable",
+              "value": "65,536 FE/t"
+            },
+            {
+              "key": "Gold conductor",
+              "value": "262,144 FE/t"
+            },
+            {
+              "key": "Crystalline channel",
+              "value": "1,048,576 FE/t"
+            },
+            {
+              "key": "Emerald flux cable",
+              "value": "4,194,304 FE/t"
+            },
+            {
+              "key": "Energy magistral",
+              "value": "16,777,216 FE/t"
+            },
+            {
+              "key": "Netherite fiber",
+              "value": "no limit"
+            }
+          ]
+        },
+        {
+          "type": "tip",
+          "text": "The bare wire for the energy magistral only comes from **wire cutters**, out of a redstone block."
         },
         {
           "type": "items",
           "items": [
             "industrial_core:copper_cable",
+            "industrial_core:ferro_cable",
             "industrial_core:gold_conductor",
+            "industrial_core:crystalline_channel",
             "industrial_core:emerald_flux_cable",
+            "industrial_core:heavy_magistral",
             "industrial_core:netherite_fiber_cable"
           ]
         }
@@ -88,20 +135,21 @@
       "name": "Batteries & Cells",
       "elements": [
         {
-          "type": "header",
-          "text": "Portable Cells"
+          "type": "card",
+          "icon": "industrial_core:battery",
+          "title": "Batteries & Cells"
         },
         {
           "type": "text",
-          "text": "Wearable FE stores: battery, lithium battery, energy crystal and lapotron, by rising capacity. They charge tools and armor in your inventory and carry energy between bases."
+          "text": "You carry them in your inventory: they charge your tools and armor and let you take power with you. From smallest to largest: battery, lithium battery, flux core and plasma core."
         },
         {
           "type": "items",
           "items": [
             "industrial_core:battery",
             "industrial_core:lithium_battery",
-            "industrial_core:energy_crystal",
-            "industrial_core:lapotron_crystal"
+            "industrial_core:flux_core",
+            "industrial_core:plasma_core"
           ]
         }
       ]
@@ -110,12 +158,13 @@
       "name": "Energy Bank",
       "elements": [
         {
-          "type": "header",
-          "text": "Energy Bank"
+          "type": "card",
+          "icon": "industrial_core:energy_bank",
+          "title": "Energy Bank"
         },
         {
           "type": "text",
-          "text": "A stationary 10M FE store. Holds a set reserve percentage and pushes the surplus to the grid. Its GUI shows I/O and the reserve setting."
+          "text": "A big 10M FE battery block. In its window you set how many percent to keep in reserve, and everything above that goes back into the grid. It also shows how much power comes in and out."
         },
         {
           "type": "items",
@@ -129,12 +178,13 @@
       "name": "Battery Charger",
       "elements": [
         {
-          "type": "header",
-          "text": "Battery Charger"
+          "type": "card",
+          "icon": "industrial_core:battery_charger",
+          "title": "Battery Charger"
         },
         {
           "type": "text",
-          "text": "Charges a battery, cell or tool placed in its slot from the connected grid. A simple way to top up portable cells."
+          "text": "Put a battery, cell or tool inside, run a cable to it, and it charges the item from the grid."
         },
         {
           "type": "items",

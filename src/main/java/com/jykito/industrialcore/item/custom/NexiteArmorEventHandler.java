@@ -46,6 +46,11 @@ public class NexiteArmorEventHandler {
 
         drainEvenly(pieces, actualCost);
         player.getInventory().setChanged();
+        // контрудар энергоклинка: погашенный бронёй урон копится и уходит в следующий удар клинком
+        com.jykito.industrialcore.item.custom.weapon.EnergyBladeItem.addCounter(player, actualAbsorb);
+        if (actualAbsorb > 0 && player.getMainHandItem().getItem() instanceof com.jykito.industrialcore.item.custom.weapon.EnergyBladeItem)
+            player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.industrial_core.energy_blade.counter_ready",
+                    String.format(java.util.Locale.ROOT, "%.1f", com.jykito.industrialcore.item.custom.weapon.EnergyBladeItem.counter(player))), true);
 
         float remaining = damage - actualAbsorb;
         if (remaining <= 0.0f) {

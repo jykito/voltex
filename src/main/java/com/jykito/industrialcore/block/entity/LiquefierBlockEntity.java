@@ -1,7 +1,10 @@
 package com.jykito.industrialcore.block.entity;
 
 import com.jykito.industrialcore.block.custom.LiquefierBlock;
+import com.jykito.industrialcore.energy.MachineEnergy;
 import com.jykito.industrialcore.item.ModItems;
+import com.jykito.industrialcore.item.upgrade.MachineUpgrades;
+import com.jykito.industrialcore.item.upgrade.UpgradeTargets;
 import com.jykito.industrialcore.menu.LiquefierMenu;
 import com.jykito.industrialcore.recipe.LiquefierRecipe;
 import com.jykito.industrialcore.recipe.ModRecipes;
@@ -26,7 +29,6 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.IItemHandler;
@@ -46,7 +48,7 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             return switch (slot) {
                 case 0, 1 -> !(stack.getItem() instanceof com.jykito.industrialcore.item.upgrade.MachineUpgradeItem);
-                case 2, 3, 4, 5 -> stack.getItem() instanceof com.jykito.industrialcore.item.upgrade.MachineUpgradeItem;
+                case 2, 3, 4, 5 -> UpgradeTargets.works(getBlockState().getBlock(), stack);
                 default -> false;
             };
         }
@@ -70,13 +72,7 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
 
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
-    private static class LiquefierEnergy extends EnergyStorage {
-        LiquefierEnergy(int capacity, int maxReceive) { super(capacity, maxReceive, 0); }
-
-        void consumeEnergy(int amount) { this.energy = Math.max(0, this.energy - amount); }
-        void setEnergy(int amount) { this.energy = Math.min(getMaxEnergyStored(), Math.max(0, amount)); }
-    }
-    private final LiquefierEnergy energyStorage = new LiquefierEnergy(50000, 50000); // приём = буфер, без потолка на вход
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(50000, 50000); // приём = буфер, без потолка на вход
     private LazyOptional<EnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
     private static final int TANK_BASE = 8000;
@@ -156,45 +152,23 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
         if (!isReceivingHeat && heat > 0) heat = Math.max(0, heat - 1);
         isReceivingHeat = false;
 
-        float timeMultiplier   = 1.0f;
-        float energyMultiplier = 1.0f;
-        int parallel = 1;
-        Direction fluidPushDir = null, itemPullDir = null;
-        for (int s = 2; s <= 5; s++) {
-            ItemStack up = itemHandler.getStackInSlot(s);
-            if (up.getItem() instanceof com.jykito.industrialcore.item.upgrade.AcceleratorItem acc) {
-                for (int c = 0; c < up.getCount(); c++) {
-                    timeMultiplier   *= acc.getSpeedMultiplier();
-                    energyMultiplier *= acc.getEnergyMultiplier();
-                }
-            } else if (up.getItem() instanceof com.jykito.industrialcore.item.upgrade.ParallelModuleItem pm) {
-                parallel = Math.max(parallel, pm.getParallelCount());
-            } else if (up.getItem() instanceof com.jykito.industrialcore.item.upgrade.AdvancedParallelModuleItem adv) {
-                parallel = Math.max(parallel, adv.getParallelCount());
-            } else if (up.getItem() instanceof com.jykito.industrialcore.item.upgrade.DirectionalUpgradeItem dir) {
-                Direction d = com.jykito.industrialcore.item.upgrade.DirectionalUpgradeItem.getStoredDirection(up);
-                if (d != null) {
-                    if (dir.getMode() == com.jykito.industrialcore.item.upgrade.DirectionalUpgradeItem.Mode.FLUID_PUSH) fluidPushDir = d;
-                    else if (dir.getMode() == com.jykito.industrialcore.item.upgrade.DirectionalUpgradeItem.Mode.ITEM_PULL) itemPullDir = d;
-                }
-            }
-        }
+        MachineUpgrades upg = MachineUpgrades.scan(itemHandler, 2, 5);
 
-        if (AdaptiveTank.resize(outputTank, TANK_BASE, parallel))
+        if (AdaptiveTank.resize(outputTank, TANK_BASE, upg.parallel()))
             level.sendBlockUpdated(pos, state, state, 3); // шкала бака считается от ёмкости, клиенту нужна новая
 
         LiquefierRecipe recipe = findRecipe(level);
-        this.maxProgress = recipe != null ? Math.max(1, (int)(recipe.getProcessingTime() * timeMultiplier)) : 200;
+        this.maxProgress = recipe != null ? upg.scaleTime(recipe.getProcessingTime()) : 200;
 
         boolean working = false;
         if (recipe != null
                 && heat >= recipe.getRequiredHeat()
                 && outputTank.getSpace() >= recipe.getFluidOutputAmount()) {
 
-            int actualParallel = Math.max(1, Math.min(parallel, Math.min(
+            int actualParallel = Math.max(1, Math.min(upg.parallel(), Math.min(
                     maxRunsForInputs(recipe),
                     outputTank.getSpace() / Math.max(1, recipe.getFluidOutputAmount()))));
-            int cost = Math.max(1, (int)(recipe.getEnergyCostPerTick() * energyMultiplier));
+            int cost = upg.scaleEnergy(recipe.getEnergyCostPerTick());
             if (energyStorage.getEnergyStored() >= cost) {
                 energyStorage.consumeEnergy(cost);
                 progress++;
@@ -218,30 +192,9 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
             level.setBlock(pos, ns, 3);
         }
 
-        if (fluidPushDir != null && !outputTank.isEmpty()) {
-            final Direction d = fluidPushDir;
-            BlockEntity n = level.getBlockEntity(pos.relative(d));
-            if (n != null) n.getCapability(ForgeCapabilities.FLUID_HANDLER, d.getOpposite()).ifPresent(dst ->
-                    FluidUtil.tryFluidTransfer(dst, outputTank, outputTank.getFluidAmount(), true));
-        }
+        if (upg.fluidPush() != null) MachineIO.pushFluid(level, pos, upg.fluidPush(), outputTank);
 
-        if (itemPullDir != null) {
-            final Direction d = itemPullDir;
-            BlockEntity n = level.getBlockEntity(pos.relative(d));
-            if (n != null) n.getCapability(ForgeCapabilities.ITEM_HANDLER, d.getOpposite()).ifPresent(src -> {
-                for (int i = 0; i < src.getSlots(); i++) {
-                    ItemStack sim = src.extractItem(i, 64, true);
-                    if (sim.isEmpty()) continue;
-                    for (int target : new int[]{0, 1}) {
-                        int accepted = sim.getCount() - itemHandler.insertItem(target, sim, true).getCount();
-                        if (accepted > 0) {
-                            itemHandler.insertItem(target, src.extractItem(i, accepted, false), false);
-                            return;
-                        }
-                    }
-                }
-            });
-        }
+        if (upg.itemPull() != null) MachineIO.pullItems(level, pos, upg.itemPull(), itemHandler, 0, 1);
 
         setChanged();
     }

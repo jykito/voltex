@@ -5,18 +5,16 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.Nullable;
 
-public class HubMenu extends AbstractContainerMenu {
+public class HubMenu extends MachineMenu {
 
-    // координаты слотов (совпадают с текстурами хаба)
-    public static final int INV_X = 44, INV_Y = 131, HOTBAR_Y = 194, SLOT_STEP = 19;
-    public static final int UP_X = 206, UP_Y = 48;
+    // координаты слотов (совпадают с hub_*_gui.png из tools/gui_gen/build_hub_guis.ps1)
+    public static final int INV_X = 44, INV_Y = 169;
+    public static final int UP_X = 222, UP_Y = 29;
 
     @Nullable public final HubBlockEntity be;
     public int selectedFace = -1;
@@ -46,11 +44,7 @@ public class HubMenu extends AbstractContainerMenu {
                 });
             }
         }
-        for (int i = 0; i < 3; i++)
-            for (int j = 0; j < 9; j++)
-                addSlot(new Slot(inv, j + i * 9 + 9, INV_X + j * SLOT_STEP, INV_Y + i * SLOT_STEP));
-        for (int k = 0; k < 9; k++)
-            addSlot(new Slot(inv, k, INV_X + k * SLOT_STEP, HOTBAR_Y));
+        addPlayerInventory(inv, INV_X, INV_Y);
     }
 
     /** 0..5 цикл; 100+грань*3+m задать режим экскл.; 200+грань выбрать (206 закрыть);

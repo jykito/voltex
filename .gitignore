@@ -34,6 +34,7 @@ tools
 *.log
 
 # internal working docs / scratch (kept private)
+docs
 AUDIT_REPORT.html
 PROJECT_STATE.md
 PROJECT_SUMMARY.md

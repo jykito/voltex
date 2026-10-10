@@ -1,0 +1,12 @@
+{
+  "type": "industrial_core:liquefier_recipe",
+  "ingredient": {
+    "item": "minecraft:cobblestone"
+  },
+  "itemCount": 1,
+  "requiredHeat": 1200,
+  "fluid": "minecraft:lava",
+  "fluidAmount": 250,
+  "processingTime": 160,
+  "energyCostPerTick": 40
+}

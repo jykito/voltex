@@ -33,6 +33,40 @@ public abstract class EnergyDrillItem extends DiggerItem {
         this.miningSpeed = miningSpeed;
     }
 
+    public int getCapacity() { return capacity; }
+
+    /** Бур бурит, а не бьёт: взмах руки отменён (и у себя, и для других игроков); копание идёт как обычно. */
+    @Override
+    public boolean onEntitySwing(ItemStack stack, net.minecraft.world.entity.LivingEntity entity) {
+        return true;
+    }
+
+    /**
+     * Заряд лежит в NBT и меняется при каждом сломанном блоке и при подзарядке от рюкзака, а рука считает любую смену
+     * NBT новым предметом и опускает его. Перевзмах только при смене предмета или слота.
+     */
+    @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+        return slotChanged || !ItemStack.isSameItem(oldStack, newStack);
+    }
+
+    /** По той же причине трата или подзарядка энергии не сбрасывает прогресс ломания блока. */
+    @Override
+    public boolean shouldCauseBlockBreakReset(ItemStack oldStack, ItemStack newStack) {
+        return !ItemStack.isSameItem(oldStack, newStack);
+    }
+
+    /** В руке, на земле и в рамке — объёмный бур (DrillRenderer); в интерфейсе модель предмета даёт плоскую иконку. */
+    @Override
+    public void initializeClient(java.util.function.Consumer<net.minecraftforge.client.extensions.common.IClientItemExtensions> consumer) {
+        consumer.accept(new net.minecraftforge.client.extensions.common.IClientItemExtensions() {
+            @Override
+            public net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                return com.jykito.industrialcore.client.drill.DrillRenderer.get();
+            }
+        });
+    }
+
     public static int getStoredEnergy(ItemStack stack) {
         return stack.hasTag() ? stack.getTag().getInt("energy") : 0;
     }

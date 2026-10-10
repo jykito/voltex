@@ -153,6 +153,139 @@ public class ModFluids {
             SUPERFLUID_CONDENSATE_FLUID_TYPE, SOURCE_SUPERFLUID_CONDENSATE, FLOWING_SUPERFLUID_CONDENSATE)
             .bucket(ForgeRegistries.ITEMS.getDelegateOrThrow(net.minecraft.world.item.Items.AIR));
 
+    // Расплавленный свинец — первая жидкость со своей текстурой, а не перекрашенной водой:
+    // непрозрачный серебристый металл с бликами и окалиной (генератор tools/gui_gen/build_molten_lead.ps1),
+    // поэтому тинт белый. Свинец плавится около 600 K, светиться ему не с чего.
+    public static final RegistryObject<FluidType> MOLTEN_LEAD_FLUID_TYPE = FLUID_TYPES.register("molten_lead_fluid",
+            () -> new FluidType(FluidType.Properties.create().density(3000).viscosity(2500).temperature(600)) {
+                @Override
+                public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
+                    consumer.accept(new IClientFluidTypeExtensions() {
+                        private static final ResourceLocation STILL = new ResourceLocation(IndustrialCore.MODID, "block/molten_lead_still");
+                        private static final ResourceLocation FLOW  = new ResourceLocation(IndustrialCore.MODID, "block/molten_lead_flow");
+
+                        @Override public ResourceLocation getStillTexture()   { return STILL; }
+                        @Override public ResourceLocation getFlowingTexture() { return FLOW;  }
+                        @Override public int getTintColor()                    { return 0xFFFFFFFF; }
+                    });
+                }
+            });
+
+    public static final RegistryObject<FlowingFluid> SOURCE_MOLTEN_LEAD = FLUIDS.register("molten_lead",
+            () -> new ForgeFlowingFluid.Source(ModFluids.MOLTEN_LEAD_PROPERTIES));
+
+    public static final RegistryObject<FlowingFluid> FLOWING_MOLTEN_LEAD = FLUIDS.register("molten_lead_flowing",
+            () -> new ForgeFlowingFluid.Flowing(ModFluids.MOLTEN_LEAD_PROPERTIES));
+
+    private static final ForgeFlowingFluid.Properties MOLTEN_LEAD_PROPERTIES = new ForgeFlowingFluid.Properties(
+            MOLTEN_LEAD_FLUID_TYPE, SOURCE_MOLTEN_LEAD, FLOWING_MOLTEN_LEAD)
+            .bucket(ForgeRegistries.ITEMS.getDelegateOrThrow(net.minecraft.world.item.Items.AIR));
+
+    // Э7: механический сплав — расплав свинца со сталью; первая ступень лестницы, сборщик собирает на нём лейт-машины.
+    // Четыре жидкости Э7 — текстура расплавленного свинца, перекрашенная в свой тон (tools/gui_gen/fluids_e7/build.js), поэтому тинт белый.
+    public static final RegistryObject<FluidType> MECHANICAL_ALLOY_FLUID_TYPE = FLUID_TYPES.register("mechanical_alloy_fluid",
+            () -> new FluidType(FluidType.Properties.create().density(3000).viscosity(4000).temperature(900).lightLevel(3)) {
+                @Override
+                public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
+                    consumer.accept(new IClientFluidTypeExtensions() {
+                        private static final ResourceLocation STILL = new ResourceLocation(IndustrialCore.MODID, "block/mechanical_alloy_still");
+                        private static final ResourceLocation FLOW  = new ResourceLocation(IndustrialCore.MODID, "block/mechanical_alloy_flow");
+
+                        @Override public ResourceLocation getStillTexture()   { return STILL; }
+                        @Override public ResourceLocation getFlowingTexture() { return FLOW;  }
+                        @Override public int getTintColor()                    { return 0xFFFFFFFF; }
+                    });
+                }
+            });
+
+    public static final RegistryObject<FlowingFluid> SOURCE_MECHANICAL_ALLOY = FLUIDS.register("mechanical_alloy",
+            () -> new ForgeFlowingFluid.Source(ModFluids.MECHANICAL_ALLOY_PROPERTIES));
+
+    public static final RegistryObject<FlowingFluid> FLOWING_MECHANICAL_ALLOY = FLUIDS.register("mechanical_alloy_flowing",
+            () -> new ForgeFlowingFluid.Flowing(ModFluids.MECHANICAL_ALLOY_PROPERTIES));
+
+    private static final ForgeFlowingFluid.Properties MECHANICAL_ALLOY_PROPERTIES = new ForgeFlowingFluid.Properties(
+            MECHANICAL_ALLOY_FLUID_TYPE, SOURCE_MECHANICAL_ALLOY, FLOWING_MECHANICAL_ALLOY)
+            .bucket(ForgeRegistries.ITEMS.getDelegateOrThrow(net.minecraft.world.item.Items.AIR));
+
+    // Э7: фотонный расплав — сплав с фотонной линзой и кристаллом, ступень 2
+    public static final RegistryObject<FluidType> PHOTONIC_MELT_FLUID_TYPE = FLUID_TYPES.register("photonic_melt_fluid",
+            () -> new FluidType(FluidType.Properties.create().density(2200).viscosity(2000).temperature(1100).lightLevel(8)) {
+                @Override
+                public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
+                    consumer.accept(new IClientFluidTypeExtensions() {
+                        private static final ResourceLocation STILL = new ResourceLocation(IndustrialCore.MODID, "block/photonic_melt_still");
+                        private static final ResourceLocation FLOW  = new ResourceLocation(IndustrialCore.MODID, "block/photonic_melt_flow");
+
+                        @Override public ResourceLocation getStillTexture()   { return STILL; }
+                        @Override public ResourceLocation getFlowingTexture() { return FLOW;  }
+                        @Override public int getTintColor()                    { return 0xFFFFFFFF; }
+                    });
+                }
+            });
+
+    public static final RegistryObject<FlowingFluid> SOURCE_PHOTONIC_MELT = FLUIDS.register("photonic_melt",
+            () -> new ForgeFlowingFluid.Source(ModFluids.PHOTONIC_MELT_PROPERTIES));
+
+    public static final RegistryObject<FlowingFluid> FLOWING_PHOTONIC_MELT = FLUIDS.register("photonic_melt_flowing",
+            () -> new ForgeFlowingFluid.Flowing(ModFluids.PHOTONIC_MELT_PROPERTIES));
+
+    private static final ForgeFlowingFluid.Properties PHOTONIC_MELT_PROPERTIES = new ForgeFlowingFluid.Properties(
+            PHOTONIC_MELT_FLUID_TYPE, SOURCE_PHOTONIC_MELT, FLOWING_PHOTONIC_MELT)
+            .bucket(ForgeRegistries.ITEMS.getDelegateOrThrow(net.minecraft.world.item.Items.AIR));
+
+    // Э7: криоплазма — ступень 3, сверхпроводник и криокристалл в расплаве
+    public static final RegistryObject<FluidType> CRYOPLASMA_FLUID_TYPE = FLUID_TYPES.register("cryoplasma_fluid",
+            () -> new FluidType(FluidType.Properties.create().density(800).viscosity(300).temperature(20).lightLevel(6)) {
+                @Override
+                public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
+                    consumer.accept(new IClientFluidTypeExtensions() {
+                        private static final ResourceLocation STILL = new ResourceLocation(IndustrialCore.MODID, "block/cryoplasma_still");
+                        private static final ResourceLocation FLOW  = new ResourceLocation(IndustrialCore.MODID, "block/cryoplasma_flow");
+
+                        @Override public ResourceLocation getStillTexture()   { return STILL; }
+                        @Override public ResourceLocation getFlowingTexture() { return FLOW;  }
+                        @Override public int getTintColor()                    { return 0xFFFFFFFF; }
+                    });
+                }
+            });
+
+    public static final RegistryObject<FlowingFluid> SOURCE_CRYOPLASMA = FLUIDS.register("cryoplasma",
+            () -> new ForgeFlowingFluid.Source(ModFluids.CRYOPLASMA_PROPERTIES));
+
+    public static final RegistryObject<FlowingFluid> FLOWING_CRYOPLASMA = FLUIDS.register("cryoplasma_flowing",
+            () -> new ForgeFlowingFluid.Flowing(ModFluids.CRYOPLASMA_PROPERTIES));
+
+    private static final ForgeFlowingFluid.Properties CRYOPLASMA_PROPERTIES = new ForgeFlowingFluid.Properties(
+            CRYOPLASMA_FLUID_TYPE, SOURCE_CRYOPLASMA, FLOWING_CRYOPLASMA)
+            .bucket(ForgeRegistries.ITEMS.getDelegateOrThrow(net.minecraft.world.item.Items.AIR));
+
+    // Э7: Эссенция Вольтекса — вершина лестницы, идёт в Сердце Вольтекса через порт лейт-магнита
+    public static final RegistryObject<FluidType> VOLTEX_ESSENCE_FLUID_TYPE = FLUID_TYPES.register("voltex_essence_fluid",
+            () -> new FluidType(FluidType.Properties.create().density(1500).viscosity(1500).temperature(3000).lightLevel(12)) {
+                @Override
+                public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
+                    consumer.accept(new IClientFluidTypeExtensions() {
+                        private static final ResourceLocation STILL = new ResourceLocation(IndustrialCore.MODID, "block/voltex_essence_still");
+                        private static final ResourceLocation FLOW  = new ResourceLocation(IndustrialCore.MODID, "block/voltex_essence_flow");
+
+                        @Override public ResourceLocation getStillTexture()   { return STILL; }
+                        @Override public ResourceLocation getFlowingTexture() { return FLOW;  }
+                        @Override public int getTintColor()                    { return 0xFFFFFFFF; }
+                    });
+                }
+            });
+
+    public static final RegistryObject<FlowingFluid> SOURCE_VOLTEX_ESSENCE = FLUIDS.register("voltex_essence",
+            () -> new ForgeFlowingFluid.Source(ModFluids.VOLTEX_ESSENCE_PROPERTIES));
+
+    public static final RegistryObject<FlowingFluid> FLOWING_VOLTEX_ESSENCE = FLUIDS.register("voltex_essence_flowing",
+            () -> new ForgeFlowingFluid.Flowing(ModFluids.VOLTEX_ESSENCE_PROPERTIES));
+
+    private static final ForgeFlowingFluid.Properties VOLTEX_ESSENCE_PROPERTIES = new ForgeFlowingFluid.Properties(
+            VOLTEX_ESSENCE_FLUID_TYPE, SOURCE_VOLTEX_ESSENCE, FLOWING_VOLTEX_ESSENCE)
+            .bucket(ForgeRegistries.ITEMS.getDelegateOrThrow(net.minecraft.world.item.Items.AIR));
+
     public static void register(IEventBus eventBus) {
         FLUID_TYPES.register(eventBus);
         FLUIDS.register(eventBus);

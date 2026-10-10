@@ -2,15 +2,41 @@
   "name": "Equipment",
   "entries": [
     {
-      "name": "Tools",
+      "name": "Hammer & Wire Cutters",
       "elements": [
         {
-          "type": "header",
-          "text": "Power Tools"
+          "type": "card",
+          "icon": "industrial_core:hammer",
+          "title": "Hammer & Wire Cutters"
         },
         {
           "type": "text",
-          "text": "Run on FE from an inventory cell or backpack. The wrench configures and removes machines; the electric and industrial drills mine fast and in an area. Drill tips set the drill’s tier."
+          "text": "Hand tools for the crafting table. Put the tool in the grid with the material: it stays in place and only loses durability, lasting 128 crafts."
+        },
+        {
+          "type": "text",
+          "text": "The **hammer** knocks a plate out of an ingot, and the **wire cutters** cut a plate into bare wire. The metal former does it more efficiently, so these tools are for the early game. But only the cutters cut the wire for the energy magistral out of a redstone block, and they can also make solder from tin and lead."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:hammer",
+            "industrial_core:cutters"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Tools",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:electric_wrench",
+          "title": "Power Tools"
+        },
+        {
+          "type": "text",
+          "text": "They run on power from a cell in your inventory or from the backpack. The **wrench** configures machines and picks them up in one click, dropping their contents next to you. The **electric drill** and **industrial drill** dig fast and over an area, and the drill tip decides what the drill can mine. Both drills are built on a **tool base**."
         },
         {
           "type": "items",
@@ -18,7 +44,8 @@
             "industrial_core:electric_wrench",
             "industrial_core:electric_drill",
             "industrial_core:industrial_drill",
-            "industrial_core:netherite_drill_tip"
+            "industrial_core:netherite_drill_tip",
+            "industrial_core:tool_base"
           ]
         }
       ]
@@ -27,12 +54,13 @@
       "name": "Energy Backpack",
       "elements": [
         {
-          "type": "header",
-          "text": "Energy Backpack"
+          "type": "card",
+          "icon": "industrial_core:energy_backpack_t1",
+          "title": "Energy Backpack"
         },
         {
           "type": "text",
-          "text": "A wearable battery that charges tools and armor on your body. 3 capacity tiers (1M, 10M and 100M FE) and modes: hand, hotbar or the whole inventory."
+          "text": "You wear it on your back and it charges your tools and armor by itself. It comes in 1M, 10M and 100M FE. You choose what it charges: just the item in your hand, the whole hotbar, or your whole inventory."
         },
         {
           "type": "items",
@@ -48,12 +76,13 @@
       "name": "Nexite Armor",
       "elements": [
         {
-          "type": "header",
-          "text": "Nexite Armor"
+          "type": "card",
+          "icon": "industrial_core:nexite_helmet",
+          "title": "Nexite Armor"
         },
         {
           "type": "text",
-          "text": "Energy armor: unbreakable, absorbs damage for FE. Boots negate fall damage; a fully charged set grants Haste. The mid endgame defense tier."
+          "text": "Armor that runs on power: it never breaks and soaks damage with its charge. The boots remove fall damage completely, and a full charged set gives you Haste."
         },
         {
           "type": "items",
@@ -70,12 +99,13 @@
       "name": "Plasma Armor",
       "elements": [
         {
-          "type": "header",
-          "text": "Plasma Armor"
+          "type": "card",
+          "icon": "industrial_core:plasma_helmet",
+          "title": "Plasma Armor"
         },
         {
           "type": "text",
-          "text": "The apex of defense. A huge FE buffer, absorbing up to 100% of damage. A full set grants flight and fire resistance, and on charge — a plasma burst against nearby foes."
+          "text": "The best armor in the mod. A huge energy store, soaks up to 100% of damage. A full set gives flight and fire protection, and once charged it hits nearby enemies with a plasma burst. It is built on top of Nexite: each piece is made from the Nexite piece of the same slot."
         },
         {
           "type": "items",
@@ -84,6 +114,77 @@
             "industrial_core:plasma_chestplate",
             "industrial_core:plasma_leggings",
             "industrial_core:plasma_boots"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Energy Blade",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:energy_blade",
+          "title": "Energy Blade"
+        },
+        {
+          "type": "text",
+          "text": "A sword that runs on power. It never breaks, holds 100k FE and spends 400 FE per hit. Charged it deals 15 damage, empty only 3."
+        },
+        {
+          "type": "text",
+          "text": "Shift and right-click switch the mode. **Cut** goes through armor: the hit adds 30% of the damage the target's armor would have absorbed. **Arc** hits everyone in a fan in front of you up to 3 blocks away, 10.5 damage each, but without a full Nexite set it uses twice the power."
+        },
+        {
+          "type": "tip",
+          "text": "The blade works together with Nexite armor. Damage the armor takes builds up into a counter-strike, up to +7.5. A full charged set speeds up your swings, and when the blade drops below half charge it draws power from the armor."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:energy_blade",
+            "industrial_core:nexite_chestplate"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Gauss Rifle",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:gauss_rifle",
+          "title": "Gauss Rifle"
+        },
+        {
+          "type": "text",
+          "text": "Hold right-click and the rifle charges up, one stage per second. Let go and the beam hits up to 64 blocks away. It holds 200k FE, and if there is not enough for a stage, it fires the strongest one it can afford."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Stage 1",
+              "value": "24 damage, one target, 2,000 FE"
+            },
+            {
+              "key": "Stage 2",
+              "value": "48 damage, up to three targets, 5,000 FE"
+            },
+            {
+              "key": "Stage 3",
+              "value": "90 damage, everything in line, 10,000 FE"
+            }
+          ]
+        },
+        {
+          "type": "tip",
+          "text": "With Plasma armor it charges twice as fast and draws power from the armor, and a stage 3 shot with the plasma burst ready explodes: 30 damage within 4 blocks and fire. The explosion does not break blocks."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:gauss_rifle",
+            "industrial_core:plasma_chestplate"
           ]
         }
       ]

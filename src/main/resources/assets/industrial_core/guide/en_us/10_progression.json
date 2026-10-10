@@ -10,24 +10,29 @@
         },
         {
           "type": "text",
-          "text": "It begins with ore and your first machines, then metallurgy and powering your base. Heat, the restructor and advanced materials come next, and with them the miner and the cryo chamber. Near the end come exotic matter on the magnet and, finally, the Dyson panel. Each step sets up the one after it."
+          "text": "First ore and your first machines, then alloys and proper power for your base. After that come heat, the restructor and advanced materials, and with them the miner and the cryo chamber."
         },
         {
           "type": "text",
-          "text": "Do not rush the top: the restructor and catalysts grow throughout the mod, while solar panels and storage scale your base along the way."
+          "text": "Then the magnet accelerator, followed by the big port-based machines led by the **assembler**. At the very end come the Dyson panel and the **Heart of Voltex**."
+        },
+        {
+          "type": "tip",
+          "text": "Do not rush to the end. The restructor and catalysts stay useful the whole game, and it is better to grow your solar panels and storage as you go."
         }
       ]
     },
     {
-      "name": "Magnet & Exotica",
+      "name": "Exotic Matter",
       "elements": [
         {
-          "type": "header",
-          "text": "Exotic Matter"
+          "type": "card",
+          "icon": "industrial_core:exotic_matter",
+          "title": "Exotic Matter"
         },
         {
           "type": "text",
-          "text": "The magnet accelerator births exotic matter and star shards, which build the quantum capacitor, singularity core and stellar matrix — the apex materials."
+          "text": "The magnet produces **exotic matter** and **star shards**. They are used to make the quantum capacitor, the singularity core and the stellar matrix, the most expensive materials in the mod."
         },
         {
           "type": "items",
@@ -42,21 +47,78 @@
       ]
     },
     {
-      "name": "Apex: Dyson Panel",
+      "name": "More From the Magnet",
       "elements": [
         {
-          "type": "header",
-          "text": "Dyson Panel"
+          "type": "card",
+          "icon": "industrial_core:condensate_ampoule",
+          "title": "More From the Magnet"
         },
         {
           "type": "text",
-          "text": "The T10 solar panel is forged on the magnet from stellar matrices and a graviton coil — the mod’s largest generator. Array them in the Panel Combiner for a true Dyson swarm."
+          "text": "Besides exotic matter, the magnet makes **condensate ampoules** from cryo crystals, **piezoelectric elements** and **material containers**. Melt an ampoule in the liquefier to get superfluid condensate. The elements and containers are needed for the Dyson panel."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:condensate_ampoule",
+            "industrial_core:piezo_element",
+            "industrial_core:material_container"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Dyson Panel",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:solar_panel_t10",
+          "title": "Dyson Panel"
+        },
+        {
+          "type": "text",
+          "text": "The tenth-tier solar panel. It is made on the magnet from stellar matrices and a graviton coil, and it is the most powerful generator in the mod."
+        },
+        {
+          "type": "tip",
+          "text": "Put several panels into a **combiner** and you get a whole power plant in one block."
         },
         {
           "type": "items",
           "items": [
             "industrial_core:solar_panel_t10",
             "industrial_core:panel_combiner"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Heart of Voltex",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:heart_of_voltex",
+          "title": "Heart of Voltex"
+        },
+        {
+          "type": "text",
+          "text": "The last item in the mod, a trophy. It does nothing useful, but it tells you that you have beaten the mod."
+        },
+        {
+          "type": "text",
+          "text": "The road to it runs through the late machines. The industrial compressor squeezes 512 iron ingots into an **iron cluster**, and crystal ingots and emeralds into their own clusters. The industrial blast furnace melts the iron cluster with kronium alloy into a **voltex ingot**, the rolling mill turns it into plates, and the assembler builds the **resonance matrix** from the clusters. It all comes together on the industrial electromagnet."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:heart_of_voltex",
+            "industrial_core:voltex_ingot",
+            "industrial_core:voltex_plate",
+            "industrial_core:resonance_matrix",
+            "industrial_core:iron_cluster",
+            "industrial_core:crystal_cluster",
+            "industrial_core:emerald_cluster"
           ]
         }
       ]

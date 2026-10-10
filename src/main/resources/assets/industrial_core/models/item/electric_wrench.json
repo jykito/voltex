@@ -1,6 +1,15 @@
 {
-  "parent": "item/handheld",
-  "textures": {
-    "layer0": "industrial_core:item/electric_wrench"
+  "loader": "forge:separate_transforms",
+  "gui_light": "front",
+  "base": {
+    "parent": "industrial_core:item/electric_wrench_3d"
+  },
+  "perspectives": {
+    "gui": {
+      "parent": "item/generated",
+      "textures": {
+        "layer0": "industrial_core:item/electric_wrench"
+      }
+    }
   }
 }

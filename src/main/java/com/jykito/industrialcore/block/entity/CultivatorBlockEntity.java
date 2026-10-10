@@ -1,11 +1,14 @@
 package com.jykito.industrialcore.block.entity;
 
 import com.jykito.industrialcore.block.custom.CultivatorBlock;
+import com.jykito.industrialcore.energy.MachineEnergy;
 import com.jykito.industrialcore.item.upgrade.AcceleratorItem;
 import com.jykito.industrialcore.item.upgrade.CultivatorUpgradeItem;
 import com.jykito.industrialcore.item.upgrade.DirectionalUpgradeItem;
+import com.jykito.industrialcore.item.upgrade.MachineUpgrades;
 import com.jykito.industrialcore.item.upgrade.ParallelModuleItem;
 import com.jykito.industrialcore.menu.CultivatorMenu;
+import com.jykito.industrialcore.recipe.CachedRecipe;
 import com.jykito.industrialcore.recipe.GrowingRecipe;
 import com.jykito.industrialcore.recipe.ModRecipes;
 import net.minecraft.core.BlockPos;
@@ -28,48 +31,55 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+
+/**
+ * Взраститель. T1 — одна линия «вход → выход», T2 — три независимые линии на общих воде, энергии,
+ * модуле и апгрейдах (модули параллели действуют на каждую линию).
+ */
 public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
 
     public static final TagKey<Item> GROWABLE_PLANTS =
             ItemTags.create(new ResourceLocation("industrial_core", "growable_plants"));
 
-    // База под работу без модуля: 8 циклов. Под параллели бак растёт сам, см. AdaptiveTank.
+    // База под работу без модуля: 8 циклов на линию. Под параллели бак растёт сам, см. AdaptiveTank.
     private static final int TANK_CAP = 8000;
     private static final int WATER_PER_RECIPE = 1000;
+    private static final int ENERGY_CAP = 50_000;
 
-    private final com.jykito.industrialcore.recipe.CachedRecipe<GrowingRecipe> recipeCache =
-            new com.jykito.industrialcore.recipe.CachedRecipe<>();
+    public static final int T2_LANES = 3;
 
-    private final ItemStackHandler itemHandler = new ItemStackHandler(7) {
-        @Override protected void onContentsChanged(int slot) { recipeCache.markDirty(); setChanged(); }
-        @Override public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-            return switch (slot) {
-                case 0 -> !(stack.getItem() instanceof com.jykito.industrialcore.item.upgrade.MachineUpgradeItem);
-                case 1 -> false;
-                case 2 -> stack.getItem() instanceof CultivatorUpgradeItem;
-                case 3, 4, 5, 6 -> isDefaultUpgrade(stack);
-                default -> false;
-            };
-        }
-    };
+    /** Модуль взрастителя и апгрейды — слоты T1. */
+    public static final int SLOT_MODULE = 2, SLOT_UPG_FIRST = 3, SLOT_UPG_LAST = 6;
+
+    /** Вход линии: первая на слотах T1 (0 → 1), остальные после апгрейдов (7 → 8, 9 → 10). Сейвы T1 не сдвигаются. */
+    public static int inSlot(int lane)  { return lane == 0 ? 0 : SLOT_UPG_LAST - 1 + 2 * lane; }
+    public static int outSlot(int lane) { return lane == 0 ? 1 : inSlot(lane) + 1; }
+    private static boolean isInput(int slot)  { return slot == 0 || slot > SLOT_UPG_LAST && (slot - SLOT_UPG_LAST) % 2 == 1; }
+    private static boolean isOutput(int slot) { return slot == 1 || slot > SLOT_UPG_LAST && (slot - SLOT_UPG_LAST) % 2 == 0; }
+
+    private final int lanes;
+    private final int tankBase;
+    private final CachedRecipe<GrowingRecipe>[] recipeCache;
+    private final int[] outSlots;
+
+    private final ItemStackHandler itemHandler;
 
     private static boolean isDefaultUpgrade(ItemStack stack) {
         if (stack.getItem() instanceof AcceleratorItem) return true;
@@ -86,11 +96,11 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
         @Override public int getSlots() { return itemHandler.getSlots(); }
         @Override public @NotNull ItemStack getStackInSlot(int slot) { return itemHandler.getStackInSlot(slot); }
         @Override public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-            if (slot != 0) return stack;
+            if (!isInput(slot)) return stack;
             return itemHandler.insertItem(slot, stack, simulate);
         }
         @Override public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
-            if (slot != 1) return ItemStack.EMPTY;
+            if (!isOutput(slot)) return ItemStack.EMPTY;
             return itemHandler.extractItem(slot, amount, simulate);
         }
         @Override public int getSlotLimit(int slot) { return itemHandler.getSlotLimit(slot); }
@@ -98,26 +108,15 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
     };
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
-    private static class CultEnergy extends EnergyStorage {
-        CultEnergy(int capacity, int maxReceive) { super(capacity, maxReceive, 0); }
-        void consume(int amount) { this.energy = Math.max(0, this.energy - amount); }
-        void set(int amount)     { this.energy = Math.min(getMaxEnergyStored(), Math.max(0, amount)); }
-    }
-    private final CultEnergy energyStorage = new CultEnergy(50_000, 50_000); // приём = буфер, без потолка на вход
+    private final MachineEnergy energyStorage; // приём = буфер, без потолка на вход
     private LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.empty();
 
-    public final FluidTank waterTank = new FluidTank(TANK_CAP, fs -> fs.getFluid() == Fluids.WATER) {
-        @Override protected void onContentsChanged() {
-            setChanged();
-            if (level != null && !level.isClientSide())
-                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
-        }
-    };
+    public final FluidTank waterTank;
 
     private final IFluidHandler fillOnlyHandler = new IFluidHandler() {
         @Override public int getTanks() { return 1; }
         @Override public @NotNull FluidStack getFluidInTank(int tank) { return waterTank.getFluid(); }
-        @Override public int getTankCapacity(int tank) { return TANK_CAP; }
+        @Override public int getTankCapacity(int tank) { return tankBase; }
         @Override public boolean isFluidValid(int tank, @NotNull FluidStack stack) { return stack.getFluid() == Fluids.WATER; }
         @Override public int fill(FluidStack resource, FluidAction action) { return waterTank.fill(resource, action); }
         @Override public @NotNull FluidStack drain(FluidStack resource, FluidAction action) { return FluidStack.EMPTY; }
@@ -125,149 +124,157 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
     };
     private LazyOptional<IFluidHandler> lazyFluid = LazyOptional.empty();
 
-    private int progress = 0;
-    private ItemStack displayResult = ItemStack.EMPTY; // что рисуется в центре (синкается на клиент для BER)
-    private int maxProgress = 100;
+    private final int[] progress;
+    private final int[] maxProgress;
     protected final ContainerData data;
 
     public CultivatorBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.CULTIVATOR_BE.get(), pos, state);
+        this(ModBlockEntities.CULTIVATOR_BE.get(), pos, state, 1);
+    }
+
+    /** T2: три линии; бак и буфер втрое больше, чтобы на линию приходилось как у T1. */
+    public static CultivatorBlockEntity t2(BlockPos pos, BlockState state) {
+        return new CultivatorBlockEntity(ModBlockEntities.CULTIVATOR_T2_BE.get(), pos, state, T2_LANES);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected CultivatorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int lanes) {
+        super(type, pos, state);
+        this.lanes = lanes;
+        this.tankBase = TANK_CAP * lanes;
+        this.progress = new int[lanes];
+        this.maxProgress = new int[lanes];
+        Arrays.fill(maxProgress, 100);
+        this.recipeCache = new CachedRecipe[lanes];
+        this.outSlots = new int[lanes];
+        for (int i = 0; i < lanes; i++) { recipeCache[i] = new CachedRecipe<>(); outSlots[i] = outSlot(i); }
+        this.energyStorage = MachineEnergy.consumer(ENERGY_CAP * lanes, ENERGY_CAP * lanes);
+        this.waterTank = new FluidTank(tankBase, fs -> fs.getFluid() == Fluids.WATER) {
+            @Override protected void onContentsChanged() {
+                setChanged();
+                if (level != null && !level.isClientSide())
+                    level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+            }
+        };
+        this.itemHandler = new ItemStackHandler(Math.max(SLOT_UPG_LAST + 1, outSlot(lanes - 1) + 1)) {   // у T1 все 7 слотов
+            @Override protected void onContentsChanged(int slot) {
+                for (CachedRecipe<GrowingRecipe> c : recipeCache) c.markDirty();
+                setChanged();
+            }
+            @Override public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+                if (slot == SLOT_MODULE) return stack.getItem() instanceof CultivatorUpgradeItem;
+                if (slot >= SLOT_UPG_FIRST && slot <= SLOT_UPG_LAST) return isDefaultUpgrade(stack);
+                if (isInput(slot)) return !(stack.getItem() instanceof com.jykito.industrialcore.item.upgrade.MachineUpgradeItem);
+                return false;
+            }
+        };
+        // 0, 1 — прогресс первой линии, 2..5 — энергия (как у T1), дальше по паре «прогресс, максимум» на линию
         this.data = new ContainerData() {
             @Override public int get(int index) {
                 return switch (index) {
-                    case 0 -> progress;
-                    case 1 -> maxProgress;
+                    case 0 -> progress[0];
+                    case 1 -> maxProgress[0];
                     case 2 -> energyStorage.getEnergyStored() & 0xFFFF;
                     case 3 -> (energyStorage.getEnergyStored() >> 16) & 0xFFFF;
                     case 4 -> energyStorage.getMaxEnergyStored() & 0xFFFF;
                     case 5 -> (energyStorage.getMaxEnergyStored() >> 16) & 0xFFFF;
-                    default -> 0;
+                    default -> index < getCount() ? ((index & 1) == 0 ? progress[index / 2 - 2] : maxProgress[index / 2 - 2]) : 0;
                 };
             }
             @Override public void set(int index, int value) {
-                if (index == 0) progress = value;
-                if (index == 1) maxProgress = value;
+                if (index == 0) progress[0] = value;
+                if (index == 1) maxProgress[0] = value;
             }
-            @Override public int getCount() { return 6; }
+            @Override public int getCount() { return 4 + 2 * lanes; }
         };
     }
+
+    public int getLanes() { return lanes; }
 
     public void tick(Level level, BlockPos pos, BlockState state) {
         if (level.isClientSide()) return;
 
         int waterBefore = waterTank.getFluidAmount();
 
-        float speedMul = 1.0f, energyMul = 1.0f;
-        int parallel = 1;
-        Direction fluidPullDir = null, itemPushDir = null;
-        for (int s = 3; s <= 6; s++) {
-            ItemStack u = itemHandler.getStackInSlot(s);
-            if (u.getItem() instanceof AcceleratorItem acc) {
-                for (int c = 0; c < u.getCount(); c++) { speedMul *= acc.getSpeedMultiplier(); energyMul *= acc.getEnergyMultiplier(); }
-            } else if (u.getItem() instanceof ParallelModuleItem pm) {
-                parallel = Math.max(parallel, pm.getParallelCount());
-            } else if (u.getItem() instanceof com.jykito.industrialcore.item.upgrade.AdvancedParallelModuleItem adv) {
-                parallel = Math.max(parallel, adv.getParallelCount());
-            } else if (u.getItem() instanceof DirectionalUpgradeItem dir) {
-                Direction d = DirectionalUpgradeItem.getStoredDirection(u);
-                if (d != null) {
-                    if (dir.getMode() == DirectionalUpgradeItem.Mode.FLUID_PULL) fluidPullDir = d;
-                    else if (dir.getMode() == DirectionalUpgradeItem.Mode.ITEM_PUSH) itemPushDir = d;
-                }
-            }
-        }
+        MachineUpgrades upg = MachineUpgrades.scan(itemHandler, SLOT_UPG_FIRST, SLOT_UPG_LAST);
 
-        if (AdaptiveTank.resize(waterTank, TANK_CAP, parallel))
+        if (AdaptiveTank.resize(waterTank, tankBase, upg.parallel()))
             level.sendBlockUpdated(pos, state, state, 3); // шкала бака считается от ёмкости, клиенту нужна новая
 
         boolean working = false;
-        ItemStack newDisplay = ItemStack.EMPTY;
-        ItemStack cultUp = itemHandler.getStackInSlot(2);
+        ItemStack cultUp = itemHandler.getStackInSlot(SLOT_MODULE);
         if (cultUp.getItem() instanceof CultivatorUpgradeItem up) {
-            GrowingRecipe.Category category = up.getCategory();
-            ItemStack input = itemHandler.getStackInSlot(0);
-
-            ItemStack result = ItemStack.EMPTY;
-            int time = 100, energyPerTick = 200, inputCount = 1;
-            boolean keepInput = true;
-
-            GrowingRecipe recipe = findRecipe(level, input, category);
-            if (recipe != null) {
-                result = recipe.getOutput().copy();
-                time = Math.max(1, recipe.getTime());
-                energyPerTick = Math.max(1, recipe.getEnergy());
-                inputCount = recipe.getInputCount();
-                keepInput = recipe.keepInput();
-            } else if (category == GrowingRecipe.Category.PLANT && !input.isEmpty() && input.is(GROWABLE_PLANTS)) {
-                result = input.copy();
-                result.setCount(1);
-            }
-
-            if (!result.isEmpty()) {
-                maxProgress = Math.max(1, (int) (time * speedMul));
-                int fePerTick = Math.max(1, (int) (energyPerTick * energyMul));
-                ItemStack output = itemHandler.getStackInSlot(1);
-                int outRoom = output.isEmpty()
-                        ? result.getMaxStackSize() / result.getCount()
-                        : (ItemStack.isSameItemSameTags(output, result)
-                            ? (output.getMaxStackSize() - output.getCount()) / result.getCount() : 0);
-                int inputAvail = keepInput ? parallel : input.getCount() / Math.max(1, inputCount);
-                int waterAvail = waterTank.getFluidAmount() / WATER_PER_RECIPE;
-                int actualParallel = Math.min(parallel, Math.min(outRoom, Math.min(inputAvail, waterAvail)));
-
-                if (actualParallel >= 1 && energyStorage.getEnergyStored() >= fePerTick) {
-                    energyStorage.consume(fePerTick);
-                    progress++;
-                    working = true;
-                    newDisplay = result.copy();
-                    if (progress >= maxProgress) {
-                        waterTank.drain(WATER_PER_RECIPE * actualParallel, IFluidHandler.FluidAction.EXECUTE);
-                        if (!keepInput) itemHandler.extractItem(0, inputCount * actualParallel, false);
-                        int produced = result.getCount() * actualParallel;
-                        if (output.isEmpty()) {
-                            ItemStack o = result.copy(); o.setCount(produced);
-                            itemHandler.setStackInSlot(1, o);
-                        } else {
-                            output.grow(produced);
-                        }
-                        progress = 0;
-                    }
-                } else {
-                    progress = 0;
-                }
-            } else {
-                progress = 0;
-            }
+            for (int lane = 0; lane < lanes; lane++)
+                working |= tickLane(level, lane, up.getCategory(), upg);
         } else {
-            progress = 0;
+            Arrays.fill(progress, 0);
         }
 
-        if (fluidPullDir != null) {
-            final Direction d = fluidPullDir;
-            BlockEntity n = level.getBlockEntity(pos.relative(d));
-            if (n != null) n.getCapability(ForgeCapabilities.FLUID_HANDLER, d.getOpposite()).ifPresent(src ->
-                    FluidUtil.tryFluidTransfer(waterTank, src, waterTank.getSpace(), true));
-        }
-        if (itemPushDir != null && !itemHandler.getStackInSlot(1).isEmpty()) {
-            final Direction d = itemPushDir;
-            BlockEntity n = level.getBlockEntity(pos.relative(d));
-            if (n != null) n.getCapability(ForgeCapabilities.ITEM_HANDLER, d.getOpposite()).ifPresent(dst ->
-                    itemHandler.setStackInSlot(1, ItemHandlerHelper.insertItem(dst, itemHandler.getStackInSlot(1), false)));
-        }
+        if (upg.fluidPull() != null) MachineIO.pullFluid(level, pos, upg.fluidPull(), waterTank);
+        if (upg.itemPush() != null) MachineIO.pushItems(level, pos, upg.itemPush(), itemHandler, outSlots);
 
-        boolean shown = MachineLit.tick(this, level, pos, state, CultivatorBlock.LIT, working);
-        ItemStack want = !shown ? ItemStack.EMPTY : (newDisplay.isEmpty() ? displayResult : newDisplay);
+        MachineLit.tick(this, level, pos, state, CultivatorBlock.LIT, working);
 
         setChanged();
-        boolean displayChanged = !ItemStack.matches(displayResult, want);
-        if (displayChanged) displayResult = want.isEmpty() ? ItemStack.EMPTY : want.copy();
-        if (waterTank.getFluidAmount() != waterBefore || displayChanged)
+        if (waterTank.getFluidAmount() != waterBefore)
             level.sendBlockUpdated(pos, state, state, 3);
     }
 
+    /** Один тик линии; вода и энергия общие, поэтому линии берут их по очереди. */
+    private boolean tickLane(Level level, int lane, GrowingRecipe.Category category, MachineUpgrades upg) {
+        int in = inSlot(lane), out = outSlot(lane);
+        ItemStack input = itemHandler.getStackInSlot(in);
+
+        ItemStack result = ItemStack.EMPTY;
+        int time = 100, energyPerTick = 200, inputCount = 1;
+        boolean keepInput = true;
+
+        GrowingRecipe recipe = findRecipe(level, lane, input, category);
+        if (recipe != null) {
+            result = recipe.getOutput().copy();
+            time = Math.max(1, recipe.getTime());
+            energyPerTick = Math.max(1, recipe.getEnergy());
+            inputCount = recipe.getInputCount();
+            keepInput = recipe.keepInput();
+        } else if (category == GrowingRecipe.Category.PLANT && !input.isEmpty() && input.is(GROWABLE_PLANTS)) {
+            result = input.copy();
+            result.setCount(1);
+        }
+
+        if (result.isEmpty()) { progress[lane] = 0; return false; }
+
+        maxProgress[lane] = upg.scaleTime(time);
+        int fePerTick = upg.scaleEnergy(energyPerTick);
+        ItemStack output = itemHandler.getStackInSlot(out);
+        int outRoom = output.isEmpty()
+                ? result.getMaxStackSize() / result.getCount()
+                : (ItemStack.isSameItemSameTags(output, result)
+                    ? (output.getMaxStackSize() - output.getCount()) / result.getCount() : 0);
+        int inputAvail = keepInput ? upg.parallel() : input.getCount() / Math.max(1, inputCount);
+        int waterAvail = waterTank.getFluidAmount() / WATER_PER_RECIPE;
+        int actualParallel = Math.min(upg.parallel(), Math.min(outRoom, Math.min(inputAvail, waterAvail)));
+
+        if (actualParallel < 1 || energyStorage.getEnergyStored() < fePerTick) { progress[lane] = 0; return false; }
+
+        energyStorage.consumeEnergy(fePerTick);
+        if (++progress[lane] >= maxProgress[lane]) {
+            waterTank.drain(WATER_PER_RECIPE * actualParallel, IFluidHandler.FluidAction.EXECUTE);
+            if (!keepInput) itemHandler.extractItem(in, inputCount * actualParallel, false);
+            int produced = result.getCount() * actualParallel;
+            if (output.isEmpty()) {
+                ItemStack o = result.copy(); o.setCount(produced);
+                itemHandler.setStackInSlot(out, o);
+            } else {
+                output.grow(produced);
+            }
+            progress[lane] = 0;
+        }
+        return true;
+    }
+
     @Nullable
-    private GrowingRecipe findRecipe(Level level, ItemStack input, GrowingRecipe.Category category) {
-        return recipeCache.get(() -> {
+    private GrowingRecipe findRecipe(Level level, int lane, ItemStack input, GrowingRecipe.Category category) {
+        return recipeCache[lane].get(() -> {
             if (input.isEmpty()) return null;
             SimpleContainer c = new SimpleContainer(1);
             c.setItem(0, input);
@@ -283,11 +290,11 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    @Override public Component getDisplayName() { return Component.translatable("block.industrial_core.cultivator"); }
+    @Override public Component getDisplayName() { return Component.translatable(getBlockState().getBlock().getDescriptionId()); }
 
     @Nullable @Override
     public AbstractContainerMenu createMenu(int id, Inventory inv, Player player) {
-        return new CultivatorMenu(id, inv, this, this.data);
+        return lanes == 1 ? new CultivatorMenu(id, inv, this, this.data) : CultivatorMenu.t2(id, inv, this, this.data);
     }
 
     @Override
@@ -312,27 +319,29 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
         lazyFluid.invalidate();
     }
 
+    /** Ключ прогресса линии: у первой как у T1. */
+    private static String progressKey(int lane) { return lane == 0 ? "progress" : "progress" + lane; }
+
     @Override protected void saveAdditional(CompoundTag tag) {
         tag.put("inventory", itemHandler.serializeNBT());
         tag.putInt("energy", energyStorage.getEnergyStored());
         tag.put("waterTank", waterTank.writeToNBT(new CompoundTag()));
         AdaptiveTank.save(tag, "waterTankCapacity", waterTank);
-        tag.putInt("progress", progress);
-        tag.put("displayResult", displayResult.save(new CompoundTag()));
+        for (int i = 0; i < lanes; i++) tag.putInt(progressKey(i), progress[i]);
         super.saveAdditional(tag);
     }
 
     @Override public void load(CompoundTag tag) {
         super.load(tag);
-        itemHandler.deserializeNBT(tag.getCompound("inventory"));
-        energyStorage.set(tag.getInt("energy"));
-        AdaptiveTank.load(tag, "waterTankCapacity", waterTank, TANK_CAP);
+        // сейв меньшего размера (с jar 10-08, где у T1 было 2 слота) поднимается до полного, иначе размер прочитается из NBT
+        CompoundTag inv = tag.getCompound("inventory");
+        if (inv.getInt("Size") < itemHandler.getSlots()) inv.putInt("Size", itemHandler.getSlots());
+        itemHandler.deserializeNBT(inv);
+        energyStorage.setEnergy(tag.getInt("energy"));
+        AdaptiveTank.load(tag, "waterTankCapacity", waterTank, tankBase);
         waterTank.readFromNBT(tag.getCompound("waterTank"));
-        progress = tag.getInt("progress");
-        if (tag.contains("displayResult")) displayResult = ItemStack.of(tag.getCompound("displayResult"));
+        for (int i = 0; i < lanes; i++) progress[i] = tag.getInt(progressKey(i));
     }
-
-    public ItemStack getDisplayResult() { return displayResult; }
 
     public FluidStack getFluidInTank() { return waterTank.getFluid(); }
     public int getTankCapacity()       { return waterTank.getCapacity(); }

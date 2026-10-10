@@ -10,7 +10,7 @@
       "tag": "forge:plates/electrum"
     },
     "B": {
-      "item": "industrial_core:amethyst_crystal"
+      "tag": "forge:plates/lapis"
     },
     "C": {
       "item": "industrial_core:crystal_fiber"

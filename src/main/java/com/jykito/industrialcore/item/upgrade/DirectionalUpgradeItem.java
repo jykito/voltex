@@ -62,6 +62,7 @@ public class DirectionalUpgradeItem extends MachineUpgradeItem {
             Component dirName = Component.translatable("tooltip.industrial_core.dir_" + dir.getName());
             tooltip.add(Component.translatable("tooltip.industrial_core.direction_set", dirName).withStyle(ChatFormatting.AQUA));
         }
+        UpgradeTargets.append(tooltip, UpgradeTargets.forMode(mode));
     }
 
     @Override

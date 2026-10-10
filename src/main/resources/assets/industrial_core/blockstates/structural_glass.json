@@ -1,0 +1,196 @@
+{
+  "variants": {
+    "north=false,south=false,east=false,west=false,up=false,down=false": {
+      "model": "industrial_core:block/structural_glass_solo"
+    },
+    "north=false,south=false,east=false,west=false,up=false,down=true": {
+      "model": "industrial_core:block/structural_glass_d"
+    },
+    "north=false,south=false,east=false,west=false,up=true,down=false": {
+      "model": "industrial_core:block/structural_glass_u"
+    },
+    "north=false,south=false,east=false,west=false,up=true,down=true": {
+      "model": "industrial_core:block/structural_glass_ud"
+    },
+    "north=false,south=false,east=false,west=true,up=false,down=false": {
+      "model": "industrial_core:block/structural_glass_w"
+    },
+    "north=false,south=false,east=false,west=true,up=false,down=true": {
+      "model": "industrial_core:block/structural_glass_wd"
+    },
+    "north=false,south=false,east=false,west=true,up=true,down=false": {
+      "model": "industrial_core:block/structural_glass_wu"
+    },
+    "north=false,south=false,east=false,west=true,up=true,down=true": {
+      "model": "industrial_core:block/structural_glass_wud"
+    },
+    "north=false,south=false,east=true,west=false,up=false,down=false": {
+      "model": "industrial_core:block/structural_glass_e"
+    },
+    "north=false,south=false,east=true,west=false,up=false,down=true": {
+      "model": "industrial_core:block/structural_glass_ed"
+    },
+    "north=false,south=false,east=true,west=false,up=true,down=false": {
+      "model": "industrial_core:block/structural_glass_eu"
+    },
+    "north=false,south=false,east=true,west=false,up=true,down=true": {
+      "model": "industrial_core:block/structural_glass_eud"
+    },
+    "north=false,south=false,east=true,west=true,up=false,down=false": {
+      "model": "industrial_core:block/structural_glass_ew"
+    },
+    "north=false,south=false,east=true,west=true,up=false,down=true": {
+      "model": "industrial_core:block/structural_glass_ewd"
+    },
+    "north=false,south=false,east=true,west=true,up=true,down=false": {
+      "model": "industrial_core:block/structural_glass_ewu"
+    },
+    "north=false,south=false,east=true,west=true,up=true,down=true": {
+      "model": "industrial_core:block/structural_glass_ewud"
+    },
+    "north=false,south=true,east=false,west=false,up=false,down=false": {
+      "model": "industrial_core:block/structural_glass_s"
+    },
+    "north=false,south=true,east=false,west=false,up=false,down=true": {
+      "model": "industrial_core:block/structural_glass_sd"
+    },
+    "north=false,south=true,east=false,west=false,up=true,down=false": {
+      "model": "industrial_core:block/structural_glass_su"
+    },
+    "north=false,south=true,east=false,west=false,up=true,down=true": {
+      "model": "industrial_core:block/structural_glass_sud"
+    },
+    "north=false,south=true,east=false,west=true,up=false,down=false": {
+      "model": "industrial_core:block/structural_glass_sw"
+    },
+    "north=false,south=true,east=false,west=true,up=false,down=true": {
+      "model": "industrial_core:block/structural_glass_swd"
+    },
+    "north=false,south=true,east=false,west=true,up=true,down=false": {
+      "model": "industrial_core:block/structural_glass_swu"
+    },
+    "north=false,south=true,east=false,west=true,up=true,down=true": {
+      "model": "industrial_core:block/structural_glass_swud"
+    },
+    "north=false,south=true,east=true,west=false,up=false,down=false": {
+      "model": "industrial_core:block/structural_glass_se"
+    },
+    "north=false,south=true,east=true,west=false,up=false,down=true": {
+      "model": "industrial_core:block/structural_glass_sed"
+    },
+    "north=false,south=true,east=true,west=false,up=true,down=false": {
+      "model": "industrial_core:block/structural_glass_seu"
+    },
+    "north=false,south=true,east=true,west=false,up=true,down=true": {
+      "model": "industrial_core:block/structural_glass_seud"
+    },
+    "north=false,south=true,east=true,west=true,up=false,down=false": {
+      "model": "industrial_core:block/structural_glass_sew"
+    },
+    "north=false,south=true,east=true,west=true,up=false,down=true": {
+      "model": "industrial_core:block/structural_glass_sewd"
+    },
+    "north=false,south=true,east=true,west=true,up=true,down=false": {
+      "model": "industrial_core:block/structural_glass_sewu"
+    },
+    "north=false,south=true,east=true,west=true,up=true,down=true": {
+      "model": "industrial_core:block/structural_glass_sewud"
+    },
+    "north=true,south=false,east=false,west=false,up=false,down=false": {
+      "model": "industrial_core:block/structural_glass_n"
+    },
+    "north=true,south=false,east=false,west=false,up=false,down=true": {
+      "model": "industrial_core:block/structural_glass_nd"
+    },
+    "north=true,south=false,east=false,west=false,up=true,down=false": {
+      "model": "industrial_core:block/structural_glass_nu"
+    },
+    "north=true,south=false,east=false,west=false,up=true,down=true": {
+      "model": "industrial_core:block/structural_glass_nud"
+    },
+    "north=true,south=false,east=false,west=true,up=false,down=false": {
+      "model": "industrial_core:block/structural_glass_nw"
+    },
+    "north=true,south=false,east=false,west=true,up=false,down=true": {
+      "model": "industrial_core:block/structural_glass_nwd"
+    },
+    "north=true,south=false,east=false,west=true,up=true,down=false": {
+      "model": "industrial_core:block/structural_glass_nwu"
+    },
+    "north=true,south=false,east=false,west=true,up=true,down=true": {
+      "model": "industrial_core:block/structural_glass_nwud"
+    },
+    "north=true,south=false,east=true,west=false,up=false,down=false": {
+      "model": "industrial_core:block/structural_glass_ne"
+    },
+    "north=true,south=false,east=true,west=false,up=false,down=true": {
+      "model": "industrial_core:block/structural_glass_ned"
+    },
+    "north=true,south=false,east=true,west=false,up=true,down=false": {
+      "model": "industrial_core:block/structural_glass_neu"
+    },
+    "north=true,south=false,east=true,west=false,up=true,down=true": {
+      "model": "industrial_core:block/structural_glass_neud"
+    },
+    "north=true,south=false,east=true,west=true,up=false,down=false": {
+      "model": "industrial_core:block/structural_glass_new"
+    },
+    "north=true,south=false,east=true,west=true,up=false,down=true": {
+      "model": "industrial_core:block/structural_glass_newd"
+    },
+    "north=true,south=false,east=true,west=true,up=true,down=false": {
+      "model": "industrial_core:block/structural_glass_newu"
+    },
+    "north=true,south=false,east=true,west=true,up=true,down=true": {
+      "model": "industrial_core:block/structural_glass_newud"
+    },
+    "north=true,south=true,east=false,west=false,up=false,down=false": {
+      "model": "industrial_core:block/structural_glass_ns"
+    },
+    "north=true,south=true,east=false,west=false,up=false,down=true": {
+      "model": "industrial_core:block/structural_glass_nsd"
+    },
+    "north=true,south=true,east=false,west=false,up=true,down=false": {
+      "model": "industrial_core:block/structural_glass_nsu"
+    },
+    "north=true,south=true,east=false,west=false,up=true,down=true": {
+      "model": "industrial_core:block/structural_glass_nsud"
+    },
+    "north=true,south=true,east=false,west=true,up=false,down=false": {
+      "model": "industrial_core:block/structural_glass_nsw"
+    },
+    "north=true,south=true,east=false,west=true,up=false,down=true": {
+      "model": "industrial_core:block/structural_glass_nswd"
+    },
+    "north=true,south=true,east=false,west=true,up=true,down=false": {
+      "model": "industrial_core:block/structural_glass_nswu"
+    },
+    "north=true,south=true,east=false,west=true,up=true,down=true": {
+      "model": "industrial_core:block/structural_glass_nswud"
+    },
+    "north=true,south=true,east=true,west=false,up=false,down=false": {
+      "model": "industrial_core:block/structural_glass_nse"
+    },
+    "north=true,south=true,east=true,west=false,up=false,down=true": {
+      "model": "industrial_core:block/structural_glass_nsed"
+    },
+    "north=true,south=true,east=true,west=false,up=true,down=false": {
+      "model": "industrial_core:block/structural_glass_nseu"
+    },
+    "north=true,south=true,east=true,west=false,up=true,down=true": {
+      "model": "industrial_core:block/structural_glass_nseud"
+    },
+    "north=true,south=true,east=true,west=true,up=false,down=false": {
+      "model": "industrial_core:block/structural_glass_nsew"
+    },
+    "north=true,south=true,east=true,west=true,up=false,down=true": {
+      "model": "industrial_core:block/structural_glass_nsewd"
+    },
+    "north=true,south=true,east=true,west=true,up=true,down=false": {
+      "model": "industrial_core:block/structural_glass_nsewu"
+    },
+    "north=true,south=true,east=true,west=true,up=true,down=true": {
+      "model": "industrial_core:block/structural_glass_nsewud"
+    }
+  }
+}

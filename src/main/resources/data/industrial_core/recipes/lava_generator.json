@@ -3,22 +3,25 @@
   "pattern": [
     "ABA",
     "CDC",
-    "AEA"
+    "EFE"
   ],
   "key": {
     "A": {
-      "item": "industrial_core:heat_conductor"
+      "tag": "forge:plates/invar"
     },
     "B": {
       "item": "industrial_core:fluid_valve"
     },
     "C": {
-      "tag": "forge:plates/copper"
+      "item": "industrial_core:heat_conductor"
     },
     "D": {
-      "item": "industrial_core:machine_casing"
+      "tag": "forge:components/machine_casing"
     },
     "E": {
+      "item": "minecraft:obsidian"
+    },
+    "F": {
       "item": "industrial_core:heat_vent"
     }
   },

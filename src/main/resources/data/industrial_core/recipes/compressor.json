@@ -1,21 +1,24 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "AAA",
     "ABA",
-    "CDC"
+    "CDC",
+    "AEA"
   ],
   "key": {
     "A": {
       "item": "minecraft:smooth_stone"
     },
     "B": {
-      "item": "industrial_core:machine_casing"
+      "item": "minecraft:piston"
     },
     "C": {
       "tag": "forge:plates/iron"
     },
     "D": {
+      "tag": "forge:components/machine_casing"
+    },
+    "E": {
       "item": "industrial_core:electric_motor"
     }
   },

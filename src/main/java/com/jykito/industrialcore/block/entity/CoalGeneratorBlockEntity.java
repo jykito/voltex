@@ -1,6 +1,7 @@
 package com.jykito.industrialcore.block.entity;
 
 import com.jykito.industrialcore.block.CoalGeneratorBlock;
+import com.jykito.industrialcore.energy.MachineEnergy;
 import com.jykito.industrialcore.menu.CoalGeneratorMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -20,7 +21,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -29,16 +29,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class CoalGeneratorBlockEntity extends BlockEntity implements MenuProvider {
-
-    private static class CustomEnergyStorage extends EnergyStorage {
-        public CustomEnergyStorage(int capacity, int maxReceive, int maxExtract) {
-            super(capacity, maxReceive, maxExtract);
-        }
-        @Override
-        public boolean canReceive() { return false; }
-        public void addEnergy(int amount) { this.energy = Math.min(this.capacity, this.energy + amount); }
-        public void setEnergy(int amount) { this.energy = amount; }
-    }
 
     private final ItemStackHandler itemHandler = new ItemStackHandler(1) {
         @Override
@@ -57,7 +47,7 @@ public class CoalGeneratorBlockEntity extends BlockEntity implements MenuProvide
 
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
-    private final CustomEnergyStorage energyStorage = new CustomEnergyStorage(50000, 0, 2000);
+    private final MachineEnergy energyStorage = MachineEnergy.generator(50000, 2000);
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
     private LazyOptional<IEnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 

@@ -1,19 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "ABA",
+    "AAA",
     "BCB",
-    "ABA"
+    "BAB"
   ],
   "key": {
     "A": {
-      "item": "industrial_core:composite"
-    },
-    "B": {
       "item": "industrial_core:carbon_plate"
     },
+    "B": {
+      "item": "industrial_core:composite"
+    },
     "C": {
-      "item": "minecraft:diamond"
+      "tag": "forge:gems/diamond"
     }
   },
   "result": {

@@ -2,20 +2,28 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "ABA",
-    "BCB",
-    "ABA"
+    "CDC",
+    "AEA"
   ],
   "key": {
     "A": {
-      "type": "forge:nbt",
-      "item": "industrial_core:capsule",
-      "nbt": "{Fluid:{Amount:1000,FluidName:\"industrial_core:superfluid_condensate\"}}"
-    },
-    "B": {
       "tag": "forge:plates/electrum"
     },
+    "B": {
+      "type": "forge:nbt",
+      "item": "industrial_core:capsule",
+      "nbt": "{Fluid:{Amount:1000,FluidName:\"industrial_core:molten_amethyst\"}}"
+    },
     "C": {
+      "item": "industrial_core:condensator"
+    },
+    "D": {
       "item": "industrial_core:basic_catalyst"
+    },
+    "E": {
+      "type": "forge:nbt",
+      "item": "industrial_core:capsule",
+      "nbt": "{Fluid:{Amount:1000,FluidName:\"industrial_core:coolant\"}}"
     }
   },
   "result": {

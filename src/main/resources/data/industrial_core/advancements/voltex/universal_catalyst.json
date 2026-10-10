@@ -1,0 +1,37 @@
+{
+  "parent": "industrial_core:voltex/restructor",
+  "display": {
+    "icon": {
+      "item": "industrial_core:universal_catalyst"
+    },
+    "title": {
+      "translate": "advancements.industrial_core.universal_catalyst.title"
+    },
+    "description": {
+      "translate": "advancements.industrial_core.universal_catalyst.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_universal_catalyst": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "industrial_core:universal_catalyst"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_universal_catalyst"
+    ]
+  ]
+}

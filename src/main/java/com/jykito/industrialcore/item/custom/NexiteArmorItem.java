@@ -32,10 +32,28 @@ public class NexiteArmorItem extends ArmorItem {
         super(material, type, properties);
     }
 
+    /** Одна текстура на все детали своей модели (узор Nexite, см. PowerSuitModel). */
     @Override
     public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-        int layer = slot == EquipmentSlot.LEGS ? 2 : 1;
-        return IndustrialCore.MODID + ":textures/models/armor/nexite_" + layer + ".png";
+        return IndustrialCore.MODID + ":textures/models/armor/nexite_suit.png";
+    }
+
+    /** Своя модель брони вместо ванильной развёртки. Класс модели клиентский: грузится только отсюда, на клиенте. */
+    @Override
+    public void initializeClient(java.util.function.Consumer<net.minecraftforge.client.extensions.common.IClientItemExtensions> consumer) {
+        consumer.accept(new net.minecraftforge.client.extensions.common.IClientItemExtensions() {
+            @Override
+            public @NotNull net.minecraft.client.model.HumanoidModel<?> getHumanoidArmorModel(net.minecraft.world.entity.LivingEntity entity, ItemStack stack,
+                                                                                           EquipmentSlot slot, net.minecraft.client.model.HumanoidModel<?> original) {
+                return com.jykito.industrialcore.client.armor.PowerSuitModel.forSlot(slot);
+            }
+
+            /** 3D-иконка: предмет рисуется самой деталью брони. */
+            @Override
+            public net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                return com.jykito.industrialcore.client.armor.ArmorIconRenderer.get();
+            }
+        });
     }
 
     @Override

@@ -1,6 +1,6 @@
 {
-  "parent": "item/generated",
+  "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "industrial_core:block/crystalline_channel"
+    "layer0": "industrial_core:item/crystalline_channel"
   }
 }

@@ -1,11 +1,14 @@
 {
   "multipart": [
-    { "apply": { "model": "industrial_core:block/heavy_magistral_center" } },
-    { "when": { "north": "true" }, "apply": { "model": "industrial_core:block/heavy_magistral_side" } },
-    { "when": { "east": "true" },  "apply": { "model": "industrial_core:block/heavy_magistral_side", "y": 90 } },
-    { "when": { "south": "true" }, "apply": { "model": "industrial_core:block/heavy_magistral_side", "y": 180 } },
-    { "when": { "west": "true" },  "apply": { "model": "industrial_core:block/heavy_magistral_side", "y": 270 } },
-    { "when": { "up": "true" },    "apply": { "model": "industrial_core:block/heavy_magistral_side", "x": 270 } },
-    { "when": { "down": "true" },  "apply": { "model": "industrial_core:block/heavy_magistral_side", "x": 90 } }
+    {"when":{"OR":[{"north":"true","south":"false"},{"north":"false","south":"true"},{"east":"true","west":"false"},{"east":"false","west":"true"},{"up":"true","down":"false"},{"up":"false","down":"true"},{"north":"false","south":"false","east":"false","west":"false","up":"false","down":"false"},{"north":"true","south":"true","east":"true","west":"true"},{"north":"true","south":"true","up":"true","down":"true"},{"east":"true","west":"true","up":"true","down":"true"}]},"apply":{"model":"industrial_core:block/heavy_magistral_center"}},
+    {"when":{"north":"true","south":"true","east":"false","west":"false","up":"false","down":"false"},"apply":{"model":"industrial_core:block/heavy_magistral_mid"}},
+    {"when":{"north":"false","south":"false","east":"true","west":"true","up":"false","down":"false"},"apply":{"model":"industrial_core:block/heavy_magistral_mid","y":90}},
+    {"when":{"north":"false","south":"false","east":"false","west":"false","up":"true","down":"true"},"apply":{"model":"industrial_core:block/heavy_magistral_mid","x":90}},
+    {"when":{"north":"true"},"apply":{"model":"industrial_core:block/heavy_magistral_side"}},
+    {"when":{"east":"true"},"apply":{"model":"industrial_core:block/heavy_magistral_side","y":90}},
+    {"when":{"south":"true"},"apply":{"model":"industrial_core:block/heavy_magistral_side","y":180}},
+    {"when":{"west":"true"},"apply":{"model":"industrial_core:block/heavy_magistral_side","y":270}},
+    {"when":{"up":"true"},"apply":{"model":"industrial_core:block/heavy_magistral_side","x":270}},
+    {"when":{"down":"true"},"apply":{"model":"industrial_core:block/heavy_magistral_side","x":90}}
   ]
 }

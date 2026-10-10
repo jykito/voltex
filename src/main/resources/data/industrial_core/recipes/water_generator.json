@@ -13,13 +13,13 @@
       "item": "industrial_core:fluid_valve"
     },
     "C": {
-      "item": "industrial_core:electric_motor"
+      "tag": "forge:ingots/nickel"
     },
     "D": {
-      "item": "industrial_core:machine_casing"
+      "tag": "forge:components/machine_casing"
     },
     "E": {
-      "tag": "forge:plates/copper"
+      "item": "industrial_core:electric_motor"
     }
   },
   "result": {

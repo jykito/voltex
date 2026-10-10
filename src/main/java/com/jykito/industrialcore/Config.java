@@ -47,11 +47,6 @@ public class Config
 
     private static final ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
 
-    private static final ForgeConfigSpec.BooleanValue SHOW_MACHINE_ITEM = CLIENT_BUILDER
-            .comment("Render the in-progress item floating in the center of working Restructors and Cultivators (visual only).",
-                     "Turn off to reclaim FPS in very large setups (hundreds of working machines in view).")
-            .define("showMachineItem", true);
-
     private static final ForgeConfigSpec.DoubleValue SOUND_VOLUME = CLIENT_BUILDER
             .comment("Volume of this mod's machine sounds (electromagnet hum, column flybys, power-up).",
                      "1.0 = full, 0.0 = muted. Scales on top of your in-game Blocks volume slider.")
@@ -72,7 +67,6 @@ public class Config
     public static int antigravColumnLimit = 24;  // кап колонн на измерение (0 = без лимита)
     public static boolean devTools = false;      // дев-инструменты в креатив-табе
 
-    public static boolean showMachineItem = true;
     public static double soundVolume = 1.0;
     public static boolean cullSolidFaces = true; // откат оптимизации: false → рендер ровно как был (NO_CULL)
 
@@ -88,7 +82,6 @@ public class Config
 
             com.jykito.industrialcore.item.custom.MinerLensItem.clearCache();
         } else if (event.getConfig().getType() == ModConfig.Type.CLIENT) {
-            showMachineItem = SHOW_MACHINE_ITEM.get();
             soundVolume     = SOUND_VOLUME.get();
             cullSolidFaces  = CULL_SOLID_FACES.get();
         }

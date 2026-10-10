@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "facing=north,lit=false": { "model": "industrial_core:block/multiblock_macerator" },
+    "facing=east,lit=false": { "model": "industrial_core:block/multiblock_macerator", "y": 90 },
+    "facing=south,lit=false": { "model": "industrial_core:block/multiblock_macerator", "y": 180 },
+    "facing=west,lit=false": { "model": "industrial_core:block/multiblock_macerator", "y": 270 },
+    "facing=north,lit=true": { "model": "industrial_core:block/multiblock_macerator_on" },
+    "facing=east,lit=true": { "model": "industrial_core:block/multiblock_macerator_on", "y": 90 },
+    "facing=south,lit=true": { "model": "industrial_core:block/multiblock_macerator_on", "y": 180 },
+    "facing=west,lit=true": { "model": "industrial_core:block/multiblock_macerator_on", "y": 270 }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "type": "industrial_core:fluid_enricher_recipe",
+  "ingredient": {
+    "item": "industrial_core:kronium_alloy"
+  },
+  "itemCount": 1,
+  "ingredient2": {
+    "tag": "forge:ingots/electrum"
+  },
+  "itemCount2": 2,
+  "fluidInput": "industrial_core:molten_lead",
+  "fluidInputAmount": 2000,
+  "fluidOutput": "industrial_core:mechanical_alloy",
+  "fluidOutputAmount": 2000,
+  "processingTime": 200,
+  "energyCostPerTick": 1000,
+  "lateOnly": true
+}

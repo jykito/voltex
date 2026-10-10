@@ -1,0 +1,212 @@
+package com.jykito.industrialcore.jei;
+
+import com.jykito.industrialcore.IndustrialCore;
+import com.jykito.industrialcore.multiblock.LateRecipe;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.forge.ForgeTypes;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.category.IRecipeCategory;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+
+/**
+ * Окно JEI лейт-машины (макет Л1 «Порты», выбор юзера 2026-10-09): строка режима по центру сверху (если у ядра их
+ * несколько), бак на входе, входы сеткой до 6×3 (Сердце Вольтекса — 17 входов и эссенция, сборщик — до 15), прогресс
+ * как в окне ядра (лента с шевронами), выход (побочный продукт под ним, бак на выходе), внизу расход, время и порог
+ * тепла. Рамка — его лейт-рамка, собранная под размер окна из куска late_parts.png (tools/gui_gen/jei_late/parts.js);
+ * клетки — его клетка из окна порта. Значка ядра в шапке нет: имя машины и так в заголовке JEI (юзер: «у иконки то ли
+ * текст надо, то ли иконку убрать»). Раскладка считается один раз по всем рецептам ядра: клеток столько, сколько
+ * входов бывает у его рецептов, бак и клетка побочного продукта — только если они есть хоть у одного рецепта;
+ * содержимое по центру.
+ */
+public class LateJeiCategory implements IRecipeCategory<LateJeiCategory.Entry> {
+
+    /** Рецепт ядра и подпись режима (null — у ядра один режим, подписывать нечего). */
+    public record Entry(LateRecipe recipe, Component mode) {}
+
+    static final ResourceLocation PARTS = new ResourceLocation(IndustrialCore.MODID, "textures/gui/jei/late_parts.png");
+    private static final ResourceLocation PROGRESS = new ResourceLocation(IndustrialCore.MODID, "textures/gui/progress_fill_6x_anim.png");
+    static final int PARTS_W = 128, PARTS_H = 64;
+    private static final int CELL = 18, TANK_W = 12, PROG_W = 24, PROG_H = 8, GAP = 4, COLS = 6;
+    /** Окно не уже 184 и с полями по 14 (уголки рамки): у магнита и сборщика содержимое 174 — в 184 бак и текст ложились на рамку. */
+    private static final int MIN_WIDTH = 184, MARGIN = 14, MODE_Y = 10, LINE = 11, PROG_CYCLE_MS = 2000;
+    private static final int C_MODE = 0xFFE0C060, C_TIME = 0xFFB0B0B0, C_HEAT = 0xFFFFA347;
+
+    private final RecipeType<Entry> recipeType;
+    private final Component title;
+    private final IDrawable icon, cell, background;
+    private final JeiGui.Anim chevrons = new JeiGui.Anim();
+
+    // раскладка: x считаются от левого края окна, уже с центровкой
+    private final int width, bodyY, cols, rows, bodyH, height;
+    private final int tankInX, gridX, gridY, progX, progY, outX, outY, byX, byY, tankOutX;
+    private final boolean fluidIn, itemOut, byproduct, fluidOut, heat;
+
+    public LateJeiCategory(IGuiHelper helper, RecipeType<Entry> type, ItemStack core, Component title, List<Entry> recipes) {
+        this.recipeType = type;
+        this.title = title;
+        this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, core);
+        this.cell = helper.drawableBuilder(PARTS, 96, 0, CELL, CELL).setTextureSize(PARTS_W, PARTS_H).build();
+
+        int maxIn = 1;
+        boolean fIn = false, iOut = false, by = false, fOut = false, ht = false, modes = false;
+        for (Entry e : recipes) {
+            LateRecipe r = e.recipe();
+            maxIn = Math.max(maxIn, r.items().length);
+            fIn |= !r.fluid().isEmpty();
+            iOut |= !r.result().isEmpty();
+            by |= !r.byproduct().isEmpty();
+            fOut |= !r.fluidResult().isEmpty();
+            ht |= r.heat() > 0;
+            modes |= e.mode() != null;
+        }
+        fluidIn = fIn; itemOut = iOut || !fOut; byproduct = by; fluidOut = fOut; heat = ht;
+        bodyY = modes ? 24 : 12;                                       // без строки режима тело сразу под рамкой
+        cols = Math.min(COLS, maxIn);
+        rows = Math.min(3, (maxIn + COLS - 1) / COLS);
+        bodyH = Math.max(rows * CELL, Math.max(fluidIn || fluidOut ? 2 * CELL : CELL, byproduct ? 2 * CELL + 2 : 0));
+
+        // ширина содержимого и центровка
+        int w = (fluidIn ? TANK_W + GAP : 0) + cols * CELL + GAP + PROG_W + GAP
+                + (itemOut ? CELL : 0) + (itemOut && fluidOut ? GAP : 0) + (fluidOut ? TANK_W : 0);
+        width = Math.max(MIN_WIDTH, w + 2 * MARGIN);
+        int x = (width - w) / 2;
+        tankInX = x;                    if (fluidIn) x += TANK_W + GAP;
+        gridX = x;                      x += cols * CELL + GAP;
+        gridY = bodyY + (bodyH - rows * CELL) / 2;
+        progX = x;                      x += PROG_W + GAP;
+        progY = bodyY + (bodyH - PROG_H) / 2;
+        outX = x;                       if (itemOut) x += CELL + (fluidOut ? GAP : 0);
+        outY = byproduct ? bodyY + bodyH / 2 - CELL - 1 : bodyY + (bodyH - CELL) / 2;
+        byX = outX; byY = bodyY + bodyH / 2 + 1;
+        tankOutX = x;
+        height = bodyY + bodyH + 6 + LINE + (heat ? LINE : 0) + 6;
+        this.background = new Frame(width, height);
+    }
+
+    @Override public RecipeType<Entry> getRecipeType() { return recipeType; }
+    @Override public Component getTitle()      { return title; }
+    @Override public IDrawable getBackground() { return background; }
+    @Override public IDrawable getIcon()       { return icon; }
+
+    @Override
+    public void setRecipe(IRecipeLayoutBuilder builder, Entry entry, IFocusGroup focuses) {
+        LateRecipe r = entry.recipe();
+        for (int i = 0; i < r.items().length && i < cols * rows; i++) {
+            builder.addSlot(RecipeIngredientRole.INPUT, gridX + CELL * (i % cols) + 1, gridY + CELL * (i / cols) + 1)
+                   .setBackground(cell, -1, -1)
+                   .addItemStacks(withCount(r.items()[i].getItems(), r.counts()[i]));
+        }
+        if (!r.fluid().isEmpty()) tank(builder, RecipeIngredientRole.INPUT, tankInX, r.fluid());
+        if (!r.result().isEmpty()) chance(builder.addSlot(RecipeIngredientRole.OUTPUT, outX + 1, outY + 1)
+                .setBackground(cell, -1, -1).addItemStack(r.result()), r.resultChance());
+        if (!r.byproduct().isEmpty()) chance(builder.addSlot(RecipeIngredientRole.OUTPUT, byX + 1, byY + 1)
+                .setBackground(cell, -1, -1).addItemStack(r.byproduct()), r.byproductChance());
+        if (!r.fluidResult().isEmpty()) tank(builder, RecipeIngredientRole.OUTPUT, tankOutX, r.fluidResult());
+    }
+
+    private void tank(IRecipeLayoutBuilder builder, RecipeIngredientRole role, int x, FluidStack fluid) {
+        builder.addSlot(role, x + 1, bodyY + 1)
+               .setCustomRenderer(ForgeTypes.FLUID_STACK, new FluidTankRenderer(TANK_W - 2, bodyH - 2))
+               .addFluidStack(fluid.getFluid(), fluid.getAmount());
+    }
+
+    private static void chance(IRecipeSlotBuilder slot, float chance) {
+        if (chance >= 1f) return;
+        int pct = Math.round(chance * 100);
+        slot.addTooltipCallback((v, tip) -> tip.add(Component.translatable("jei.industrial_core.chance", pct).withStyle(ChatFormatting.GRAY)));
+    }
+
+    @Override
+    public void draw(Entry entry, IRecipeSlotsView slots, GuiGraphics g, double mx, double my) {
+        LateRecipe r = entry.recipe();
+        var font = Minecraft.getInstance().font;
+        int left = fluidIn ? tankInX : gridX;                 // левый край содержимого: по нему строки внизу
+        if (entry.mode() != null) g.drawString(font, entry.mode(), (width - font.width(entry.mode())) / 2, MODE_Y, C_MODE, false);
+        // свободные клетки сетки (у рецепта входов меньше, чем у самого длинного рецепта ядра) — притушены
+        for (int i = r.items().length; i < cols * rows; i++) {
+            int cx = gridX + CELL * (i % cols), cy = gridY + CELL * (i / cols);
+            cell.draw(g, cx, cy);
+            g.fill(cx + 1, cy + 1, cx + CELL - 1, cy + CELL - 1, 0x99000000);
+        }
+        // рамки баков (как его табло: тёмный верх-лево, светлый низ-право) — у ядра с баком всегда, даже если в рецепте его нет
+        if (fluidIn) gauge(g, tankInX);
+        if (fluidOut) gauge(g, tankOutX);
+        if (itemOut && r.result().isEmpty() && fluidOut) {   // ядро бывает и с предметом, и с жидкостью: пустая клетка притушена
+            cell.draw(g, outX, outY);
+            g.fill(outX + 1, outY + 1, outX + CELL - 1, outY + CELL - 1, 0x99000000);
+        }
+        // прогресс как в окне ядра: ниша его табло, внутри лента с шевронами заполняется по кругу
+        g.fill(progX, progY, progX + PROG_W, progY + PROG_H, 0xFF0F0F0F);
+        g.fill(progX, progY, progX + PROG_W, progY + 1, 0xFF1B1B1B); g.fill(progX, progY, progX + 1, progY + PROG_H, 0xFF1B1B1B);
+        g.fill(progX, progY + PROG_H - 1, progX + PROG_W, progY + PROG_H, 0xFF6E6E6E); g.fill(progX + PROG_W - 1, progY, progX + PROG_W, progY + PROG_H, 0xFF6E6E6E);
+        chevrons.advance();
+        int filled = (int) (System.currentTimeMillis() % PROG_CYCLE_MS * (PROG_W - 2) / PROG_CYCLE_MS);
+        if (filled > 0) JeiGui.tileFill(g, PROGRESS, progX + 1, progY + 1, filled, chevrons.frame());
+        // расход и время, ниже порог тепла
+        int y = bodyY + bodyH + 6;
+        String fe = JeiGui.fe(r.energyPerTick()) + " FE/t";
+        g.drawString(font, fe, left, y, JeiGui.ENERGY, false);
+        g.drawString(font, JeiGui.secs(r.time()), left + font.width(fe) + 8, y, C_TIME, false);
+        if (r.heat() > 0) g.drawString(font, Component.translatable("gui.industrial_core.late_core.heat",
+                String.format(Locale.ROOT, "%,d", r.heat()).replace(',', ' ')), left, y + LINE, C_HEAT, false);
+    }
+
+    private void gauge(GuiGraphics g, int x) {
+        int y = bodyY, h = bodyH;
+        g.fill(x, y, x + TANK_W, y + h, 0xFF0F0F0F);
+        g.fill(x, y, x + TANK_W, y + 1, 0xFF1B1B1B); g.fill(x, y, x + 1, y + h, 0xFF1B1B1B);
+        g.fill(x, y + h - 1, x + TANK_W, y + h, 0xFF6E6E6E); g.fill(x + TANK_W - 1, y, x + TANK_W, y + h, 0xFF6E6E6E);
+    }
+
+    private static List<ItemStack> withCount(ItemStack[] stacks, int count) {
+        return Arrays.stream(stacks).map(s -> { ItemStack c = s.copy(); c.setCount(Math.max(1, count)); return c; }).toList();
+    }
+
+    /**
+     * Его лейт-рамка нужного размера из куска 96×64 в late_parts.png: уголки 14×14 как есть, кромки 6 px тянутся
+     * из одного столбца/строки (по длине они одинаковые), скобы 40×7 — по центру сверху и снизу, внутри фон #171717.
+     */
+    static final class Frame implements IDrawable {   // и окно нанолаборатории (NaniteLabJeiCategory)
+        private static final int SRC = 96, SRC_H = 64, C = 14, E = 6, BR_W = 40, BR_H = 7;
+        private final int w, h;
+        Frame(int w, int h) { this.w = w; this.h = h; }
+        @Override public int getWidth()  { return w; }
+        @Override public int getHeight() { return h; }
+
+        @Override
+        public void draw(GuiGraphics g, int x, int y) {
+            g.fill(x + E, y + E, x + w - E, y + h - E, 0xFF171717);
+            // кромки: столбец 20 источника (между уголком и скобой) и строка 32
+            g.blit(PARTS, x + C, y, w - 2 * C, E, 20, 0, 1, E, PARTS_W, PARTS_H);
+            g.blit(PARTS, x + C, y + h - E, w - 2 * C, E, 20, SRC_H - E, 1, E, PARTS_W, PARTS_H);
+            g.blit(PARTS, x, y + C, E, h - 2 * C, 0, 32, E, 1, PARTS_W, PARTS_H);
+            g.blit(PARTS, x + w - E, y + C, E, h - 2 * C, SRC - E, 32, E, 1, PARTS_W, PARTS_H);
+            // скобы по центру
+            int bx = x + w / 2 - BR_W / 2, sx = SRC / 2 - BR_W / 2;
+            g.blit(PARTS, bx, y, sx, 0, BR_W, BR_H, PARTS_W, PARTS_H);
+            g.blit(PARTS, bx, y + h - BR_H, sx, SRC_H - BR_H, BR_W, BR_H, PARTS_W, PARTS_H);
+            // уголки
+            g.blit(PARTS, x, y, 0, 0, C, C, PARTS_W, PARTS_H);
+            g.blit(PARTS, x + w - C, y, SRC - C, 0, C, C, PARTS_W, PARTS_H);
+            g.blit(PARTS, x, y + h - C, 0, SRC_H - C, C, C, PARTS_W, PARTS_H);
+            g.blit(PARTS, x + w - C, y + h - C, SRC - C, SRC_H - C, C, C, PARTS_W, PARTS_H);
+        }
+    }
+}

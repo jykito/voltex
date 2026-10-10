@@ -2,6 +2,7 @@ package com.jykito.industrialcore.block.entity;
 
 import com.jykito.industrialcore.block.ModBlocks;
 import com.jykito.industrialcore.block.custom.ThermostationCoreBlock;
+import com.jykito.industrialcore.energy.MachineEnergy;
 import com.jykito.industrialcore.heat.HeatBuffer;
 import com.jykito.industrialcore.heat.HeatCapability;
 import com.jykito.industrialcore.heat.IHeatHandler;
@@ -26,7 +27,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -54,12 +54,7 @@ public class ThermostationBlockEntity extends BlockEntity implements MenuProvide
     private LazyOptional<IHeatHandler> lazyIn = LazyOptional.empty();  // приём на боковые грани → буфер ядра
     private LazyOptional<IHeatHandler> lazyOut = LazyOptional.empty(); // выход ВНИЗ (ядро): труба видит для коннекта, приём=0
 
-    private static class StationEnergy extends EnergyStorage {
-        StationEnergy() { super(ENERGY_CAP, ENERGY_CAP, 0); }          // буфер, вход без лимита, выход 0 (только приём)
-        void setEnergy(int e) { this.energy = Math.max(0, Math.min(ENERGY_CAP, e)); }
-        void consume(int amount) { this.energy = Math.max(0, this.energy - amount); }
-    }
-    private final StationEnergy energyStorage = new StationEnergy();   // FE-вход на задней грани ЯДРА
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(ENERGY_CAP, ENERGY_CAP);   // FE-вход на задней грани ЯДРА
     private LazyOptional<IEnergyStorage> energyOptional = LazyOptional.empty();
 
     private final ItemStackHandler itemHandler = new ItemStackHandler(1) {  // слот x2-апгрейда (пока залочен в меню)
@@ -183,7 +178,7 @@ public class ThermostationBlockEntity extends BlockEntity implements MenuProvide
                     int accepted = down.receiveHeat(want, false);
                     if (accepted > 0) {
                         be.buffer.extract(accepted);
-                        be.energyStorage.consume(accepted * ENERGY_PER_HEAT);
+                        be.energyStorage.consumeEnergy(accepted * ENERGY_PER_HEAT);
                         worked = true;
                         be.setChanged();
                     }

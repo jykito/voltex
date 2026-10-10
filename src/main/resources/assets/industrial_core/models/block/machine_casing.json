@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "industrial_core:block/machine_casing"
+    "all": "industrial_core:block/machine/machine_casing"
   }
 }

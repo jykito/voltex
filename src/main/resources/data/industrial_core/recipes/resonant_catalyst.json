@@ -2,18 +2,26 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "ABA",
-    "BCB",
-    "ABA"
+    "CDC",
+    "AEA"
   ],
   "key": {
     "A": {
-      "item": "industrial_core:amethyst_crystal"
+      "item": "industrial_core:cryo_crystal"
     },
     "B": {
-      "tag": "forge:plates/electrum"
+      "item": "industrial_core:amethyst_crystal"
     },
     "C": {
+      "item": "industrial_core:superconducting_wire"
+    },
+    "D": {
       "item": "industrial_core:activated_catalyst"
+    },
+    "E": {
+      "type": "forge:nbt",
+      "item": "industrial_core:capsule",
+      "nbt": "{Fluid:{Amount:1000,FluidName:\"industrial_core:superfluid_condensate\"}}"
     }
   },
   "result": {

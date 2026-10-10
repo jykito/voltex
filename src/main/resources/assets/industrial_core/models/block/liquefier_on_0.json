@@ -1,9 +1,10 @@
 {
-  "parent": "minecraft:block/orientable",
+  "parent": "minecraft:block/orientable_with_bottom",
   "textures": {
-    "top":    "industrial_core:block/liquefier_top",
-    "bottom": "industrial_core:block/liquefier_top",
-    "side":   "industrial_core:block/liquefier_side",
-    "front":  "industrial_core:block/liquefier_front_on_0"
+    "top": "industrial_core:block/machine/liquefier_top",
+    "bottom": "industrial_core:block/machine/liquefier_bottom",
+    "side": "industrial_core:block/machine/liquefier_side",
+    "front": "industrial_core:block/machine/liquefier_front_on_0",
+    "particle": "industrial_core:block/machine/liquefier_side"
   }
 }

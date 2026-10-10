@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "EEE"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:microcontroller"
+    },
+    "B": {
+      "item": "industrial_core:quantum_capacitor"
+    },
+    "C": {
+      "item": "industrial_core:gold_conductor"
+    },
+    "D": {
+      "item": "industrial_core:data_transfer_matrix"
+    },
+    "E": {
+      "tag": "forge:ingots/silver"
+    }
+  },
+  "result": {
+    "item": "industrial_core:control_unit",
+    "count": 1
+  }
+}

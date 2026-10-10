@@ -1,9 +1,9 @@
 package com.jykito.industrialcore.block.entity;
 
-import com.jykito.industrialcore.item.upgrade.AcceleratorItem;
-import com.jykito.industrialcore.item.upgrade.DirectionalUpgradeItem;
+import com.jykito.industrialcore.energy.MachineEnergy;
 import com.jykito.industrialcore.item.upgrade.MachineUpgradeItem;
-import com.jykito.industrialcore.item.upgrade.ParallelModuleItem;
+import com.jykito.industrialcore.item.upgrade.MachineUpgrades;
+import com.jykito.industrialcore.item.upgrade.UpgradeTargets;
 import com.jykito.industrialcore.recipe.MachineRecipe;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -21,25 +21,14 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class BaseMachineBlockEntity extends BlockEntity implements MenuProvider {
-
-    protected static class MachineEnergyStorage extends EnergyStorage {
-        public MachineEnergyStorage(int capacity, int maxReceive) {
-            super(capacity, maxReceive, 0);
-        }
-        @Override public boolean canExtract() { return false; }
-        public void consumeEnergy(int amount) { this.energy = Math.max(0, this.energy - amount); }
-        public void setEnergy(int amount) { this.energy = amount; }
-    }
 
     private static volatile int recipeGeneration = 0;
     public static void markAllRecipesDirty() { recipeGeneration++; }
@@ -58,7 +47,7 @@ public abstract class BaseMachineBlockEntity extends BlockEntity implements Menu
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             if (slot == 0) return !(stack.getItem() instanceof MachineUpgradeItem);
-            if (slot >= 2 && slot <= 5) return stack.getItem() instanceof MachineUpgradeItem;
+            if (slot >= 2 && slot <= 5) return UpgradeTargets.works(getBlockState().getBlock(), stack);
             return false;
         }
     };
@@ -82,7 +71,7 @@ public abstract class BaseMachineBlockEntity extends BlockEntity implements Menu
 
     // приём = буфер: потолок на вход ничего не ограничивал (расход рецепта на порядок ниже),
     // только тормозил доливку после простоя. Как у электропечи.
-    protected final MachineEnergyStorage energyStorage = new MachineEnergyStorage(64000, 64000);
+    protected final MachineEnergy energyStorage = MachineEnergy.consumer(64000, 64000);
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
     private LazyOptional<IEnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
@@ -125,65 +114,9 @@ public abstract class BaseMachineBlockEntity extends BlockEntity implements Menu
     public void tick(Level level, BlockPos pos, BlockState state) {
         if (level.isClientSide) return;
 
-        Direction itemPusherDir = null;
-        Direction itemPullerDir = null;
-        int parallelCount = 1;
+        MachineUpgrades upg = MachineUpgrades.scan(itemHandler, 2, 5);
 
-        // 1.0 = время берётся из рецепта как есть. Прежние 0.7 (глобальный «-30% времени»)
-        // перенесены прямо в json рецептов crushing/compressing/extracting/rolling/extruding,
-        // иначе JEI показывал время из файла, а машина исполняла на 30% быстрее.
-        float timeMultiplier   = 1.0f;
-        float energyMultiplier = 1.0f;
-
-        for (int s = 2; s <= 5; s++) {
-            ItemStack upgrade = itemHandler.getStackInSlot(s);
-            if (upgrade.isEmpty()) continue;
-            if (upgrade.getItem() instanceof AcceleratorItem acc) {
-
-                for (int c = 0; c < upgrade.getCount(); c++) {
-                    timeMultiplier   *= acc.getSpeedMultiplier();
-                    energyMultiplier *= acc.getEnergyMultiplier();
-                }
-            } else if (upgrade.getItem() instanceof DirectionalUpgradeItem dir) {
-                Direction d = DirectionalUpgradeItem.getStoredDirection(upgrade);
-                if (d != null) {
-                    switch (dir.getMode()) {
-                        case ITEM_PUSH -> itemPusherDir = d;
-                        case ITEM_PULL -> itemPullerDir = d;
-                        default -> {  }
-                    }
-                }
-            } else if (upgrade.getItem() instanceof ParallelModuleItem pm) {
-                parallelCount = Math.max(parallelCount, pm.getParallelCount());
-            } else if (upgrade.getItem() instanceof com.jykito.industrialcore.item.upgrade.AdvancedParallelModuleItem adv) {
-                parallelCount = Math.max(parallelCount, adv.getParallelCount());
-            }
-        }
-
-        if (itemPullerDir != null) {
-            ItemStack cur = itemHandler.getStackInSlot(0);
-            boolean hasRoom = cur.isEmpty()
-                    || cur.getCount() < Math.min(cur.getMaxStackSize(), itemHandler.getSlotLimit(0));
-            if (hasRoom) {
-                final Direction pullerDir = itemPullerDir;
-                BlockEntity neighbor = level.getBlockEntity(pos.relative(pullerDir));
-                if (neighbor != null) {
-                    neighbor.getCapability(ForgeCapabilities.ITEM_HANDLER, pullerDir.getOpposite())
-                            .ifPresent(nh -> {
-                                for (int i = 0; i < nh.getSlots(); i++) {
-                                    ItemStack sim = nh.extractItem(i, 64, true);
-                                    if (sim.isEmpty()) continue;
-
-                                    int accepted = sim.getCount() - itemHandler.insertItem(0, sim, true).getCount();
-                                    if (accepted <= 0) continue;
-                                    itemHandler.insertItem(0, nh.extractItem(i, accepted, false), false);
-                                    setChanged();
-                                    break;
-                                }
-                            });
-                }
-            }
-        }
+        if (upg.itemPull() != null && MachineIO.pullItems(level, pos, upg.itemPull(), itemHandler, 0)) setChanged();
 
         boolean hasChanges = false;
         boolean isWorking  = false;
@@ -205,14 +138,17 @@ public abstract class BaseMachineBlockEntity extends BlockEntity implements Menu
 
             int inputAvail   = itemHandler.getStackInSlot(0).getCount() / r.getInputCount();
             int outputSpace  = result.getMaxStackSize() - itemHandler.getStackInSlot(1).getCount();
-            int actualParallel = Math.max(1, Math.min(parallelCount,
+            int actualParallel = Math.max(1, Math.min(upg.parallel(),
                     Math.min(inputAvail, outputSpace / Math.max(1, result.getCount()))));
 
             if (canInsertItemIntoOutputSlot(result)
                     && canInsertAmountIntoOutputSlot(result.getCount() * actualParallel)) {
 
-                this.maxProgress       = Math.max(1, (int)(r.getProcessingTime() * timeMultiplier));
-                this.energyCostPerTick = Math.max(1, (int)(r.getEnergyCost()     * energyMultiplier));
+                // Время из рецепта как есть, множат только апгрейды. Прежние 0.7 (глобальный
+                // «-30% времени») перенесены прямо в json рецептов crushing/compressing/extracting/
+                // rolling/extruding, иначе JEI показывал время из файла, а машина работала быстрее.
+                this.maxProgress       = upg.scaleTime(r.getProcessingTime());
+                this.energyCostPerTick = upg.scaleEnergy(r.getEnergyCost());
 
                 if (energyStorage.getEnergyStored() >= energyCostPerTick) {
                     energyStorage.consumeEnergy(energyCostPerTick);
@@ -236,24 +172,7 @@ public abstract class BaseMachineBlockEntity extends BlockEntity implements Menu
             }
         }
 
-        if (itemPusherDir != null) {
-            ItemStack output = itemHandler.getStackInSlot(1);
-            if (!output.isEmpty()) {
-                final Direction pusherDir = itemPusherDir;
-                BlockEntity neighbor = level.getBlockEntity(pos.relative(pusherDir));
-                if (neighbor != null) {
-                    neighbor.getCapability(ForgeCapabilities.ITEM_HANDLER, pusherDir.getOpposite())
-                            .ifPresent(nh -> {
-                                ItemStack remaining = ItemHandlerHelper.insertItem(nh, output.copy(), false);
-                                if (remaining.getCount() < output.getCount()) {
-                                    itemHandler.setStackInSlot(1,
-                                            remaining.isEmpty() ? ItemStack.EMPTY : remaining);
-                                    setChanged();
-                                }
-                            });
-                }
-            }
-        }
+        if (upg.itemPush() != null && MachineIO.pushItems(level, pos, upg.itemPush(), itemHandler, 1)) setChanged();
 
         MachineLit.tick(this, level, pos, state, BlockStateProperties.LIT, isWorking);
 

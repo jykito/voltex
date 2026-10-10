@@ -60,10 +60,28 @@ public class PlasmaArmorItem extends ArmorItem {
         return true;
     }
 
+    /** Одна текстура на все детали силовой модели (узор Plasma, см. PowerSuitModel). */
     @Override
     public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-        int layer = slot == EquipmentSlot.LEGS ? 2 : 1;
-        return IndustrialCore.MODID + ":textures/models/armor/plasma_" + layer + ".png";
+        return IndustrialCore.MODID + ":textures/models/armor/plasma_suit.png";
+    }
+
+    /** Та же силовая модель, что у Nexite. Класс модели клиентский: грузится только отсюда, на клиенте. */
+    @Override
+    public void initializeClient(java.util.function.Consumer<net.minecraftforge.client.extensions.common.IClientItemExtensions> consumer) {
+        consumer.accept(new net.minecraftforge.client.extensions.common.IClientItemExtensions() {
+            @Override
+            public @org.jetbrains.annotations.NotNull net.minecraft.client.model.HumanoidModel<?> getHumanoidArmorModel(net.minecraft.world.entity.LivingEntity entity, ItemStack stack,
+                                                                                                                   EquipmentSlot slot, net.minecraft.client.model.HumanoidModel<?> original) {
+                return com.jykito.industrialcore.client.armor.PowerSuitModel.forSlot(slot);
+            }
+
+            /** 3D-иконка: предмет рисуется самой деталью брони. */
+            @Override
+            public net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                return com.jykito.industrialcore.client.armor.ArmorIconRenderer.get();
+            }
+        });
     }
 
     @Override
@@ -107,8 +125,6 @@ public class PlasmaArmorItem extends ArmorItem {
                 .withStyle(com.jykito.industrialcore.ModStyle.ENERGY_STYLE));
         lines.add(Component.literal(String.format("⚡ %d / %d", burst, BURST_MAX))
                 .withStyle(ChatFormatting.RED));
-        lines.add(Component.translatable("tooltip.industrial_core.plasma_info")
-                .withStyle(ChatFormatting.DARK_RED));
     }
 
     @Override

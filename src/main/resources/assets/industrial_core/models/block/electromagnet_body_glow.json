@@ -1,0 +1,9 @@
+{
+    "loader": "forge:obj",
+    "model": "industrial_core:models/block/electromagnet_body.obj",
+    "flip_v": true,
+    "textures": {
+        "electromagnet_body": "industrial_core:block/electromagnet_body_emissive",
+        "particle": "industrial_core:block/electromagnet_body_emissive"
+    }
+}

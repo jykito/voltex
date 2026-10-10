@@ -13,13 +13,13 @@
       "item": "industrial_core:photonic_lens"
     },
     "C": {
-      "item": "industrial_core:superconductor_coil"
+      "item": "minecraft:quartz"
     },
     "D": {
       "item": "industrial_core:data_transfer_matrix"
     },
     "E": {
-      "item": "industrial_core:carbon_plate"
+      "item": "industrial_core:crystal_plate"
     }
   },
   "result": {

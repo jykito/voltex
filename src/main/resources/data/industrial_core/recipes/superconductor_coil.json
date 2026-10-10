@@ -1,29 +1,28 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "ABC",
-    "DED",
-    "CBA"
+    " A ",
+    "BCD",
+    " A "
   ],
   "key": {
     "A": {
-      "tag": "forge:plates/electrum"
+      "item": "industrial_core:superconducting_winding"
     },
     "B": {
-      "item": "industrial_core:condensator"
+      "item": "industrial_core:microcontroller"
     },
     "C": {
-      "item": "industrial_core:crystal_fiber"
+      "type": "forge:nbt",
+      "item": "industrial_core:capsule",
+      "nbt": "{Fluid:{Amount:1000,FluidName:\"industrial_core:superfluid_condensate\"}}"
     },
     "D": {
-      "item": "industrial_core:gold_conductor"
-    },
-    "E": {
-      "item": "industrial_core:lithium"
+      "item": "industrial_core:data_card_cryophysics"
     }
   },
   "result": {
     "item": "industrial_core:superconductor_coil",
-    "count": 2
+    "count": 1
   }
 }

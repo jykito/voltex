@@ -3,7 +3,7 @@
   "pattern": [
     " A ",
     "BCB",
-    " A "
+    " D "
   ],
   "key": {
     "A": {
@@ -13,6 +13,9 @@
       "tag": "forge:ingots/electrum"
     },
     "C": {
+      "tag": "forge:gems/diamond"
+    },
+    "D": {
       "item": "industrial_core:crystal_plate"
     }
   },

@@ -1,6 +1,7 @@
 package com.jykito.industrialcore.block.entity;
 
 import com.jykito.industrialcore.block.custom.ThermogeneratorBlock;
+import com.jykito.industrialcore.energy.MachineEnergy;
 import com.jykito.industrialcore.item.ModItems;
 import com.jykito.industrialcore.menu.ThermogeneratorMenu;
 import net.minecraft.core.BlockPos;
@@ -29,23 +30,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class ThermogeneratorBlockEntity extends BlockEntity implements MenuProvider {
 
-    private static class ThermogenEnergyStorage extends EnergyStorage {
-        public ThermogenEnergyStorage(int capacity, int maxReceive) {
-            super(capacity, maxReceive, 0);
-        }
-        @Override
-        public boolean canExtract() { return false; }
-
-        public void consumeInternal(int amount) {
-            this.energy = Math.max(0, this.energy - amount);
-        }
-
-        public void setEnergy(int amount) {
-            this.energy = Math.max(0, Math.min(this.capacity, amount));
-        }
-    }
-
-    private final ThermogenEnergyStorage energyStorage = new ThermogenEnergyStorage(20000, 20000);
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(20000, 20000);
     private LazyOptional<EnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
     private int currentGeneration = 0;
@@ -177,13 +162,13 @@ public class ThermogeneratorBlockEntity extends BlockEntity implements MenuProvi
         }
         else if (upgradeSlot.getItem() == ModItems.CRYOGENIC_HEAT_EXCHANGER.get() && feedsThermostation(level, pos, state)) {
             // Криогенный работает ТОЛЬКО в связке со станцией: она буфер и насос, и без неё
-            // такой поток тепла девать некуда. Одиночный термогенератор с ним просто не заводится.
+            // такой поток тепла девать некуда. Одиночный термогенератор с ним работает как с пустым слотом.
             heatOutput = 60;
             energyCost = 4200;
         }
 
         if (energyStorage.getEnergyStored() >= energyCost) {
-            energyStorage.consumeInternal(energyCost);
+            energyStorage.consumeEnergy(energyCost);
             isWorking = true;
 
             Direction facing = state.getValue(ThermogeneratorBlock.FACING);

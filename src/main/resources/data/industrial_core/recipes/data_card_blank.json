@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    " C "
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:gold_conductor"
+    },
+    "B": {
+      "tag": "forge:plates/lapis"
+    },
+    "C": {
+      "item": "industrial_core:silicon"
+    }
+  },
+  "result": {
+    "item": "industrial_core:data_card_blank",
+    "count": 2
+  }
+}

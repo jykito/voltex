@@ -4,7 +4,9 @@ import com.jykito.industrialcore.Config;
 import com.jykito.industrialcore.block.ModBlocks;
 import com.jykito.industrialcore.block.custom.ElectromagnetCoreBlock;
 import com.jykito.industrialcore.block.custom.MultiblockShellBlock;
+import com.jykito.industrialcore.energy.MachineEnergy;
 import com.jykito.industrialcore.menu.ElectromagnetMenu;
+import com.jykito.industrialcore.multiblock.WandBuild;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -169,12 +171,7 @@ public class ElectromagnetCoreBlockEntity extends BlockEntity implements MenuPro
     public IFluidHandler getExternalFluidHandler() { return combinedFluidHandler; }
     public net.minecraftforge.energy.IEnergyStorage getExternalEnergyHandler() { return energyStorage; }
 
-    private static class MagnetEnergy extends EnergyStorage {
-        MagnetEnergy(int cap, int maxIn) { super(cap, maxIn, 0); }
-        void setEnergy(int amount) { this.energy = Math.min(getMaxEnergyStored(), Math.max(0, amount)); }
-        void consumeEnergy(int amount) { this.energy = Math.max(0, this.energy - amount); }
-    }
-    private final MagnetEnergy energyStorage = new MagnetEnergy(1_000_000, 20_000);
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(1_000_000, 20_000);
     private LazyOptional<EnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
     // 2 бака, оба входные (внешний налив, без слива)
@@ -275,6 +272,8 @@ public class ElectromagnetCoreBlockEntity extends BlockEntity implements MenuPro
         for (Direction f : Direction.Plane.HORIZONTAL) {
             if (checkStructure(level, pos, f)) {
                 formed = true;
+                com.jykito.industrialcore.advancement.VoltexEventTrigger.award(level, pos, 16,
+                        com.jykito.industrialcore.advancement.VoltexEventTrigger.MAGNET_FORMED);
                 level.setBlock(pos, state.setValue(ElectromagnetCoreBlock.FACING, f)
                         .setValue(ElectromagnetCoreBlock.FORMED, true), 3);
                 setShellFormed(level, pos, f, true);   // спрятать скелет — корпус занимает его место
@@ -489,6 +488,9 @@ public class ElectromagnetCoreBlockEntity extends BlockEntity implements MenuPro
         }
         // ×2, если на завершении держим полосу нестабильности и выход вмещает
         int mult = (resonanceCharge >= RESONANCE_X2 && outputFits(recipe.getResult(), 2)) ? 2 : 1; // ×2 только за удержанный резонанс
+        if (mult == 2)
+            com.jykito.industrialcore.advancement.VoltexEventTrigger.award(level, worldPosition, 32,
+                    com.jykito.industrialcore.advancement.VoltexEventTrigger.MAGNET_RESONANCE);
         ItemStack out = recipe.getResult().copy();
         out.setCount(out.getCount() * mult);
         ItemStack cur = itemHandler.getStackInSlot(8);
@@ -524,8 +526,11 @@ public class ElectromagnetCoreBlockEntity extends BlockEntity implements MenuPro
         }
     }
 
-    /** DEV: строит весь скелет по схеме вокруг ядра (структурная палочка). Ставит только в заменяемые клетки. */
-    public static void buildStructure(Level level, BlockPos core, Direction facing) {
+    /**
+     * Строит скелет по схеме вокруг ядра (структурная палочка). Ставит только в заменяемые клетки,
+     * готовые не трогает; в выживании блоки берутся из инвентаря (см. {@link WandBuild}).
+     */
+    public static void buildStructure(Level level, BlockPos core, Direction facing, WandBuild wb) {
         Block structural = ModBlocks.STRUCTURAL_BLOCK.get();
         Block holder     = ModBlocks.COIL_HOLDER.get();
         for (int layer = 0; layer < HEIGHT; layer++) {
@@ -538,8 +543,7 @@ public class ElectromagnetCoreBlockEntity extends BlockEntity implements MenuPro
                     int[] r = rot(dx, dz, facing);
                     BlockPos p = core.offset(r[0], dy, r[1]);
                     Block want = (c == 'H') ? holder : structural;
-                    if (level.getBlockState(p).canBeReplaced())
-                        level.setBlock(p, want.defaultBlockState(), 3);
+                    if (!level.getBlockState(p).is(want)) wb.place(level, p, want.defaultBlockState());
                 }
             }
         }

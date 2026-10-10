@@ -2,6 +2,7 @@ package com.jykito.industrialcore.block;
 
 import com.jykito.industrialcore.IndustrialCore;
 import com.jykito.industrialcore.block.custom.BatteryChargerBlock;
+import com.jykito.industrialcore.block.custom.MechanismUpgradeBlock;
 import com.jykito.industrialcore.block.custom.RubberLogBlock;
 import com.jykito.industrialcore.block.custom.PanelCombinerBlock;
 import com.jykito.industrialcore.block.custom.SolarPanelBlock;
@@ -11,6 +12,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -50,10 +52,143 @@ public class ModBlocks {
     public static final RegistryObject<Block> RAW_LEAD_BLOCK = BLOCKS.register("raw_lead_block",
             () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_GRAY).strength(5.0f, 6.0f).requiresCorrectToolForDrops()));
 
+    public static final RegistryObject<Block> RAW_ALUMINUM_BLOCK = BLOCKS.register("raw_aluminum_block",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(5.0f, 6.0f).requiresCorrectToolForDrops()));
+
     public static final RegistryObject<Block> INVAR_BLOCK = BLOCKS.register("invar_block",
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)));
     public static final RegistryObject<Block> ELECTRUM_BLOCK = BLOCKS.register("electrum_block",
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.GOLD_BLOCK)));
+    /** Блок механизма: внутренности лейт-мультиблока; любой можно заменить блоком улучшения. */
+    public static final RegistryObject<Block> MECHANISM_BLOCK = BLOCKS.register("mechanism_block",
+            () -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)));
+    /** Блоки улучшений: встают на место блока механизма. Параллель складывается, скорость тоже. */
+    public static final RegistryObject<Block> MECHANISM_PARALLEL_1 = BLOCKS.register("mechanism_parallel_1",
+            () -> new MechanismUpgradeBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK), MechanismUpgradeBlock.Kind.PARALLEL, 16));
+    public static final RegistryObject<Block> MECHANISM_PARALLEL_2 = BLOCKS.register("mechanism_parallel_2",
+            () -> new MechanismUpgradeBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK), MechanismUpgradeBlock.Kind.PARALLEL, 32));
+    public static final RegistryObject<Block> MECHANISM_PARALLEL_3 = BLOCKS.register("mechanism_parallel_3",
+            () -> new MechanismUpgradeBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK), MechanismUpgradeBlock.Kind.PARALLEL, 64));
+    public static final RegistryObject<Block> MECHANISM_SPEED = BLOCKS.register("mechanism_speed",
+            () -> new MechanismUpgradeBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK), MechanismUpgradeBlock.Kind.SPEED, 0));
+    public static final RegistryObject<Block> MECHANISM_EFFICIENCY = BLOCKS.register("mechanism_efficiency",
+            () -> new MechanismUpgradeBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK), MechanismUpgradeBlock.Kind.EFFICIENCY, 0));
+    /** Обшивка лейт-мультиблоков: белая перекраска криокорпуса, соединяется сама с собой. */
+    public static final RegistryObject<Block> MULTIBLOCK_CASING = BLOCKS.register("multiblock_casing",
+            () -> new com.jykito.industrialcore.block.custom.ConnectedCasingBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(2.0f)));
+    /** Продвинутая обшивка 2-го тира лейт-мультиблоков (рисунок юзера, графит + красный), сшивается сама с собой. */
+    public static final RegistryObject<Block> MULTIBLOCK_CASING_ADVANCED = BLOCKS.register("multiblock_casing_advanced",
+            () -> new com.jykito.industrialcore.block.custom.ConnectedCasingBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(2.0f)));
+    public static final RegistryObject<Block> STRUCTURAL_GLASS = BLOCKS.register("structural_glass",
+            () -> new com.jykito.industrialcore.block.custom.StructuralGlassBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(2.0f).sound(SoundType.GLASS)
+                            .noOcclusion().isValidSpawn((s, l, p, e) -> false).isRedstoneConductor((s, l, p) -> false)
+                            .isSuffocating((s, l, p) -> false).isViewBlocking((s, l, p) -> false)));
+    /** Продвинутое структурное стекло: пара к продвинутой обшивке (графитовая рамка, дымчатое стекло). */
+    public static final RegistryObject<Block> STRUCTURAL_GLASS_ADVANCED = BLOCKS.register("structural_glass_advanced",
+            () -> new com.jykito.industrialcore.block.custom.StructuralGlassBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(2.0f).sound(SoundType.GLASS)
+                            .noOcclusion().isValidSpawn((s, l, p, e) -> false).isRedstoneConductor((s, l, p) -> false)
+                            .isSuffocating((s, l, p) -> false).isViewBlocking((s, l, p) -> false)));
+    // Ядра лейт-мультиблоков
+    public static final RegistryObject<Block> MULTIBLOCK_MACERATOR = BLOCKS.register("multiblock_macerator",
+            () -> new com.jykito.industrialcore.block.custom.LateMachineCoreBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(3.0f),
+                    com.jykito.industrialcore.multiblock.LateMachines.MACERATOR,
+                    com.jykito.industrialcore.multiblock.LateRecipe.machine(com.jykito.industrialcore.recipe.ModRecipes.CRUSHING_TYPE)));
+    public static final RegistryObject<Block> MULTIBLOCK_FURNACE = BLOCKS.register("multiblock_furnace",
+            () -> new com.jykito.industrialcore.block.custom.LateMachineCoreBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(3.0f),
+                    com.jykito.industrialcore.multiblock.LateMachines.FURNACE,
+                    com.jykito.industrialcore.multiblock.LateRecipe.smelting()));
+    public static final RegistryObject<Block> MULTIBLOCK_COMPRESSOR = BLOCKS.register("multiblock_compressor",
+            () -> new com.jykito.industrialcore.block.custom.LateMachineCoreBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(3.0f),
+                    com.jykito.industrialcore.multiblock.LateMachines.COMPRESSOR,
+                    new com.jykito.industrialcore.multiblock.LateRecipe.Mode("single",
+                            com.jykito.industrialcore.multiblock.LateRecipe.machine(com.jykito.industrialcore.recipe.ModRecipes.COMPRESSING_TYPE)),
+                    new com.jykito.industrialcore.multiblock.LateRecipe.Mode("industrial",
+                            com.jykito.industrialcore.multiblock.LateRecipe.machine(com.jykito.industrialcore.recipe.ModRecipes.COMPRESSING_TYPE, true))));
+    public static final RegistryObject<Block> MULTIBLOCK_LIQUEFIER = BLOCKS.register("multiblock_liquefier",
+            () -> new com.jykito.industrialcore.block.custom.LateMachineCoreBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(3.0f),
+                    com.jykito.industrialcore.multiblock.LateMachines.LIQUEFIER,
+                    com.jykito.industrialcore.multiblock.LateRecipe.liquefying()));
+    public static final RegistryObject<Block> MULTIBLOCK_BLAST_FURNACE = BLOCKS.register("multiblock_blast_furnace",
+            () -> new com.jykito.industrialcore.block.custom.LateMachineCoreBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(3.0f),
+                    com.jykito.industrialcore.multiblock.LateMachines.BLAST_FURNACE,
+                    new com.jykito.industrialcore.multiblock.LateRecipe.Mode("single",
+                            com.jykito.industrialcore.multiblock.LateRecipe.blasting()),
+                    new com.jykito.industrialcore.multiblock.LateRecipe.Mode("industrial",
+                            com.jykito.industrialcore.multiblock.LateRecipe.blasting(true))));
+    /** Прокатный стан: режим выбирает игрок — в сборке у прокатки и волочения могут оказаться рецепты из одного сырья. */
+    public static final RegistryObject<Block> MULTIBLOCK_ROLLING_MILL = BLOCKS.register("multiblock_rolling_mill",
+            () -> new com.jykito.industrialcore.block.custom.LateMachineCoreBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(3.0f),
+                    com.jykito.industrialcore.multiblock.LateMachines.ROLLING_MILL,
+                    new com.jykito.industrialcore.multiblock.LateRecipe.Mode("rolling",
+                            com.jykito.industrialcore.multiblock.LateRecipe.machine(com.jykito.industrialcore.recipe.ModRecipes.ROLLING_TYPE)),
+                    new com.jykito.industrialcore.multiblock.LateRecipe.Mode("extruding",
+                            com.jykito.industrialcore.multiblock.LateRecipe.machine(com.jykito.industrialcore.recipe.ModRecipes.EXTRUDING_TYPE)),
+                    new com.jykito.industrialcore.multiblock.LateRecipe.Mode("industrial",
+                            com.jykito.industrialcore.multiblock.LateRecipe.machine(com.jykito.industrialcore.recipe.ModRecipes.ROLLING_TYPE, true))));
+    public static final RegistryObject<Block> MULTIBLOCK_WASHER = BLOCKS.register("multiblock_washer",
+            () -> new com.jykito.industrialcore.block.custom.LateMachineCoreBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(3.0f),
+                    com.jykito.industrialcore.multiblock.LateMachines.WASHER,
+                    new com.jykito.industrialcore.multiblock.LateRecipe.Mode("single",
+                            com.jykito.industrialcore.multiblock.LateRecipe.washing()),
+                    new com.jykito.industrialcore.multiblock.LateRecipe.Mode("industrial",
+                            com.jykito.industrialcore.multiblock.LateRecipe.washing(true))));
+    public static final RegistryObject<Block> MULTIBLOCK_CRAFTER = BLOCKS.register("multiblock_crafter",
+            () -> new com.jykito.industrialcore.block.custom.LateMachineCoreBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(3.0f),
+                    com.jykito.industrialcore.multiblock.LateMachines.CRAFTER,
+                    com.jykito.industrialcore.multiblock.LateRecipe.assembling()));
+    public static final RegistryObject<Block> MULTIBLOCK_FLUID_ENRICHER = BLOCKS.register("multiblock_fluid_enricher",
+            () -> new com.jykito.industrialcore.block.custom.LateMachineCoreBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(3.0f),
+                    com.jykito.industrialcore.multiblock.LateMachines.FLUID_ENRICHER,
+                    new com.jykito.industrialcore.multiblock.LateRecipe.Mode("single",
+                            com.jykito.industrialcore.multiblock.LateRecipe.enriching()),
+                    new com.jykito.industrialcore.multiblock.LateRecipe.Mode("industrial",
+                            com.jykito.industrialcore.multiblock.LateRecipe.enriching(true))));
+    public static final RegistryObject<Block> MULTIBLOCK_MAGNET = BLOCKS.register("multiblock_magnet",
+            () -> new com.jykito.industrialcore.block.custom.LateMachineCoreBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(3.0f),
+                    com.jykito.industrialcore.multiblock.LateMachines.MAGNET,
+                    new com.jykito.industrialcore.multiblock.LateRecipe.Mode("single",
+                            com.jykito.industrialcore.multiblock.LateRecipe.accelerating()),
+                    new com.jykito.industrialcore.multiblock.LateRecipe.Mode("industrial",
+                            com.jykito.industrialcore.multiblock.LateRecipe.accelerating(true))));
+    // Порты лейт-мультиблоков: весь обмен структуры с миром идёт через них
+    public static final RegistryObject<Block> MULTIBLOCK_INPUT_PORT = BLOCKS.register("multiblock_input_port",
+            () -> new com.jykito.industrialcore.block.custom.MultiblockPortBlock(
+                    com.jykito.industrialcore.block.custom.MultiblockPortBlock.Kind.INPUT,
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(2.0f)));
+    public static final RegistryObject<Block> MULTIBLOCK_OUTPUT_PORT = BLOCKS.register("multiblock_output_port",
+            () -> new com.jykito.industrialcore.block.custom.MultiblockPortBlock(
+                    com.jykito.industrialcore.block.custom.MultiblockPortBlock.Kind.OUTPUT,
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(2.0f)));
+    public static final RegistryObject<Block> MULTIBLOCK_ENERGY_PORT = BLOCKS.register("multiblock_energy_port",
+            () -> new com.jykito.industrialcore.block.custom.MultiblockPortBlock(
+                    com.jykito.industrialcore.block.custom.MultiblockPortBlock.Kind.ENERGY,
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(2.0f)));
+    /** Тепловой порт: принимает тепло от теплотруб для машин, которым оно нужно (сжижитель). */
+    public static final RegistryObject<Block> MULTIBLOCK_HEAT_PORT = BLOCKS.register("multiblock_heat_port",
+            () -> new com.jykito.industrialcore.block.custom.MultiblockPortBlock(
+                    com.jykito.industrialcore.block.custom.MultiblockPortBlock.Kind.HEAT,
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(2.0f)));
+    // МЭ-порты: с AE2 — интерфейс, выход в сеть и поставщик шаблонов; без AE2 — обычные порты
+    public static final RegistryObject<Block> ME_INPUT_PORT = BLOCKS.register("me_input_port",
+            () -> new com.jykito.industrialcore.block.custom.MePortBlock(com.jykito.industrialcore.block.custom.MePortBlock.MeKind.INPUT, BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(2.0f)));
+    public static final RegistryObject<Block> ME_OUTPUT_PORT = BLOCKS.register("me_output_port",
+            () -> new com.jykito.industrialcore.block.custom.MePortBlock(com.jykito.industrialcore.block.custom.MePortBlock.MeKind.OUTPUT, BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(2.0f)));
+    public static final RegistryObject<Block> ME_PATTERN_PORT = BLOCKS.register("me_pattern_port",
+            () -> new com.jykito.industrialcore.block.custom.MePortBlock(com.jykito.industrialcore.block.custom.MePortBlock.MeKind.PATTERN, BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(2.0f)));
     public static final RegistryObject<Block> NICKEL_BLOCK = BLOCKS.register("nickel_block",
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)));
     public static final RegistryObject<Block> SILVER_BLOCK = BLOCKS.register("silver_block",
@@ -148,6 +283,12 @@ public class ModBlocks {
                     .requiresCorrectToolForDrops().strength(5.0f)
                     .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.OreWasherBlock.LIT) ? 1 : 0)));
 
+    // Э3 (2026-10-08): органика без мобов, в тепле от теплосети
+    public static final RegistryObject<Block> BIOREACTOR = BLOCKS.register("bioreactor",
+            () -> new com.jykito.industrialcore.block.custom.BioreactorBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
+                    .requiresCorrectToolForDrops().strength(5.0f)
+                    .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.BioreactorBlock.LIT) ? 1 : 0)));
+
     public static final RegistryObject<Block> LIQUEFIER = BLOCKS.register("liquefier",
             () -> new com.jykito.industrialcore.block.custom.LiquefierBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
                     .requiresCorrectToolForDrops().strength(5.0f)
@@ -157,6 +298,16 @@ public class ModBlocks {
             () -> new com.jykito.industrialcore.block.custom.CrystallizerBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
                     .requiresCorrectToolForDrops().strength(5.0f)
                     .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.CrystallizerBlock.LIT) ? 1 : 0)));
+
+    public static final RegistryObject<Block> EVOLUTION_CHAMBER = BLOCKS.register("evolution_chamber",
+            () -> new com.jykito.industrialcore.block.custom.EvolutionChamberBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
+                    .requiresCorrectToolForDrops().strength(5.0f).noOcclusion()
+                    .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.EvolutionChamberBlock.LIT) ? 1 : 0)));
+
+    public static final RegistryObject<Block> NANITE_LAB = BLOCKS.register("nanite_lab",
+            () -> new com.jykito.industrialcore.block.custom.NaniteLabBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
+                    .requiresCorrectToolForDrops().strength(5.0f).noOcclusion()
+                    .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.NaniteLabBlock.LIT) ? 1 : 0)));
 
     public static final RegistryObject<Block> LAVA_GENERATOR = BLOCKS.register("lava_generator",
             () -> new com.jykito.industrialcore.block.custom.FluidGeneratorBlock(
@@ -187,6 +338,11 @@ public class ModBlocks {
                     BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops().strength(5.0f).noOcclusion()
                             .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.CultivatorBlock.LIT) ? 1 : 0)));
 
+    public static final RegistryObject<Block> CULTIVATOR_T2 = BLOCKS.register("cultivator_t2",
+            () -> new com.jykito.industrialcore.block.custom.CultivatorBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops().strength(5.0f).noOcclusion()
+                            .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.CultivatorBlock.LIT) ? 1 : 0), true));
+
     public static final RegistryObject<Block> EXTRACTOR = BLOCKS.register("extractor",
             () -> new ExtractorBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
                     .requiresCorrectToolForDrops()
@@ -203,6 +359,12 @@ public class ModBlocks {
                             .requiresCorrectToolForDrops().strength(6.0f, 10.0f).noOcclusion()
                             .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.RestructorBlock.LIT) ? 1 : 0)));
 
+    public static final RegistryObject<Block> RESTRUCTOR_T2 = BLOCKS.register("restructor_t2",
+            () -> new com.jykito.industrialcore.block.custom.RestructorBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
+                            .requiresCorrectToolForDrops().strength(6.0f, 10.0f).noOcclusion()
+                            .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.RestructorBlock.LIT) ? 1 : 0), true));
+
     public static final RegistryObject<Block> MINER_CASING = BLOCKS.register("miner_casing",
             () -> new com.jykito.industrialcore.block.custom.MinerCasingBlock(
                     BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops().strength(5.0f).noOcclusion()));
@@ -211,6 +373,20 @@ public class ModBlocks {
             () -> new com.jykito.industrialcore.block.custom.MinerCoreBlock(
                     BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops().strength(5.0f).noOcclusion()
                             .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.MinerCoreBlock.LIT) ? 12 : 0)));
+
+    // промышленный шахтёр: каркас 5×5×6 прячется при сборке, модель рисует ядро; буровой маяк сканирует участок
+    public static final RegistryObject<Block> INDUSTRIAL_MINER_FRAME = BLOCKS.register("industrial_miner_frame",
+            () -> new com.jykito.industrialcore.block.custom.IndustrialMinerFrameBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops().strength(5.0f).noOcclusion()));
+
+    public static final RegistryObject<Block> INDUSTRIAL_MINER_CORE = BLOCKS.register("industrial_miner_core",
+            () -> new com.jykito.industrialcore.block.custom.IndustrialMinerCoreBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops().strength(5.0f).noOcclusion()
+                            .lightLevel(state -> state.getValue(com.jykito.industrialcore.block.custom.IndustrialMinerCoreBlock.LIT) ? 12 : 0)));
+
+    public static final RegistryObject<Block> DRILL_BEACON = BLOCKS.register("drill_beacon",
+            () -> new com.jykito.industrialcore.block.custom.DrillBeaconBlock(
+                    BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops().strength(3.0f).noOcclusion().lightLevel(state -> 7)));
 
     public static final RegistryObject<Block> LOGISTICS_NODE = BLOCKS.register("logistics_node",
             () -> new LogisticsNodeBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion().strength(2.0f)));

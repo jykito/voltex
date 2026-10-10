@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -30,6 +31,8 @@ public class AntigravColumnBER implements BlockEntityRenderer<AntigravColumnBloc
 
     public static final ResourceLocation PILON_MODEL = new ResourceLocation("industrial_core", "block/antigrav_pilon");
     public static final ResourceLocation PILON_GLOW_MODEL = new ResourceLocation("industrial_core", "block/antigrav_pilon_glow");
+    /** Маска голубых поясов (tools/texture_viewer/export_magnet_glow.js) — светится всегда, корпус при настоящем свете. */
+    public static final ResourceLocation PILON_CURRENT_MODEL = new ResourceLocation("industrial_core", "block/antigrav_pilon_current");
 
     public AntigravColumnBER(BlockEntityRendererProvider.Context ctx) {}
 
@@ -62,9 +65,20 @@ public class AntigravColumnBER implements BlockEntityRenderer<AntigravColumnBloc
         ps.mulPose(Axis.YP.rotationDegrees(angle));   // растяжка ×2.33 ЗАПЕЧЕНА в antigrav_pilon.obj → рендерим 1:1
         PoseStack.Pose pose = ps.last();
 
+        // настоящий свет (раньше FULL_BRIGHT — колонна светилась сама); пилон парит над подставкой — берём светлейшее из блока и над ним
+        int lit = light;
+        if (be.getLevel() != null) {
+            int above = LevelRenderer.getLightColor(be.getLevel(), be.getBlockPos().above());
+            lit = LightTexture.pack(Math.max(LightTexture.block(light), LightTexture.block(above)), Math.max(LightTexture.sky(light), LightTexture.sky(above)));
+        }
         VertexConsumer vc = buf.getBuffer(ModRenderTypes.solidModel(TextureAtlas.LOCATION_BLOCKS)); // cull (конфиг cullSolidFaces)
         for (BakedQuad q : allQuads(pilon))
-            vc.putBulkData(pose, q, 1f, 1f, 1f, LightTexture.FULL_BRIGHT, overlay);
+            vc.putBulkData(pose, q, 1f, 1f, 1f, lit, overlay);
+        // «ток» (голубые пояса) светится всегда: маска поверх тем же типом рендера на полной яркости
+        BakedModel current = mc.getModelManager().getModel(PILON_CURRENT_MODEL);
+        if (current != missing)
+            for (BakedQuad q : allQuads(current))
+                vc.putBulkData(pose, q, 1f, 1f, 1f, LightTexture.FULL_BRIGHT, overlay);
 
         // свечение выемок/углов по нагреву: аддитив (эмиссив), яркость = тепло/макс; работает → «дышит»
         float frac = Mth.clamp(be.getRenderHeat(partialTick) / (float) AntigravColumnBlockEntity.MAX_HEAT, 0f, 1f);

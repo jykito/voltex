@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "ABA",
-    "BCB",
+    "CDC",
     "ABA"
   ],
   "key": {
@@ -10,10 +10,13 @@
       "item": "minecraft:glass"
     },
     "B": {
-      "item": "minecraft:diamond"
+      "tag": "forge:gems/diamond"
     },
     "C": {
-      "item": "industrial_core:logic_board"
+      "item": "industrial_core:glass_fiber"
+    },
+    "D": {
+      "item": "industrial_core:photonic_lens"
     }
   },
   "result": {

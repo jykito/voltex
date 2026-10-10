@@ -1,9 +1,9 @@
 package com.jykito.industrialcore.block.entity;
 
 import com.jykito.industrialcore.block.custom.CapsuleFillerBlock;
-import com.jykito.industrialcore.item.upgrade.AcceleratorItem;
-import com.jykito.industrialcore.item.upgrade.DirectionalUpgradeItem;
-import com.jykito.industrialcore.item.upgrade.ParallelModuleItem;
+import com.jykito.industrialcore.energy.MachineEnergy;
+import com.jykito.industrialcore.item.upgrade.MachineUpgrades;
+import com.jykito.industrialcore.item.upgrade.UpgradeTargets;
 import com.jykito.industrialcore.menu.CapsuleFillerMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -24,7 +24,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidActionResult;
 import net.minecraftforge.fluids.FluidStack;
@@ -57,7 +56,7 @@ public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvide
                     return false;
                 }).orElse(false);
                 case 1 -> false;
-                case 2, 3, 4, 5 -> stack.getItem() instanceof com.jykito.industrialcore.item.upgrade.MachineUpgradeItem;
+                case 2, 3, 4, 5 -> UpgradeTargets.works(getBlockState().getBlock(), stack);
                 default -> false;
             };
         }
@@ -80,12 +79,7 @@ public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvide
     };
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
-    private static class FillerEnergy extends EnergyStorage {
-        FillerEnergy(int capacity, int maxReceive) { super(capacity, maxReceive, 0); }
-        void consume(int amount) { this.energy = Math.max(0, this.energy - amount); }
-        void set(int amount)     { this.energy = Math.min(getMaxEnergyStored(), Math.max(0, amount)); }
-    }
-    private final FillerEnergy energyStorage = new FillerEnergy(50_000, 50_000); // приём = буфер, без потолка на вход
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(50_000, 50_000); // приём = буфер, без потолка на вход
     private LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.empty();
 
     public final FluidTank inputTank = new FluidTank(TANK_CAP) {
@@ -137,32 +131,12 @@ public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvide
     public void tick(Level level, BlockPos pos, BlockState state) {
         if (level.isClientSide()) return;
 
-        float speedMul = 1.0f, energyMul = 1.0f;
-        int parallel = 1;
-        Direction itemPushDir = null, itemPullDir = null, fluidPushDir = null, fluidPullDir = null;
-        for (int s = 2; s <= 5; s++) {
-            ItemStack up = itemHandler.getStackInSlot(s);
-            if (up.getItem() instanceof AcceleratorItem acc) {
-                for (int c = 0; c < up.getCount(); c++) { speedMul *= acc.getSpeedMultiplier(); energyMul *= acc.getEnergyMultiplier(); }
-            } else if (up.getItem() instanceof ParallelModuleItem pm) {
-                parallel = Math.max(parallel, pm.getParallelCount());
-            } else if (up.getItem() instanceof com.jykito.industrialcore.item.upgrade.AdvancedParallelModuleItem adv) {
-                parallel = Math.max(parallel, adv.getParallelCount());
-            } else if (up.getItem() instanceof DirectionalUpgradeItem dir) {
-                Direction d = DirectionalUpgradeItem.getStoredDirection(up);
-                if (d != null) switch (dir.getMode()) {
-                    case ITEM_PUSH  -> itemPushDir  = d;
-                    case ITEM_PULL  -> itemPullDir  = d;
-                    case FLUID_PUSH -> fluidPushDir = d;
-                    case FLUID_PULL -> fluidPullDir = d;
-                }
-            }
-        }
-        if (AdaptiveTank.resize(inputTank, TANK_CAP, parallel))
+        MachineUpgrades upg = MachineUpgrades.scan(itemHandler, 2, 5);
+        if (AdaptiveTank.resize(inputTank, TANK_CAP, upg.parallel()))
             level.sendBlockUpdated(pos, state, state, 3); // шкала бака считается от ёмкости, клиенту нужна новая
 
-        maxProgress = Math.max(1, (int) (BASE_TIME * speedMul));
-        int fePerTick = Math.max(1, (int) (BASE_FE_PER_TICK * energyMul));
+        maxProgress = upg.scaleTime(BASE_TIME);
+        int fePerTick = upg.scaleEnergy(BASE_FE_PER_TICK);
 
         ItemStack input  = itemHandler.getStackInSlot(0);
         ItemStack output = itemHandler.getStackInSlot(1);
@@ -173,11 +147,11 @@ public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvide
             int outRoom = output.isEmpty()
                     ? fr.result().getMaxStackSize()
                     : (ItemStack.isSameItemSameTags(output, fr.result()) ? output.getMaxStackSize() - output.getCount() : 0);
-            int actualParallel = Math.min(parallel, Math.min(input.getCount(),
+            int actualParallel = Math.min(upg.parallel(), Math.min(input.getCount(),
                     Math.min(inputTank.getFluidAmount() / fr.consumed(), outRoom)));
 
             if (actualParallel >= 1 && energyStorage.getEnergyStored() >= fePerTick) {
-                energyStorage.consume(fePerTick);
+                energyStorage.consumeEnergy(fePerTick);
                 progress++;
                 working = true;
                 if (progress >= maxProgress) {
@@ -199,39 +173,10 @@ public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvide
             progress = 0;
         }
 
-        if (itemPullDir != null) {
-            final Direction d = itemPullDir;
-            BlockEntity n = level.getBlockEntity(pos.relative(d));
-            if (n != null) n.getCapability(ForgeCapabilities.ITEM_HANDLER, d.getOpposite()).ifPresent(src -> {
-                for (int i = 0; i < src.getSlots(); i++) {
-                    ItemStack sim = src.extractItem(i, 64, true);
-                    if (sim.isEmpty()) continue;
-                    int accepted = sim.getCount() - itemHandler.insertItem(0, sim, true).getCount();
-                    if (accepted > 0) {
-                        itemHandler.insertItem(0, src.extractItem(i, accepted, false), false);
-                        break;
-                    }
-                }
-            });
-        }
-        if (itemPushDir != null && !itemHandler.getStackInSlot(1).isEmpty()) {
-            final Direction d = itemPushDir;
-            BlockEntity n = level.getBlockEntity(pos.relative(d));
-            if (n != null) n.getCapability(ForgeCapabilities.ITEM_HANDLER, d.getOpposite()).ifPresent(dst ->
-                    itemHandler.setStackInSlot(1, ItemHandlerHelper.insertItem(dst, itemHandler.getStackInSlot(1), false)));
-        }
-        if (fluidPullDir != null) {
-            final Direction d = fluidPullDir;
-            BlockEntity n = level.getBlockEntity(pos.relative(d));
-            if (n != null) n.getCapability(ForgeCapabilities.FLUID_HANDLER, d.getOpposite()).ifPresent(src ->
-                    FluidUtil.tryFluidTransfer(inputTank, src, inputTank.getSpace(), true));
-        }
-        if (fluidPushDir != null && !inputTank.isEmpty()) {
-            final Direction d = fluidPushDir;
-            BlockEntity n = level.getBlockEntity(pos.relative(d));
-            if (n != null) n.getCapability(ForgeCapabilities.FLUID_HANDLER, d.getOpposite()).ifPresent(dst ->
-                    FluidUtil.tryFluidTransfer(dst, inputTank, inputTank.getFluidAmount(), true));
-        }
+        if (upg.itemPull() != null) MachineIO.pullItems(level, pos, upg.itemPull(), itemHandler, 0);
+        if (upg.itemPush() != null) MachineIO.pushItems(level, pos, upg.itemPush(), itemHandler, 1);
+        if (upg.fluidPull() != null) MachineIO.pullFluid(level, pos, upg.fluidPull(), inputTank);
+        if (upg.fluidPush() != null) MachineIO.pushFluid(level, pos, upg.fluidPush(), inputTank);
 
         MachineLit.tick(this, level, pos, state, CapsuleFillerBlock.LIT, working);setChanged();
     }
@@ -307,7 +252,7 @@ public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvide
     @Override public void load(CompoundTag tag) {
         super.load(tag);
         itemHandler.deserializeNBT(tag.getCompound("inventory"));
-        energyStorage.set(tag.getInt("energy"));
+        energyStorage.setEnergy(tag.getInt("energy"));
         AdaptiveTank.load(tag, "inputTankCapacity", inputTank, TANK_CAP);
         inputTank.readFromNBT(tag.getCompound("inputTank"));
         progress = tag.getInt("progress");

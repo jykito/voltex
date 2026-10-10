@@ -1,12 +1,12 @@
 {
   "type": "industrial_core:cryo_recipe",
   "ingredient": {
-    "item": "industrial_core:cryolite"
+    "item": "industrial_core:cryo_crystal"
   },
   "ingredientCount": 1,
   "requiredStage": 3,
   "fluidResult": "industrial_core:superfluid_condensate",
-  "fluidResultAmount": 250,
+  "fluidResultAmount": 500,
   "processingTime": 600,
   "energyCostPerTick": 400
 }

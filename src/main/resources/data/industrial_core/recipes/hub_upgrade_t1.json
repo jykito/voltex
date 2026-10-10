@@ -1,18 +1,21 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "ABA",
+    " A ",
     "BCB",
-    "ABA"
+    " D "
   ],
   "key": {
     "A": {
-      "tag": "forge:plates/gold"
-    },
-    "B": {
       "tag": "forge:dusts/redstone"
     },
+    "B": {
+      "tag": "forge:plates/gold"
+    },
     "C": {
+      "item": "industrial_core:textolite_board"
+    },
+    "D": {
       "tag": "forge:plates/iron"
     }
   },

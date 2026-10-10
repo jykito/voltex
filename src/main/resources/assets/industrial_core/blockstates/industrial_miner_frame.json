@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "formed=false": {
+      "model": "industrial_core:block/industrial_miner_frame"
+    },
+    "formed=true": {
+      "model": "industrial_core:block/industrial_miner_frame"
+    }
+  }
+}

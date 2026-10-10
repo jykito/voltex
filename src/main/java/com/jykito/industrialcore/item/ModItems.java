@@ -68,9 +68,16 @@
 
         public static final RegistryObject<Item> CRYSTALLIZER_ITEM = ITEMS.register("crystallizer",
                 () -> new BlockItem(ModBlocks.CRYSTALLIZER.get(), new Item.Properties()));
+        public static final RegistryObject<Item> EVOLUTION_CHAMBER_ITEM = ITEMS.register("evolution_chamber",
+                () -> new BlockItem(ModBlocks.EVOLUTION_CHAMBER.get(), new Item.Properties()));
+        public static final RegistryObject<Item> NANITE_LAB_ITEM = ITEMS.register("nanite_lab",
+                () -> new BlockItem(ModBlocks.NANITE_LAB.get(), new Item.Properties()));
 
         public static final RegistryObject<Item> ORE_WASHER_ITEM = ITEMS.register("ore_washer",
                 () -> new BlockItem(ModBlocks.ORE_WASHER.get(), new Item.Properties()));
+
+        public static final RegistryObject<Item> BIOREACTOR_ITEM = ITEMS.register("bioreactor",
+                () -> new BlockItem(ModBlocks.BIOREACTOR.get(), new Item.Properties()));
 
         public static final RegistryObject<Item> LAVA_GENERATOR_ITEM = ITEMS.register("lava_generator",
                 () -> new BlockItem(ModBlocks.LAVA_GENERATOR.get(), new Item.Properties()));
@@ -82,6 +89,8 @@
                 () -> new BlockItem(ModBlocks.CAPSULE_FILLER.get(), new Item.Properties()));
         public static final RegistryObject<Item> CULTIVATOR_ITEM = ITEMS.register("cultivator",
                 () -> new BlockItem(ModBlocks.CULTIVATOR.get(), new Item.Properties()));
+        public static final RegistryObject<Item> CULTIVATOR_T2_ITEM = ITEMS.register("cultivator_t2",
+                () -> new BlockItem(ModBlocks.CULTIVATOR_T2.get(), new Item.Properties()));
 
         public static final RegistryObject<Item> CULTIVATOR_BIOSTIMULATOR = ITEMS.register("cultivator_biostimulator",
                 () -> new CultivatorUpgradeItem(CultivatorUpgradeItem.Mode.BIOSTIMULATOR, new Item.Properties()));
@@ -284,6 +293,8 @@
 
         public static final RegistryObject<Item> RESTRUCTOR_ITEM = ITEMS.register("restructor",
                 () -> new BlockItem(ModBlocks.RESTRUCTOR.get(), new Item.Properties()));
+        public static final RegistryObject<Item> RESTRUCTOR_T2_ITEM = ITEMS.register("restructor_t2",
+                () -> new BlockItem(ModBlocks.RESTRUCTOR_T2.get(), new Item.Properties()));
 
         // ── Криоветка ──
         // Криолит — основание ветки, кристаллизуется из хладагента.
@@ -342,6 +353,11 @@
                 () -> new Item(new Item.Properties()));
 
         public static final RegistryObject<Item> ELECTRIC_MOTOR = ITEMS.register("electric_motor",
+                () -> new Item(new Item.Properties()));
+        // уровни мотора (юзер 2026-10-06): текстуры его, анимация — продвинутый нагревается, расширенный бьёт разрядом; крафта пока нет
+        public static final RegistryObject<Item> ELECTRIC_MOTOR_ADVANCED = ITEMS.register("electric_motor_advanced",
+                () -> new Item(new Item.Properties()));
+        public static final RegistryObject<Item> ELECTRIC_MOTOR_EXTENDED = ITEMS.register("electric_motor_extended",
                 () -> new Item(new Item.Properties()));
 
         public static final RegistryObject<Item> HEAT_CONDUCTOR = ITEMS.register("heat_conductor",
@@ -526,6 +542,13 @@
         public static final RegistryObject<Item> INDUSTRIAL_DRILL = ITEMS.register("industrial_drill",
                 () -> new com.jykito.industrialcore.item.custom.IndustrialDrillItem(new Item.Properties().stacksTo(1)));
 
+        // оружие: энергоклинок (связка с нексит-бронёй) и гаусс-винтовка (связка с плазменной)
+        public static final RegistryObject<Item> ENERGY_BLADE = ITEMS.register("energy_blade",
+                () -> new com.jykito.industrialcore.item.custom.weapon.EnergyBladeItem(new Item.Properties().stacksTo(1)));
+
+        public static final RegistryObject<Item> GAUSS_RIFLE = ITEMS.register("gauss_rifle",
+                () -> new com.jykito.industrialcore.item.custom.weapon.GaussRifleItem(new Item.Properties().stacksTo(1)));
+
         public static final RegistryObject<Item> CUTTERS = ITEMS.register("cutters",
                 () -> new com.jykito.industrialcore.item.custom.CraftingToolItem(new Item.Properties().durability(128)));
 
@@ -556,6 +579,65 @@
         public static final RegistryObject<Item> RUBBER = ITEMS.register("rubber",
                 () -> new Item(new Item.Properties()));
 
+        // Э1 (2026-10-08): соленоид — базовая электрическая деталь (генератор, дробитель, электропечь, мотор),
+        // припой — сплав олова и свинца (мотор, дальше логическая плата)
+        public static final RegistryObject<Item> COPPER_SOLENOID = ITEMS.register("copper_solenoid",
+                () -> new Item(new Item.Properties()));
+
+        public static final RegistryObject<Item> SOLDER = ITEMS.register("solder",
+                () -> new Item(new Item.Properties()));
+
+        // Э2 (2026-10-08): стекловолокно — основа текстолита (формовщик вытягивает из стекла),
+        // транзистор — первая электроника (логическая плата, апгрейд хаба T2)
+        public static final RegistryObject<Item> GLASS_FIBER = ITEMS.register("glass_fiber",
+                () -> new Item(new Item.Properties()));
+
+        // Э3: сырьё биореактора, компрессор прессует из зелени
+        public static final RegistryObject<Item> BIOMASS = ITEMS.register("biomass",
+                () -> new Item(new Item.Properties()));
+
+        public static final RegistryObject<Item> TRANSISTOR = ITEMS.register("transistor",
+                () -> new Item(new Item.Properties()));
+
+        // Э5 (2026-10-08): лестница сверхпроводников к ключу эпохи — проволока (криокамера, ступень 1) → жгут (фабрикатор
+        // стержней) → соленоид (на кроните и криокристаллах, ID superconducting_winding) → сверхпроводящая катушка
+        public static final RegistryObject<Item> SUPERCONDUCTING_WIRE = ITEMS.register("superconducting_wire",
+                () -> new com.jykito.industrialcore.item.custom.TooltipItem(new Item.Properties(), "tooltip.industrial_core.crafting_ingredient"));
+        public static final RegistryObject<Item> SUPERCONDUCTING_STRAND = ITEMS.register("superconducting_strand",
+                () -> new com.jykito.industrialcore.item.custom.TooltipItem(new Item.Properties(), "tooltip.industrial_core.crafting_ingredient"));
+        public static final RegistryObject<Item> SUPERCONDUCTING_WINDING = ITEMS.register("superconducting_winding",
+                () -> new Item(new Item.Properties()));
+
+        // Э6 (2026-10-08): ампула конденсата — магнит переводит криокристаллы в сверхтекучую фазу, сжижитель вскрывает в 1000 мБ
+        public static final RegistryObject<Item> CONDENSATE_AMPOULE = ITEMS.register("condensate_ampoule",
+                () -> new Item(new Item.Properties()));
+
+        // Э7 (2026-10-08): лестница лейт-железа (броневой лист, сервопривод, блок управления), кластеры из массового сырья,
+        // вольтекс-сплав и резонансная матрица — компоненты Сердца Вольтекса
+        public static final RegistryObject<Item> ARMOR_SHEET = ITEMS.register("armor_sheet",
+                () -> new Item(new Item.Properties()));
+        public static final RegistryObject<Item> SERVO_DRIVE = ITEMS.register("servo_drive",
+                () -> new Item(new Item.Properties()));
+        public static final RegistryObject<Item> CONTROL_UNIT = ITEMS.register("control_unit",
+                () -> new Item(new Item.Properties()));
+        public static final RegistryObject<Item> IRON_CLUSTER = ITEMS.register("iron_cluster",
+                () -> new Item(new Item.Properties()));
+        public static final RegistryObject<Item> CRYSTAL_CLUSTER = ITEMS.register("crystal_cluster",
+                () -> new Item(new Item.Properties()));
+        public static final RegistryObject<Item> EMERALD_CLUSTER = ITEMS.register("emerald_cluster",
+                () -> new Item(new Item.Properties()));
+        public static final RegistryObject<Item> VOLTEX_INGOT = ITEMS.register("voltex_ingot",
+                () -> new Item(new Item.Properties()));
+        public static final RegistryObject<Item> VOLTEX_PLATE = ITEMS.register("voltex_plate",
+                () -> new Item(new Item.Properties()));
+        public static final RegistryObject<Item> RESONANCE_MATRIX = ITEMS.register("resonance_matrix",
+                () -> new Item(new Item.Properties()));
+        /** Финал мода: трофей, силы и ресурса не даёт. */
+        public static final RegistryObject<Item> HEART_OF_VOLTEX = ITEMS.register("heart_of_voltex",
+                () -> new com.jykito.industrialcore.item.custom.TooltipItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.EPIC), "tooltip.industrial_core.heart_of_voltex") {
+                    @Override public boolean isFoil(net.minecraft.world.item.ItemStack stack) { return true; }
+                });
+
         public static final RegistryObject<Item> HARDENED_STEEL_INGOT = ITEMS.register("hardened_steel_ingot",
                 () -> new Item(new Item.Properties()));
 
@@ -566,10 +648,70 @@
                 () -> new BlockItem(ModBlocks.RAW_TIN_BLOCK.get(), new Item.Properties()));
         public static final RegistryObject<Item> RAW_LEAD_BLOCK_ITEM = ITEMS.register("raw_lead_block",
                 () -> new BlockItem(ModBlocks.RAW_LEAD_BLOCK.get(), new Item.Properties()));
+        public static final RegistryObject<Item> RAW_ALUMINUM_BLOCK_ITEM = ITEMS.register("raw_aluminum_block",
+                () -> new BlockItem(ModBlocks.RAW_ALUMINUM_BLOCK.get(), new Item.Properties()));
         public static final RegistryObject<Item> INVAR_BLOCK_ITEM = ITEMS.register("invar_block",
                 () -> new BlockItem(ModBlocks.INVAR_BLOCK.get(), new Item.Properties()));
         public static final RegistryObject<Item> ELECTRUM_BLOCK_ITEM = ITEMS.register("electrum_block",
                 () -> new BlockItem(ModBlocks.ELECTRUM_BLOCK.get(), new Item.Properties()));
+        public static final RegistryObject<Item> MECHANISM_BLOCK_ITEM = ITEMS.register("mechanism_block",
+                () -> new BlockItem(ModBlocks.MECHANISM_BLOCK.get(), new Item.Properties()));
+        public static final RegistryObject<Item> MECHANISM_PARALLEL_1_ITEM = ITEMS.register("mechanism_parallel_1",
+                () -> new BlockItem(ModBlocks.MECHANISM_PARALLEL_1.get(), new Item.Properties()));
+        public static final RegistryObject<Item> MECHANISM_PARALLEL_2_ITEM = ITEMS.register("mechanism_parallel_2",
+                () -> new BlockItem(ModBlocks.MECHANISM_PARALLEL_2.get(), new Item.Properties()));
+        public static final RegistryObject<Item> MECHANISM_PARALLEL_3_ITEM = ITEMS.register("mechanism_parallel_3",
+                () -> new BlockItem(ModBlocks.MECHANISM_PARALLEL_3.get(), new Item.Properties()));
+        public static final RegistryObject<Item> MECHANISM_SPEED_ITEM = ITEMS.register("mechanism_speed",
+                () -> new BlockItem(ModBlocks.MECHANISM_SPEED.get(), new Item.Properties()));
+        public static final RegistryObject<Item> MECHANISM_EFFICIENCY_ITEM = ITEMS.register("mechanism_efficiency",
+                () -> new BlockItem(ModBlocks.MECHANISM_EFFICIENCY.get(), new Item.Properties()));
+        public static final RegistryObject<Item> MULTIBLOCK_CASING_ITEM = ITEMS.register("multiblock_casing",
+                () -> new BlockItem(ModBlocks.MULTIBLOCK_CASING.get(), new Item.Properties()));
+        public static final RegistryObject<Item> MULTIBLOCK_CASING_ADVANCED_ITEM = ITEMS.register("multiblock_casing_advanced",
+                () -> new BlockItem(ModBlocks.MULTIBLOCK_CASING_ADVANCED.get(), new Item.Properties()));
+        public static final RegistryObject<Item> STRUCTURAL_GLASS_ITEM = ITEMS.register("structural_glass",
+                () -> new BlockItem(ModBlocks.STRUCTURAL_GLASS.get(), new Item.Properties()));
+        public static final RegistryObject<Item> STRUCTURAL_GLASS_ADVANCED_ITEM = ITEMS.register("structural_glass_advanced",
+                () -> new BlockItem(ModBlocks.STRUCTURAL_GLASS_ADVANCED.get(), new Item.Properties()));
+        public static final RegistryObject<Item> MULTIBLOCK_MACERATOR_ITEM = ITEMS.register("multiblock_macerator",
+                () -> new BlockItem(ModBlocks.MULTIBLOCK_MACERATOR.get(), new Item.Properties()));
+        public static final RegistryObject<Item> MULTIBLOCK_FURNACE_ITEM = ITEMS.register("multiblock_furnace",
+                () -> new BlockItem(ModBlocks.MULTIBLOCK_FURNACE.get(), new Item.Properties()));
+        public static final RegistryObject<Item> MULTIBLOCK_COMPRESSOR_ITEM = ITEMS.register("multiblock_compressor",
+                () -> new BlockItem(ModBlocks.MULTIBLOCK_COMPRESSOR.get(), new Item.Properties()));
+        public static final RegistryObject<Item> MULTIBLOCK_ROLLING_MILL_ITEM = ITEMS.register("multiblock_rolling_mill",
+                () -> new BlockItem(ModBlocks.MULTIBLOCK_ROLLING_MILL.get(), new Item.Properties()));
+        public static final RegistryObject<Item> MULTIBLOCK_LIQUEFIER_ITEM = ITEMS.register("multiblock_liquefier",
+                () -> new BlockItem(ModBlocks.MULTIBLOCK_LIQUEFIER.get(), new Item.Properties()));
+        public static final RegistryObject<Item> MULTIBLOCK_BLAST_FURNACE_ITEM = ITEMS.register("multiblock_blast_furnace",
+                () -> new BlockItem(ModBlocks.MULTIBLOCK_BLAST_FURNACE.get(), new Item.Properties()));
+        public static final RegistryObject<Item> MULTIBLOCK_FLUID_ENRICHER_ITEM = ITEMS.register("multiblock_fluid_enricher",
+                () -> new BlockItem(ModBlocks.MULTIBLOCK_FLUID_ENRICHER.get(), new Item.Properties()));
+        public static final RegistryObject<Item> MULTIBLOCK_MAGNET_ITEM = ITEMS.register("multiblock_magnet",
+                () -> new BlockItem(ModBlocks.MULTIBLOCK_MAGNET.get(), new Item.Properties()));
+        public static final RegistryObject<Item> MULTIBLOCK_WASHER_ITEM = ITEMS.register("multiblock_washer",
+                () -> new BlockItem(ModBlocks.MULTIBLOCK_WASHER.get(), new Item.Properties()));
+        public static final RegistryObject<Item> MULTIBLOCK_CRAFTER_ITEM = ITEMS.register("multiblock_crafter",
+                () -> new BlockItem(ModBlocks.MULTIBLOCK_CRAFTER.get(), new Item.Properties()));
+        public static final RegistryObject<Item> MULTIBLOCK_INPUT_PORT_ITEM = ITEMS.register("multiblock_input_port",
+                () -> new BlockItem(ModBlocks.MULTIBLOCK_INPUT_PORT.get(), new Item.Properties()));
+        public static final RegistryObject<Item> MULTIBLOCK_OUTPUT_PORT_ITEM = ITEMS.register("multiblock_output_port",
+                () -> new BlockItem(ModBlocks.MULTIBLOCK_OUTPUT_PORT.get(), new Item.Properties()));
+        public static final RegistryObject<Item> MULTIBLOCK_ENERGY_PORT_ITEM = ITEMS.register("multiblock_energy_port",
+                () -> new BlockItem(ModBlocks.MULTIBLOCK_ENERGY_PORT.get(), new Item.Properties()));
+        public static final RegistryObject<Item> MULTIBLOCK_HEAT_PORT_ITEM = ITEMS.register("multiblock_heat_port",
+                () -> new BlockItem(ModBlocks.MULTIBLOCK_HEAT_PORT.get(), new Item.Properties()));
+        public static final RegistryObject<Item> ME_INPUT_PORT_ITEM = ITEMS.register("me_input_port",
+                () -> new BlockItem(ModBlocks.ME_INPUT_PORT.get(), new Item.Properties()));
+        public static final RegistryObject<Item> ME_OUTPUT_PORT_ITEM = ITEMS.register("me_output_port",
+                () -> new BlockItem(ModBlocks.ME_OUTPUT_PORT.get(), new Item.Properties()));
+        public static final RegistryObject<Item> ME_PATTERN_PORT_ITEM = ITEMS.register("me_pattern_port",
+                () -> new BlockItem(ModBlocks.ME_PATTERN_PORT.get(), new Item.Properties()));
+        public static final RegistryObject<Item> PORT_UPGRADE_BASIC = ITEMS.register("port_upgrade_basic",
+                () -> new PortUpgradeItem(1, new Item.Properties()));
+        public static final RegistryObject<Item> PORT_UPGRADE_ADVANCED = ITEMS.register("port_upgrade_advanced",
+                () -> new PortUpgradeItem(2, new Item.Properties()));
         public static final RegistryObject<Item> NICKEL_BLOCK_ITEM = ITEMS.register("nickel_block",
                 () -> new BlockItem(ModBlocks.NICKEL_BLOCK.get(), new Item.Properties()));
         public static final RegistryObject<Item> SILVER_BLOCK_ITEM = ITEMS.register("silver_block",
@@ -598,6 +740,12 @@
                 () -> new BlockItem(ModBlocks.MINER_CASING.get(), new Item.Properties()));
         public static final RegistryObject<Item> MINER_CORE_ITEM = ITEMS.register("miner_core",
                 () -> new com.jykito.industrialcore.item.custom.TooltipBlockItem(ModBlocks.MINER_CORE.get(), new Item.Properties(), "tooltip.industrial_core.miner_core"));
+        public static final RegistryObject<Item> INDUSTRIAL_MINER_FRAME_ITEM = ITEMS.register("industrial_miner_frame",
+                () -> new BlockItem(ModBlocks.INDUSTRIAL_MINER_FRAME.get(), new Item.Properties()));
+        public static final RegistryObject<Item> INDUSTRIAL_MINER_CORE_ITEM = ITEMS.register("industrial_miner_core",
+                () -> new com.jykito.industrialcore.item.custom.TooltipBlockItem(ModBlocks.INDUSTRIAL_MINER_CORE.get(), new Item.Properties(), "tooltip.industrial_core.industrial_miner_core"));
+        public static final RegistryObject<Item> DRILL_BEACON_ITEM = ITEMS.register("drill_beacon",
+                () -> new com.jykito.industrialcore.item.custom.DrillBeaconItem(ModBlocks.DRILL_BEACON.get(), new Item.Properties(), "tooltip.industrial_core.drill_beacon"));
 
         public static final RegistryObject<Item> MINER_LENS_1 = ITEMS.register("miner_lens_1",
                 () -> new com.jykito.industrialcore.item.custom.MinerLensItem(
@@ -611,6 +759,25 @@
         public static final RegistryObject<Item> MINER_LENS_4 = ITEMS.register("miner_lens_4",
                 () -> new com.jykito.industrialcore.item.custom.MinerLensItem(
                         com.jykito.industrialcore.item.custom.MinerLensItem.LensType.ALL, new Item.Properties()));
+
+        // --- Наниты (2026-10-07): штамм выводится в камере эволюции, ставится в промышленный шахтёр ---
+        public static final RegistryObject<Item> NANITE_STRAIN = ITEMS.register("nanite_strain",
+                () -> new com.jykito.industrialcore.item.custom.NaniteStrainItem(new Item.Properties().stacksTo(1)));
+
+        // Карты данных учёного: пустая и по одной на тему (темы — NaniteLab.THRESHOLDS). Явно, а не циклом:
+        // так их видят проверки полноты (tools/checks) и поиск по коду.
+        public static final RegistryObject<Item> DATA_CARD_BLANK = dataCard("data_card_blank", null);
+        public static final RegistryObject<Item> DATA_CARD_CRYSTALLOGRAPHY = dataCard("data_card_crystallography", "crystallography");
+        public static final RegistryObject<Item> DATA_CARD_CRYOPHYSICS = dataCard("data_card_cryophysics", "cryophysics");
+        public static final RegistryObject<Item> DATA_CARD_MATTER = dataCard("data_card_matter", "matter");
+        public static final RegistryObject<Item> DATA_CARD_STELLAR = dataCard("data_card_stellar", "stellar");
+        /** Записанные карты по порядку тем: источник для вкладки и окраски. */
+        public static final java.util.List<RegistryObject<Item>> DATA_CARDS = java.util.List.of(
+                DATA_CARD_CRYSTALLOGRAPHY, DATA_CARD_CRYOPHYSICS, DATA_CARD_MATTER, DATA_CARD_STELLAR);
+
+        private static RegistryObject<Item> dataCard(String id, @Nullable String theme) {
+            return ITEMS.register(id, () -> new com.jykito.industrialcore.item.custom.DataCardItem(theme, new Item.Properties()));
+        }
 
         public static final RegistryObject<Item> ITEM_PUSHER = ITEMS.register("item_pusher",
                 () -> new DirectionalUpgradeItem(DirectionalUpgradeItem.Mode.ITEM_PUSH, new Item.Properties()));

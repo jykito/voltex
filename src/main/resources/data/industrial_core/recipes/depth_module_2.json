@@ -1,19 +1,22 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "ACA",
-    "CMC",
-    "ACA"
+    "AAA",
+    "BCB",
+    "DDD"
   ],
   "key": {
     "A": {
       "item": "industrial_core:cryolite"
     },
-    "C": {
+    "B": {
       "item": "industrial_core:crystal_plate"
     },
-    "M": {
-      "item": "industrial_core:machine_casing"
+    "C": {
+      "tag": "forge:components/machine_casing"
+    },
+    "D": {
+      "item": "industrial_core:thermal_insulation"
     }
   },
   "result": {

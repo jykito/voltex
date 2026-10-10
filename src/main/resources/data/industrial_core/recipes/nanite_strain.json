@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:superconducting_wire"
+    },
+    "B": {
+      "item": "industrial_core:microcontroller"
+    },
+    "C": {
+      "item": "industrial_core:crystal_fiber"
+    },
+    "D": {
+      "item": "industrial_core:capsule"
+    }
+  },
+  "result": {
+    "item": "industrial_core:nanite_strain",
+    "count": 1
+  }
+}

@@ -11,6 +11,8 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -22,6 +24,8 @@ import org.jetbrains.annotations.Nullable;
 public class AcceleratorRecipe implements Recipe<SimpleContainer> {
 
     private final ResourceLocation id;
+    /** Рецепт только для лейт-машины (её промышленный режим); малая машина его не видит. */
+    private boolean lateOnly;
     private final Ingredient[] inputs;
     private final int[] counts;
     private final ItemStack result;
@@ -54,6 +58,7 @@ public class AcceleratorRecipe implements Recipe<SimpleContainer> {
 
     /** Все ингредиенты есть в слотах 0-7 (жадное сопоставление: каждому — свой слот с нужным count). */
     public boolean matches(ItemStack[] slots) {
+        if (lateOnly) return false;
         boolean[] used = new boolean[slots.length];
         for (int i = 0; i < inputs.length; i++) {
             boolean found = false;
@@ -66,8 +71,14 @@ public class AcceleratorRecipe implements Recipe<SimpleContainer> {
         return true;
     }
 
+    public boolean isLateOnly() { return lateOnly; }
+    /** Жидкость на входе (порт лейт-магнита); у старого магнита жидкого входа нет — такие рецепты только lateOnly. */
+    private FluidStack fluid = FluidStack.EMPTY;
+    public FluidStack getFluid() { return fluid; }
+
     @Override
     public boolean matches(SimpleContainer c, Level level) {
+        if (lateOnly) return false;
         if (level.isClientSide()) return false;
         ItemStack[] slots = new ItemStack[c.getContainerSize()];
         for (int i = 0; i < slots.length; i++) slots[i] = c.getItem(i);
@@ -112,7 +123,14 @@ public class AcceleratorRecipe implements Recipe<SimpleContainer> {
             float minInstab = GsonHelper.getAsFloat(json, "minInstab", 0f);
             float bandLo    = GsonHelper.getAsFloat(json, "bandLo", 0f);
             float bandHi    = GsonHelper.getAsFloat(json, "bandHi", 0f);
-            return new AcceleratorRecipe(id, ing, cnt, result, minTier, time, energy, minInstab, bandLo, bandHi);
+            AcceleratorRecipe recipe__ = new AcceleratorRecipe(id, ing, cnt, result, minTier, time, energy, minInstab, bandLo, bandHi);
+            recipe__.lateOnly = GsonHelper.getAsBoolean(json, "lateOnly", false);
+            if (json.has("fluid")) {
+                JsonObject f = GsonHelper.getAsJsonObject(json, "fluid");
+                var fl = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(GsonHelper.getAsString(f, "fluid")));
+                if (fl != null) recipe__.fluid = new FluidStack(fl, GsonHelper.getAsInt(f, "amount", 1000));
+            }
+            return recipe__;
         }
 
         @Override
@@ -124,7 +142,10 @@ public class AcceleratorRecipe implements Recipe<SimpleContainer> {
             ItemStack result = buf.readItem();
             int minTier = buf.readVarInt(), time = buf.readVarInt(), energy = buf.readVarInt();
             float minInstab = buf.readFloat(), bandLo = buf.readFloat(), bandHi = buf.readFloat();
-            return new AcceleratorRecipe(id, ing, cnt, result, minTier, time, energy, minInstab, bandLo, bandHi);
+            AcceleratorRecipe recipe__ = new AcceleratorRecipe(id, ing, cnt, result, minTier, time, energy, minInstab, bandLo, bandHi);
+            recipe__.lateOnly = buf.readBoolean();
+            recipe__.fluid = buf.readFluidStack();
+            return recipe__;
         }
 
         @Override
@@ -134,6 +155,8 @@ public class AcceleratorRecipe implements Recipe<SimpleContainer> {
             buf.writeItem(r.result);
             buf.writeVarInt(r.minTier); buf.writeVarInt(r.processingTime); buf.writeVarInt(r.energyPerTick);
             buf.writeFloat(r.minInstab); buf.writeFloat(r.bandLo); buf.writeFloat(r.bandHi);
+            buf.writeBoolean(r.lateOnly);
+            buf.writeFluidStack(r.fluid);
         }
     }
 }

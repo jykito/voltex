@@ -82,8 +82,8 @@ public class RestructorJeiCategory implements IRecipeCategory<MachineRecipe> {
         anim.advance();
         JeiGui.tileFill(g, JeiGui.ENERGY_FILL, EBAR_X, EBAR_Y, EBAR_W, anim.frame());
         var font = Minecraft.getInstance().font;
-        JeiGui.smallText(g, font, JeiGui.fe(recipe.getEnergyCost()) + " FE/t", INFO_X, INFO_Y, JeiGui.ENERGY);
-        JeiGui.smallText(g, font, JeiGui.secs(recipe.getProcessingTime()), INFO_X, INFO_Y + JeiGui.SMALL_LINE, 0xB0B0B0);
+        // у реструктора нет времени: предмет + накопленная энергия = результат, стоимость — на весь крафт
+        JeiGui.smallText(g, font, JeiGui.fe(recipe.getEnergyCost()) + " FE", INFO_X, INFO_Y, JeiGui.ENERGY);
     }
 
     @Override
@@ -91,9 +91,7 @@ public class RestructorJeiCategory implements IRecipeCategory<MachineRecipe> {
         if (mx >= EBAR_X && mx < EBAR_X + EBAR_W && my >= EBAR_Y && my < EBAR_Y + JeiGui.FILL_H) {
             return List.of(
                     Component.translatable("jei.industrial_core.energy").withStyle(com.jykito.industrialcore.ModStyle.ENERGY_STYLE),
-                    Component.literal(JeiGui.fe(recipe.getEnergyCost()) + " FE/t").withStyle(ChatFormatting.GRAY),
-                    Component.translatable("jei.industrial_core.time", recipe.getProcessingTime() / 20)
-                            .withStyle(ChatFormatting.DARK_GRAY));
+                    Component.literal(JeiGui.fe(recipe.getEnergyCost()) + " FE").withStyle(ChatFormatting.GRAY));
         }
         return List.of();
     }

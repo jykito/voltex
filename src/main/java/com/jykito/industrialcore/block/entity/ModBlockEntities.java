@@ -76,6 +76,11 @@ public class ModBlockEntities {
                     BlockEntityType.Builder.of(RecipeExporterBlockEntity::new,
                             ModBlocks.RECIPE_EXPORTER.get()).build(null));
 
+    public static final RegistryObject<BlockEntityType<BioreactorBlockEntity>> BIOREACTOR_BE =
+            BLOCK_ENTITIES.register("bioreactor_be", () ->
+                    BlockEntityType.Builder.of(BioreactorBlockEntity::new,
+                            ModBlocks.BIOREACTOR.get()).build(null));
+
     public static final RegistryObject<BlockEntityType<OreWasherBlockEntity>> ORE_WASHER_BE =
             BLOCK_ENTITIES.register("ore_washer_be", () ->
                     BlockEntityType.Builder.of(OreWasherBlockEntity::new,
@@ -95,6 +100,16 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("crystallizer_be", () ->
                     BlockEntityType.Builder.of(CrystallizerBlockEntity::new,
                             ModBlocks.CRYSTALLIZER.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<EvolutionChamberBlockEntity>> EVOLUTION_CHAMBER_BE =
+            BLOCK_ENTITIES.register("evolution_chamber_be", () ->
+                    BlockEntityType.Builder.of(EvolutionChamberBlockEntity::new,
+                            ModBlocks.EVOLUTION_CHAMBER.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<NaniteLabBlockEntity>> NANITE_LAB_BE =
+            BLOCK_ENTITIES.register("nanite_lab_be", () ->
+                    BlockEntityType.Builder.of(NaniteLabBlockEntity::new,
+                            ModBlocks.NANITE_LAB.get()).build(null));
 
     public static final RegistryObject<BlockEntityType<FluidGeneratorBlockEntity>> LAVA_GENERATOR_BE =
             BLOCK_ENTITIES.register("lava_generator_be", () ->
@@ -123,6 +138,11 @@ public class ModBlockEntities {
                     BlockEntityType.Builder.of(CultivatorBlockEntity::new,
                             ModBlocks.CULTIVATOR.get()).build(null));
 
+    public static final RegistryObject<BlockEntityType<CultivatorBlockEntity>> CULTIVATOR_T2_BE =
+            BLOCK_ENTITIES.register("cultivator_t2_be", () ->
+                    BlockEntityType.Builder.of(CultivatorBlockEntity::t2,
+                            ModBlocks.CULTIVATOR_T2.get()).build(null));
+
     public static final RegistryObject<BlockEntityType<RodFabricatorBlockEntity>> ROD_FABRICATOR_BE =
             BLOCK_ENTITIES.register("rod_fabricator_be", () ->
                     BlockEntityType.Builder.of(RodFabricatorBlockEntity::new,
@@ -143,6 +163,11 @@ public class ModBlockEntities {
                     BlockEntityType.Builder.of(RestructorBlockEntity::new,
                             ModBlocks.RESTRUCTOR.get()).build(null));
 
+    public static final RegistryObject<BlockEntityType<RestructorBlockEntity>> RESTRUCTOR_T2_BE =
+            BLOCK_ENTITIES.register("restructor_t2_be", () ->
+                    BlockEntityType.Builder.of(RestructorBlockEntity::t2,
+                            ModBlocks.RESTRUCTOR_T2.get()).build(null));
+
     public static final RegistryObject<BlockEntityType<ResinCollectorBlockEntity>> RESIN_COLLECTOR_BE =
             BLOCK_ENTITIES.register("resin_collector_be", () ->
                     BlockEntityType.Builder.of(ResinCollectorBlockEntity::new,
@@ -152,6 +177,18 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("miner_core_be", () ->
                     BlockEntityType.Builder.of(MinerCoreBlockEntity::new,
                             ModBlocks.MINER_CORE.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<IndustrialMinerCoreBlockEntity>> INDUSTRIAL_MINER_CORE_BE =
+            BLOCK_ENTITIES.register("industrial_miner_core_be", () ->
+                    BlockEntityType.Builder.of(IndustrialMinerCoreBlockEntity::new, ModBlocks.INDUSTRIAL_MINER_CORE.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<IndustrialMinerFrameBlockEntity>> INDUSTRIAL_MINER_FRAME_BE =
+            BLOCK_ENTITIES.register("industrial_miner_frame_be", () ->
+                    BlockEntityType.Builder.of(IndustrialMinerFrameBlockEntity::new, ModBlocks.INDUSTRIAL_MINER_FRAME.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<DrillBeaconBlockEntity>> DRILL_BEACON_BE =
+            BLOCK_ENTITIES.register("drill_beacon_be", () ->
+                    BlockEntityType.Builder.of(DrillBeaconBlockEntity::new, ModBlocks.DRILL_BEACON.get()).build(null));
 
     public static final RegistryObject<BlockEntityType<MinerCasingBlockEntity>> MINER_CASING_BE =
             BLOCK_ENTITIES.register("miner_casing_be", () ->
@@ -177,6 +214,36 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("energy_bank_be", () ->
                     BlockEntityType.Builder.of(EnergyBankBlockEntity::new,
                             ModBlocks.ENERGY_BANK.get()).build(null));
+
+    /** Один тип на входной и выходной порт: направление сущность берёт из блока. */
+    public static final RegistryObject<BlockEntityType<ItemFluidPortBlockEntity>> ITEM_FLUID_PORT_BE =
+            BLOCK_ENTITIES.register("item_fluid_port_be", () ->
+                    BlockEntityType.Builder.of(ItemFluidPortBlockEntity::new,
+                            ModBlocks.MULTIBLOCK_INPUT_PORT.get(), ModBlocks.MULTIBLOCK_OUTPUT_PORT.get()).build(null));
+
+    /** Один тип на все ядра лейт-мультиблоков: форму и рецепты сущность берёт из блока. */
+    public static final RegistryObject<BlockEntityType<LateMachineCoreBlockEntity>> LATE_MACHINE_CORE_BE =
+            BLOCK_ENTITIES.register("late_machine_core_be", () ->
+                    BlockEntityType.Builder.of(LateMachineCoreBlockEntity::new,
+                            ModBlocks.MULTIBLOCK_MACERATOR.get(), ModBlocks.MULTIBLOCK_FURNACE.get(), ModBlocks.MULTIBLOCK_WASHER.get(),
+                            ModBlocks.MULTIBLOCK_COMPRESSOR.get(), ModBlocks.MULTIBLOCK_ROLLING_MILL.get(),
+                            ModBlocks.MULTIBLOCK_CRAFTER.get(), ModBlocks.MULTIBLOCK_LIQUEFIER.get(), ModBlocks.MULTIBLOCK_BLAST_FURNACE.get(),
+                            ModBlocks.MULTIBLOCK_FLUID_ENRICHER.get(), ModBlocks.MULTIBLOCK_MAGNET.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<HeatPortBlockEntity>> HEAT_PORT_BE =
+            BLOCK_ENTITIES.register("heat_port_be", () ->
+                    BlockEntityType.Builder.of(HeatPortBlockEntity::new, ModBlocks.MULTIBLOCK_HEAT_PORT.get()).build(null));
+
+    /** МЭ-порты: класс сущности выбирает {@link com.jykito.industrialcore.compat.ae2.MePorts} — с AE2 МЭ-порт, без — обычный. */
+    public static final RegistryObject<BlockEntityType<ItemFluidPortBlockEntity>> ME_PORT_BE =
+            BLOCK_ENTITIES.register("me_port_be", () ->
+                    BlockEntityType.Builder.of(com.jykito.industrialcore.compat.ae2.MePorts::create,
+                            ModBlocks.ME_INPUT_PORT.get(), ModBlocks.ME_OUTPUT_PORT.get(), ModBlocks.ME_PATTERN_PORT.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<EnergyPortBlockEntity>> ENERGY_PORT_BE =
+            BLOCK_ENTITIES.register("energy_port_be", () ->
+                    BlockEntityType.Builder.of(EnergyPortBlockEntity::new,
+                            ModBlocks.MULTIBLOCK_ENERGY_PORT.get()).build(null));
 
     public static final RegistryObject<BlockEntityType<ElectromagnetCoreBlockEntity>> ELECTROMAGNET_CORE_BE =
             BLOCK_ENTITIES.register("electromagnet_core_be", () ->

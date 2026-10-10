@@ -5,12 +5,17 @@
       "name": "Miner",
       "elements": [
         {
-          "type": "header",
-          "text": "Miner"
+          "type": "card",
+          "icon": "industrial_core:miner_core",
+          "title": "Miner"
         },
         {
           "type": "text",
-          "text": "Automated ore mining without digging. A 3×3×3 cube: core in the center, 26 casings around. A lens sets the dimension and ore pool. Runs on FE and drill fluid."
+          "text": "Mines ore by itself, no digging needed. It is a 3×3×3 cube: the core in the center and 26 casings around it."
+        },
+        {
+          "type": "text",
+          "text": "The **lens** in the core decides which ores it mines. It runs on power and drill fluid."
         },
         {
           "type": "multiblock",
@@ -35,7 +40,8 @@
                 "CCC",
                 "CCC"
               ]
-            ]
+            ],
+            "model": "miner"
           }
         },
         {
@@ -45,8 +51,178 @@
             "industrial_core:miner_casing",
             "industrial_core:miner_lens_1",
             "industrial_core:miner_lens_4"
-          ],
-          "label": "Components"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Industrial Miner",
+      "id": "industrial_miner",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:industrial_miner_core",
+          "title": "Industrial Miner"
+        },
+        {
+          "type": "text",
+          "text": "A big 5×5 miner. It does not dig the world itself: it mines what the **drill beacons** found. The blocks stay in place and the veins never run out."
+        },
+        {
+          "type": "text",
+          "text": "It is built from frame blocks, with the core in the middle of the front wall, facing out. The structure wand can build it for you."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "F": "industrial_core:industrial_miner_frame",
+              "K": "industrial_core:industrial_miner_core"
+            },
+            "layers": [
+              [
+                "F...F",
+                ".....",
+                ".....",
+                ".....",
+                "F...F"
+              ],
+              [
+                "FFFFF",
+                "FFFFF",
+                "FFFFF",
+                "FFFFF",
+                "FFFFF"
+              ],
+              [
+                "FFKFF",
+                "F...F",
+                "F...F",
+                "F...F",
+                "FFFFF"
+              ],
+              [
+                "FFFFF",
+                "FFFFF",
+                "FFFFF",
+                "FFFFF",
+                "FFFFF"
+              ],
+              [
+                ".....",
+                ".....",
+                "..F..",
+                ".....",
+                "....."
+              ],
+              [
+                ".....",
+                ".....",
+                "..F..",
+                ".....",
+                "....."
+              ]
+            ],
+            "model": "industrial_miner"
+          }
+        },
+        {
+          "type": "text",
+          "text": "Every 5 seconds it gives up to 64 ore blocks, split evenly between all enabled beacons. Each block costs 50,000 FE and 250 mB of drill fluid. Power, fluid and output pipes can connect to any frame block."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Cycle",
+              "value": "5 s"
+            },
+            {
+              "key": "Ore per cycle",
+              "value": "up to 64"
+            },
+            {
+              "key": "Energy",
+              "value": "50,000 FE per ore"
+            },
+            {
+              "key": "Drill fluid",
+              "value": "250 mB per ore"
+            },
+            {
+              "key": "Beacons",
+              "value": "up to 4"
+            },
+            {
+              "key": "Output",
+              "value": "27 slots"
+            }
+          ]
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:industrial_miner_core",
+            "industrial_core:industrial_miner_frame",
+            "industrial_core:drill_beacon"
+          ]
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Drill Beacon",
+              "to": "drill_beacon"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Drill Beacon",
+      "id": "drill_beacon",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:drill_beacon",
+          "title": "Drill Beacon"
+        },
+        {
+          "type": "text",
+          "text": "Place it where you want to mine. In 10 seconds the beacon looks through the 3×3 chunks around it, from the bottom of the world up to its own height, and counts the ore."
+        },
+        {
+          "type": "text",
+          "text": "In the beacon window you pick a height band. Whatever ore lies in that band, and how much of it, is what you will mine."
+        },
+        {
+          "type": "text",
+          "text": "Without a lens the beacon works only in the Overworld. For the Nether or the End, place the beacon there and give it that world's lens; the dimensional lens works anywhere. The miner itself can stay at home."
+        },
+        {
+          "type": "text",
+          "text": "Link it with the linker: click the beacon, then the miner core. One miner takes up to four beacons, and each can be switched off in its window."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:drill_beacon",
+            "industrial_core:miner_lens_1",
+            "industrial_core:miner_lens_2",
+            "industrial_core:miner_lens_3",
+            "industrial_core:miner_lens_4"
+          ]
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Industrial Miner",
+              "to": "industrial_miner"
+            }
+          ]
         }
       ]
     },
@@ -54,12 +230,13 @@
       "name": "Cryo Chamber",
       "elements": [
         {
-          "type": "header",
-          "text": "Cryo Chamber (multiblock)"
+          "type": "card",
+          "icon": "industrial_core:cryo_core",
+          "title": "Cryo Chamber"
         },
         {
           "type": "text",
-          "text": "A 5×5×5 cube: floor and ceiling entirely of casing, walls of cryo panels, a hollow inside with a column of refrigeration chambers. The core sits in the front row of the floor and sets the orientation of the whole build. Details in the Cryogenics chapter."
+          "text": "A 5×5×5 cube: casing floor and ceiling, cryo panel walls, a column of refrigeration chambers inside. The core sits in the front row of the floor. How it works is covered in the Cryogenics chapter."
         },
         {
           "type": "multiblock",
@@ -124,12 +301,13 @@
       "name": "Magnet Accelerator",
       "elements": [
         {
-          "type": "header",
-          "text": "Magnet Accelerator"
+          "type": "card",
+          "icon": "industrial_core:structural_block",
+          "title": "Magnet Accelerator"
         },
         {
           "type": "text",
-          "text": "The apex of the mod — a 7×7×8 frame of structural blocks with two coil holders and an electromagnet core. A coil goes into the holder (copper, superconductor or graviton), and its tier unlocks ever stronger accelerations."
+          "text": "The largest machine in the mod: a 7×7×8 frame of structural blocks, two coil holders and an electromagnet core."
         },
         {
           "type": "multiblock",
@@ -212,12 +390,17 @@
                 ".S...S.",
                 "......."
               ]
-            ]
+            ],
+            "model": "magnet"
           }
         },
         {
           "type": "text",
-          "text": "Accelerating builds up instability. In the resonance band the output doubles, but overshooting triggers a quench wave that wrecks your base. Nearby antigravity columns raise the safe threshold — place them BEFORE moving to higher coils."
+          "text": "A coil goes into the holders: copper, superconductor or graviton. The better the coil, the stronger the accelerations you can run."
+        },
+        {
+          "type": "tip",
+          "text": "Accelerating builds up **instability**. In the resonance band the output doubles, but overshoot it and a quench wave tears through your base. Place antigrav columns **before** moving to stronger coils."
         },
         {
           "type": "items",
@@ -244,16 +427,34 @@
       "name": "Antigrav Columns",
       "elements": [
         {
-          "type": "header",
-          "text": "Antigrav Columns"
+          "type": "card",
+          "icon": "industrial_core:antigrav_column",
+          "title": "Antigrav Columns"
         },
         {
           "type": "text",
-          "text": "Antigrav columns run on HEAT, not FE. Heat comes in from below through a heat pipe from the heat network: a thermogenerator warms the pipe, and the pipe feeds heat into the column base. The column stores it in a buffer (up to 4000) and starts working for the magnet once warm (from 200). The hotter the column, the greater its contribution to stability."
+          "text": "Columns run on **heat**, not power. Run a heat pipe from a thermogenerator into the base of the column. It stores heat (up to 4000) and starts helping the magnet once it warms up to 200."
         },
         {
           "type": "text",
-          "text": "Each fully heated column raises the safe quench threshold by 7.5% over the base 50%. Up to 8 columns within 16 blocks of the magnet center are counted. Rough guide: 2 columns hold the threshold at 65%, 4 at 80% (needed for the superconductor coil), 6 at 95%, 7 the full 100% (needed for the graviton coil). The copper coil needs no columns: its ceiling sits below 50%."
+          "text": "Each warm column raises the magnet's safe threshold by 7.5% above the base 50%. Up to eight columns within 16 blocks of the magnet center count."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Copper coil",
+              "value": "no columns needed"
+            },
+            {
+              "key": "Superconductor",
+              "value": "needs 4 columns (80% threshold)"
+            },
+            {
+              "key": "Graviton",
+              "value": "needs 7 columns (100% threshold)"
+            }
+          ]
         },
         {
           "type": "items",
@@ -261,8 +462,1420 @@
             "industrial_core:antigrav_column",
             "industrial_core:heat_pipe",
             "industrial_core:thermogenerator"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Distant Controller",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:distant_controller",
+          "title": "Distant Controller"
+        },
+        {
+          "type": "text",
+          "text": "A running magnet pulls in everything around it and kills anything right at the core. The field grows with instability, so during a run you should stay away from the core, yet you still need its window."
+        },
+        {
+          "type": "text",
+          "text": "That is what the **distant controller** is for. Place it somewhere safe and link it to the core with the **linker**, no more than 64 blocks away. Clicking the controller opens the core window, and its screen shows what is being accelerated and the current instability."
+        },
+        {
+          "type": "tip",
+          "text": "The window stays open while you are within 8 blocks of the controller. The controller does not work with the industrial electromagnet."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:distant_controller",
+            "industrial_core:logistics_linker"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Phase-Lock",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:phase_lock_upgrade",
+          "title": "Phase-Lock"
+        },
+        {
+          "type": "text",
+          "text": "An upgrade for the magnet core that goes into its upgrade slot. While it is in, instability holds itself on the resonance target even as the target drifts, and the output doubles reliably without manual tuning. It uses 400 FE per tick."
+        },
+        {
+          "type": "tip",
+          "text": "The Phase-Lock never pushes instability past the safe threshold. Without antigrav columns that threshold is 50%, so it cannot reach the high bands. The industrial electromagnet neither needs nor takes it."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:phase_lock_upgrade"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Late Multiblocks",
+      "id": "late_overview",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_casing",
+          "title": "Late Multiblocks",
+          "subtitle": "Big versions of the regular machines"
+        },
+        {
+          "type": "text",
+          "text": "These are the machines you built before, just big. They do the same jobs, but instead of one item at a time they work in batches: up to **64** items per cycle, more with upgrades."
+        },
+        {
+          "type": "text",
+          "text": "They are built from **casing**, **structural glass** and **mechanism blocks** around a core. The core has no slots: you put whatever the machine needs into an input port, take the results from an output port, and feed power into an energy port."
+        },
+        {
+          "type": "tip",
+          "text": "Every machine has its own strict shape. Only two swaps are allowed: a **port** in place of any casing, and an **upgrade block** in place of a mechanism block."
+        },
+        {
+          "type": "text",
+          "text": "If the machine does not start, open the core. It tells you what is wrong: which port is missing, or which block is in the wrong place and where."
+        },
+        {
+          "type": "itemlist",
+          "items": [
+            {
+              "id": "industrial_core:multiblock_casing",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:structural_glass",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:mechanism_block",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:multiblock_input_port",
+              "count": 1
+            }
           ],
-          "label": "Heat feed"
+          "label": "Built from"
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Ports",
+              "to": "late_ports"
+            },
+            {
+              "text": "Upgrade blocks",
+              "to": "late_upgrades"
+            },
+            {
+              "text": "Structure wand",
+              "to": "late_wand"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ports",
+      "id": "late_ports",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_input_port",
+          "title": "Multiblock Ports",
+          "subtitle": "Go in place of any casing",
+          "tags": [
+            {
+              "text": "Input",
+              "color": "#FF5A00"
+            },
+            {
+              "text": "Output",
+              "color": "#5100FF"
+            },
+            {
+              "text": "Energy",
+              "color": "#00FFCC"
+            },
+            {
+              "text": "Heat",
+              "color": "#FFD000"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Put whatever the machine should process into the **input port**. Take the results from the **output port**. Run a cable into the **energy port**. You can place as many ports as you like; the machine uses all of them."
+        },
+        {
+          "type": "text",
+          "text": "A button in the port window chooses what it takes: items, fluid or both. Another button turns on auto mode: the input then pulls from neighbouring chests and pipes on its own, and the output pushes results out."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "No upgrade",
+              "value": "9 slots, 16-bucket tank, 1M FE port"
+            },
+            {
+              "key": "Basic upgrade",
+              "value": "18 slots, 64 buckets, 10M FE"
+            },
+            {
+              "key": "Advanced upgrade",
+              "value": "27 slots, 256 buckets, 100M FE"
+            }
+          ]
+        },
+        {
+          "type": "tip",
+          "text": "If a recipe needs both items and a fluid and your autocrafter sends them in one go, set the port to **items + fluid**. The mode can only be changed while the port is empty."
+        },
+        {
+          "type": "text",
+          "text": "The **heat port** is for machines that run on heat. Run a heat pipe into it and it holds the heat for as long as it keeps coming. Once the supply stops, the port slowly cools down."
+        },
+        {
+          "type": "itemlist",
+          "items": [
+            {
+              "id": "industrial_core:multiblock_input_port",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:multiblock_output_port",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:multiblock_energy_port",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:multiblock_heat_port",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:port_upgrade_basic",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:port_upgrade_advanced",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Late multiblocks",
+              "to": "late_overview"
+            },
+            {
+              "text": "Upgrade blocks",
+              "to": "late_upgrades"
+            },
+            {
+              "text": "ME ports",
+              "to": "late_me_ports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ME Ports",
+      "id": "late_me_ports",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:me_input_port",
+          "title": "ME Ports",
+          "subtitle": "For an Applied Energistics 2 network",
+          "tags": [
+            {
+              "text": "Input",
+              "color": "#FF5A00"
+            },
+            {
+              "text": "Output",
+              "color": "#5100FF"
+            },
+            {
+              "text": "Patterns",
+              "color": "#C86BF0"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "If your pack has **Applied Energistics 2**, a late machine can connect straight to the ME network. ME ports go in place of casing like regular ports and take up a channel. Without AE2 these ports do not exist."
+        },
+        {
+          "type": "text",
+          "text": "The **ME input port** works like an interface: in its slots you set what to keep and how much, it takes that from the network by itself and sends anything extra back. The **ME output port** sends every finished item straight into the network."
+        },
+        {
+          "type": "text",
+          "text": "The **ME pattern port** holds processing patterns like a pattern provider, and the machine becomes part of your autocrafting. The network loads everything a pattern needs into the port at once, and the result comes back through the ME output port."
+        },
+        {
+          "type": "tip",
+          "text": "ME ports do not trade with neighbouring chests; everything goes through the network. Port upgrades work as usual: more rows and bigger tanks."
+        },
+        {
+          "type": "itemlist",
+          "items": [
+            {
+              "id": "industrial_core:me_input_port",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:me_output_port",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:me_pattern_port",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Ports",
+              "to": "late_ports"
+            },
+            {
+              "text": "Late multiblocks",
+              "to": "late_overview"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Upgrade Blocks",
+      "id": "late_upgrades",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:mechanism_parallel_3",
+          "title": "Upgrade Blocks",
+          "subtitle": "Go in place of a mechanism block",
+          "tags": [
+            {
+              "text": "Parallel",
+              "color": "#C86BF0"
+            },
+            {
+              "text": "Speed",
+              "color": "#FF8A4A"
+            },
+            {
+              "text": "Efficiency",
+              "color": "#5CF4FF"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Big machines have no upgrade slots. Instead, any **mechanism block** inside can be swapped for an upgrade block. The machine notices the swap by itself, nothing to press."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Parallel I",
+              "value": "16 more items per cycle"
+            },
+            {
+              "key": "Parallel II",
+              "value": "32 more"
+            },
+            {
+              "key": "Parallel III",
+              "value": "64 more"
+            },
+            {
+              "key": "Speed",
+              "value": "cycle 15% shorter, 15% more energy"
+            },
+            {
+              "key": "Efficiency",
+              "value": "10% less energy"
+            }
+          ]
+        },
+        {
+          "type": "tip",
+          "text": "Speed and efficiency work well together. Two speed and three efficiency blocks give a 30% shorter cycle at the same energy use."
+        },
+        {
+          "type": "itemlist",
+          "items": [
+            {
+              "id": "industrial_core:mechanism_parallel_1",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:mechanism_parallel_2",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:mechanism_parallel_3",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:mechanism_speed",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:mechanism_efficiency",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:mechanism_block",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Late multiblocks",
+              "to": "late_overview"
+            },
+            {
+              "text": "Ports",
+              "to": "late_ports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Structure Wand",
+      "id": "late_wand",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:structure_wand",
+          "title": "Structure Wand",
+          "subtitle": "Builds a multiblock for you"
+        },
+        {
+          "type": "text",
+          "text": "Place the core and click it with the wand: it builds out the whole machine. In survival the blocks come from your inventory, and if something is missing the wand tells you in chat what. Grab the rest and click again."
+        },
+        {
+          "type": "text",
+          "text": "The wand never breaks other blocks and leaves whatever is already correct alone. Your ports and upgrade blocks stay where they are."
+        },
+        {
+          "type": "tip",
+          "text": "The wand does not place ports: where each port goes is your call."
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Late multiblocks",
+              "to": "late_overview"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Second Tier",
+      "id": "late_tier2",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_casing_advanced",
+          "title": "Second Tier",
+          "subtitle": "Dark casing for the newer machines"
+        },
+        {
+          "type": "text",
+          "text": "Some big machines are built from **advanced casing** instead of the regular kind, and they use **advanced glass** too. Regular casing will not fit them, and advanced casing will not fit the older machines. The machine's entry shows which one it needs."
+        },
+        {
+          "type": "text",
+          "text": "The ports are the same ones. Put a port next to advanced casing and it darkens to match on its own. It works exactly the same."
+        },
+        {
+          "type": "itemlist",
+          "items": [
+            {
+              "id": "industrial_core:multiblock_casing_advanced",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:structural_glass_advanced",
+              "count": 1
+            }
+          ],
+          "label": "Built from"
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Industrial Liquefier",
+              "to": "late_liquefier"
+            },
+            {
+              "text": "Industrial Blast Furnace",
+              "to": "late_blast"
+            },
+            {
+              "text": "Industrial Electromagnet",
+              "to": "late_magnet"
+            },
+            {
+              "text": "Ports",
+              "to": "late_ports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Industrial Crusher",
+      "id": "late_crusher",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_macerator",
+          "title": "Industrial Crusher",
+          "subtitle": "A big crusher, 5×5×4",
+          "tags": [
+            {
+              "text": "Crushing",
+              "color": "#02E2DB"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Grinds everything a regular crusher does, just in batches. Put ore into the input port, and after a cycle the output port holds dust for the whole batch at once."
+        },
+        {
+          "type": "text",
+          "text": "The core sits in a glass band, there is a funnel ring on the roof, and nine mechanism blocks form a square inside."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing",
+              "G": "industrial_core:structural_glass",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_macerator",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port"
+            },
+            "layers": [
+              [
+                "CCCCC",
+                "CCCCC",
+                "CCCCC",
+                "CCCCC",
+                "CCCCC"
+              ],
+              [
+                "CGKGC",
+                "CMMMI",
+                "GMMMG",
+                "CMMMO",
+                "CCCCE"
+              ],
+              [
+                "CCCCC",
+                "CCCCC",
+                "CCCCC",
+                "CCCCC",
+                "CCCCC"
+              ],
+              [
+                ".....",
+                ".CCC.",
+                ".C.C.",
+                ".CCC.",
+                "....."
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Late multiblocks",
+              "to": "late_overview"
+            },
+            {
+              "text": "Ports",
+              "to": "late_ports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Industrial Ore Washer",
+      "id": "late_washer",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_washer",
+          "title": "Industrial Ore Washer",
+          "subtitle": "A big ore washer, 5×5×4",
+          "tags": [
+            {
+              "text": "Water",
+              "color": "#62B2FF"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Washes ore just like the regular washer. Put the ore into an item input port and pour water into a port that takes fluid. Collect the washed results from the output."
+        },
+        {
+          "type": "text",
+          "text": "Byproducts drop just like with the small machine: the chance is rolled for every ore in the batch, so 64 ores give about as many byproducts as washing them one by one."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing",
+              "G": "industrial_core:structural_glass",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_washer",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port"
+            },
+            "layers": [
+              [
+                "CCCCC",
+                "CCCCC",
+                "CCCCC",
+                "CCCCC",
+                "CCCCC"
+              ],
+              [
+                "CGKGC",
+                "CMMMI",
+                "CMMMG",
+                "CMMMO",
+                "CCCCE"
+              ],
+              [
+                "CCCCC",
+                "CGGGC",
+                "CGGGC",
+                "CGGGC",
+                "CCCCC"
+              ],
+              [
+                "CCCCC",
+                "C...C",
+                "C...C",
+                "C...C",
+                "CCCCC"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Ports",
+              "to": "late_ports"
+            },
+            {
+              "text": "Upgrade blocks",
+              "to": "late_upgrades"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Industrial Furnace",
+      "id": "late_furnace",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_furnace",
+          "title": "Industrial Furnace",
+          "subtitle": "A big electric furnace, 5×3×5",
+          "tags": [
+            {
+              "text": "Smelting",
+              "color": "#FF8A2E"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Smelts everything the electric furnace does, but in batches: drop a stack into the input port and it smelts in a single cycle."
+        },
+        {
+          "type": "text",
+          "text": "It is a tall tower with a 3×3 window on the front. The core sits in the bottom row of the window, and behind the glass you can see a column of nine mechanism blocks."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing",
+              "G": "industrial_core:structural_glass",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_furnace",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port"
+            },
+            "layers": [
+              [
+                "CCCCC",
+                "CCCCC",
+                "CCCCC"
+              ],
+              [
+                "CGKGC",
+                "CMMMI",
+                "CCCCO"
+              ],
+              [
+                "CGGGC",
+                "CMMME",
+                "CCCCC"
+              ],
+              [
+                "CGGGC",
+                "CMMMC",
+                "CCCCC"
+              ],
+              [
+                "CCCCC",
+                "CCCCC",
+                "CCCCC"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Late multiblocks",
+              "to": "late_overview"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Industrial Compressor",
+      "id": "late_compressor",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_compressor",
+          "title": "Industrial Compressor",
+          "subtitle": "A big compressor, 3×5×5",
+          "tags": [
+            {
+              "text": "Compressing",
+              "color": "#C86BF0"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Compresses the same things as the regular compressor, just in batches. It is narrow, with the core on the end and a long side window showing a column of mechanism blocks."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing",
+              "G": "industrial_core:structural_glass",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_compressor",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port"
+            },
+            "layers": [
+              [
+                "CCC",
+                "CCC",
+                "CCC",
+                "CCC",
+                "CCC"
+              ],
+              [
+                "CKC",
+                "CMI",
+                "CMO",
+                "CME",
+                "CCC"
+              ],
+              [
+                "CGC",
+                "GMC",
+                "GMC",
+                "GMC",
+                "CCC"
+              ],
+              [
+                "CGC",
+                "GMC",
+                "GMC",
+                "GMC",
+                "CCC"
+              ],
+              [
+                "CCC",
+                "CCC",
+                "CCC",
+                "CCC",
+                "CCC"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Late multiblocks",
+              "to": "late_overview"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Industrial Rolling Mill",
+      "id": "late_rolling",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_rolling_mill",
+          "title": "Industrial Rolling Mill",
+          "subtitle": "A big metal former, 7×4×3",
+          "tags": [
+            {
+              "text": "Rolling",
+              "color": "#7CDC55"
+            },
+            {
+              "text": "Extruding",
+              "color": "#7CDC55"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Works like the metal former, with the same two modes. **Rolling** turns ingots into plates; **extruding** turns plates into wire, plus rods and fiber."
+        },
+        {
+          "type": "text",
+          "text": "Click the Mode line in the core window to switch. Switching mid-cycle just restarts the current batch, nothing is lost."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing",
+              "G": "industrial_core:structural_glass",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_rolling_mill",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port"
+            },
+            "layers": [
+              [
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC"
+              ],
+              [
+                "CGGKGGC",
+                "CMMMMMI",
+                "CMMMMMO",
+                "CCCCCCE"
+              ],
+              [
+                "CCCCCCC",
+                "CGGGGGC",
+                "CGGGGGC",
+                "CCCCCCC"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Late multiblocks",
+              "to": "late_overview"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Industrial Assembler",
+      "id": "late_assembler",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_crafter",
+          "title": "Industrial Assembler",
+          "subtitle": "The key late-game machine, 7×7×3",
+          "tags": [
+            {
+              "text": "Assembling",
+              "color": "#FFC45C"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "This is where the cores of the other big machines and other expensive things are made. Put the needed items into the input port, pour in a fluid if the recipe wants one, and pick up the result after a cycle. Sometimes the result is a fluid too."
+        },
+        {
+          "type": "text",
+          "text": "The largest of the late multiblocks: a ring of 16 mechanism blocks inside under a glass roof."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing",
+              "G": "industrial_core:structural_glass",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_crafter",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port"
+            },
+            "layers": [
+              [
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC"
+              ],
+              [
+                "CGGKGGC",
+                "CMMMMMI",
+                "CMCCCMO",
+                "CMCCCME",
+                "CMCCCMC",
+                "CMMMMMC",
+                "CCCCCCC"
+              ],
+              [
+                "CCCCCCC",
+                "CGGGGGC",
+                "CGCCCGC",
+                "CGCCCGC",
+                "CGCCCGC",
+                "CGGGGGC",
+                "CCCCCCC"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Late multiblocks",
+              "to": "late_overview"
+            },
+            {
+              "text": "Upgrade blocks",
+              "to": "late_upgrades"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Industrial Liquefier",
+      "id": "late_liquefier",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_liquefier",
+          "title": "Industrial Liquefier",
+          "subtitle": "A big liquefier, 6×3×6",
+          "tags": [
+            {
+              "text": "Heat",
+              "color": "#FFD000"
+            },
+            {
+              "text": "Second tier",
+              "color": "#C42A20"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Melts the same things into fluid as the regular liquefier, just in batches. Put ingots or other items into the input port and collect the melt from an output port set to fluid."
+        },
+        {
+          "type": "text",
+          "text": "Besides power it needs **heat**. Put a heat port on the casing and run a heat pipe into it. While the port holds less heat than the recipe needs, the machine waits. The core window shows how much heat there is and how much is needed. Heat is not used up, it just has to be kept there."
+        },
+        {
+          "type": "text",
+          "text": "On the left is a tall tower where things melt, on the right a low bath under a glass lid. The core sits in the front of the tower. It is built from advanced casing and advanced glass."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing_advanced",
+              "G": "industrial_core:structural_glass_advanced",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_liquefier",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port",
+              "H": "industrial_core:multiblock_heat_port"
+            },
+            "layers": [
+              [
+                "ECCCCC",
+                "CCCCCC",
+                "CCCCCC"
+              ],
+              [
+                "CGCCKC",
+                "OMMCMC",
+                "CCCCCC"
+              ],
+              [
+                "GGGCGC",
+                "GGGGMG",
+                "GGGCGC"
+              ],
+              [
+                "...CGC",
+                "...IMG",
+                "...CGC"
+              ],
+              [
+                "...CGC",
+                "...HMG",
+                "...CGC"
+              ],
+              [
+                "...CCC",
+                "...CCC",
+                "...CCC"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Second tier",
+              "to": "late_tier2"
+            },
+            {
+              "text": "Ports",
+              "to": "late_ports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Industrial Blast Furnace",
+      "id": "late_blast",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_blast_furnace",
+          "title": "Industrial Blast Furnace",
+          "subtitle": "A big blast furnace, 7×5×4",
+          "tags": [
+            {
+              "text": "Heat",
+              "color": "#FFD000"
+            },
+            {
+              "text": "Second tier",
+              "color": "#C42A20"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Smelts the same things as the regular blast furnace, just in batches: alloys and hardened steel. Put what you smelt and the fuel into the input port, and collect the ingots from the output port."
+        },
+        {
+          "type": "text",
+          "text": "Besides power it needs **heat**. Put a heat port on the casing and run a heat pipe into it. While the port holds less heat than the recipe needs, the furnace waits. The core window shows how much there is and how much is needed. Heat is not used up, it just has to be kept there."
+        },
+        {
+          "type": "text",
+          "text": "It is a tunnel: a wide base seven blocks across, twenty mechanism blocks inside, narrowing upward to a glass ridge. The core sits in a glass band at the front. Built from advanced casing and advanced glass."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Energy",
+              "value": "40 FE per tick per smelt"
+            },
+            {
+              "key": "Heat",
+              "value": "1,200 to 3,200, by recipe"
+            },
+            {
+              "key": "Smelts per cycle",
+              "value": "up to 64"
+            }
+          ]
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing_advanced",
+              "G": "industrial_core:structural_glass_advanced",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_blast_furnace",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port",
+              "H": "industrial_core:multiblock_heat_port"
+            },
+            "layers": [
+              [
+                "CCICOCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCECCC"
+              ],
+              [
+                "CGGKGGC",
+                "CMMMMMC",
+                "CMMMMMC",
+                "CMMMMMC",
+                "CCCHCCC"
+              ],
+              [
+                ".......",
+                "CCCCCCC",
+                "CMMMMMC",
+                "CCCCCCC",
+                "......."
+              ],
+              [
+                ".......",
+                ".......",
+                "CGGGGGC",
+                ".......",
+                "......."
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Second tier",
+              "to": "late_tier2"
+            },
+            {
+              "text": "Industrial Liquefier",
+              "to": "late_liquefier"
+            },
+            {
+              "text": "Ports",
+              "to": "late_ports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Industrial Fluid Enricher",
+      "id": "late_enricher",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_fluid_enricher",
+          "title": "Industrial Fluid Enricher",
+          "subtitle": "A big fluid enricher, 9×5×3",
+          "tags": [
+            {
+              "text": "Enriching",
+              "color": "#F06AB8"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Does the same as the regular fluid enricher, just in batches. Pour the fluid into a port that takes fluid, put the reagents into an item input port, and collect the finished fluid from an output port set to fluid."
+        },
+        {
+          "type": "text",
+          "text": "Two round glass tanks stand on the sides with a low mixer between them that holds the core. The tank corners are not checked, so you can leave them empty or put anything there."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing",
+              "G": "industrial_core:structural_glass",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_fluid_enricher",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port"
+            },
+            "layers": [
+              [
+                ".I.CCC.O.",
+                "CCCCCCCCC",
+                ".C.CCC.C."
+              ],
+              [
+                ".G.GKG.G.",
+                "GMGMMMGMG",
+                ".G.CEC.G."
+              ],
+              [
+                ".G.CCC.G.",
+                "GMGCGCGMG",
+                ".G.CCC.G."
+              ],
+              [
+                ".G.....G.",
+                "GMG...GMG",
+                ".G.....G."
+              ],
+              [
+                ".C.....C.",
+                "CCC...CCI",
+                ".C.....C."
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Late multiblocks",
+              "to": "late_overview"
+            },
+            {
+              "text": "Ports",
+              "to": "late_ports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Industrial Electromagnet",
+      "id": "late_magnet",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_magnet",
+          "title": "Industrial Electromagnet",
+          "subtitle": "The late-game magnet, 7×9×7",
+          "tags": [
+            {
+              "text": "Accelerating",
+              "color": "#5560F0"
+            },
+            {
+              "text": "Second tier",
+              "color": "#C42A20"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Makes the same things as the regular electromagnet, but without columns, instability or bands. Put what the recipe needs into the input port, feed it power and collect the result from the output. Works in batches like the other big machines."
+        },
+        {
+          "type": "text",
+          "text": "It is a tower. A plate holds a pedestal with the core and four posts in the corners, then comes a thin glass stem, a head of nine mechanism blocks under a glass dome, and a crown. The plate sticks out two blocks in front of the core. Built from advanced casing and advanced glass."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing_advanced",
+              "G": "industrial_core:structural_glass_advanced",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_magnet",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port",
+              "H": "industrial_core:multiblock_heat_port"
+            },
+            "layers": [
+              [
+                ".CICOC.",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                ".CCECC."
+              ],
+              [
+                ".......",
+                ".C...C.",
+                "..CKC..",
+                "..CCC..",
+                "..CCC..",
+                ".C...C.",
+                "......."
+              ],
+              [
+                ".......",
+                ".G...G.",
+                "...G...",
+                "..GMG..",
+                "...G...",
+                ".G...G.",
+                "......."
+              ],
+              [
+                ".......",
+                ".C...C.",
+                "...G...",
+                "..GMG..",
+                "...G...",
+                ".C...C.",
+                "......."
+              ],
+              [
+                ".......",
+                ".......",
+                "...C...",
+                "..CMC..",
+                "...C...",
+                ".......",
+                "......."
+              ],
+              [
+                ".......",
+                "...C...",
+                "...C...",
+                ".CCMCC.",
+                "...C...",
+                "...C...",
+                "......."
+              ],
+              [
+                ".......",
+                "..CCC..",
+                ".CMMMC.",
+                ".CMMMC.",
+                ".CMMMC.",
+                "..CCC..",
+                "......."
+              ],
+              [
+                ".......",
+                "..C.C..",
+                ".CGGGC.",
+                "..GGG..",
+                ".CGGGC.",
+                "..C.C..",
+                "......."
+              ],
+              [
+                ".......",
+                "..C.C..",
+                ".C...C.",
+                ".......",
+                ".C...C.",
+                "..C.C..",
+                "......."
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Second tier",
+              "to": "late_tier2"
+            },
+            {
+              "text": "Ports",
+              "to": "late_ports"
+            }
+          ]
         }
       ]
     }

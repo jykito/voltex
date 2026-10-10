@@ -5,12 +5,17 @@
       "name": "Logistics Node",
       "elements": [
         {
-          "type": "header",
-          "text": "Logistics Node"
+          "type": "card",
+          "icon": "industrial_core:logistics_node",
+          "title": "Logistics Node"
         },
         {
           "type": "text",
-          "text": "A network hub: it links points into one logistics network over which items and fluids travel between distant hubs. The node itself does not transfer — it forms the graph."
+          "text": "A node links hubs into one network, even when they are far apart. It does not move anything itself, it only connects: items and fluids then travel between the hubs in that network."
+        },
+        {
+          "type": "text",
+          "text": "The node window shows its links as a list and on a map around it, north up. The order of the list sets the priority; drag a row by the handle on its right to change it. The Highlight button shows the selected block in the world."
         },
         {
           "type": "items",
@@ -25,12 +30,21 @@
       "name": "Hubs",
       "elements": [
         {
-          "type": "header",
-          "text": "Item & Fluid Hubs"
+          "type": "card",
+          "icon": "industrial_core:item_hub",
+          "title": "Hubs"
         },
         {
           "type": "text",
-          "text": "Each of the 6 faces is configurable: input, output, both or off. There are ghost filters (whitelist), limits and round-robin. They transfer locally and across the linked network."
+          "text": "A hub goes next to a chest or a machine. You set each of its six sides separately: take, give, both or nothing."
+        },
+        {
+          "type": "text",
+          "text": "You can choose which items go through, how many to keep in the neighbouring chest, and whether to hand them out in turns. A hub moves things both to its neighbours and across the whole linked network."
+        },
+        {
+          "type": "text",
+          "text": "The hub window lists all six sides on the left and the settings of the selected one on the right: mode, input or output filter, toggles and the upgrade slot. Right-click a side to cycle its mode."
         },
         {
           "type": "items",
@@ -45,12 +59,17 @@
       "name": "Linker",
       "elements": [
         {
-          "type": "header",
-          "text": "Linker"
+          "type": "card",
+          "icon": "industrial_core:logistics_linker",
+          "title": "Linker"
         },
         {
           "type": "text",
-          "text": "The linking tool. Click a node, then a hub or device — they join the same network. It also binds the magnet’s remote controller."
+          "text": "Use it to link devices. Click a node, then a hub or machine, and they end up in the same network. The magnet's remote controller is bound the same way."
+        },
+        {
+          "type": "text",
+          "text": "It also links drill beacons to the industrial miner."
         },
         {
           "type": "items",
@@ -64,12 +83,13 @@
       "name": "Pushers & Pullers",
       "elements": [
         {
-          "type": "header",
-          "text": "Pushers & Pullers"
+          "type": "card",
+          "icon": "industrial_core:item_pusher",
+          "title": "Pushers & Pullers"
         },
         {
           "type": "text",
-          "text": "Upgrades for a machine slot: a pusher ejects the result, a puller draws in input. Separate for items and fluids — basic automation without hubs."
+          "text": "The simplest automation, no hubs needed. Put one into a machine's upgrade slot: a **pusher** sends finished items into the chest next to it, a **puller** takes what the machine needs from the neighbouring chest. Items and fluids each have their own."
         },
         {
           "type": "items",
@@ -83,15 +103,16 @@
       ]
     },
     {
-      "name": "Connector Upgrades",
+      "name": "Hub Upgrades",
       "elements": [
         {
-          "type": "header",
-          "text": "Connector Upgrades"
+          "type": "card",
+          "icon": "industrial_core:hub_upgrade_t1",
+          "title": "Hub Upgrades"
         },
         {
           "type": "text",
-          "text": "Placed on a hub face: they speed up the transfer interval and raise per-tick volume and range. higher tiers, from T1 to T3, move more, faster and farther."
+          "text": "They go on a side of a hub. A hub with an upgrade moves things more often and more at a time. There are three tiers, and the third is the fastest."
         },
         {
           "type": "items",
@@ -107,21 +128,41 @@
       "name": "Machine Upgrades",
       "elements": [
         {
-          "type": "header",
-          "text": "Machine Upgrades"
+          "type": "card",
+          "icon": "industrial_core:accelerator",
+          "title": "Machine Upgrades"
         },
         {
           "type": "text",
-          "text": "Upgrades go into a machine’s slots. The accelerator raises speed at the cost of FE. Parallel modules process several operations at once: ×8, ×32 and ×64. Combine them for throughput."
+          "text": "They go into a machine's slots. The **accelerator** makes the machine work faster, but it uses more power. There are three accelerators, and several of them stack. **Parallel modules** let it make several items at once: 8, 32 or 64."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Accelerator",
+              "value": "time ×0.7, power ×1.3"
+            },
+            {
+              "key": "Accelerator Mk1",
+              "value": "time ×0.5, power ×1.5"
+            },
+            {
+              "key": "Accelerator Mk2",
+              "value": "time ×0.25, power ×2"
+            }
+          ]
         },
         {
           "type": "text",
-          "text": "The blast furnace (forced air, oxygen boost), cultivator (biostimulator, resonator) and logistics (pushers, connector upgrades) have their own upgrades — see their chapters."
+          "text": "The blast furnace, the cultivator and logistics have their own upgrades, described in their entries."
         },
         {
           "type": "items",
           "items": [
             "industrial_core:accelerator",
+            "industrial_core:accelerator_mk1",
+            "industrial_core:accelerator_mk2",
             "industrial_core:parallel_module",
             "industrial_core:advanced_parallel_module",
             "industrial_core:quantum_parallel_module"
@@ -133,19 +174,26 @@
       "name": "Storage",
       "elements": [
         {
-          "type": "header",
-          "text": "Crates & Barrels"
+          "type": "card",
+          "icon": "industrial_core:crate_t1",
+          "title": "Crates & Barrels"
         },
         {
           "type": "text",
-          "text": "Crates store items (3 tiers by capacity), barrels store fluids (32k to 512k mb). Simple, cheap, and easy to wire into logistics."
+          "text": "**Crates** hold items: 54, 72 or 90 slots. **Barrels** hold fluids: 32, 128 or 512 buckets, and they keep their fluid even when broken. Each tier is made from the one before."
+        },
+        {
+          "type": "text",
+          "text": "They are cheap and connect easily to hubs and machines."
         },
         {
           "type": "items",
           "items": [
             "industrial_core:crate_t1",
+            "industrial_core:crate_t2",
             "industrial_core:crate_t3",
             "industrial_core:barrel_t1",
+            "industrial_core:barrel_t2",
             "industrial_core:barrel_t3"
           ]
         }

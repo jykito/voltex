@@ -5,19 +5,27 @@
       "name": "Ores",
       "elements": [
         {
-          "type": "header",
-          "text": "Mod Ores"
+          "type": "card",
+          "icon": "industrial_core:tin_ore",
+          "title": "Ores"
         },
         {
           "type": "text",
-          "text": "Voltex adds 3 ores: tin, lead and bauxite (for aluminum). They generate normally in the Overworld, in stone and deepslate. Crush or smelt them like any ore."
+          "text": "The mod adds three ores: **tin**, **lead** and **bauxite**, which is where aluminum comes from. They spawn in the Overworld, in stone and deepslate, just like iron or copper."
+        },
+        {
+          "type": "text",
+          "text": "Mine them with a pickaxe, then crush, wash or simply smelt them like any other ore."
         },
         {
           "type": "items",
           "items": [
             "industrial_core:tin_ore",
             "industrial_core:lead_ore",
-            "industrial_core:bauxite_ore"
+            "industrial_core:bauxite_ore",
+            "industrial_core:raw_tin",
+            "industrial_core:raw_lead",
+            "industrial_core:raw_aluminum"
           ]
         }
       ]
@@ -26,12 +34,17 @@
       "name": "Dusts",
       "elements": [
         {
-          "type": "header",
-          "text": "Dusts"
+          "type": "card",
+          "icon": "industrial_core:iron_dust",
+          "title": "Dusts"
         },
         {
           "type": "text",
-          "text": "The Crusher turns ore, raw and ingots into dust; dust smelts back into ingots. Some dusts (lapis, coal, mineral) feed alloys, coolant and drill fluid."
+          "text": "Dust comes out of the crusher, from ore and from ingots. It smelts back into an ingot, so dust is handy both for doubling ore and for alloys."
+        },
+        {
+          "type": "text",
+          "text": "Some dusts go further. **Lapis** dust with water makes coolant, **mineral** dust makes drill fluid, and **coal** dust is needed for carbon fiber."
         },
         {
           "type": "items",
@@ -49,12 +62,17 @@
       "name": "Alloys",
       "elements": [
         {
-          "type": "header",
-          "text": "Alloys"
+          "type": "card",
+          "icon": "industrial_core:bronze_ingot",
+          "title": "Alloys"
         },
         {
           "type": "text",
-          "text": "Bronze smelts in the Electric Furnace. Invar, electrum and hardened steel need the Blast Furnace (1200–2400 heat). Kronium is a high-tech restructor alloy."
+          "text": "**Bronze** smelts in the regular electric furnace. **Invar**, **electrum** and **hardened steel** need more: the blast furnace, which in turn needs heat."
+        },
+        {
+          "type": "text",
+          "text": "**Kronium alloy** comes later, through the restructor."
         },
         {
           "type": "items",
@@ -72,12 +90,17 @@
       "name": "Plates",
       "elements": [
         {
-          "type": "header",
-          "text": "Plates"
+          "type": "card",
+          "icon": "industrial_core:iron_plate",
+          "title": "Plates"
         },
         {
           "type": "text",
-          "text": "The Metal Former (rolling mode) presses ingots into plates — the backbone of casings, cables and armor. Early game: the Hammer by hand."
+          "text": "Plates go into almost everything: machine casings, cables and armor. Put an ingot into the **metal former** in rolling mode and you get two plates from one ingot."
+        },
+        {
+          "type": "tip",
+          "text": "Until you have a former, you can hammer a plate out with the **hammer** right on the crafting table."
         },
         {
           "type": "items",
@@ -94,12 +117,17 @@
       "name": "Wires & Cables",
       "elements": [
         {
-          "type": "header",
-          "text": "Wires & Cables"
+          "type": "card",
+          "icon": "industrial_core:copper_cable",
+          "title": "Wires & Cables"
         },
         {
           "type": "text",
-          "text": "The Metal Former (extruding) draws bare wires; cutters cut them. Insulate a wire with rubber to make a cable. Cable tier sets the FE transfer limit, from copper up to netherite fiber."
+          "text": "Bare wire comes from the **metal former** in extruding mode: put in a plate, get four wires. Wrap it in rubber and you have a cable that carries power."
+        },
+        {
+          "type": "text",
+          "text": "The better the cable, the more power it carries. Copper is enough at first, while netherite fiber handles nearly anything."
         },
         {
           "type": "items",
@@ -109,7 +137,7 @@
             "industrial_core:gold_conductor",
             "industrial_core:netherite_fiber_cable"
           ],
-          "label": "Cable tiers"
+          "label": "From weak to strong"
         }
       ]
     },
@@ -117,12 +145,17 @@
       "name": "Circuits",
       "elements": [
         {
-          "type": "header",
-          "text": "Circuits"
+          "type": "card",
+          "icon": "industrial_core:textolite_board",
+          "title": "Circuits"
         },
         {
           "type": "text",
-          "text": "The textolite board is the base. From it you build the logic board, then the data transfer matrix and the microcontroller. Circuits go into advanced machines, the reactor and the magnet."
+          "text": "Everything starts with the **textolite board**. It becomes a logic board, and the logic board goes into the data transfer matrix and the microcontroller."
+        },
+        {
+          "type": "text",
+          "text": "Advanced machines, the cryo chamber and the magnet all need circuits, so keep a stock of boards."
         },
         {
           "type": "items",
@@ -139,12 +172,17 @@
       "name": "Resin & Rubber",
       "elements": [
         {
-          "type": "header",
-          "text": "Resin & Rubber"
+          "type": "card",
+          "icon": "industrial_core:resin_sapling",
+          "title": "Resin & Rubber"
         },
         {
           "type": "text",
-          "text": "The resin tree yields tree resin — gather it by hand or with the Resin Collector. An Extractor or furnace processes resin into rubber, which insulates wires into cables."
+          "text": "Plant a **resin tree** and collect **tree resin** from it, by hand or with a **resin collector** that does it for you."
+        },
+        {
+          "type": "text",
+          "text": "Put the resin into an extractor or a furnace to get **rubber**. You need rubber to turn bare wire into cable."
         },
         {
           "type": "items",
@@ -161,12 +199,17 @@
       "name": "Crystals",
       "elements": [
         {
-          "type": "header",
-          "text": "Crystal Chain"
+          "type": "card",
+          "icon": "industrial_core:amethyst_crystal",
+          "title": "Crystals"
         },
         {
           "type": "text",
-          "text": "Crush amethyst to dust, blast it into a crystal ingot. From it come the crystal plate, fiber and amethyst crystal. Crystals feed the restructor, panels and the magnet."
+          "text": "Melt amethyst in the liquefier while heat flows into it, then cast the melt with silicon in the crystallizer to get a **crystal ingot**. The restructor makes it from quartz without amethyst, but it eats a lot of power. That ingot gives the crystal plate, crystal fiber and the amethyst crystal."
+        },
+        {
+          "type": "text",
+          "text": "You will need crystals for the restructor, solar panels and the magnet."
         },
         {
           "type": "items",
@@ -183,12 +226,17 @@
       "name": "Carbon & Composite",
       "elements": [
         {
-          "type": "header",
-          "text": "Carbon & Composite"
+          "type": "card",
+          "icon": "industrial_core:carbon_fiber",
+          "title": "Carbon & Composite"
         },
         {
           "type": "text",
-          "text": "Coal dust becomes carbon fiber, then carbon mesh and the carbon plate. Composite is pressed from metal plates. The carbon-composite ingot is an advanced material for exotica."
+          "text": "**Coal dust** becomes carbon fiber, the fiber becomes carbon mesh, and the mesh becomes a carbon plate. **Composite** is pressed in the compressor from metal plates."
+        },
+        {
+          "type": "text",
+          "text": "Together they make the **carbon composite ingot**, which goes into the most expensive items."
         },
         {
           "type": "items",
@@ -197,6 +245,184 @@
             "industrial_core:carbon_plate",
             "industrial_core:composite",
             "industrial_core:carbon_composite_ingot"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Kronit",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:kronit",
+          "title": "Kronit"
+        },
+        {
+          "type": "text",
+          "text": "Kronit comes from the cryo chamber: at its second stage it turns hardened steel into kronit. It is the first material you cannot get without cold."
+        },
+        {
+          "type": "text",
+          "text": "Kronit goes into kronium alloy, Nexite armor, the casing of late machines and the energy blade, and it is also what you repair power armor with. The metal former rolls kronium alloy into an **armor sheet**, which late machine casings and ports are built from."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:kronit",
+            "industrial_core:kronium_alloy",
+            "industrial_core:armor_sheet"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Silicon & Lithium",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:silicon_dust",
+          "title": "Silicon & Lithium"
+        },
+        {
+          "type": "text",
+          "text": "**Silicon dust** comes from the crusher when you grind quartz, from the ore washer when you wash sand, and from the phase splitter when it splits mineral dust. It smelts into **silicon**, which you need for the crystal ingot, transistors, photonic lenses and the first solar panels."
+        },
+        {
+          "type": "text",
+          "text": "There is no lithium ore. **Lithium dust** only drops when you wash copper ore, 15% of the time. **Lithium** goes into lithium batteries, the cryo chamber's refrigeration chambers and the basic port upgrade, so set up a washer for copper early."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:silicon_dust",
+            "industrial_core:silicon",
+            "industrial_core:lithium_dust",
+            "industrial_core:lithium"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Machine Parts",
+      "elements": [
+        {
+          "type": "header",
+          "text": "Machine Parts"
+        },
+        {
+          "type": "text",
+          "text": "Almost every part is made on the crafting table. The **solenoid** and **electric motor** go into the first machines, the **fluid valve** into every machine with a tank, **thermal insulation** into heat pipes and the cryo chamber, and the **coil winding** into the magnet."
+        },
+        {
+          "type": "text",
+          "text": "Later the motors become **advanced** and **extended**, and the **manipulator**, the **servo drive** and **heat-resistant plating** for the thermostation and Plasma armor appear. The servo drive, the **control unit** and the **armor sheet** carry all the late machines: mechanism blocks, ports and cores are built from them."
+        },
+        {
+          "type": "text",
+          "text": "Electronics need **solder** from the crystallizer, **glass fiber** from the metal former, and **transistors**. The **photonic lens** goes into the microcontroller, miner lenses and solar panels, and the **signal receiver** into the magnet's distant controller and the Phase-Lock."
+        },
+        {
+          "type": "itemlist",
+          "items": [
+            {
+              "id": "industrial_core:copper_solenoid",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:electric_motor",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:electric_motor_advanced",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:electric_motor_extended",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:fluid_valve",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:thermal_insulation",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:coil_winding",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:manipulator",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:servo_drive",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:control_unit",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:heat_resistant_plating",
+              "count": 1
+            }
+          ],
+          "label": "Mechanics"
+        },
+        {
+          "type": "itemlist",
+          "items": [
+            {
+              "id": "industrial_core:solder",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:glass_fiber",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:transistor",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:photonic_lens",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:signal_receiver",
+              "count": 1
+            }
+          ],
+          "label": "Electronics"
+        }
+      ]
+    },
+    {
+      "name": "Superconductors",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:superconducting_wire",
+          "title": "Superconductors"
+        },
+        {
+          "type": "text",
+          "text": "Superconductors start with cold. At its first stage the cryo chamber turns bare crystalline wire into **superconducting wire**. The rod fabricator twists it with cryolite into a **strand**, the strand becomes a **superconducting solenoid** on the crafting table, and the solenoid goes into the **superconductor coil**."
+        },
+        {
+          "type": "text",
+          "text": "The coil also needs a **data card** on cryophysics, written by the nanite lab. The coil itself goes into a lot of things: the magnet core and its superconductor coil, the phase splitter, the Restructor T2, the matter fabricator and the gauss rifle."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:superconducting_wire",
+            "industrial_core:superconducting_strand",
+            "industrial_core:superconducting_winding",
+            "industrial_core:superconductor_coil",
+            "industrial_core:data_card_cryophysics"
           ]
         }
       ]

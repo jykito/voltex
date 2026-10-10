@@ -1,12 +1,12 @@
 {
   "parent": "block/cube",
   "textures": {
-    "particle": "industrial_core:block/expander_side_both",
-    "up": "industrial_core:block/expander_caps_both",
-    "down": "industrial_core:block/expander_caps_both",
-    "north": "industrial_core:block/expander_side_both",
-    "east": "industrial_core:block/expander_side_both",
-    "south": "industrial_core:block/expander_back_both",
-    "west": "industrial_core:block/expander_side_both"
+    "particle": "industrial_core:block/machine/expander_side_both",
+    "up": "industrial_core:block/machine/expander_caps_both",
+    "down": "industrial_core:block/machine/expander_caps_both",
+    "north": "industrial_core:block/machine/expander_side_both",
+    "east": "industrial_core:block/machine/expander_side_both",
+    "south": "industrial_core:block/machine/expander_back_both",
+    "west": "industrial_core:block/machine/expander_side_both"
   }
 }

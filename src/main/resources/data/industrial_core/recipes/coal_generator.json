@@ -3,19 +3,22 @@
   "pattern": [
     "ABA",
     "CDC",
-    "AAA"
+    "CEC"
   ],
   "key": {
     "A": {
-      "tag": "forge:ingots/iron"
+      "tag": "forge:plates/iron"
     },
     "B": {
-      "item": "minecraft:furnace"
+      "item": "industrial_core:copper_solenoid"
     },
     "C": {
-      "tag": "forge:dusts/redstone"
+      "item": "minecraft:brick"
     },
     "D": {
+      "item": "minecraft:furnace"
+    },
+    "E": {
       "tag": "forge:components/machine_casing"
     }
   },

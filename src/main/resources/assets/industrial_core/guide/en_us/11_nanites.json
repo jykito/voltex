@@ -1,0 +1,417 @@
+{
+  "name": "Nanites",
+  "entries": [
+    {
+      "name": "Nanites",
+      "id": "nanites",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:nanite_strain",
+          "title": "Nanites",
+          "subtitle": "A swarm that learns your task",
+          "tags": [
+            {
+              "text": "Miner",
+              "color": "#F29A5C"
+            },
+            {
+              "text": "Processor",
+              "color": "#9EC4E6"
+            },
+            {
+              "text": "Scientist",
+              "color": "#C98BFF"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "A **nanite strain** lives in a spider-shaped capsule. On its own it can do nothing: you evolve it in the **evolution chamber**, and it becomes whatever you fed it on."
+        },
+        {
+          "type": "text",
+          "text": "Feed it ore and you get a **miner** for the industrial miner. Dust gives a **processor** for the ore washer. A research sample gives a **scientist** for the nanite lab. The class is fixed by the first generation and never changes."
+        },
+        {
+          "type": "text",
+          "text": "The shell colour shows what the strain is bred for: copper for copper, gold for gold, purple for crystallography."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:nanite_strain",
+            "industrial_core:evolution_chamber",
+            "industrial_core:nanite_lab"
+          ]
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Evolution chamber",
+              "to": "nanite_chamber"
+            },
+            {
+              "text": "Species atlas",
+              "to": "nanite_atlas"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Evolution Chamber",
+      "id": "nanite_chamber",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:evolution_chamber",
+          "title": "Evolution Chamber",
+          "subtitle": "Where a strain grows"
+        },
+        {
+          "type": "text",
+          "text": "Put the strain in the top slot, the food in the bottom one and feed it power. Every 20 seconds a **generation** passes: variants grow from the strain and the one that suits the food best stays. The strain never gets worse from it."
+        },
+        {
+          "type": "text",
+          "text": "Ore and dust are eaten one per generation. A research sample is not eaten, it is only studied."
+        },
+        {
+          "type": "text",
+          "text": "The graph in the window shows how affinity grows. Fast at first, then slower and slower until it hits the class cap."
+        },
+        {
+          "type": "text",
+          "text": "Run a **heat pipe** into the chamber and generations get faster, up to four times, with bigger steps. But heat lowers the strain's stability, see the next entry."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Generation",
+              "value": "20 s, 5 s at full heat"
+            },
+            {
+              "key": "Energy",
+              "value": "1,000 FE per tick"
+            },
+            {
+              "key": "Food",
+              "value": "ore, dust or a sample"
+            }
+          ]
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Stability and wear",
+              "to": "nanite_stability"
+            },
+            {
+              "text": "Nanites",
+              "to": "nanites"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Stability and Wear",
+      "id": "nanite_stability",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:nanite_strain",
+          "title": "Stability and Wear",
+          "subtitle": "The price of speed"
+        },
+        {
+          "type": "text",
+          "text": "A fresh strain has 100% stability. Each hot generation takes up to 3%, each cold one gives 2% back. It never drops below 10%."
+        },
+        {
+          "type": "text",
+          "text": "Stability matters at work. An unstable strain slowly **wears out** in a machine: now and then its affinity loses a share. At 100% there is no wear at all."
+        },
+        {
+          "type": "tip",
+          "text": "Push the strain on heat, then take the heat away and run more generations: stability comes back and the affinity stays. That is tempering."
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Evolution chamber",
+              "to": "nanite_chamber"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Miners",
+      "id": "nanite_miner",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:industrial_miner_core",
+          "title": "Miners",
+          "subtitle": "More ore from the same beacons",
+          "tags": [
+            {
+              "text": "Miner",
+              "color": "#F29A5C"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "A miner is bred on ore or raw ore of the right material and goes into the slot on the right of the **industrial miner** window."
+        },
+        {
+          "type": "text",
+          "text": "Affinity to a material is added to the ore: at +84% copper the miner gives 1.84 copper ore on average instead of one. The bonus needs no drill fluid."
+        },
+        {
+          "type": "text",
+          "text": "A miner's affinities add up to +300% at most. You can breed a narrow expert on one ore or a strain with a little of everything. A miner also has a drill fluid rate, which selection slowly lowers too."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Cap",
+              "value": "+300% across all materials"
+            },
+            {
+              "key": "Fluid",
+              "value": "×0.5 to ×1.5"
+            }
+          ]
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Industrial Miner",
+              "to": "industrial_miner"
+            },
+            {
+              "text": "Stability and wear",
+              "to": "nanite_stability"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Processors",
+      "id": "nanite_processor",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:ore_washer",
+          "title": "Processors",
+          "subtitle": "A second product in the washer",
+          "tags": [
+            {
+              "text": "Processor",
+              "color": "#9EC4E6"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "A processor is bred on dust. It only works in ore washers: in the regular one it goes into an upgrade slot, in the industrial one into the slot on the core panel."
+        },
+        {
+          "type": "text",
+          "text": "For every wash of the material the strain knows, the main product has a chance to come out twice. If the output has no room, there is no extra, but nothing is lost either."
+        },
+        {
+          "type": "text",
+          "text": "The chance grows slowly, about 3.5% per generation, and stops at 30%."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Cap",
+              "value": "30% second output"
+            }
+          ]
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Industrial Ore Washer",
+              "to": "late_washer"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Scientists and the Nanite Lab",
+      "id": "nanite_scientist",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:nanite_lab",
+          "title": "Scientists and the Nanite Lab",
+          "subtitle": "Data cards by theme",
+          "tags": [
+            {
+              "text": "Scientist",
+              "color": "#C98BFF"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "A scientist is bred on a theme sample. The sample is not eaten in the chamber. Instead of a bonus a scientist has **knowledge** of the theme, from 0 to 100%."
+        },
+        {
+          "type": "text",
+          "text": "In the nanite lab put the scientist, the sample and **blank data cards**. The scientist writes cards on the sample's theme, one blank per card. The sample is not used up here either."
+        },
+        {
+          "type": "text",
+          "text": "A scientist takes on a theme only from its knowledge threshold. Above it he simply writes faster: from one card a minute to one every 20 seconds."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Crystallography",
+              "value": "amethyst, threshold 30%"
+            },
+            {
+              "key": "Cryophysics",
+              "value": "cryo crystal or cryolite, 50%"
+            },
+            {
+              "key": "Matter",
+              "value": "exotic matter, 70%"
+            },
+            {
+              "key": "Stellar physics",
+              "value": "star shard or nether star, 90%"
+            }
+          ]
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:nanite_lab",
+            "industrial_core:data_card_blank",
+            "industrial_core:data_card_crystallography",
+            "industrial_core:data_card_cryophysics",
+            "industrial_core:data_card_matter",
+            "industrial_core:data_card_stellar"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Species Atlas",
+      "id": "nanite_atlas",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:nanite_strain",
+          "title": "Species Atlas",
+          "subtitle": "The last tab of this panel"
+        },
+        {
+          "type": "text",
+          "text": "Each mix of class and target is its own **species**: a copper miner, a tin processor, a crystallography scientist. A species opens when its strain gets into your inventory, and a banner slides in at the top right, like an achievement."
+        },
+        {
+          "type": "text",
+          "text": "The atlas keeps your best record for every species and gives medals by the share of the class cap. Discoveries are yours and survive death."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Bronze",
+              "value": "from 25% of the cap"
+            },
+            {
+              "key": "Silver",
+              "value": "from 60% of the cap"
+            },
+            {
+              "key": "Gold",
+              "value": "from 95% of the cap"
+            }
+          ]
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Rare species",
+              "to": "nanite_rare"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Rare Species",
+      "id": "nanite_rare",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:nanite_strain",
+          "title": "Rare Species",
+          "subtitle": "You do not breed them, they happen",
+          "tags": [
+            {
+              "text": "Five species",
+              "color": "#C98BFF"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "A rare species is a special **trait** of a strain. It appears on its own when selection runs under special conditions, and stays forever. With it the strain works better than usual."
+        },
+        {
+          "type": "text",
+          "text": "The atlas does not say outright how to get them, it only hints. Look where something unusual surrounds the chamber: cold, heat, strong fields or a lot of patience."
+        },
+        {
+          "type": "tip",
+          "text": "Traits show up in the strain tooltip. An opened trait in the atlas shows its exact condition and what it does."
+        },
+        {
+          "type": "links",
+          "label": "See also",
+          "links": [
+            {
+              "text": "Species atlas",
+              "to": "nanite_atlas"
+            },
+            {
+              "text": "Stability and wear",
+              "to": "nanite_stability"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

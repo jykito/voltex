@@ -1,0 +1,15 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:rolling",
+  "ingredient": {
+    "item": "industrial_core:voltex_ingot"
+  },
+  "inputCount": 1,
+  "result": {
+    "item": "industrial_core:voltex_plate",
+    "count": 1
+  },
+  "processingTime": 400,
+  "energyCost": 4000,
+  "lateOnly": true
+}

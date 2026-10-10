@@ -1,4 +1,4 @@
-﻿{
+{
   "parent": "item/generated",
   "textures": {
     "layer0": "industrial_core:block/resin_sapling"

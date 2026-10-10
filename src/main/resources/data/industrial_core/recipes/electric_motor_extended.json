@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "EFE"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:exotic_matter"
+    },
+    "B": {
+      "item": "industrial_core:singularity_core"
+    },
+    "C": {
+      "item": "industrial_core:coil_winding"
+    },
+    "D": {
+      "item": "industrial_core:electric_motor_advanced"
+    },
+    "E": {
+      "item": "industrial_core:kronium_alloy"
+    },
+    "F": {
+      "item": "industrial_core:data_card_matter"
+    }
+  },
+  "result": {
+    "item": "industrial_core:electric_motor_extended",
+    "count": 1
+  }
+}

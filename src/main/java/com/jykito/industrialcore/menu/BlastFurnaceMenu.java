@@ -12,7 +12,7 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
-public class BlastFurnaceMenu extends AbstractContainerMenu {
+public class BlastFurnaceMenu extends MachineMenu {
     public final BlastFurnaceBlockEntity blockEntity;
     private final ContainerData data;
 
@@ -37,20 +37,14 @@ public class BlastFurnaceMenu extends AbstractContainerMenu {
             this.addSlot(new SlotItemHandler(iItemHandler, 6, 186, 84));
         });
 
-        for (int i = 0; i < 3; ++i)
-            for (int j = 0; j < 9; ++j)
-                this.addSlot(new Slot(inv, j + i * 9 + 9, 44 + j * 19, 133 + i * 19));
-
-        for (int k = 0; k < 9; ++k)
-            this.addSlot(new Slot(inv, k, 44 + k * 19, 196));
+        addPlayerInventory(inv, 44, 133);
         addDataSlots(data);
     }
 
     public int getScaledProgress() {
         int progress = this.data.get(1);
         int maxProgress = this.data.get(2);
-        if (maxProgress == 0 || progress == 0) return 0;
-        return Math.min(28, (progress * 28 + maxProgress - 1) / maxProgress);
+        return scaleProgress(progress, maxProgress, 28);
     }
 
     public int getHeat()    { return data.get(0); }

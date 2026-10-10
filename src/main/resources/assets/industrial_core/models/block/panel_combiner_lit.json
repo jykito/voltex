@@ -1,1 +1,0 @@
-﻿{ "parent": "minecraft:block/cube_all", "textures": { "all": "industrial_core:block/panel_combiner_lit" } }

@@ -15,6 +15,22 @@ public class ModMenuTypes {
     public static final RegistryObject<MenuType<CoalGeneratorMenu>> COAL_GENERATOR_MENU =
             MENUS.register("coal_generator_menu", () -> IForgeMenuType.create(CoalGeneratorMenu::new));
 
+    public static final RegistryObject<MenuType<ItemFluidPortMenu>> ITEM_FLUID_PORT_MENU =
+            MENUS.register("item_fluid_port_menu", () -> IForgeMenuType.create(ItemFluidPortMenu::new));
+
+    public static final RegistryObject<MenuType<MePortMenu>> ME_PORT_MENU =
+            MENUS.register("me_port_menu", () -> IForgeMenuType.create(MePortMenu::new));
+
+    public static final RegistryObject<MenuType<EnergyPortMenu>> ENERGY_PORT_MENU =
+            MENUS.register("energy_port_menu", () -> IForgeMenuType.create(EnergyPortMenu::new));
+
+    public static final RegistryObject<MenuType<IndustrialMinerMenu>> INDUSTRIAL_MINER_MENU =
+            MENUS.register("industrial_miner_menu", () -> IForgeMenuType.create(IndustrialMinerMenu::new));
+    public static final RegistryObject<MenuType<DrillBeaconMenu>> DRILL_BEACON_MENU =
+            MENUS.register("drill_beacon_menu", () -> IForgeMenuType.create(DrillBeaconMenu::new));
+    public static final RegistryObject<MenuType<LateMachineCoreMenu>> LATE_MACHINE_CORE_MENU =
+            MENUS.register("late_machine_core_menu", () -> IForgeMenuType.create(LateMachineCoreMenu::new));
+
     public static final RegistryObject<MenuType<CrusherMenu>> CRUSHER_MENU =
             MENUS.register("crusher_menu", () -> IForgeMenuType.create(CrusherMenu::new));
 
@@ -49,6 +65,12 @@ public class ModMenuTypes {
     public static final RegistryObject<MenuType<CrystallizerMenu>> CRYSTALLIZER_MENU =
             MENUS.register("crystallizer_menu", () -> IForgeMenuType.create(CrystallizerMenu::new));
 
+    public static final RegistryObject<MenuType<EvolutionChamberMenu>> EVOLUTION_CHAMBER_MENU =
+            MENUS.register("evolution_chamber_menu", () -> IForgeMenuType.create(EvolutionChamberMenu::new));
+
+    public static final RegistryObject<MenuType<NaniteLabMenu>> NANITE_LAB_MENU =
+            MENUS.register("nanite_lab_menu", () -> IForgeMenuType.create(NaniteLabMenu::new));
+
     public static final RegistryObject<MenuType<FluidGeneratorMenu>> FLUID_GENERATOR_MENU =
             MENUS.register("fluid_generator_menu", () -> IForgeMenuType.create(FluidGeneratorMenu::new));
 
@@ -60,6 +82,12 @@ public class ModMenuTypes {
 
     public static final RegistryObject<MenuType<CultivatorMenu>> CULTIVATOR_MENU =
             MENUS.register("cultivator_menu", () -> IForgeMenuType.create(CultivatorMenu::new));
+
+    public static final RegistryObject<MenuType<CultivatorMenu>> CULTIVATOR_T2_MENU =
+            MENUS.register("cultivator_t2_menu", () -> IForgeMenuType.create(CultivatorMenu::t2));
+
+    public static final RegistryObject<MenuType<BioreactorMenu>> BIOREACTOR_MENU =
+            MENUS.register("bioreactor_menu", () -> IForgeMenuType.create(BioreactorMenu::new));
 
     public static final RegistryObject<MenuType<OreWasherMenu>> ORE_WASHER_MENU =
             MENUS.register("ore_washer_menu", () -> IForgeMenuType.create(OreWasherMenu::new));
@@ -81,6 +109,9 @@ public class ModMenuTypes {
 
     public static final RegistryObject<MenuType<RestructorMenu>> RESTRUCTOR_MENU =
             MENUS.register("restructor_menu", () -> IForgeMenuType.create(RestructorMenu::new));
+
+    public static final RegistryObject<MenuType<RestructorMenu>> RESTRUCTOR_T2_MENU =
+            MENUS.register("restructor_t2_menu", () -> IForgeMenuType.create(RestructorMenu::t2));
 
     public static final RegistryObject<MenuType<MinerCoreMenu>> MINER_CORE_MENU =
             MENUS.register("miner_core_menu", () -> IForgeMenuType.create(MinerCoreMenu::new));

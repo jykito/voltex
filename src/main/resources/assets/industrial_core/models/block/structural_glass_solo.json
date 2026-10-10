@@ -1,0 +1,13 @@
+{
+  "parent": "minecraft:block/cube",
+  "render_type": "minecraft:translucent",
+  "textures": {
+    "up": "industrial_core:block/structural_glass_based",
+    "down": "industrial_core:block/structural_glass_based",
+    "north": "industrial_core:block/structural_glass_based",
+    "south": "industrial_core:block/structural_glass_based",
+    "east": "industrial_core:block/structural_glass_based",
+    "west": "industrial_core:block/structural_glass_based",
+    "particle": "industrial_core:block/structural_glass_based"
+  }
+}

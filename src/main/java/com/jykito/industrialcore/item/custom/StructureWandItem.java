@@ -1,12 +1,16 @@
 package com.jykito.industrialcore.item.custom;
 
+import com.jykito.industrialcore.block.custom.CryoCoreBlock;
 import com.jykito.industrialcore.block.custom.ElectromagnetCoreBlock;
+import com.jykito.industrialcore.block.custom.LateMachineCoreBlock;
+import com.jykito.industrialcore.block.entity.CryoCoreBlockEntity;
 import com.jykito.industrialcore.block.entity.ElectromagnetCoreBlockEntity;
+import com.jykito.industrialcore.multiblock.WandBuild;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -16,6 +20,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -33,7 +38,8 @@ import java.util.Map;
 /**
  * DEV-жезл. Две функции, обе на правый клик:
  * <ul>
- *   <li>по ядру магнита — строит вокруг него скелет мультиблока (было раньше);</li>
+ *   <li>по ядру мультиблока (магнит, криокамера, лейт-машины, промышленный шахтёр) — достраивает структуру;
+ *       в творческом бесплатно, в выживании блоки берутся из инвентаря;</li>
  *   <li>по любому другому блоку — отмечает угол области. Два угла подряд задают коробку,
  *       которую клиент рисует каркасом сквозь стены ({@code StructureSelectionRenderer}).
  *       Нужно, чтобы прикидывать габариты мультиблока прямо в мире.</li>
@@ -67,24 +73,25 @@ public class StructureWandItem extends Item {
         Player player = ctx.getPlayer();
         ItemStack stack = ctx.getItemInHand();
 
-        // прежнее поведение: сборка скелета магнита
-        if (state.getBlock() instanceof ElectromagnetCoreBlock) {
+        // клик по ядру мультиблока: достройка структуры. В творческом блоки бесплатны,
+        // в выживании берутся из инвентаря (WandBuild); раскладку строит сам мультиблок, по ней же и проверяет
+        boolean magnet = state.getBlock() instanceof ElectromagnetCoreBlock;
+        boolean cryo = state.getBlock() instanceof CryoCoreBlock;
+        boolean late = state.getBlock() instanceof LateMachineCoreBlock;
+        boolean miner = state.getBlock() instanceof com.jykito.industrialcore.block.custom.IndustrialMinerCoreBlock;
+        if ((magnet || cryo || late || miner) && player != null) {
             if (!level.isClientSide) {
-                Direction facing = state.getValue(ElectromagnetCoreBlock.FACING);
-                ElectromagnetCoreBlockEntity.buildStructure(level, pos, facing);
-                if (player != null)
-                    player.displayClientMessage(Component.translatable("msg.industrial_core.structure_built"), true);
-            }
-            return InteractionResult.sidedSuccess(level.isClientSide());
-        }
-
-        // то же для криокамеры: раскладку строит сама блок-сущность, по которой потом и проверяет
-        if (state.getBlock() instanceof com.jykito.industrialcore.block.custom.CryoCoreBlock) {
-            if (!level.isClientSide) {
-                Direction facing = state.getValue(com.jykito.industrialcore.block.custom.CryoCoreBlock.FACING);
-                com.jykito.industrialcore.block.entity.CryoCoreBlockEntity.buildStructure(level, pos, facing);
-                if (player != null)
-                    player.displayClientMessage(Component.translatable("msg.industrial_core.structure_built"), true);
+                WandBuild wb = new WandBuild(player);
+                if (magnet)
+                    ElectromagnetCoreBlockEntity.buildStructure(level, pos, state.getValue(ElectromagnetCoreBlock.FACING), wb);
+                else if (cryo)
+                    CryoCoreBlockEntity.buildStructure(level, pos, state.getValue(CryoCoreBlock.FACING), wb);
+                else if (miner)
+                    com.jykito.industrialcore.miner.IndustrialMinerStructure.build(level, pos,
+                            state.getValue(com.jykito.industrialcore.block.custom.IndustrialMinerCoreBlock.FACING), wb);
+                else
+                    ((LateMachineCoreBlock) state.getBlock()).pattern().build(level, pos, state.getValue(LateMachineCoreBlock.FACING), wb);
+                reportBuild(player, wb);
             }
             return InteractionResult.sidedSuccess(level.isClientSide());
         }
@@ -116,6 +123,31 @@ public class StructureWandItem extends Item {
                         dx, dy, dz, dx * dy * dz).withStyle(ChatFormatting.AQUA), true);
         }
         return InteractionResult.sidedSuccess(level.isClientSide());
+    }
+
+    private static void reportBuild(Player player, WandBuild r) {
+        if (r.placed() == 0 && r.blocked() == 0 && r.missing().isEmpty()) {
+            player.displayClientMessage(Component.translatable("msg.industrial_core.wand.late_complete")
+                    .withStyle(ChatFormatting.GREEN), true);
+            return;
+        }
+        if (r.placed() > 0)
+            player.displayClientMessage(Component.translatable("msg.industrial_core.wand.late_placed", r.placed())
+                    .withStyle(ChatFormatting.GREEN), false);
+        if (!r.missing().isEmpty()) {
+            MutableComponent list = Component.empty();
+            boolean first = true;
+            for (Map.Entry<Block, Integer> e : r.missing().entrySet()) {
+                if (!first) list.append(", ");
+                list.append(e.getKey().getName()).append(" ×" + e.getValue());
+                first = false;
+            }
+            player.displayClientMessage(Component.translatable("msg.industrial_core.wand.late_missing", list)
+                    .withStyle(ChatFormatting.YELLOW), false);
+        }
+        if (r.blocked() > 0)
+            player.displayClientMessage(Component.translatable("msg.industrial_core.wand.late_blocked", r.blocked())
+                    .withStyle(ChatFormatting.RED), false);
     }
 
     /**

@@ -5,14 +5,13 @@ import com.jykito.industrialcore.block.entity.RecipeExporterBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class RecipeExporterMenu extends AbstractContainerMenu {
+public class RecipeExporterMenu extends MachineMenu {
     public final RecipeExporterBlockEntity blockEntity;
 
     public RecipeExporterMenu(int id, Inventory inv, FriendlyByteBuf extraData) {

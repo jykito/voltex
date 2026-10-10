@@ -8,13 +8,13 @@ import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-public class SolarPanelMenu extends AbstractContainerMenu {
+public class SolarPanelMenu extends MachineMenu {
 
     public final SolarPanelBlockEntity blockEntity;
     private final ContainerData data;
 
     public SolarPanelMenu(int id, Inventory inv, FriendlyByteBuf buf) {
-        this(id, inv, inv.player.level().getBlockEntity(buf.readBlockPos()), new SimpleContainerData(6));
+        this(id, inv, inv.player.level().getBlockEntity(buf.readBlockPos()), new SimpleContainerData(7));
     }
 
     public SolarPanelMenu(int id, Inventory inv, BlockEntity entity, ContainerData data) {
@@ -23,18 +23,13 @@ public class SolarPanelMenu extends AbstractContainerMenu {
         this.data = data;
         addDataSlots(data);
 
-        for (int i = 0; i < 3; i++)
-            for (int j = 0; j < 9; j++)
-                addSlot(new Slot(inv, j + i * 9 + 9, 44 + j * 19, 133 + i * 19));
-
-        for (int k = 0; k < 9; k++)
-            addSlot(new Slot(inv, k, 44 + k * 19, 196));
+        addPlayerInventory(inv, 44, 133);
     }
 
-    public int getEnergyStored()   { return (data.get(1) << 16) | (data.get(0) & 0xFFFF); }
-    public int getMaxEnergy()      { return (data.get(3) << 16) | (data.get(2) & 0xFFFF); }
-    public int getCurrentGen()     { return data.get(4); }
-    public boolean isGenerating()  { return data.get(5) == 1; }
+    public int getEnergyStored()   { return unpack(data.get(0), data.get(1)); }
+    public int getMaxEnergy()      { return unpack(data.get(2), data.get(3)); }
+    public int getCurrentGen()     { return unpack(data.get(4), data.get(5)); }
+    public boolean isGenerating()  { return data.get(6) == 1; }
 
     public int getScaledEnergy(int barHeight) {
         int max = getMaxEnergy();

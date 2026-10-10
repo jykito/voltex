@@ -72,12 +72,39 @@ public class ModMessages {
                 .consumerMainThread(ExportRecipePacket::handle)
                 .add();
 
+        net.messageBuilder(AtlasSyncPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(AtlasSyncPacket::new)
+                .encoder(AtlasSyncPacket::toBytes)
+                .consumerMainThread(AtlasSyncPacket::handle)
+                .add();
+
         net.messageBuilder(MagnetThrottlePacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
                 .decoder(MagnetThrottlePacket::new)
                 .encoder(MagnetThrottlePacket::toBytes)
                 .consumerMainThread(MagnetThrottlePacket::handle)
                 .add();
 
+        net.messageBuilder(GaussShotPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(GaussShotPacket::new)
+                .encoder(GaussShotPacket::toBytes)
+                .consumerMainThread(GaussShotPacket::handle)
+                .add();
+
+        net.messageBuilder(MePortPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(MePortPacket::new)
+                .encoder(MePortPacket::toBytes)
+                .consumerMainThread(MePortPacket::handle)
+                .add();
+
+    }
+
+    public static <MSG> void sendToPlayer(MSG message, net.minecraft.server.level.ServerPlayer player) {
+        INSTANCE.send(net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> player), message);
+    }
+
+    /** Всем, кто видит сущность, и ей самой (если это игрок). */
+    public static <MSG> void sendToTrackingAndSelf(MSG message, net.minecraft.world.entity.Entity entity) {
+        INSTANCE.send(net.minecraftforge.network.PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), message);
     }
 
     public static <MSG> void sendToServer(MSG message) {

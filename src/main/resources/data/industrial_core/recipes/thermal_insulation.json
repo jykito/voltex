@@ -1,16 +1,15 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "ABA",
-    "BCB",
-    "ABA"
+    "AAA",
+    "BCB"
   ],
   "key": {
     "A": {
       "tag": "minecraft:wool"
     },
     "B": {
-      "item": "industrial_core:rubber"
+      "item": "industrial_core:mineral_dust"
     },
     "C": {
       "tag": "forge:plates/lead"
@@ -18,6 +17,6 @@
   },
   "result": {
     "item": "industrial_core:thermal_insulation",
-    "count": 2
+    "count": 4
   }
 }

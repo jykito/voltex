@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "up": "industrial_core:block/multiblock_casing_ud_connections",
+    "down": "industrial_core:block/multiblock_casing_ud_connections",
+    "north": "industrial_core:block/multiblock_casing_d_connections",
+    "south": "industrial_core:block/multiblock_casing_d_connections",
+    "east": "industrial_core:block/multiblock_casing_rld_connections",
+    "west": "industrial_core:block/multiblock_casing_rld_connections",
+    "particle": "industrial_core:block/multiblock_casing_ud_connections"
+  }
+}

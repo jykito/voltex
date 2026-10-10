@@ -1,0 +1,14 @@
+{
+  "type": "industrial_core:fluid_enricher_recipe",
+  "ingredient": {
+    "item": "industrial_core:cryo_crystal"
+  },
+  "itemCount": 1,
+  "fluidInput": "industrial_core:coolant",
+  "fluidInputAmount": 1000,
+  "fluidOutput": "industrial_core:superfluid_condensate",
+  "fluidOutputAmount": 2000,
+  "processingTime": 100,
+  "energyCostPerTick": 500,
+  "lateOnly": true
+}

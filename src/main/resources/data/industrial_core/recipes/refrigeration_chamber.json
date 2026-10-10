@@ -1,19 +1,28 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "ACA",
-    "CVC",
-    "ACA"
+    "ABA",
+    "CDC",
+    "FEF"
   ],
   "key": {
     "A": {
       "tag": "forge:plates/aluminum"
     },
+    "B": {
+      "item": "industrial_core:fluid_valve"
+    },
     "C": {
       "item": "industrial_core:cryolite"
     },
-    "V": {
-      "item": "industrial_core:condensator"
+    "D": {
+      "item": "industrial_core:electric_motor"
+    },
+    "E": {
+      "item": "industrial_core:heat_exchanger"
+    },
+    "F": {
+      "item": "industrial_core:lithium"
     }
   },
   "result": {

@@ -1,7 +1,9 @@
 {
-  "parent": "minecraft:block/cube_column",
+  "parent": "minecraft:block/cube_bottom_top",
   "textures": {
-    "end":  "industrial_core:block/matter_fabricator_end",
-    "side": "industrial_core:block/matter_fabricator_side"
+    "top": "industrial_core:block/machine/matter_fabricator_top",
+    "bottom": "industrial_core:block/machine/matter_fabricator_bottom",
+    "side": "industrial_core:block/machine/matter_fabricator_side",
+    "particle": "industrial_core:block/machine/matter_fabricator_side"
   }
 }

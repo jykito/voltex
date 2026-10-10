@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
-public class ThermostationMenu extends AbstractContainerMenu {
+public class ThermostationMenu extends MachineMenu {
     public final ThermostationBlockEntity blockEntity;
     private final ContainerData data;
 
@@ -33,18 +33,14 @@ public class ThermostationMenu extends AbstractContainerMenu {
             @Override public boolean mayPlace(@NotNull ItemStack s) { return false; }
         });
 
-        for (int i = 0; i < 3; ++i)
-            for (int j = 0; j < 9; ++j)
-                this.addSlot(new Slot(inv, j + i * 9 + 9, 44 + j * 19, 133 + i * 19));
-        for (int k = 0; k < 9; ++k)
-            this.addSlot(new Slot(inv, k, 44 + k * 19, 196));
+        addPlayerInventory(inv, 44, 133);
 
         addDataSlots(data);
     }
 
-    public int getEnergy()    { return (data.get(1) << 16) | (data.get(0) & 0xFFFF); }
-    public int getHeat()      { return (data.get(3) << 16) | (data.get(2) & 0xFFFF); }
-    public int getMaxHeat()   { return (data.get(5) << 16) | (data.get(4) & 0xFFFF); }
+    public int getEnergy()    { return unpack(data.get(0), data.get(1)); }
+    public int getHeat()      { return unpack(data.get(2), data.get(3)); }
+    public int getMaxHeat()   { return unpack(data.get(4), data.get(5)); }
     public int getGenRate()   { return data.get(6); }
     public int getRadiators() { return data.get(7); }
     public boolean isWorking(){ return data.get(8) != 0; }

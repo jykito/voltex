@@ -1,23 +1,26 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "ABA",
+    "AAA",
     "BCB",
-    "ABA"
+    "DDD"
   ],
   "key": {
     "A": {
       "item": "industrial_core:hardened_steel_ingot"
     },
     "B": {
-      "tag": "forge:plates/invar"
+      "item": "minecraft:obsidian"
     },
     "C": {
       "item": "industrial_core:thermal_insulation"
+    },
+    "D": {
+      "tag": "forge:plates/invar"
     }
   },
   "result": {
     "item": "industrial_core:heat_resistant_plating",
-    "count": 1
+    "count": 2
   }
 }

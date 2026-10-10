@@ -31,5 +31,6 @@ public class AcceleratorItem extends MachineUpgradeItem {
                 speedMultiplier, speedPct).withStyle(ChatFormatting.GREEN));
         tooltip.add(Component.translatable("tooltip.industrial_core.accelerator_energy",
                 energyMultiplier, energyPct).withStyle(ChatFormatting.RED));
+        UpgradeTargets.append(tooltip, UpgradeTargets.ACCELERATOR);
     }
 }

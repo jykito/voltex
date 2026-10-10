@@ -35,8 +35,6 @@ public class RestructorScreen extends AbstractContainerScreen<RestructorMenu> {
         this.titleLabelY     = 10000;
     }
 
-    @Override public void renderBackground(GuiGraphics guiGraphics) {}
-
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         this.renderBackground(guiGraphics);
@@ -87,7 +85,7 @@ public class RestructorScreen extends AbstractContainerScreen<RestructorMenu> {
         return mouseX >= ax && mouseX < ax + w && mouseY >= ay && mouseY < ay + h;
     }
 
-    private static String formatFE(int fe) {
+    static String formatFE(int fe) {
         if (fe >= 1_000_000) return String.format("%.1fM", fe / 1_000_000.0);
         if (fe >= 1_000)     return String.format("%.1fk", fe / 1_000.0);
         return fe + "";

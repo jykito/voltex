@@ -2,21 +2,24 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "ABA",
-    "BCB",
-    "ADA"
+    "CDC",
+    "AEA"
   ],
   "key": {
     "A": {
-      "tag": "forge:ingots/iron"
+      "item": "minecraft:brick"
     },
     "B": {
       "tag": "forge:dusts/redstone"
     },
     "C": {
-      "tag": "forge:components/machine_casing"
+      "item": "industrial_core:copper_solenoid"
     },
     "D": {
       "item": "minecraft:furnace"
+    },
+    "E": {
+      "tag": "forge:components/machine_casing"
     }
   },
   "result": {

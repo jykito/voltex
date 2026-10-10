@@ -9,7 +9,7 @@ import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-public class EnergyBankMenu extends AbstractContainerMenu {
+public class EnergyBankMenu extends MachineMenu {
     public final EnergyBankBlockEntity blockEntity;
     private final ContainerData data;
 
@@ -22,18 +22,14 @@ public class EnergyBankMenu extends AbstractContainerMenu {
         this.blockEntity = (EnergyBankBlockEntity) entity;
         this.data = data;
         // слотов машины нет — только инвентарь игрока (раскладка как у станции)
-        for (int i = 0; i < 3; ++i)
-            for (int j = 0; j < 9; ++j)
-                addSlot(new Slot(inv, j + i * 9 + 9, 44 + j * 19, 133 + i * 19));
-        for (int k = 0; k < 9; ++k)
-            addSlot(new Slot(inv, k, 44 + k * 19, 196));
+        addPlayerInventory(inv, 44, 133);
         addDataSlots(data);
     }
 
-    public int getEnergy()    { return (data.get(1) << 16) | (data.get(0) & 0xFFFF); }
+    public int getEnergy()    { return unpack(data.get(0), data.get(1)); }
     public int getMaxEnergy() { return EnergyBankBlockEntity.CAPACITY; }
-    public int getIoIn()      { return (data.get(3) << 16) | (data.get(2) & 0xFFFF); }
-    public int getIoOut()     { return (data.get(5) << 16) | (data.get(4) & 0xFFFF); }
+    public int getIoIn()      { return unpack(data.get(2), data.get(3)); }
+    public int getIoOut()     { return unpack(data.get(4), data.get(5)); }
     public int getReserve()   { return data.get(6); }
 
     public int getScaledEnergy(int w) { int m = getMaxEnergy(); return m <= 0 ? 0 : (int) ((long) getEnergy() * w / m); }

@@ -1,5 +1,7 @@
 package com.jykito.industrialcore.item.custom;
 
+import com.jykito.industrialcore.block.ModBlocks;
+import com.jykito.industrialcore.item.upgrade.UpgradeTargets;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -44,5 +46,6 @@ public class MagnetCoilItem extends Item {
                 String.format("%.1f", instabPerTick * 20f)).withStyle(ChatFormatting.GOLD));
         tooltip.add(Component.translatable("tooltip.industrial_core.coil_resource",
                 Component.translatable(resourceKey)).withStyle(ChatFormatting.DARK_GRAY));
+        UpgradeTargets.append(tooltip, ModBlocks.ELECTROMAGNET_CORE);
     }
 }

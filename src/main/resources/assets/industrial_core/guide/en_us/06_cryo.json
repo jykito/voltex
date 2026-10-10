@@ -5,12 +5,17 @@
       "name": "Cryo Chamber",
       "elements": [
         {
-          "type": "header",
-          "text": "Cryo Chamber"
+          "type": "card",
+          "icon": "industrial_core:cryo_core",
+          "title": "Cryo Chamber"
         },
         {
           "type": "text",
-          "text": "Here cold is produced by heat, like in a gas refrigerator. The chamber does not dump heat, it consumes it: heat is its fuel. A 5×5×5 multiblock: casing floor and ceiling, cryo panels for walls, a column of refrigeration chambers inside and the core at the front."
+          "text": "Cold is made with heat here, like in a gas fridge. The chamber does not throw heat away, it burns it: heat is its fuel."
+        },
+        {
+          "type": "text",
+          "text": "It is a 5×5×5 multiblock. The floor and ceiling are casing, the walls are cryo panels, there is a column of refrigeration chambers inside, and the core sits in the front row of the floor."
         },
         {
           "type": "multiblock",
@@ -61,8 +66,8 @@
           }
         },
         {
-          "type": "text",
-          "text": "The core sits in the front row of the floor and sets the orientation of the whole build — the chamber assembles the same way in any direction. ANY casing block accepts heat, so pipes can be routed into the floor and ceiling at several points at once."
+          "type": "tip",
+          "text": "**Any** casing block takes heat, so you can run pipes into the floor and ceiling at several spots at once."
         },
         {
           "type": "items",
@@ -79,12 +84,34 @@
       "name": "Depth",
       "elements": [
         {
-          "type": "header",
-          "text": "Depth and Stages"
+          "type": "card",
+          "icon": "industrial_core:cryo_core",
+          "title": "Depth"
         },
         {
           "type": "text",
-          "text": "The chamber is an installation, not a machine: it accumulates DEPTH. Depth follows the heat inflow and settles exactly on it, so the stages read directly in heat per tick: 200, 800 and 1800. It builds over minutes of steady supply and drops three times faster, so the chamber is never switched off."
+          "text": "The chamber gradually sinks into the cold, and that is called **depth**. Depth depends on how much heat arrives per tick and settles right at it."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Stage one",
+              "value": "200 heat per tick"
+            },
+            {
+              "key": "Stage two",
+              "value": "800"
+            },
+            {
+              "key": "Stage three",
+              "value": "1800"
+            }
+          ]
+        },
+        {
+          "type": "tip",
+          "text": "Depth takes minutes to build and drops three times faster, so it is best never to switch the chamber off."
         },
         {
           "type": "items",
@@ -100,12 +127,17 @@
       "name": "Depth Modules",
       "elements": [
         {
-          "type": "header",
-          "text": "Depth Modules"
+          "type": "card",
+          "icon": "industrial_core:depth_module_2",
+          "title": "Depth Modules"
         },
         {
           "type": "text",
-          "text": "The module in the core sets the ceiling: without one the chamber will not go past stage one, however much heat you feed it. Module III is built from Module II and a cryo crystal, and the crystal is a stage-two product. Only those who worked a stage below are let deeper."
+          "text": "Without a module in the core the chamber will not go past stage one, no matter how much heat you feed it. **Module II** lets it reach stage two, **Module III** stage three."
+        },
+        {
+          "type": "text",
+          "text": "Module III is made from Module II and a cryo crystal, and cryo crystals only come from stage two. So you only reach stage three after working at stage two."
         },
         {
           "type": "items",
@@ -121,12 +153,17 @@
       "name": "Cryo Rods",
       "elements": [
         {
-          "type": "header",
-          "text": "Cryo Rods"
+          "type": "card",
+          "icon": "industrial_core:cryo_rod",
+          "title": "Cryo Rods"
         },
         {
           "type": "text",
-          "text": "Three rods in the core speed the work up, from a quarter to double. They wear out, and the deeper the chamber sits the faster: nine times faster on stage three than on stage one. Depth costs more than heat alone."
+          "text": "Up to three rods go into the core, and they speed the chamber up, from a quarter extra to twice as fast."
+        },
+        {
+          "type": "text",
+          "text": "Rods wear out, and the deeper the chamber, the faster: nine times faster at stage three than at stage one."
         },
         {
           "type": "items",
@@ -142,12 +179,17 @@
       "name": "Crystallizer",
       "elements": [
         {
-          "type": "header",
-          "text": "Crystallizer"
+          "type": "card",
+          "icon": "industrial_core:crystallizer",
+          "title": "Crystallizer"
         },
         {
           "type": "text",
-          "text": "The only machine that goes from fluid to item. Coolant with aluminum dust yields cryolite, the base of the whole branch: panels, casing, rods and modules all come from it."
+          "text": "The only machine that turns a fluid into an item. Coolant with aluminum dust gives **cryolite**, and the whole cold branch is made from it: panels, casing, rods and modules."
+        },
+        {
+          "type": "text",
+          "text": "It also freezes ice from a snow block and water, and casts solder from tin and molten lead, twice as much as the cutters give."
         },
         {
           "type": "items",
@@ -163,12 +205,17 @@
       "name": "Coolant",
       "elements": [
         {
-          "type": "header",
-          "text": "Coolant and Spent Coolant"
+          "type": "card",
+          "icon": "industrial_core:capsule",
+          "title": "Coolant"
         },
         {
           "type": "text",
-          "text": "The chamber needs coolant: it passes through and comes out hot. Pump the spent coolant out, a full tank halts the work. It is not waste but a component of late builds, starting with the Cryogenic Heat Exchanger."
+          "text": "The chamber needs coolant: it flows through and comes out hot. Pump the hot coolant out, or the tank fills up and the chamber stops. Take it to the fluid enricher: with a pinch of lapis dust it turns back into coolant."
+        },
+        {
+          "type": "text",
+          "text": "Do not pour it away, you will need it in later recipes. The first of them is the **cryogenic heat exchanger**."
         },
         {
           "type": "items",

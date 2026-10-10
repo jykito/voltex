@@ -1,0 +1,18 @@
+{
+  "type": "industrial_core:fluid_enricher_recipe",
+  "ingredient": {
+    "item": "industrial_core:exotic_matter"
+  },
+  "itemCount": 2,
+  "ingredient2": {
+    "item": "industrial_core:star_shard"
+  },
+  "itemCount2": 1,
+  "fluidInput": "industrial_core:cryoplasma",
+  "fluidInputAmount": 1000,
+  "fluidOutput": "industrial_core:voltex_essence",
+  "fluidOutputAmount": 250,
+  "processingTime": 400,
+  "energyCostPerTick": 4000,
+  "lateOnly": true
+}

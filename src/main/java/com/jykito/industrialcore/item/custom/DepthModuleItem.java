@@ -1,6 +1,14 @@
 package com.jykito.industrialcore.item.custom;
 
+import com.jykito.industrialcore.block.ModBlocks;
+import com.jykito.industrialcore.item.upgrade.UpgradeTargets;
+import java.util.List;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Модуль глубины: разрешение криокамере уходить на ступень {@link #getTier()}.
@@ -22,4 +30,9 @@ public class DepthModuleItem extends Item {
 
     /** Максимальная ступень, на которую модуль пускает камеру. */
     public int getTier() { return tier; }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        UpgradeTargets.append(tooltip, ModBlocks.CRYO_CORE);
+    }
 }

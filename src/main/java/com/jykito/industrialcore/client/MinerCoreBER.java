@@ -50,6 +50,18 @@ public class MinerCoreBER implements BlockEntityRenderer<MinerCoreBlockEntity> {
         BlockState state = be.getBlockState();
         if (!state.getValue(MinerCoreBlock.FORMED)) return;
 
+        Direction facing = state.getValue(MinerCoreBlock.FACING);
+        boolean isWorking = state.getValue(MinerCoreBlock.LIT);
+        float degreesPerTick = isWorking ? 3f : 0.5f;
+        float screwAngle = ((be.getLevel().getGameTime() + partialTick) * degreesPerTick) % 360f;
+        renderFormed(ps, buf, facing, screwAngle, light, overlay);
+    }
+
+    /**
+     * Собранный шахтёр от блока ядра: бур (на свете {@code light}, слой свечения на полной яркости) и шнек под углом
+     * {@code screwAngle}. Зовут BER и превью структуры в гайде (там блок-сущности нет).
+     */
+    public static void renderFormed(PoseStack ps, MultiBufferSource buf, Direction facing, float screwAngle, int light, int overlay) {
         var mc = Minecraft.getInstance();
         BakedModel drillModel = mc.getModelManager().getModel(DRILL_MODEL_RL);
         BakedModel glowModel  = mc.getModelManager().getModel(DRILL_GLOW_MODEL_RL);
@@ -57,7 +69,6 @@ public class MinerCoreBER implements BlockEntityRenderer<MinerCoreBlockEntity> {
         if (drillModel == mc.getModelManager().getMissingModel()) return;
         boolean hasGlow = glowModel != mc.getModelManager().getMissingModel();
 
-        Direction facing = state.getValue(MinerCoreBlock.FACING);
         float yDeg = switch (facing) {
             case NORTH -> 0f;
             case WEST  -> 90f;
@@ -65,10 +76,6 @@ public class MinerCoreBER implements BlockEntityRenderer<MinerCoreBlockEntity> {
             case EAST  -> 270f;
             default    -> 0f;
         };
-
-        boolean isWorking = state.getValue(MinerCoreBlock.LIT);
-        float degreesPerTick = isWorking ? 3f : 0.5f;
-        float screwAngle = ((be.getLevel().getGameTime() + partialTick) * degreesPerTick) % 360f;
 
         RenderType rt = ModRenderTypes.entityCutoutNoCullOffset(TextureAtlas.LOCATION_BLOCKS);
 

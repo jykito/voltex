@@ -1,15 +1,17 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "A A",
-    "B B",
-    "   "
+    "ABA",
+    "C C"
   ],
   "key": {
     "A": {
       "item": "industrial_core:heat_resistant_plating"
     },
     "B": {
+      "item": "industrial_core:nexite_boots"
+    },
+    "C": {
       "item": "industrial_core:exotic_matter"
     }
   },

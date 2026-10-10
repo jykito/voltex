@@ -1,0 +1,71 @@
+{
+  "type": "industrial_core:assembling",
+  "inputs": [
+    {
+      "item": "industrial_core:liquefier",
+      "count": 8
+    },
+    {
+      "item": "industrial_core:cryogenic_heat_exchanger",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:heat_pipe_t2",
+      "count": 16
+    },
+    {
+      "item": "industrial_core:fluid_valve",
+      "count": 16
+    },
+    {
+      "item": "industrial_core:barrel_t3",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:heat_resistant_plating",
+      "count": 16
+    },
+    {
+      "item": "industrial_core:invar_ingot",
+      "count": 32
+    },
+    {
+      "item": "minecraft:obsidian",
+      "count": 32
+    },
+    {
+      "item": "industrial_core:thermal_insulation",
+      "count": 32
+    },
+    {
+      "item": "industrial_core:mechanism_block",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:control_unit",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:servo_drive",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:armor_sheet",
+      "count": 32
+    },
+    {
+      "item": "industrial_core:quantum_capacitor",
+      "count": 2
+    }
+  ],
+  "fluid": {
+    "fluid": "industrial_core:mechanical_alloy",
+    "amount": 16000
+  },
+  "result": {
+    "item": "industrial_core:multiblock_liquefier",
+    "count": 1
+  },
+  "processingTime": 1200,
+  "energyCostPerTick": 16000
+}

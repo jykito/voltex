@@ -1,0 +1,37 @@
+{
+  "parent": "industrial_core:voltex/root",
+  "display": {
+    "icon": {
+      "item": "industrial_core:coal_generator"
+    },
+    "title": {
+      "translate": "advancements.industrial_core.coal_generator.title"
+    },
+    "description": {
+      "translate": "advancements.industrial_core.coal_generator.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_coal_generator": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "industrial_core:coal_generator"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_coal_generator"
+    ]
+  ]
+}

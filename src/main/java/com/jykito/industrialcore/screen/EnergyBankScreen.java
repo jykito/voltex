@@ -5,19 +5,14 @@ import com.jykito.industrialcore.menu.EnergyBankMenu;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import org.lwjgl.glfw.GLFW;
 
-public class EnergyBankScreen extends AbstractContainerScreen<EnergyBankMenu> {
+public class EnergyBankScreen extends MachineScreen<EnergyBankMenu> {
     private static final ResourceLocation TEXTURE     = new ResourceLocation(IndustrialCore.MODID, "textures/gui/energy_bank_gui.png");
-    private static final ResourceLocation ENERGY_FILL = new ResourceLocation(IndustrialCore.MODID, "textures/gui/energy_fill_6x_anim.png");
-    private static final int TEX_W = 256, TEX_H = 315;
-    private static final int FILL_W = 96, ANIM_H = 36, FRAME_H = 6, FRAMES = 6, FRAME_TICKS = 6;
-    private int animTick = 0, frame = 0;
 
     private static final int BAR_X = 92, BAR_Y = 87, BAR_W = 75, BAR_H = 6;   // энергобар
     private static final int INFO_X = 76, INFO_Y = 41;                        // инфо-поле (107×43)
@@ -28,13 +23,11 @@ public class EnergyBankScreen extends AbstractContainerScreen<EnergyBankMenu> {
     private EditBox reserveField;
 
     public EnergyBankScreen(EnergyBankMenu menu, Inventory inv, Component title) {
-        super(menu, inv, title);
-        this.imageWidth = 256; this.imageHeight = 224;
+        super(menu, inv, title, 6);
     }
 
     @Override protected void init() {
         super.init();
-        this.inventoryLabelY = 10000; this.titleLabelY = 10000;
         reserveField = new EditBox(this.font, leftPos + RES_X + 1, topPos + RES_Y, RES_W - 1, RES_H, Component.empty());
         reserveField.setMaxLength(3);
         reserveField.setBordered(false);      // рамка — твоя нарисованная, EditBox рисует только текст
@@ -85,11 +78,7 @@ public class EnergyBankScreen extends AbstractContainerScreen<EnergyBankMenu> {
     }
 
     @Override
-    public void render(GuiGraphics g, int mx, int my, float pt) {
-        renderBackground(g);
-        if (++animTick >= FRAME_TICKS) { animTick = 0; frame = (frame + 1) % FRAMES; }
-        super.render(g, mx, my, pt);
-        renderTooltip(g, mx, my);
+    protected void renderTooltips(GuiGraphics g, int mx, int my) {
         Bars.energy(g, font, mx, my, leftPos + BAR_X, topPos + BAR_Y, BAR_W, BAR_H,
                 menu.getEnergy(), menu.getMaxEnergy());
     }
@@ -100,15 +89,7 @@ public class EnergyBankScreen extends AbstractContainerScreen<EnergyBankMenu> {
         int x = leftPos, y = topPos;
         g.blit(TEXTURE, x, y, 0, 0, imageWidth, imageHeight, TEX_W, TEX_H);
 
-        int filled = menu.getScaledEnergy(BAR_W);
-        if (filled > 0) {
-            int bx = x + BAR_X, by = y + BAR_Y, v = frame * FRAME_H, dx = bx;
-            while (dx < bx + filled) {
-                int tw = Math.min(FILL_W, bx + filled - dx);
-                g.blit(ENERGY_FILL, dx, by, 0, v, tw, BAR_H, FILL_W, ANIM_H);
-                dx += FILL_W;
-            }
-        }
+        bars.draw(g, FillBar.ENERGY, x + BAR_X, y + BAR_Y, menu.getScaledEnergy(BAR_W), BAR_H);
         drawInfo(g, x, y);
     }
 

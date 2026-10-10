@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class ResinCollectorMenu extends AbstractContainerMenu {
+public class ResinCollectorMenu extends MachineMenu {
 
     public final ResinCollectorBlockEntity blockEntity;
     private static final int MACHINE_SLOTS = 9;
@@ -28,11 +28,7 @@ public class ResinCollectorMenu extends AbstractContainerMenu {
             for (int col = 0; col < 3; col++)
                 addSlot(new SlotItemHandler(h, row * 3 + col, 101 + col * 19, 46 + row * 19));
 
-        for (int i = 0; i < 3; i++)
-            for (int j = 0; j < 9; j++)
-                addSlot(new Slot(inv, j + i * 9 + 9, 44 + j * 19, 133 + i * 19));
-        for (int k = 0; k < 9; k++)
-            addSlot(new Slot(inv, k, 44 + k * 19, 196));
+        addPlayerInventory(inv, 44, 133);
     }
 
     @Override

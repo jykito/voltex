@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "industrial_core:cryo_crystal",
+    "industrial_core:cryolite"
+  ]
+}

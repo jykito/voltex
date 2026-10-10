@@ -5,10 +5,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 
-public class LogisticsNodeMenu extends AbstractContainerMenu {
+public class LogisticsNodeMenu extends MachineMenu {
     public final BlockPos nodePos;
 
     public LogisticsNodeMenu(int id, Inventory inv, FriendlyByteBuf buf) {

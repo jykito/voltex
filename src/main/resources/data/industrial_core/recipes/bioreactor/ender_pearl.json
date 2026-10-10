@@ -1,0 +1,19 @@
+{
+  "type": "industrial_core:bioreactor_recipe",
+  "ingredient": {
+    "item": "industrial_core:biomass"
+  },
+  "inputCount": 3,
+  "additive": {
+    "item": "minecraft:emerald"
+  },
+  "additiveCount": 1,
+  "waterAmount": 250,
+  "result": {
+    "item": "minecraft:ender_pearl",
+    "count": 1
+  },
+  "processingTime": 400,
+  "energyCostPerTick": 60,
+  "requiredHeat": 800
+}

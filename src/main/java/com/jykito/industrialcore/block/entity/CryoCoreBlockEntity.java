@@ -4,6 +4,8 @@ import com.jykito.industrialcore.block.custom.CryoCasingBlock;
 import com.jykito.industrialcore.block.custom.CryoCoreBlock;
 import com.jykito.industrialcore.block.custom.CryoGlassBlock;
 import com.jykito.industrialcore.block.custom.RefrigerationChamberBlock;
+import com.jykito.industrialcore.multiblock.WandBuild;
+import com.jykito.industrialcore.energy.MachineEnergy;
 import com.jykito.industrialcore.fluid.ModFluids;
 import com.jykito.industrialcore.item.ModItems;
 import com.jykito.industrialcore.item.custom.DepthModuleItem;
@@ -153,12 +155,7 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
 
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
-    private static class CryoEnergy extends EnergyStorage {
-        CryoEnergy(int capacity) { super(capacity, capacity, 0); }
-        void consumeEnergy(int amount) { this.energy = Math.max(0, this.energy - amount); }
-        void setEnergy(int amount) { this.energy = Math.min(getMaxEnergyStored(), Math.max(0, amount)); }
-    }
-    private final CryoEnergy energyStorage = new CryoEnergy(ENERGY_CAPACITY);
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(ENERGY_CAPACITY, ENERGY_CAPACITY);
     private LazyOptional<EnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
     /** Хладагент внутрь. */
@@ -166,7 +163,7 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
             fs -> fs.getFluid() == ModFluids.SOURCE_COOLANT.get()) {
         @Override protected void onContentsChanged() { markTankChanged(); }
     };
-    /** Отработанный хладагент наружу — его регенерирует фазовый сплиттер. */
+    /** Отработанный хладагент наружу — его освежает обогатитель (enrich/coolant_regen: отработка + лазуритовая пыль). */
     public final FluidTank hotTank = new FluidTank(TANK_CAP) {
         @Override protected void onContentsChanged() { markTankChanged(); }
     };
@@ -222,6 +219,8 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
     // ---- состояние ----
     private int checkTimer = 0;
     private boolean formed = false;
+    /** Ступень прошлого тика, только для достижения (не сохраняется). */
+    private int lastStage = 0;
     private int depth = 0;
     private int progress = 0;
     private int maxProgress = 400;
@@ -303,6 +302,9 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
         if (++checkTimer >= CHECK_INTERVAL) {
             checkTimer = 0;
             boolean nowFormed = checkStructure(level, pos, state) == null;
+            if (nowFormed && !formed)
+                com.jykito.industrialcore.advancement.VoltexEventTrigger.award(level, pos, 16,
+                        com.jykito.industrialcore.advancement.VoltexEventTrigger.CRYO_FORMED);
             if (nowFormed != formed) { formed = nowFormed; setChanged(); }
             linkCasings(level, pos, state, nowFormed);
         }
@@ -323,6 +325,10 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
         if (depth > cap) depth = cap;   // модуль вынули на ходу
 
         int stage = getStage();
+        if (stage == 3 && lastStage != 3)   // достижение «На самом дне»: только в момент перехода, не каждый тик
+            com.jykito.industrialcore.advancement.VoltexEventTrigger.award(level, pos, 16,
+                    com.jykito.industrialcore.advancement.VoltexEventTrigger.CRYO_STAGE_3);
+        lastStage = stage;
         CryoRecipe recipe = findRecipe(level, stage);
 
         boolean working = false;
@@ -356,7 +362,7 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
         setChanged();
     }
 
-    /** Хладагент проходит через камеру и уходит горячим — его регенерирует фазовый сплиттер. */
+    /** Хладагент проходит через камеру и уходит горячим — его освежает обогатитель. */
     private void cycleCoolant(int amount) {
         coolantTank.drain(amount, IFluidHandler.FluidAction.EXECUTE);
         hotTank.fill(new FluidStack(ModFluids.SOURCE_HOT_COOLANT.get(), amount), IFluidHandler.FluidAction.EXECUTE);
@@ -383,7 +389,6 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
             if (rod.hurt(1, level.random, null)) itemHandler.setStackInSlot(s, ItemStack.EMPTY);
         }
     }
-
 
     private void setRunning(Level level, BlockPos pos, BlockState state, boolean running) {
         boolean lit = MachineLit.tick(this, level, pos, state, CryoCoreBlock.LIT, running);
@@ -483,16 +488,9 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
                     if (h == 0 && d == 0 && s == 0) continue;              // само ядро
 
                     BlockPos p = local(pos, facing, d, s, h);
-                    BlockState st = level.getBlockState(p);
                     Part want = partAt(d, s, h);
-
-                    boolean ok = switch (want) {
-                        case CASING -> st.getBlock() instanceof CryoCasingBlock;
-                        case GLASS  -> st.getBlock() instanceof CryoGlassBlock;
-                        case FRIDGE -> st.getBlock() instanceof RefrigerationChamberBlock;
-                        case AIR    -> st.isAir();
-                    };
-                    if (!ok) return want.label + " @ " + p.getX() + ", " + p.getY() + ", " + p.getZ();
+                    if (!fits(want, level.getBlockState(p)))
+                        return want.label + " @ " + p.getX() + ", " + p.getY() + ", " + p.getZ();
                 }
             }
         }
@@ -506,6 +504,16 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
         Part(String label) { this.label = label; }
     }
 
+    /** Подходит ли блок в клетку. Общий критерий для проверки и для сборки палочкой. */
+    private static boolean fits(Part want, BlockState st) {
+        return switch (want) {
+            case CASING -> st.getBlock() instanceof CryoCasingBlock;
+            case GLASS  -> st.getBlock() instanceof CryoGlassBlock;
+            case FRIDGE -> st.getBlock() instanceof RefrigerationChamberBlock;
+            case AIR    -> st.isAir();
+        };
+    }
+
     private static Part partAt(int d, int s, int h) {
         if (h == 0 || h == HEIGHT) return Part.CASING;
         if (d == 0 || d == DEPTH_D || s == -HALF_WIDTH || s == HALF_WIDTH) return Part.GLASS;
@@ -514,26 +522,35 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     /**
-     * Ставит всю камеру вокруг ядра — дев-сборка структурным жезлом.
+     * Ставит камеру вокруг ядра структурной палочкой: в творческом бесплатно и поверх всего, в выживании из инвентаря и только в пустое.
      * <p>
      * Раскладку берёт из {@link #partAt}, той же, по которой идёт проверка. Иначе сборка и
      * валидатор со временем разъедутся, и жезл будет ставить то, что камера не примет.
      */
-    public static void buildStructure(Level level, BlockPos corePos, Direction facing) {
+    public static void buildStructure(Level level, BlockPos corePos, Direction facing, WandBuild wb) {
         for (int h = 0; h <= HEIGHT; h++) {
             for (int d = 0; d <= DEPTH_D; d++) {
                 for (int s = -HALF_WIDTH; s <= HALF_WIDTH; s++) {
                     if (h == 0 && d == 0 && s == 0) continue;              // само ядро
                     BlockPos p = local(corePos, facing, d, s, h);
-                    BlockState put = switch (partAt(d, s, h)) {
+                    Part part = partAt(d, s, h);
+                    if (fits(part, level.getBlockState(p))) continue;
+                    // в творческом палочка расчищает и перезаписывает всё, как раньше;
+                    // в выживании чужое не ломает: ставит только в пустое и из инвентаря
+                    if (part == Part.AIR) {
+                        if (wb.free()) wb.overwrite(level, p, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+                        else wb.markBlocked();
+                        continue;
+                    }
+                    BlockState put = switch (part) {
                         case CASING -> com.jykito.industrialcore.block.ModBlocks.CRYO_CASING.get().defaultBlockState();
                         case GLASS  -> com.jykito.industrialcore.block.ModBlocks.CRYO_GLASS.get().defaultBlockState();
-                        case FRIDGE -> com.jykito.industrialcore.block.ModBlocks.REFRIGERATION_CHAMBER.get().defaultBlockState();
-                        case AIR    -> net.minecraft.world.level.block.Blocks.AIR.defaultBlockState();
+                        default     -> com.jykito.industrialcore.block.ModBlocks.REFRIGERATION_CHAMBER.get().defaultBlockState();
                     };
-                    // флаг 3: соседям приходит обновление, поэтому соединения панелей и корпуса
+                    // флаг 3 внутри: соседям приходит обновление, поэтому соединения панелей и корпуса
                     // сходятся сами, без второго прохода
-                    level.setBlock(p, put, 3);
+                    if (wb.free()) wb.overwrite(level, p, put);
+                    else wb.place(level, p, put);
                 }
             }
         }

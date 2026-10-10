@@ -2,9 +2,11 @@ package com.jykito.industrialcore.block.entity;
 
 import com.jykito.industrialcore.block.custom.MinerCasingBlock;
 import com.jykito.industrialcore.block.custom.MinerCoreBlock;
+import com.jykito.industrialcore.energy.MachineEnergy;
 import com.jykito.industrialcore.fluid.ModFluids;
 import com.jykito.industrialcore.item.custom.MinerLensItem;
 import com.jykito.industrialcore.item.upgrade.AcceleratorItem;
+import com.jykito.industrialcore.item.upgrade.MachineUpgrades;
 import com.jykito.industrialcore.item.upgrade.ParallelModuleItem;
 import com.jykito.industrialcore.item.upgrade.AdvancedParallelModuleItem;
 import com.jykito.industrialcore.menu.MinerCoreMenu;
@@ -25,7 +27,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -45,13 +46,6 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
     public static final int ENERGY_CAPACITY = 100_000;
     // База под работу без модуля: 8 руд. Под параллели бак растёт сам, см. AdaptiveTank.
     public static final int FLUID_CAPACITY  = 8_000;
-
-    private static final class DrainableEnergyStorage extends EnergyStorage {
-        DrainableEnergyStorage(int capacity, int maxReceive) { super(capacity, maxReceive, 0); }
-        @Override public boolean canExtract() { return false; }
-        public void consume(int amount) { this.energy = Math.max(0, this.energy - amount); }
-        public void setStored(int amount) { this.energy = Math.min(capacity, Math.max(0, amount)); }
-    }
 
     private final ItemStackHandler itemHandler = new ItemStackHandler(5) {
         @Override
@@ -82,7 +76,7 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
         @Override public boolean isItemValid(int slot, @NotNull ItemStack stack) { return false; }
     };
 
-    private final DrainableEnergyStorage energyStorage = new DrainableEnergyStorage(ENERGY_CAPACITY, 131_072);
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(ENERGY_CAPACITY, 131_072);
 
     public final FluidTank fluidTank = new FluidTank(FLUID_CAPACITY) {
         @Override
@@ -176,23 +170,11 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
             }
         }
 
-        float timeMultiplier = 1.0f;
-        int moduleParallel = 1;
-        for (int s = 1; s <= 4; s++) {
-            ItemStack upg = itemHandler.getStackInSlot(s);
-            Item it = upg.getItem();
-            if (it instanceof AcceleratorItem acc) {
-                for (int c = 0; c < upg.getCount(); c++) timeMultiplier *= acc.getSpeedMultiplier();
-            } else if (it instanceof ParallelModuleItem pm) {
-                moduleParallel = Math.max(moduleParallel, pm.getParallelCount());
-            } else if (it instanceof AdvancedParallelModuleItem adv) {
-                moduleParallel = Math.max(moduleParallel, adv.getParallelCount());
-            }
-        }
-        if (AdaptiveTank.resize(fluidTank, FLUID_CAPACITY, moduleParallel))
+        MachineUpgrades upg = MachineUpgrades.scan(itemHandler, 1, 4);
+        if (AdaptiveTank.resize(fluidTank, FLUID_CAPACITY, upg.parallel()))
             level.sendBlockUpdated(pos, state, state, 3); // шкала бака считается от ёмкости, клиенту нужна новая
 
-        int effectiveMax = Math.max(1, (int)(BASE_PROGRESS * timeMultiplier));
+        int effectiveMax = upg.scaleTime(BASE_PROGRESS);
         this.maxProgress = effectiveMax;
 
         pushToAdjacentInventories(level, pos);
@@ -208,8 +190,8 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
         boolean working = false;
         if (canWork) {
             // параллель, которую тянет энергия в этот тик (не больше модуля, не больше запаса)
-            int energyParallel = Math.max(1, Math.min(moduleParallel, energyStorage.getEnergyStored() / ENERGY_PER_TICK));
-            energyStorage.consume(energyParallel * ENERGY_PER_TICK);
+            int energyParallel = Math.max(1, Math.min(upg.parallel(), energyStorage.getEnergyStored() / ENERGY_PER_TICK));
+            energyStorage.consumeEnergy(energyParallel * ENERGY_PER_TICK);
             progress++;
             working = true;
             hasChanges = true;
@@ -404,7 +386,7 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
         itemHandler.deserializeNBT(tag.getCompound("inventory"));
         outputHandler.deserializeNBT(tag.getCompound("output"));
         progress = tag.getInt("progress");
-        energyStorage.setStored(tag.getInt("energy"));
+        energyStorage.setEnergy(tag.getInt("energy"));
         AdaptiveTank.load(tag, "fluidTankCapacity", fluidTank, FLUID_CAPACITY);
         fluidTank.readFromNBT(tag.getCompound("fluidTank"));
         isStructureValid = tag.getBoolean("isStructureValid");

@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:kronit"
+    },
+    "B": {
+      "item": "industrial_core:microcontroller"
+    },
+    "C": {
+      "item": "industrial_core:superconducting_winding"
+    },
+    "D": {
+      "item": "industrial_core:miner_core"
+    },
+    "E": {
+      "item": "industrial_core:superconductor_coil"
+    }
+  },
+  "result": {
+    "item": "industrial_core:industrial_miner_core",
+    "count": 1
+  }
+}

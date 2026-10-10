@@ -1,10 +1,9 @@
 package com.jykito.industrialcore.block.entity;
 
 import com.jykito.industrialcore.block.custom.StoneGeneratorBlock;
-import com.jykito.industrialcore.item.upgrade.AcceleratorItem;
-import com.jykito.industrialcore.item.upgrade.DirectionalUpgradeItem;
-import com.jykito.industrialcore.item.upgrade.MachineUpgradeItem;
-import com.jykito.industrialcore.item.upgrade.ParallelModuleItem;
+import com.jykito.industrialcore.energy.MachineEnergy;
+import com.jykito.industrialcore.item.upgrade.MachineUpgrades;
+import com.jykito.industrialcore.item.upgrade.UpgradeTargets;
 import com.jykito.industrialcore.menu.StoneGeneratorMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -26,14 +25,11 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
@@ -49,7 +45,7 @@ public class StoneGeneratorBlockEntity extends BlockEntity implements MenuProvid
         @Override protected void onContentsChanged(int slot) { setChanged(); }
         @Override public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             if (slot == 0) return false;
-            return stack.getItem() instanceof MachineUpgradeItem;
+            return UpgradeTargets.works(getBlockState().getBlock(), stack);
         }
     };
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
@@ -64,12 +60,7 @@ public class StoneGeneratorBlockEntity extends BlockEntity implements MenuProvid
     };
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
-    private static class GenEnergy extends EnergyStorage {
-        GenEnergy(int capacity, int maxReceive) { super(capacity, maxReceive, 0); }
-        void consume(int amount) { this.energy = Math.max(0, this.energy - amount); }
-        void set(int amount)     { this.energy = Math.min(getMaxEnergyStored(), Math.max(0, amount)); }
-    }
-    private final GenEnergy energyStorage = new GenEnergy(100_000, 100_000); // приём = буфер, без потолка на вход
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(100_000, 100_000); // приём = буфер, без потолка на вход
     private LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.empty();
 
     public final FluidTank waterTank = new FluidTank(TANK_CAP, fs -> fs.getFluid() == Fluids.WATER) {
@@ -157,44 +148,25 @@ public class StoneGeneratorBlockEntity extends BlockEntity implements MenuProvid
 
         StoneGeneratorMode m = StoneGeneratorMode.byId(mode);
 
-        float speedMul = 1.0f, energyMul = 1.0f;
-        int parallel = 1;
-        Direction itemPushDir = null, fluidPullDir = null;
-        for (int s = 1; s <= 4; s++) {
-            ItemStack up = itemHandler.getStackInSlot(s);
-            if (up.getItem() instanceof AcceleratorItem acc) {
-                for (int c = 0; c < up.getCount(); c++) { speedMul *= acc.getSpeedMultiplier(); energyMul *= acc.getEnergyMultiplier(); }
-            } else if (up.getItem() instanceof ParallelModuleItem pm) {
-                parallel = Math.max(parallel, pm.getParallelCount());
-            } else if (up.getItem() instanceof com.jykito.industrialcore.item.upgrade.AdvancedParallelModuleItem adv) {
-                parallel = Math.max(parallel, adv.getParallelCount());
-            } else if (up.getItem() instanceof DirectionalUpgradeItem dir) {
-                Direction d = DirectionalUpgradeItem.getStoredDirection(up);
-                if (d != null) switch (dir.getMode()) {
-                    case ITEM_PUSH  -> itemPushDir = d;
-                    case FLUID_PULL -> fluidPullDir = d;
-                    default -> {  }
-                }
-            }
-        }
+        MachineUpgrades upg = MachineUpgrades.scan(itemHandler, 1, 4);
         // Оба бака растут: партия ×64 берёт в 64 раза больше и воды, и лавы.
-        boolean resized = AdaptiveTank.resize(waterTank, TANK_CAP, parallel);
-        resized        |= AdaptiveTank.resize(lavaTank,  TANK_CAP, parallel);
+        boolean resized = AdaptiveTank.resize(waterTank, TANK_CAP, upg.parallel());
+        resized        |= AdaptiveTank.resize(lavaTank,  TANK_CAP, upg.parallel());
         if (resized) level.sendBlockUpdated(pos, state, state, 3);
 
-        maxProgress = Math.max(1, (int) (m.processTicks * speedMul));
-        int fePerTick = Math.max(1, (int) (FE_PER_TICK * energyMul));
+        maxProgress = upg.scaleTime(m.processTicks);
+        int fePerTick = upg.scaleEnergy(FE_PER_TICK);
 
         ItemStack out = itemHandler.getStackInSlot(0);
         int outRoom = out.isEmpty() ? m.result.getMaxStackSize()
                 : (out.is(m.result) ? out.getMaxStackSize() - out.getCount() : 0);
         int waterAvail = m.waterCost > 0 ? waterTank.getFluidAmount() / m.waterCost : Integer.MAX_VALUE;
         int lavaAvail  = m.lavaCost  > 0 ? lavaTank.getFluidAmount()  / m.lavaCost  : Integer.MAX_VALUE;
-        int actualParallel = Math.min(parallel, Math.min(outRoom, Math.min(waterAvail, lavaAvail)));
+        int actualParallel = Math.min(upg.parallel(), Math.min(outRoom, Math.min(waterAvail, lavaAvail)));
 
         boolean working = false;
         if (running && actualParallel >= 1 && energyStorage.getEnergyStored() >= fePerTick) {
-            energyStorage.consume(fePerTick);
+            energyStorage.consumeEnergy(fePerTick);
             progress++;
             working = true;
             if (progress >= maxProgress) {
@@ -208,22 +180,8 @@ public class StoneGeneratorBlockEntity extends BlockEntity implements MenuProvid
             progress = 0;
         }
 
-        if (fluidPullDir != null) {
-            final Direction fpd = fluidPullDir;
-            BlockEntity n = level.getBlockEntity(pos.relative(fpd));
-            if (n != null) n.getCapability(ForgeCapabilities.FLUID_HANDLER, fpd.getOpposite()).ifPresent(src -> {
-                FluidUtil.tryFluidTransfer(waterTank, src, waterTank.getSpace(), true);
-                FluidUtil.tryFluidTransfer(lavaTank,  src, lavaTank.getSpace(),  true);
-            });
-        }
-        if (itemPushDir != null && !itemHandler.getStackInSlot(0).isEmpty()) {
-            final Direction pd = itemPushDir;
-            BlockEntity n = level.getBlockEntity(pos.relative(pd));
-            if (n != null) n.getCapability(ForgeCapabilities.ITEM_HANDLER, pd.getOpposite()).ifPresent(dst -> {
-                ItemStack rem = ItemHandlerHelper.insertItem(dst, itemHandler.getStackInSlot(0), false);
-                itemHandler.setStackInSlot(0, rem);
-            });
-        }
+        if (upg.fluidPull() != null) MachineIO.pullFluid(level, pos, upg.fluidPull(), waterTank, lavaTank);
+        if (upg.itemPush() != null) MachineIO.pushItems(level, pos, upg.itemPush(), itemHandler, 0);
 
         MachineLit.tick(this, level, pos, state, StoneGeneratorBlock.LIT, working);setChanged();
         if (waterTank.getFluidAmount() != waterBefore || lavaTank.getFluidAmount() != lavaBefore)
@@ -280,7 +238,7 @@ public class StoneGeneratorBlockEntity extends BlockEntity implements MenuProvid
     @Override public void load(CompoundTag tag) {
         super.load(tag);
         itemHandler.deserializeNBT(tag.getCompound("inventory"));
-        energyStorage.set(tag.getInt("energy"));
+        energyStorage.setEnergy(tag.getInt("energy"));
         AdaptiveTank.load(tag, "waterTankCapacity", waterTank, TANK_CAP);
         AdaptiveTank.load(tag, "lavaTankCapacity",  lavaTank,  TANK_CAP);
         waterTank.readFromNBT(tag.getCompound("waterTank"));

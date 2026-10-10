@@ -1,0 +1,18 @@
+{
+  "type": "industrial_core:fluid_enricher_recipe",
+  "ingredient": {
+    "item": "industrial_core:photonic_lens"
+  },
+  "itemCount": 1,
+  "ingredient2": {
+    "item": "industrial_core:crystal_ingot"
+  },
+  "itemCount2": 4,
+  "fluidInput": "industrial_core:mechanical_alloy",
+  "fluidInputAmount": 1000,
+  "fluidOutput": "industrial_core:photonic_melt",
+  "fluidOutputAmount": 1000,
+  "processingTime": 200,
+  "energyCostPerTick": 1000,
+  "lateOnly": true
+}

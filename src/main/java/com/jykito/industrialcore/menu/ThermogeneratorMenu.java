@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class ThermogeneratorMenu extends AbstractContainerMenu {
+public class ThermogeneratorMenu extends MachineMenu {
     public final ThermogeneratorBlockEntity blockEntity;
     private final ContainerData data;
 
@@ -25,12 +25,7 @@ public class ThermogeneratorMenu extends AbstractContainerMenu {
 
         this.addSlot(new SlotItemHandler(this.blockEntity.getItemHandler(), 0, 119, 60));
 
-        for (int i = 0; i < 3; i++)
-            for (int j = 0; j < 9; j++)
-                this.addSlot(new Slot(inv, j + i * 9 + 9, 44 + j * 19, 133 + i * 19));
-
-        for (int k = 0; k < 9; k++)
-            this.addSlot(new Slot(inv, k, 44 + k * 19, 196));
+        addPlayerInventory(inv, 44, 133);
 
         addDataSlots(data);
     }
@@ -46,8 +41,8 @@ public class ThermogeneratorMenu extends AbstractContainerMenu {
     // Маска обязательна: ContainerData едет по сети как short, поэтому младшая половина
     // больше 32767 приезжает отрицательной и без & 0xFFFF заливает единицами старшие биты.
     // Сейчас буфер 20000 и до этого не доходит, но на любом росте ёмкости экран бы поехал.
-    public int getEnergy()         { return (this.data.get(2) << 16) | (this.data.get(1) & 0xFFFF); }
-    public int getMaxEnergy()      { return (this.data.get(4) << 16) | (this.data.get(3) & 0xFFFF); }
+    public int getEnergy()         { return unpack(data.get(1), data.get(2)); }
+    public int getMaxEnergy()      { return unpack(data.get(3), data.get(4)); }
     public int getGenerationRate() { return this.data.get(5); }
 
     @Override

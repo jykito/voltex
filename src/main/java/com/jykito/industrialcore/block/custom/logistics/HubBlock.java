@@ -1,5 +1,8 @@
 package com.jykito.industrialcore.block.custom.logistics;
 
+import com.jykito.industrialcore.block.custom.ConnectedShapes;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.PipeBlock;
 import com.jykito.industrialcore.block.ModBlocks;
 import com.jykito.industrialcore.block.entity.HubBlockEntity;
 import com.jykito.industrialcore.block.entity.ModBlockEntities;
@@ -28,41 +31,24 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.EnumMap;
 import java.util.Map;
 
 public class HubBlock extends BaseEntityBlock {
-    public static final BooleanProperty NORTH = BooleanProperty.create("north");
-    public static final BooleanProperty SOUTH = BooleanProperty.create("south");
-    public static final BooleanProperty EAST  = BooleanProperty.create("east");
-    public static final BooleanProperty WEST  = BooleanProperty.create("west");
-    public static final BooleanProperty UP    = BooleanProperty.create("up");
-    public static final BooleanProperty DOWN  = BooleanProperty.create("down");
+    public static final BooleanProperty NORTH = BlockStateProperties.NORTH;
+    public static final BooleanProperty SOUTH = BlockStateProperties.SOUTH;
+    public static final BooleanProperty EAST  = BlockStateProperties.EAST;
+    public static final BooleanProperty WEST  = BlockStateProperties.WEST;
+    public static final BooleanProperty UP    = BlockStateProperties.UP;
+    public static final BooleanProperty DOWN  = BlockStateProperties.DOWN;
 
-    public static final Map<Direction, BooleanProperty> PROPERTY_BY_DIRECTION = new EnumMap<>(Direction.class);
-    static {
-        PROPERTY_BY_DIRECTION.put(Direction.NORTH, NORTH);
-        PROPERTY_BY_DIRECTION.put(Direction.SOUTH, SOUTH);
-        PROPERTY_BY_DIRECTION.put(Direction.EAST, EAST);
-        PROPERTY_BY_DIRECTION.put(Direction.WEST, WEST);
-        PROPERTY_BY_DIRECTION.put(Direction.UP, UP);
-        PROPERTY_BY_DIRECTION.put(Direction.DOWN, DOWN);
-    }
+    public static final Map<Direction, BooleanProperty> PROPERTY_BY_DIRECTION = PipeBlock.PROPERTY_BY_DIRECTION;
 
-    private static final VoxelShape CORE = box(1, 1, 1, 15, 15, 15);
-    private static final Map<Direction, VoxelShape> STUBS = Map.of(
-            Direction.NORTH, box(4, 4,  0, 12, 12,  3),
-            Direction.SOUTH, box(4, 4, 13, 12, 12, 16),
-            Direction.EAST,  box(13, 4, 4, 16, 12, 12),
-            Direction.WEST,  box( 0, 4, 4,  3, 12, 12),
-            Direction.UP,    box(4, 13, 4, 12, 16, 12),
-            Direction.DOWN,  box(4,  0, 4, 12,  3, 12)
-    );
+    // коробка 12×12 с уголками, подключения 6×6 глубиной 2 (модели item_hub / *_hub_port)
+    private static final ConnectedShapes SHAPES = new ConnectedShapes(2, 14, 5, 11, 2);
 
     public HubBlock(Properties props) {
         super(props);
@@ -74,23 +60,9 @@ public class HubBlock extends BaseEntityBlock {
 
     @Override public RenderShape getRenderShape(BlockState s) { return RenderShape.MODEL; }
 
-    /** Готовые формы на все 64 комбинации: getShape зовут коллизии и луч прицела, пересобирать каждый раз незачем. */
-    private static final VoxelShape[] SHAPES = new VoxelShape[64];
-    static {
-        for (int mask = 0; mask < SHAPES.length; mask++) {
-            VoxelShape shape = CORE;
-            for (Direction d : Direction.values())
-                if ((mask & (1 << d.get3DDataValue())) != 0) shape = Shapes.or(shape, STUBS.get(d));
-            SHAPES[mask] = shape.optimize();
-        }
-    }
-
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
-        int mask = 0;
-        for (Map.Entry<Direction, BooleanProperty> e : PROPERTY_BY_DIRECTION.entrySet())
-            if (state.getValue(e.getValue())) mask |= 1 << e.getKey().get3DDataValue();
-        return SHAPES[mask];
+        return SHAPES.get(state, PROPERTY_BY_DIRECTION);
     }
 
     @Nullable @Override

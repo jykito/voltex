@@ -1,12 +1,12 @@
 {
   "parent": "block/cube",
   "textures": {
-    "particle": "industrial_core:block/thermostation_side_connect",
-    "up": "industrial_core:block/thermostation_top",
-    "down": "industrial_core:block/thermostation_bottom",
-    "north": "industrial_core:block/thermostation_front_on_connect",
-    "east": "industrial_core:block/thermostation_side_connect",
-    "south": "industrial_core:block/thermostation_side_connect",
-    "west": "industrial_core:block/thermostation_side_connect"
+    "particle": "industrial_core:block/machine/thermostation_side_connect",
+    "up": "industrial_core:block/machine/thermostation_top",
+    "down": "industrial_core:block/machine/thermostation_bottom",
+    "north": "industrial_core:block/machine/thermostation_front_on_connect",
+    "east": "industrial_core:block/machine/thermostation_side_connect",
+    "south": "industrial_core:block/machine/thermostation_side_connect",
+    "west": "industrial_core:block/machine/thermostation_side_connect"
   }
 }

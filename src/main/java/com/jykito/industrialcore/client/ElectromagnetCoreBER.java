@@ -19,6 +19,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.data.ModelData;
@@ -40,6 +43,11 @@ public class ElectromagnetCoreBER implements BlockEntityRenderer<ElectromagnetCo
     public static final ResourceLocation COIL_MODEL   = new ResourceLocation("industrial_core", "block/electromagnet_copper_coil");
     public static final ResourceLocation COIL_MODEL_2 = new ResourceLocation("industrial_core", "block/electromagnet_superconductor_coil");
     public static final ResourceLocation COIL_MODEL_3 = new ResourceLocation("industrial_core", "block/electromagnet_graviton_coil");
+    // «Ток»: те же OBJ с маской светящихся пикселей (tools/texture_viewer/export_magnet_glow.js), рисуются поверх на полной яркости
+    public static final ResourceLocation BODY_GLOW    = new ResourceLocation("industrial_core", "block/electromagnet_body_glow");
+    public static final ResourceLocation PILONS_GLOW  = new ResourceLocation("industrial_core", "block/electromagnet_pilons_glow");
+    public static final ResourceLocation COIL_GLOW_2  = new ResourceLocation("industrial_core", "block/electromagnet_superconductor_coil_glow");
+    public static final ResourceLocation COIL_GLOW_3  = new ResourceLocation("industrial_core", "block/electromagnet_graviton_coil_glow");
 
     private static final float SCALE = 8f;
     private static final float OFF_X = 0f;
@@ -75,13 +83,12 @@ public class ElectromagnetCoreBER implements BlockEntityRenderer<ElectromagnetCo
 
         renderField(be, ps, buf, partialTick, yDeg); // магнитное поле: синий/красный веера дуг по бокам
 
-        ps.pushPose();
-        ps.translate(0.5, 0.5, 0.5);
-        ps.mulPose(Axis.YP.rotationDegrees(yDeg));
-        ps.translate(OFF_X, OFF_Y, OFF_Z);
-        ps.scale(SCALE, SCALE, SCALE);
-
         if (DEBUG_GEOMETRY) {
+            ps.pushPose();
+            ps.translate(0.5, 0.5, 0.5);
+            ps.mulPose(Axis.YP.rotationDegrees(yDeg));
+            ps.translate(OFF_X, OFF_Y, OFF_Z);
+            ps.scale(SCALE, SCALE, SCALE);
             VertexConsumer dvc = buf.getBuffer(ModRenderTypes.debugGeo());
             if (body != missing) renderGeoDebug(body, ps, dvc, 40, 255, 40);
             ps.pushPose();
@@ -94,11 +101,63 @@ public class ElectromagnetCoreBER implements BlockEntityRenderer<ElectromagnetCo
             ps.popPose();
             return;
         }
+        var mm = mc.getModelManager();
+        BakedModel coilGlow = coilTier == 3 ? mm.getModel(COIL_GLOW_3) : coilTier == 2 ? mm.getModel(COIL_GLOW_2) : missing; // медь не светится
+        renderModels(ps, buf, yDeg, ang, body, pilons, coil, mm.getModel(BODY_GLOW), mm.getModel(PILONS_GLOW), coilGlow,
+                sampleLight(be), overlay);
+    }
+
+    // Свет для всей модели. Ядро сидит внутри конструкции, там темно (отсюда были «тёмные прямоугольники», из-за них
+    // раньше стоял FULL_BRIGHT) — берём самый светлый блок/небо по точкам вокруг магнита. Точки симметричны: фейсинг не важен.
+    private static final int[][] LIGHT_PROBES;
+    static {
+        java.util.List<int[]> p = new java.util.ArrayList<>();
+        for (int d : new int[]{-9, -5, 5, 9}) for (int y : new int[]{0, 4, 8}) { p.add(new int[]{d, y, 0}); p.add(new int[]{0, y, d}); }
+        p.add(new int[]{0, 10, 0});
+        LIGHT_PROBES = p.toArray(new int[0][]);
+    }
+
+    private static int sampleLight(ElectromagnetCoreBlockEntity be) {
+        Level level = be.getLevel();
+        if (level == null) return LightTexture.FULL_BRIGHT;
+        BlockPos c = be.getBlockPos();
+        int block = 0, sky = 0;
+        for (int[] o : LIGHT_PROBES) {
+            int packed = LevelRenderer.getLightColor(level, c.offset(o[0], o[1], o[2]));
+            block = Math.max(block, LightTexture.block(packed));
+            sky = Math.max(sky, LightTexture.sky(packed));
+        }
+        return LightTexture.pack(block, sky);
+    }
+
+    /**
+     * Корпус, столбы и катушка (tier 0 — без катушки) от блока ядра, без поля. Для превью структуры в гайде, где
+     * блок-сущности нет.
+     */
+    public static void renderModels(PoseStack ps, MultiBufferSource buf, float yDeg, float ang, int coilTier, int overlay) {
+        var mm = Minecraft.getInstance().getModelManager();
+        BakedModel coil = coilTier == 0 ? mm.getMissingModel() : mm.getModel(coilTier == 3 ? COIL_MODEL_3 : coilTier == 2 ? COIL_MODEL_2 : COIL_MODEL);
+        BakedModel none = mm.getMissingModel();   // в гайде света мира нет: всё на полной яркости, маски не нужны
+        renderModels(ps, buf, yDeg, ang, mm.getModel(BODY_MODEL), mm.getModel(PILONS_MODEL), coil, none, none, none,
+                LightTexture.FULL_BRIGHT, overlay);
+    }
+
+    /** Модели при свете {@code light}, поверх — маски «тока» (glow) на полной яркости тем же типом рендера: глубина совпадает. */
+    private static void renderModels(PoseStack ps, MultiBufferSource buf, float yDeg, float ang,
+                                     BakedModel body, BakedModel pilons, BakedModel coil,
+                                     BakedModel bodyGlow, BakedModel pilonsGlow, BakedModel coilGlow, int light, int overlay) {
+        BakedModel missing = Minecraft.getInstance().getModelManager().getMissingModel();
+        ps.pushPose();
+        ps.translate(0.5, 0.5, 0.5);
+        ps.mulPose(Axis.YP.rotationDegrees(yDeg));
+        ps.translate(OFF_X, OFF_Y, OFF_Z);
+        ps.scale(SCALE, SCALE, SCALE);
 
         RenderType rt = ModRenderTypes.solidModel(TextureAtlas.LOCATION_BLOCKS); // cull закрытых моделей (конфиг cullSolidFaces)
         VertexConsumer vc = buf.getBuffer(rt);
 
-        if (body != missing) renderQuads(body, ps, vc, overlay);
+        if (body != missing) renderQuads(body, ps, vc, light, overlay);
+        if (bodyGlow != missing) renderQuads(bodyGlow, ps, vc, LightTexture.FULL_BRIGHT, overlay);
 
         // столбы и катушка крутятся В РАЗНЫЕ стороны вокруг вертикальной оси
         if (pilons != missing) {
@@ -106,7 +165,8 @@ public class ElectromagnetCoreBER implements BlockEntityRenderer<ElectromagnetCo
             ps.translate(0, 0, AXIS_Z);
             ps.mulPose(Axis.YP.rotationDegrees(ang));
             ps.translate(0, 0, -AXIS_Z);
-            renderQuads(pilons, ps, vc, overlay);
+            renderQuads(pilons, ps, vc, light, overlay);
+            if (pilonsGlow != missing) renderQuads(pilonsGlow, ps, vc, LightTexture.FULL_BRIGHT, overlay);
             ps.popPose();
         }
         if (coil != missing) {
@@ -114,7 +174,8 @@ public class ElectromagnetCoreBER implements BlockEntityRenderer<ElectromagnetCo
             ps.translate(0, 0, AXIS_Z);
             ps.mulPose(Axis.YP.rotationDegrees(-ang));
             ps.translate(0, 0, -AXIS_Z);
-            renderQuads(coil, ps, vc, overlay);
+            renderQuads(coil, ps, vc, light, overlay);
+            if (coilGlow != missing) renderQuads(coilGlow, ps, vc, LightTexture.FULL_BRIGHT, overlay);
             ps.popPose();
         }
 
@@ -234,10 +295,10 @@ public class ElectromagnetCoreBER implements BlockEntityRenderer<ElectromagnetCo
         }
     }
 
-    private static void renderQuads(BakedModel model, PoseStack ps, VertexConsumer vc, int overlay) {
+    private static void renderQuads(BakedModel model, PoseStack ps, VertexConsumer vc, int light, int overlay) {
         PoseStack.Pose pose = ps.last();
         for (BakedQuad q : allQuads(model)) {
-            vc.putBulkData(pose, q, 1f, 1f, 1f, LightTexture.FULL_BRIGHT, overlay);
+            vc.putBulkData(pose, q, 1f, 1f, 1f, light, overlay);
         }
     }
 

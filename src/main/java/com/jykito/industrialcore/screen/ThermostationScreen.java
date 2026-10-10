@@ -5,19 +5,12 @@ import com.jykito.industrialcore.block.entity.ThermostationBlockEntity;
 import com.jykito.industrialcore.menu.ThermostationMenu;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-public class ThermostationScreen extends AbstractContainerScreen<ThermostationMenu> {
+public class ThermostationScreen extends MachineScreen<ThermostationMenu> {
     private static final ResourceLocation TEXTURE     = new ResourceLocation(IndustrialCore.MODID, "textures/gui/thermostation_gui.png");
-    private static final ResourceLocation ENERGY_FILL = new ResourceLocation(IndustrialCore.MODID, "textures/gui/energy_fill_6x_anim.png");
-    private static final ResourceLocation HEAT_FILL   = new ResourceLocation(IndustrialCore.MODID, "textures/gui/heat_fill_6x_anim.png");
-
-    private static final int TEX_W = 256, TEX_H = 315;
-    private static final int FILL_W = 96, ANIM_H = 36, FRAME_H = 6, FRAMES = 6, FRAME_TICKS = 8;
-    private int animTick = 0, frame = 0;
 
     // бары (dest в GUI)
     private static final int ENERGY_X = 103, ENERGY_Y = 38, ENERGY_W = 50, ENERGY_H = 6;
@@ -31,23 +24,11 @@ public class ThermostationScreen extends AbstractContainerScreen<ThermostationMe
     private static final int C_HEAT = 0xFFFF6A3D, C_ENERGY = 0xFF00FFCC, C_LABEL = 0xFF9AA0A6, C_VALUE = 0xFFE0E0E0;
 
     public ThermostationScreen(ThermostationMenu menu, Inventory inv, Component title) {
-        super(menu, inv, title);
-        this.imageWidth = 256;
-        this.imageHeight = 224;
-    }
-
-    @Override protected void init() {
-        super.init();
-        this.inventoryLabelY = 10000;
-        this.titleLabelY = 10000;
+        super(menu, inv, title, 8);
     }
 
     @Override
-    public void render(GuiGraphics g, int mx, int my, float pt) {
-        this.renderBackground(g);
-        if (++animTick >= FRAME_TICKS) { animTick = 0; frame = (frame + 1) % FRAMES; }
-        super.render(g, mx, my, pt);
-        this.renderTooltip(g, mx, my);
+    protected void renderTooltips(GuiGraphics g, int mx, int my) {
         Bars.energy(g, font, mx, my, leftPos + ENERGY_X, topPos + ENERGY_Y, ENERGY_W, ENERGY_H,
                 menu.getEnergy(), com.jykito.industrialcore.block.entity.ThermostationBlockEntity.ENERGY_CAP);
         Bars.heat(g, font, mx, my, leftPos + HEAT_X, topPos + HEAT_Y, HEAT_W, HEAT_H,
@@ -61,23 +42,14 @@ public class ThermostationScreen extends AbstractContainerScreen<ThermostationMe
         g.blit(TEXTURE, x, y, 0, 0, imageWidth, imageHeight, TEX_W, TEX_H);
 
         int ef = menu.getScaledEnergy(ENERGY_W);
-        if (ef > 0) tileFill(g, ENERGY_FILL, x + ENERGY_X, y + ENERGY_Y, ef, ENERGY_H);
+        bars.draw(g, FillBar.ENERGY, x + ENERGY_X, y + ENERGY_Y, ef, ENERGY_H);
         int hf = menu.getScaledHeat(HEAT_W);
-        if (hf > 0) tileFill(g, HEAT_FILL, x + HEAT_X, y + HEAT_Y, hf, HEAT_H);
+        bars.draw(g, FillBar.HEAT, x + HEAT_X, y + HEAT_Y, hf, HEAT_H);
 
         if (menu.isWorking())
             g.blit(TEXTURE, x + WORK_X, y + WORK_Y, WORK_U, WORK_V, WORK_W, WORK_H, TEX_W, TEX_H);
 
         drawInfo(g, x, y);
-    }
-
-    private void tileFill(GuiGraphics g, ResourceLocation tex, int bx, int by, int filled, int h) {
-        int v = frame * FRAME_H, dx = bx;
-        while (dx < bx + filled) {
-            int tw = Math.min(FILL_W, bx + filled - dx);
-            g.blit(tex, dx, by, 0, v, tw, h, FILL_W, ANIM_H);
-            dx += FILL_W;
-        }
     }
 
     private void drawInfo(GuiGraphics g, int x, int y) {

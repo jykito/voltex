@@ -10,13 +10,13 @@
       "item": "minecraft:glass"
     },
     "B": {
-      "item": "minecraft:diamond"
-    },
-    "C": {
       "item": "minecraft:ender_eye"
     },
+    "C": {
+      "tag": "forge:gems/diamond"
+    },
     "D": {
-      "item": "industrial_core:logic_board"
+      "item": "industrial_core:photonic_lens"
     }
   },
   "result": {

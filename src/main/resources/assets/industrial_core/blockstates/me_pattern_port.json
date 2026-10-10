@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "dark=false": {
+      "model": "industrial_core:block/me_pattern_port"
+    },
+    "dark=true": {
+      "model": "industrial_core:block/me_pattern_port_dark"
+    }
+  }
+}

@@ -3,11 +3,11 @@
   "pattern": [
     "ABA",
     "CDC",
-    "AEA"
+    "EFE"
   ],
   "key": {
     "A": {
-      "item": "industrial_core:composite"
+      "item": "minecraft:gunpowder"
     },
     "B": {
       "item": "industrial_core:advanced_heat_vent"
@@ -19,6 +19,9 @@
       "item": "industrial_core:blast_upgrade_forced_air"
     },
     "E": {
+      "item": "industrial_core:composite"
+    },
+    "F": {
       "item": "industrial_core:condensator"
     }
   },

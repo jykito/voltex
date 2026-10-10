@@ -1,0 +1,15 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:molecular_transforming",
+  "ingredient": {
+    "item": "minecraft:glass"
+  },
+  "inputCount": 4,
+  "result": {
+    "item": "minecraft:quartz",
+    "count": 4
+  },
+  "processingTime": 200,
+  "energyCost": 400000,
+  "catalyst": "industrial_core:basic_catalyst"
+}

@@ -1,9 +1,10 @@
 {
   "parent": "minecraft:block/orientable_with_bottom",
   "textures": {
-    "top":    "industrial_core:block/phase_splitter_top",
-    "bottom": "industrial_core:block/phase_splitter_bottom",
-    "side":   "industrial_core:block/phase_splitter_side",
-    "front":  "industrial_core:block/phase_splitter_front"
+    "top": "industrial_core:block/machine/phase_splitter_top",
+    "bottom": "industrial_core:block/machine/phase_splitter_bottom",
+    "side": "industrial_core:block/machine/phase_splitter_side",
+    "front": "industrial_core:block/machine/phase_splitter_front",
+    "particle": "industrial_core:block/machine/phase_splitter_side"
   }
 }

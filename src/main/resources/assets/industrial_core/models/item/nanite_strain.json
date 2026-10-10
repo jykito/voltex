@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "industrial_core:item/nanite_strain",
+    "layer1": "industrial_core:item/nanite_strain_tint"
+  }
+}

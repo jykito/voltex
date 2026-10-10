@@ -1,0 +1,10 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "industrial_core:block/machine/bioreactor_top",
+    "bottom": "industrial_core:block/machine/bioreactor_bottom",
+    "side": "industrial_core:block/machine/bioreactor_side",
+    "front": "industrial_core:block/machine/bioreactor_front_on",
+    "particle": "industrial_core:block/machine/bioreactor_side"
+  }
+}

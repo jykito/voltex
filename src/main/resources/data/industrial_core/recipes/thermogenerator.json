@@ -1,9 +1,9 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "AAA",
-    "BCB",
-    "ADA"
+    "ABA",
+    "CDC",
+    "AEA"
   ],
   "key": {
     "A": {
@@ -13,10 +13,13 @@
       "item": "industrial_core:heat_conductor"
     },
     "C": {
-      "item": "industrial_core:machine_casing"
+      "item": "minecraft:brick"
     },
     "D": {
-      "item": "industrial_core:copper_cable"
+      "tag": "forge:components/machine_casing"
+    },
+    "E": {
+      "item": "industrial_core:logic_board"
     }
   },
   "result": {

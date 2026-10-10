@@ -1,23 +1,22 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "ABA",
-    "BCB",
-    "ABA"
+    "AAA",
+    "BCB"
   ],
   "key": {
     "A": {
-      "item": "industrial_core:silicon"
-    },
-    "B": {
       "item": "industrial_core:bare_copper_wire"
     },
+    "B": {
+      "item": "industrial_core:glass_fiber"
+    },
     "C": {
-      "tag": "forge:dusts/redstone"
+      "item": "industrial_core:tree_resin"
     }
   },
   "result": {
     "item": "industrial_core:textolite_board",
-    "count": 2
+    "count": 1
   }
 }

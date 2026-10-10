@@ -1,0 +1,35 @@
+{
+  "type": "industrial_core:assembling",
+  "inputs": [
+    {
+      "item": "industrial_core:structural_glass",
+      "count": 16
+    },
+    {
+      "item": "industrial_core:cryo_glass",
+      "count": 16
+    },
+    {
+      "item": "industrial_core:cryolite",
+      "count": 16
+    },
+    {
+      "item": "industrial_core:armor_sheet",
+      "count": 8
+    },
+    {
+      "item": "industrial_core:heat_resistant_plating",
+      "count": 8
+    }
+  ],
+  "fluid": {
+    "fluid": "industrial_core:coolant",
+    "amount": 8000
+  },
+  "result": {
+    "item": "industrial_core:structural_glass_advanced",
+    "count": 16
+  },
+  "processingTime": 1200,
+  "energyCostPerTick": 16000
+}

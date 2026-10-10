@@ -1,7 +1,9 @@
 package com.jykito.industrialcore.item.custom;
 
 import com.jykito.industrialcore.Config;
+import com.jykito.industrialcore.block.ModBlocks;
 import com.jykito.industrialcore.item.ModItems;
+import com.jykito.industrialcore.item.upgrade.UpgradeTargets;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -107,6 +109,13 @@ public class MinerLensItem extends Item {
                 l.add(new Candidate(Items.NETHER_GOLD_ORE, 4, "nether_gold"));
                 l.add(new Candidate(Items.ANCIENT_DEBRIS, 1, "ancient_debris"));
                 l.add(new Candidate(Items.GLOWSTONE, 6, "glowstone"));
+            }
+            // Руд в Крае нет, поэтому без своего списка шахтёр с этой линзой ничего не находил. Модовый путь к Краю.
+            case END -> {
+                l.add(new Candidate(Items.END_STONE, 12, "end_stone"));
+                l.add(new Candidate(Items.OBSIDIAN, 4, "obsidian"));
+                l.add(new Candidate(Items.CHORUS_FRUIT, 3, "chorus"));
+                l.add(new Candidate(Items.SHULKER_SHELL, 1, "shulker"));
             }
             default -> { }
         }
@@ -231,5 +240,6 @@ public class MinerLensItem extends Item {
             case ALL       -> "tooltip.industrial_core.lens_all";
         };
         tooltip.add(Component.translatable(dimKey).withStyle(ChatFormatting.AQUA));
+        UpgradeTargets.append(tooltip, ModBlocks.MINER_CORE);
     }
 }

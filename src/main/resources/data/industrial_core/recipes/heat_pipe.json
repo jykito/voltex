@@ -1,23 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "ABA",
-    "BCB",
-    "ABA"
+    "AAA",
+    "BBB",
+    "AAA"
   ],
   "key": {
     "A": {
       "item": "industrial_core:thermal_insulation"
     },
     "B": {
-      "tag": "forge:plates/copper"
-    },
-    "C": {
       "item": "industrial_core:heat_conductor"
     }
   },
   "result": {
     "item": "industrial_core:heat_pipe",
-    "count": 4
+    "count": 6
   }
 }

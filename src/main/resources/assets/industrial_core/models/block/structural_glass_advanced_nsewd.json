@@ -1,0 +1,13 @@
+{
+  "parent": "minecraft:block/cube",
+  "render_type": "minecraft:translucent",
+  "textures": {
+    "up": "industrial_core:block/structural_glass_advanced_rlud_connections",
+    "down": "industrial_core:block/structural_glass_advanced_rlud_connections",
+    "north": "industrial_core:block/structural_glass_advanced_rld_connections",
+    "south": "industrial_core:block/structural_glass_advanced_rld_connections",
+    "east": "industrial_core:block/structural_glass_advanced_rld_connections",
+    "west": "industrial_core:block/structural_glass_advanced_rld_connections",
+    "particle": "industrial_core:block/structural_glass_advanced_rlud_connections"
+  }
+}

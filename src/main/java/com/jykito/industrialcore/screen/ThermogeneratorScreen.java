@@ -4,27 +4,22 @@ import com.jykito.industrialcore.IndustrialCore;
 import com.jykito.industrialcore.menu.ThermogeneratorMenu;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-public class ThermogeneratorScreen extends AbstractContainerScreen<ThermogeneratorMenu> {
+public class ThermogeneratorScreen extends MachineScreen<ThermogeneratorMenu> {
 
     private static final ResourceLocation TEXTURE =
             new ResourceLocation(IndustrialCore.MODID, "textures/gui/thermogenerator_gui.png");
-    private static final ResourceLocation HEAT_FILL =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/heat_fill_6x_anim.png");
 
     private static final int HEAT_BAR_X = 77, HEAT_BAR_Y = 97, HEAT_BAR_W = 110, HEAT_BAR_H = 6;
-    private static final int FILL_W = 96, FILL_H = 6, ANIM_H = 36, FILL_FRAMES = 6, FILL_TICKS = 32;
 
     private static final int PROG_X = 105, PROG_Y = 54, PROG_W = 43, PROG_H = 25;
     private static final int PROG_SRC_U = 106, PROG_SRC_V = 237;
 
     private static final int INFO_X = 112, INFO_Y = 79;
 
-    private int fillTick = 0, fillFrame = 0;
     private float visualProgress = 0f;
     private boolean progressInitialized = false;
 
@@ -33,23 +28,10 @@ public class ThermogeneratorScreen extends AbstractContainerScreen<Thermogenerat
 
     public ThermogeneratorScreen(ThermogeneratorMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
-        this.imageWidth  = 256;
-        this.imageHeight = 224;
-    }
-
-    @Override
-    protected void init() {
-        super.init();
-        this.inventoryLabelY = 10000;
-        this.titleLabelY     = 10000;
     }
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(g);
-
-        if (++fillTick >= FILL_TICKS) { fillTick = 0; fillFrame = (fillFrame + 1) % FILL_FRAMES; }
-
         boolean isWorking = menu.getGenerationRate() > 0;
         if (!progressInitialized) {
             visualProgress = isWorking ? 1f : 0f;
@@ -61,7 +43,10 @@ public class ThermogeneratorScreen extends AbstractContainerScreen<Thermogenerat
         }
 
         super.render(g, mouseX, mouseY, partialTick);
-        this.renderTooltip(g, mouseX, mouseY);
+    }
+
+    @Override
+    protected void renderTooltips(GuiGraphics g, int mouseX, int mouseY) {
         Bars.heat(g, font, mouseX, mouseY, leftPos + HEAT_BAR_X, topPos + HEAT_BAR_Y, HEAT_BAR_W, HEAT_BAR_H,
                 menu.getHeat(), menu.getMaxHeat());
     }
@@ -74,15 +59,7 @@ public class ThermogeneratorScreen extends AbstractContainerScreen<Thermogenerat
         g.blit(TEXTURE, x, y, 0, 0, imageWidth, imageHeight, 256, 315);
 
         int heatFilled = menu.getScaledHeat(HEAT_BAR_W);
-        if (heatFilled > 0) {
-            int vOffset = fillFrame * FILL_H;
-            int drawX = x + HEAT_BAR_X;
-            while (drawX < x + HEAT_BAR_X + heatFilled) {
-                int tileW = Math.min(FILL_W, x + HEAT_BAR_X + heatFilled - drawX);
-                g.blit(HEAT_FILL, drawX, y + HEAT_BAR_Y, 0, vOffset, tileW, HEAT_BAR_H, FILL_W, ANIM_H);
-                drawX += FILL_W;
-            }
-        }
+        bars.draw(g, FillBar.HEAT, x + HEAT_BAR_X, y + HEAT_BAR_Y, heatFilled, HEAT_BAR_H);
 
         int filled = (int)(visualProgress * PROG_H);
         if (filled > 0) {

@@ -38,7 +38,7 @@ public class OreWasherJeiCategory implements IRecipeCategory<OreWashingRecipe> {
     private static final int IN_X = 52, IN_Y = 31;
     private static final int OUT1_X = 109, OUT1_Y = 11, OUT2_X = 109, OUT2_Y = 31;
     private static final int EBAR_X = 44, EBAR_Y = 75, EBAR_W = 66;
-    private static final int PROG_GX = 71, PROG_GY = 31, PROG_W = 27, PROG_H = 14, PROG_U = 73, PROG_V = 121;
+    private static final int PROG_GX = 78, PROG_GY = 33, PROG_W = 16, PROG_H = 12, PROG_U = 42, PROG_V = 124;
     private static final int INFO_X = 56, INFO_Y = 50;
 
     private final RecipeType<OreWashingRecipe> recipeType;

@@ -1,8 +1,10 @@
 {
-  "parent": "minecraft:block/orientable",
+  "parent": "minecraft:block/orientable_with_bottom",
   "textures": {
-    "top":   "industrial_core:block/rod_fabricator_top",
-    "front": "industrial_core:block/rod_fabricator_front",
-    "side":  "industrial_core:block/rod_fabricator_side"
+    "top": "industrial_core:block/machine/rod_fabricator_top",
+    "bottom": "industrial_core:block/machine/rod_fabricator_bottom",
+    "side": "industrial_core:block/machine/rod_fabricator_side",
+    "front": "industrial_core:block/machine/rod_fabricator_front",
+    "particle": "industrial_core:block/machine/rod_fabricator_side"
   }
 }

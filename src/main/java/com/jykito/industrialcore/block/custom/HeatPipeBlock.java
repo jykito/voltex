@@ -1,5 +1,7 @@
 package com.jykito.industrialcore.block.custom;
 
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.PipeBlock;
 import com.jykito.industrialcore.block.ModBlocks;
 import com.jykito.industrialcore.block.entity.HeatPipeBlockEntity;
 import com.jykito.industrialcore.block.entity.ModBlockEntities;
@@ -20,42 +22,25 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.EnumMap;
 import java.util.Map;
 
 public class HeatPipeBlock extends BaseEntityBlock {
 
-    public static final BooleanProperty NORTH = BooleanProperty.create("north");
-    public static final BooleanProperty SOUTH = BooleanProperty.create("south");
-    public static final BooleanProperty EAST  = BooleanProperty.create("east");
-    public static final BooleanProperty WEST  = BooleanProperty.create("west");
-    public static final BooleanProperty UP    = BooleanProperty.create("up");
-    public static final BooleanProperty DOWN  = BooleanProperty.create("down");
+    public static final BooleanProperty NORTH = BlockStateProperties.NORTH;
+    public static final BooleanProperty SOUTH = BlockStateProperties.SOUTH;
+    public static final BooleanProperty EAST  = BlockStateProperties.EAST;
+    public static final BooleanProperty WEST  = BlockStateProperties.WEST;
+    public static final BooleanProperty UP    = BlockStateProperties.UP;
+    public static final BooleanProperty DOWN  = BlockStateProperties.DOWN;
     public static final BooleanProperty HOT   = BooleanProperty.create("hot"); // статик-свечение по нагреву (blockstate)
 
-    public static final Map<Direction, BooleanProperty> PROPERTY_BY_DIRECTION = new EnumMap<>(Direction.class);
-    static {
-        PROPERTY_BY_DIRECTION.put(Direction.NORTH, NORTH);
-        PROPERTY_BY_DIRECTION.put(Direction.SOUTH, SOUTH);
-        PROPERTY_BY_DIRECTION.put(Direction.EAST, EAST);
-        PROPERTY_BY_DIRECTION.put(Direction.WEST, WEST);
-        PROPERTY_BY_DIRECTION.put(Direction.UP, UP);
-        PROPERTY_BY_DIRECTION.put(Direction.DOWN, DOWN);
-    }
+    public static final Map<Direction, BooleanProperty> PROPERTY_BY_DIRECTION = PipeBlock.PROPERTY_BY_DIRECTION;
 
-    private static final VoxelShape CORE = box(4, 4, 4, 12, 12, 12);
-    private static final Map<Direction, VoxelShape> STUBS = Map.of(
-            Direction.NORTH, box(5, 5,  0, 11, 11,  4),
-            Direction.SOUTH, box(5, 5, 12, 11, 11, 16),
-            Direction.EAST,  box(12, 5, 5, 16, 11, 11),
-            Direction.WEST,  box( 0, 5, 5,  4, 11, 11),
-            Direction.UP,    box(5, 12, 5, 11, 16, 11),
-            Direction.DOWN,  box(5,  0, 5, 11,  4, 11)
-    );
+    // ядро 8×8, отростки 6×6 длиной 4
+    private static final ConnectedShapes SHAPES = new ConnectedShapes(4, 12, 5, 11, 4);
 
     public HeatPipeBlock(Properties props) {
         super(props);
@@ -67,30 +52,10 @@ public class HeatPipeBlock extends BaseEntityBlock {
 
     @Override public RenderShape getRenderShape(BlockState s) { return RenderShape.MODEL; }
 
-    /**
-     * Готовые формы на все 64 комбинации соединений.
-     * <p>
-     * Раньше форма собиралась заново на КАЖДЫЙ вызов getShape (до шести Shapes.or с аллокацией),
-     * а зовут его постоянно: коллизии сущностей, луч прицела каждый кадр, пасфайндинг, обновления
-     * соседей. В профиле это давало больше, чем весь тик теплосети. Комбинаций всего 64 —
-     * считаем один раз при загрузке класса. Форма от нагрева не зависит, HOT в маску не входит.
-     */
-    private static final VoxelShape[] SHAPES = new VoxelShape[64];
-    static {
-        for (int mask = 0; mask < SHAPES.length; mask++) {
-            VoxelShape shape = CORE;
-            for (Direction d : Direction.values())
-                if ((mask & (1 << d.get3DDataValue())) != 0) shape = Shapes.or(shape, STUBS.get(d));
-            SHAPES[mask] = shape.optimize();   // разово упрощаем — все последующие проверки дешевле
-        }
-    }
-
+    /** Форма от нагрева не зависит, HOT в маску не входит. */
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
-        int mask = 0;
-        for (Map.Entry<Direction, BooleanProperty> e : PROPERTY_BY_DIRECTION.entrySet())
-            if (state.getValue(e.getValue())) mask |= 1 << e.getKey().get3DDataValue();
-        return SHAPES[mask];
+        return SHAPES.get(state, PROPERTY_BY_DIRECTION);
     }
 
     @Nullable @Override

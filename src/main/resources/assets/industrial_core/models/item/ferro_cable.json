@@ -1,6 +1,6 @@
 {
-  "parent": "item/generated",
+  "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "industrial_core:block/ferro_cable"
+    "layer0": "industrial_core:item/ferro_cable"
   }
 }

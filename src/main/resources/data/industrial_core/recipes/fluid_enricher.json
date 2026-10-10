@@ -10,16 +10,16 @@
       "item": "minecraft:glass"
     },
     "B": {
-      "item": "industrial_core:crystal_plate"
+      "item": "industrial_core:fluid_valve"
     },
     "C": {
       "item": "minecraft:bucket"
     },
     "D": {
-      "item": "industrial_core:machine_casing"
+      "tag": "forge:components/machine_casing"
     },
     "E": {
-      "item": "industrial_core:electric_motor"
+      "item": "industrial_core:electric_motor_advanced"
     }
   },
   "result": {

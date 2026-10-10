@@ -1,0 +1,15 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:compressing",
+  "ingredient": {
+    "tag": "forge:gems/emerald"
+  },
+  "inputCount": 256,
+  "result": {
+    "item": "industrial_core:emerald_cluster",
+    "count": 1
+  },
+  "processingTime": 600,
+  "energyCost": 4000,
+  "lateOnly": true
+}

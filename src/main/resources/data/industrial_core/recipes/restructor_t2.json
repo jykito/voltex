@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ACA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:kronit"
+    },
+    "B": {
+      "item": "industrial_core:data_card_crystallography"
+    },
+    "C": {
+      "item": "industrial_core:restructor"
+    },
+    "D": {
+      "item": "industrial_core:superconductor_coil"
+    }
+  },
+  "result": {
+    "item": "industrial_core:restructor_t2",
+    "count": 1
+  }
+}

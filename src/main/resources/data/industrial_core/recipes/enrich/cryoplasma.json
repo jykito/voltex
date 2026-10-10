@@ -1,0 +1,18 @@
+{
+  "type": "industrial_core:fluid_enricher_recipe",
+  "ingredient": {
+    "item": "industrial_core:superconducting_wire"
+  },
+  "itemCount": 8,
+  "ingredient2": {
+    "item": "industrial_core:cryo_crystal"
+  },
+  "itemCount2": 2,
+  "fluidInput": "industrial_core:photonic_melt",
+  "fluidInputAmount": 1000,
+  "fluidOutput": "industrial_core:cryoplasma",
+  "fluidOutputAmount": 500,
+  "processingTime": 300,
+  "energyCostPerTick": 2000,
+  "lateOnly": true
+}

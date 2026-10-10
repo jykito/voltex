@@ -32,6 +32,8 @@ public class MagnetQuench {
 
     public static void start(ServerLevel level, Vec3 center, int radius) {
         ACTIVE.add(new Quench(level, center, radius));
+        com.jykito.industrialcore.advancement.VoltexEventTrigger.award(level, center, radius,
+                com.jykito.industrialcore.advancement.VoltexEventTrigger.MAGNET_QUENCH);
     }
 
     @SubscribeEvent

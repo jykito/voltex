@@ -1,0 +1,44 @@
+{
+  "type": "industrial_core:assembling",
+  "inputs": [
+    {
+      "item": "industrial_core:mechanism_block"
+    },
+    {
+      "item": "industrial_core:superconducting_winding",
+      "count": 8
+    },
+    {
+      "item": "industrial_core:control_unit"
+    },
+    {
+      "item": "industrial_core:superconductor_coil",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:lithium_battery",
+      "count": 8
+    },
+    {
+      "item": "industrial_core:flux_core",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:energy_bank"
+    },
+    {
+      "item": "industrial_core:composite",
+      "count": 16
+    }
+  ],
+  "fluid": {
+    "fluid": "industrial_core:superfluid_condensate",
+    "amount": 8000
+  },
+  "result": {
+    "item": "industrial_core:mechanism_efficiency",
+    "count": 1
+  },
+  "processingTime": 1200,
+  "energyCostPerTick": 16000
+}

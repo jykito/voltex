@@ -5,12 +5,17 @@
       "name": "Crusher",
       "elements": [
         {
-          "type": "header",
-          "text": "Crusher"
+          "type": "card",
+          "icon": "industrial_core:crusher",
+          "title": "Crusher"
         },
         {
           "type": "text",
-          "text": "Grinds ore, raw and ingots into dust — the core of metal doubling. Also crushes vanilla materials: bones to meal, obsidian and amethyst to dust, and more."
+          "text": "Grinds ore and ingots into dust. One ore gives two dust, so you get twice as much metal as smelting the ore directly."
+        },
+        {
+          "type": "text",
+          "text": "It also grinds vanilla items: bones into bone meal, obsidian and amethyst into dust."
         },
         {
           "type": "items",
@@ -24,12 +29,13 @@
       "name": "Electric Furnace",
       "elements": [
         {
-          "type": "header",
-          "text": "Electric Furnace"
+          "type": "card",
+          "icon": "industrial_core:electric_furnace",
+          "title": "Electric Furnace"
         },
         {
           "type": "text",
-          "text": "Smelts on FE, faster and fuel-free: dust to ingots, ore to metal — like a furnace but more efficient and automatable."
+          "text": "Smelts the same things as a regular furnace, but on power and twice as fast. It needs no fuel, so it is easy to put into an automated line."
         },
         {
           "type": "items",
@@ -43,12 +49,13 @@
       "name": "Compressor",
       "elements": [
         {
-          "type": "header",
-          "text": "Compressor"
+          "type": "card",
+          "icon": "industrial_core:compressor",
+          "title": "Compressor"
         },
         {
           "type": "text",
-          "text": "Compresses materials: dust and fiber into dense plates, components into blocks. Some advanced parts are made only by pressing."
+          "text": "Presses things together: dust and fiber into dense plates, small parts into blocks. Some parts can only be made in it."
         },
         {
           "type": "items",
@@ -62,12 +69,13 @@
       "name": "Metal Former",
       "elements": [
         {
-          "type": "header",
-          "text": "Metal Former"
+          "type": "card",
+          "icon": "industrial_core:metal_former",
+          "title": "Metal Former"
         },
         {
           "type": "text",
-          "text": "Two modes in its GUI: rolling (ingot into plate) and extruding (ingot into bare wire or rod). A key machine for cables and casings."
+          "text": "It has two modes, switched with a button in its window. **Rolling** turns an ingot into plates; **extruding** turns a plate into wire, and some ingots into rods and fiber."
         },
         {
           "type": "items",
@@ -81,12 +89,13 @@
       "name": "Extractor",
       "elements": [
         {
-          "type": "header",
-          "text": "Extractor"
+          "type": "card",
+          "icon": "industrial_core:extractor",
+          "title": "Extractor"
         },
         {
           "type": "text",
-          "text": "Extracts material from raw inputs: rubber from resin and logs, resources from by-materials. Gentle processing without crushing."
+          "text": "Pulls the useful part out of whatever you put in. For example, it makes rubber from resin and logs. It does not crush anything, it just extracts."
         },
         {
           "type": "items",
@@ -100,12 +109,34 @@
       "name": "Ore Washer",
       "elements": [
         {
-          "type": "header",
-          "text": "Ore Washer"
+          "type": "card",
+          "icon": "industrial_core:ore_washer",
+          "title": "Ore Washer"
         },
         {
           "type": "text",
-          "text": "Premium ore processing with water: more dust plus a chance of byproduct metal (nickel, silver, lithium). Needs a water supply."
+          "text": "Washes ore with water. One ore gives three dust instead of the crusher's two, and sometimes a rare metal drops on top."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Iron",
+              "value": "sometimes nickel, 30%"
+            },
+            {
+              "key": "Gold",
+              "value": "sometimes silver, 20%"
+            },
+            {
+              "key": "Copper",
+              "value": "sometimes lithium, 15%"
+            }
+          ]
+        },
+        {
+          "type": "tip",
+          "text": "Pour water straight into the machine with buckets or feed it through a pipe."
         },
         {
           "type": "items",
@@ -119,17 +150,27 @@
       "name": "Restructor",
       "elements": [
         {
-          "type": "header",
-          "text": "Restructor"
+          "type": "card",
+          "icon": "industrial_core:restructor",
+          "title": "Restructor"
         },
         {
           "type": "text",
-          "text": "Molecular transformation: turns one substance into another through a catalyst. The backbone of progression — higher catalyst tiers unlock stronger transmutations."
+          "text": "Turns one item into another. Put the item in the input, the right **catalyst** in its slot, and feed it power. Once it has stored as much energy as the transformation costs, the result appears in the output."
+        },
+        {
+          "type": "text",
+          "text": "The restructor has no work time, only energy: the more power you give it, the faster it goes. Catalysts come in tiers, and the higher the tier, the more valuable the transformations."
+        },
+        {
+          "type": "text",
+          "text": "The **Restructor T2** runs three transformations at once on one catalyst and spends half as much of the source item on each: a block the T1 uses up in one transformation lasts it two. The energy cost stays the same."
         },
         {
           "type": "items",
           "items": [
             "industrial_core:restructor",
+            "industrial_core:restructor_t2",
             "industrial_core:basic_catalyst",
             "industrial_core:activated_catalyst",
             "industrial_core:resonant_catalyst",
@@ -143,12 +184,13 @@
       "name": "Fluid Enricher",
       "elements": [
         {
-          "type": "header",
-          "text": "Fluid Enricher"
+          "type": "card",
+          "icon": "industrial_core:fluid_enricher",
+          "title": "Fluid Enricher"
         },
         {
           "type": "text",
-          "text": "Blends an item with a fluid into a new fluid: lapis dust with water makes coolant, and mineral dust with water makes drill fluid."
+          "text": "Mixes an item with a fluid to make a new fluid. Lapis dust with water gives **coolant**, mineral dust with water gives **drill fluid**. Once you have the cryo chamber, coolant can be made from blue ice and water, no lapis needed."
         },
         {
           "type": "items",
@@ -162,12 +204,13 @@
       "name": "Liquefier",
       "elements": [
         {
-          "type": "header",
-          "text": "Liquefier"
+          "type": "card",
+          "icon": "industrial_core:liquefier",
+          "title": "Liquefier"
         },
         {
           "type": "text",
-          "text": "Melts items into a fluid under heat (needs heat from the thermal network). For example, amethyst into molten amethyst — feedstock for capsules and exotica."
+          "text": "Melts items into a fluid, but only if heat from the heat network reaches it. Amethyst becomes molten amethyst, and a lead ingot becomes molten lead."
         },
         {
           "type": "items",
@@ -181,12 +224,13 @@
       "name": "Capsules",
       "elements": [
         {
-          "type": "header",
-          "text": "Capsules & Filler"
+          "type": "card",
+          "icon": "industrial_core:capsule",
+          "title": "Capsules"
         },
         {
           "type": "text",
-          "text": "The universal capsule holds 1000 mb of any fluid. The Capsule Filler pumps fluid from a tank into a capsule. Filled capsules go straight into recipes."
+          "text": "A capsule holds 1000 mB of any fluid. The **capsule filler** pours fluid into it from its own tank, and a full capsule can go straight into a crafting recipe."
         },
         {
           "type": "items",
@@ -201,12 +245,13 @@
       "name": "Phase Splitter",
       "elements": [
         {
-          "type": "header",
-          "text": "Phase Splitter"
+          "type": "card",
+          "icon": "industrial_core:phase_splitter",
+          "title": "Phase Splitter"
         },
         {
           "type": "text",
-          "text": "Splits one input into several outputs at once, for processing that yields a set of products rather than one."
+          "text": "Splits one thing into several: you put in one input and get several different products at once. It is used where a regular machine would give only one."
         },
         {
           "type": "items",
@@ -220,12 +265,17 @@
       "name": "Rod Fabricator",
       "elements": [
         {
-          "type": "header",
-          "text": "Rod Fabricator"
+          "type": "card",
+          "icon": "industrial_core:rod_fabricator",
+          "title": "Rod Fabricator"
         },
         {
           "type": "text",
-          "text": "Assembles cryo rods from an empty rod and cryolite, and the higher tiers from a lower rod and a cryo crystal. Rods wear out in the Cryo Chamber, so the fabricator always has work."
+          "text": "Makes cryo rods. The first one is built from an empty rod and cryolite, the next ones from the rod one tier lower and a cryo crystal. It also twists superconducting wire into strands."
+        },
+        {
+          "type": "text",
+          "text": "Rods wear out in the cryo chamber over time, so the fabricator never runs out of work."
         },
         {
           "type": "items",
@@ -241,19 +291,87 @@
       "name": "Cultivator",
       "elements": [
         {
-          "type": "header",
-          "text": "Cultivator"
+          "type": "card",
+          "icon": "industrial_core:cultivator",
+          "title": "Cultivator"
         },
         {
           "type": "text",
-          "text": "Grows and duplicates materials with water. An upgrade sets the category: Biostimulator for plants, Crystal Resonator for minerals (e.g., budding amethyst into shards)."
+          "text": "Grows and multiplies items using water. What it grows depends on the upgrade: the **biostimulator** for plants, the **crystal resonator** for minerals. With the resonator, for example, budding amethyst grows shards."
+        },
+        {
+          "type": "text",
+          "text": "The **Cultivator T2** has three lines: put something different in each, and they grow independently. The lines share water, energy, the growth upgrade and the machine upgrades."
         },
         {
           "type": "items",
           "items": [
             "industrial_core:cultivator",
+            "industrial_core:cultivator_t2",
             "industrial_core:cultivator_biostimulator",
             "industrial_core:cultivator_resonator"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Bioreactor",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:bioreactor",
+          "title": "Bioreactor"
+        },
+        {
+          "type": "text",
+          "text": "Makes what usually drops from mobs, without any mobs. Put in **biomass** and an additive, pour in water and bring heat from the heat network. The additive decides what comes out."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Capsule",
+              "value": "blaze rod"
+            },
+            {
+              "key": "Mineral dust",
+              "value": "bone"
+            },
+            {
+              "key": "Emerald",
+              "value": "ender pearl"
+            },
+            {
+              "key": "Coal dust",
+              "value": "gunpowder"
+            },
+            {
+              "key": "Lapis lazuli",
+              "value": "ink sac"
+            },
+            {
+              "key": "Rubber",
+              "value": "leather"
+            },
+            {
+              "key": "Tree resin",
+              "value": "slimeball"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "The compressor presses **biomass** out of leaves, seeds, saplings, kelp or sugar cane."
+        },
+        {
+          "type": "tip",
+          "text": "It needs at least 800 heat. If the supply stops, the heat slowly drains and the machine pauses, but it keeps its progress."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:bioreactor",
+            "industrial_core:biomass"
           ]
         }
       ]
@@ -262,12 +380,13 @@
       "name": "Resource Generators",
       "elements": [
         {
-          "type": "header",
-          "text": "Resource Generators"
+          "type": "card",
+          "icon": "industrial_core:stone_generator",
+          "title": "Resource Generators"
         },
         {
           "type": "text",
-          "text": "Spend FE (and water/lava) on materials: the Stone Generator makes stone, gravel, sand and obsidian; the Lava and Water Generators output fluid to a tank."
+          "text": "They make resources out of power. The **stone generator** produces stone, gravel, sand and obsidian, and the **lava and water generators** fill their tank with fluid."
         },
         {
           "type": "items",
@@ -275,6 +394,35 @@
             "industrial_core:stone_generator",
             "industrial_core:lava_generator",
             "industrial_core:water_generator"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Matter Fabricator",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:matter_fabricator",
+          "title": "Matter Fabricator"
+        },
+        {
+          "type": "text",
+          "text": "Turns pure power into **exotic matter**. You put nothing in: feed it power, and every 50M FE one item appears in the output. It takes up to 10M FE per tick, so it needs serious power."
+        },
+        {
+          "type": "text",
+          "text": "The fabricator itself is made on the magnet, and it takes at least the superconductor coil."
+        },
+        {
+          "type": "tip",
+          "text": "Put a **pusher** in its slot and the matter goes into the neighbouring chest by itself."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:matter_fabricator",
+            "industrial_core:exotic_matter"
           ]
         }
       ]

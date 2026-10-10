@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:armor_sheet"
+    },
+    "B": {
+      "item": "minecraft:hopper"
+    },
+    "C": {
+      "item": "industrial_core:fluid_valve"
+    },
+    "D": {
+      "item": "industrial_core:multiblock_casing"
+    },
+    "E": {
+      "item": "industrial_core:control_unit"
+    }
+  },
+  "result": {
+    "item": "industrial_core:multiblock_input_port",
+    "count": 1
+  }
+}

@@ -2,15 +2,21 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "AAA",
-    "ACA",
-    "AAA"
+    "BCB",
+    "NNN"
   ],
   "key": {
     "A": {
       "tag": "forge:plates/aluminum"
     },
+    "B": {
+      "item": "industrial_core:thermal_insulation"
+    },
     "C": {
       "item": "industrial_core:cryolite"
+    },
+    "N": {
+      "tag": "forge:ingots/nickel"
     }
   },
   "result": {

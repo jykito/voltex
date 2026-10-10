@@ -1,6 +1,7 @@
 package com.jykito.industrialcore.block.entity;
 
 import com.jykito.industrialcore.block.custom.EnergyBankBlock;
+import com.jykito.industrialcore.energy.MachineEnergy;
 import com.jykito.industrialcore.menu.EnergyBankMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -18,7 +19,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,12 +33,11 @@ public class EnergyBankBlockEntity extends BlockEntity implements MenuProvider {
     private static final int IO_RATE  = 100_000;
     private static final int HYST     = CAPACITY / 100; // гистерезис уровня-шкалы (1%) — не дёргать на границе
 
-    private static class BankEnergy extends EnergyStorage {
+    private static class BankEnergy extends MachineEnergy {
         int inTick, outTick;                       // накопление потока за тик (для монитора)
         BankEnergy() { super(CAPACITY, IO_RATE, IO_RATE); }
         @Override public int receiveEnergy(int max, boolean sim) { int r = super.receiveEnergy(max, sim); if (!sim) inTick += r; return r; }
         @Override public int extractEnergy(int max, boolean sim) { int e = super.extractEnergy(max, sim); if (!sim) outTick += e; return e; }
-        void setEnergy(int e) { this.energy = Math.max(0, Math.min(CAPACITY, e)); }
     }
     private final BankEnergy energy = new BankEnergy();
     private LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.empty();

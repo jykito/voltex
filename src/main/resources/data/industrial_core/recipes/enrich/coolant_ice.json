@@ -1,0 +1,13 @@
+{
+  "type": "industrial_core:fluid_enricher_recipe",
+  "ingredient": {
+    "item": "minecraft:blue_ice"
+  },
+  "itemCount": 1,
+  "fluidInput": "minecraft:water",
+  "fluidInputAmount": 1000,
+  "fluidOutput": "industrial_core:coolant",
+  "fluidOutputAmount": 2000,
+  "processingTime": 120,
+  "energyCostPerTick": 60
+}

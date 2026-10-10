@@ -1,0 +1,12 @@
+{
+  "type": "industrial_core:liquefier_recipe",
+  "ingredient": {
+    "item": "industrial_core:condensate_ampoule"
+  },
+  "itemCount": 1,
+  "requiredHeat": 0,
+  "fluid": "industrial_core:superfluid_condensate",
+  "fluidAmount": 1000,
+  "processingTime": 100,
+  "energyCostPerTick": 40
+}

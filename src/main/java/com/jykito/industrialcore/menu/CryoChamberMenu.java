@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
-public class CryoChamberMenu extends AbstractContainerMenu {
+public class CryoChamberMenu extends MachineMenu {
 
     /** Слоты камеры: вход, выход, три криостержня, модуль глубины. */
     private static final int MACHINE_SLOTS = 6;
@@ -40,17 +40,13 @@ public class CryoChamberMenu extends AbstractContainerMenu {
         this.addSlot(new SlotItemHandler(h, 5, 120, 55));   // модуль глубины
 
         // координаты инвентаря те же, что у магнита: окно такой же высоты
-        for (int i = 0; i < 3; i++)
-            for (int j = 0; j < 9; j++)
-                this.addSlot(new Slot(inv, j + i * 9 + 9, 44 + j * 19, 143 + i * 19));
-        for (int k = 0; k < 9; k++)
-            this.addSlot(new Slot(inv, k, 44 + k * 19, 206));
+        addPlayerInventory(inv, 44, 143);
 
         addDataSlots(data);
     }
 
-    public int getEnergyStored() { return (data.get(3) << 16) | (data.get(2) & 0xFFFF); }
-    public int getMaxEnergy()    { return (data.get(5) << 16) | (data.get(4) & 0xFFFF); }
+    public int getEnergyStored() { return unpack(data.get(2), data.get(3)); }
+    public int getMaxEnergy()    { return unpack(data.get(4), data.get(5)); }
     public int getDepth()        { return data.get(6); }
     public int getHeatInflow()   { return data.get(7); }
     public boolean isFormed()    { return data.get(8) != 0; }
@@ -68,13 +64,11 @@ public class CryoChamberMenu extends AbstractContainerMenu {
 
     public int getScaledProgress(int barWidth) {
         int progress = data.get(0), maxProgress = data.get(1);
-        if (maxProgress == 0 || progress == 0) return 0;
-        return Math.min(barWidth, (progress * barWidth + maxProgress - 1) / maxProgress);
+        return scaleProgress(progress, maxProgress, barWidth);
     }
 
     public int getScaledEnergy(int barWidth) {
-        int energy = getEnergyStored(), maxEnergy = getMaxEnergy();
-        return maxEnergy != 0 && energy != 0 ? (int)((long) energy * barWidth / maxEnergy) : 0;
+        return scale(getEnergyStored(), getMaxEnergy(), barWidth);
     }
 
     public int getScaledDepth(int barWidth) {

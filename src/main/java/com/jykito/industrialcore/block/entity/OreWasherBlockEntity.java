@@ -1,13 +1,15 @@
 package com.jykito.industrialcore.block.entity;
 
+import com.jykito.industrialcore.item.custom.NaniteStrainItem;
+import com.jykito.industrialcore.nanite.NaniteProcessing;
 import com.jykito.industrialcore.block.custom.OreWasherBlock;
+import com.jykito.industrialcore.energy.MachineEnergy;
+import com.jykito.industrialcore.item.upgrade.MachineUpgrades;
+import com.jykito.industrialcore.item.upgrade.UpgradeTargets;
 import com.jykito.industrialcore.menu.OreWasherMenu;
 import com.jykito.industrialcore.recipe.ModRecipes;
 import com.jykito.industrialcore.recipe.OreWashingRecipe;
-import com.jykito.industrialcore.item.upgrade.AcceleratorItem;
-import com.jykito.industrialcore.item.upgrade.DirectionalUpgradeItem;
 import com.jykito.industrialcore.item.upgrade.MachineUpgradeItem;
-import com.jykito.industrialcore.item.upgrade.ParallelModuleItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -34,7 +36,6 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -49,8 +50,8 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
 
-            if (slot >= 4) return stack.getItem() instanceof MachineUpgradeItem;
-            if (slot == 0) return !(stack.getItem() instanceof MachineUpgradeItem);
+            if (slot >= 4) return UpgradeTargets.works(getBlockState().getBlock(), stack);
+            if (slot == 0) return !(stack.getItem() instanceof MachineUpgradeItem) && !(stack.getItem() instanceof NaniteStrainItem);
             return true;
         }
     };
@@ -74,12 +75,7 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
 
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
-    private static class WasherEnergy extends EnergyStorage {
-        WasherEnergy(int capacity, int maxReceive) { super(capacity, maxReceive, 0); }
-        void consumeEnergy(int amount) { this.energy = Math.max(0, this.energy - amount); }
-        void setEnergy(int amount) { this.energy = Math.min(getMaxEnergyStored(), Math.max(0, amount)); }
-    }
-    private final WasherEnergy energyStorage = new WasherEnergy(64000, 64000); // приём = буфер, без потолка на вход
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(64000, 64000); // приём = буфер, без потолка на вход
     private LazyOptional<EnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
     // База под работу без модуля: 8 промывок. Под параллели бак растёт сам, см. AdaptiveTank.
@@ -139,70 +135,25 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
 
         boolean isWorking = false;
 
-        Direction itemPusherDir = null, itemPullerDir = null, fluidPullerDir = null;
-        float timeMultiplier = 1.0f, energyMultiplier = 1.0f;
-        int parallelCount = 1;
-        for (int s = 4; s <= 7; s++) {
-            ItemStack upgrade = itemHandler.getStackInSlot(s);
-            if (upgrade.isEmpty()) continue;
-            if (upgrade.getItem() instanceof AcceleratorItem acc) {
-                for (int c = 0; c < upgrade.getCount(); c++) {
-                    timeMultiplier   *= acc.getSpeedMultiplier();
-                    energyMultiplier *= acc.getEnergyMultiplier();
-                }
-            } else if (upgrade.getItem() instanceof DirectionalUpgradeItem dir) {
-                Direction d = DirectionalUpgradeItem.getStoredDirection(upgrade);
-                if (d != null) switch (dir.getMode()) {
-                    case ITEM_PUSH  -> itemPusherDir = d;
-                    case ITEM_PULL  -> itemPullerDir = d;
-                    case FLUID_PULL -> fluidPullerDir = d;
-                    default -> {  }
-                }
-            } else if (upgrade.getItem() instanceof ParallelModuleItem pm) {
-                parallelCount = Math.max(parallelCount, pm.getParallelCount());
-            } else if (upgrade.getItem() instanceof com.jykito.industrialcore.item.upgrade.AdvancedParallelModuleItem adv) {
-                parallelCount = Math.max(parallelCount, adv.getParallelCount());
-            }
-        }
+        MachineUpgrades upg = MachineUpgrades.scan(itemHandler, 4, 7);
 
-        if (AdaptiveTank.resize(waterTank, TANK_BASE, parallelCount))
+        if (AdaptiveTank.resize(waterTank, TANK_BASE, upg.parallel()))
             level.sendBlockUpdated(pos, state, state, 3); // шкала бака считается от ёмкости, клиенту нужна новая
 
-        if (fluidPullerDir != null && waterTank.getSpace() > 0) {
-            final Direction d = fluidPullerDir;
-            BlockEntity neighbor = level.getBlockEntity(pos.relative(d));
-            if (neighbor != null) {
-                neighbor.getCapability(ForgeCapabilities.FLUID_HANDLER, d.getOpposite()).ifPresent(nh -> {
-                    FluidStack drained = nh.drain(new FluidStack(Fluids.WATER, Math.min(1000, waterTank.getSpace())), IFluidHandler.FluidAction.EXECUTE);
-                    if (!drained.isEmpty()) waterTank.fill(drained, IFluidHandler.FluidAction.EXECUTE);
-                });
-            }
+        if (upg.fluidPull() != null && waterTank.getSpace() > 0) {
+            MachineIO.neighbor(level, pos, upg.fluidPull(), ForgeCapabilities.FLUID_HANDLER).ifPresent(nh -> {
+                FluidStack drained = nh.drain(new FluidStack(Fluids.WATER, Math.min(1000, waterTank.getSpace())), IFluidHandler.FluidAction.EXECUTE);
+                if (!drained.isEmpty()) waterTank.fill(drained, IFluidHandler.FluidAction.EXECUTE);
+            });
         }
 
-        if (itemPullerDir != null) { // тянем постоянно — insertItem сам добьёт слот 0 до полного
-            final Direction d = itemPullerDir;
-            BlockEntity neighbor = level.getBlockEntity(pos.relative(d));
-            if (neighbor != null) {
-                neighbor.getCapability(ForgeCapabilities.ITEM_HANDLER, d.getOpposite()).ifPresent(nh -> {
-                    for (int i = 0; i < nh.getSlots(); i++) {
-                        ItemStack sim = nh.extractItem(i, 64, true);
-                        if (sim.isEmpty() || !itemHandler.isItemValid(0, sim)) continue;
-                        int accepted = sim.getCount() - itemHandler.insertItem(0, sim, true).getCount();
-                        if (accepted > 0) {
-                            itemHandler.insertItem(0, nh.extractItem(i, accepted, false), false);
-                            setChanged();
-                            break;
-                        }
-                    }
-                });
-            }
-        }
+        if (upg.itemPull() != null && MachineIO.pullItems(level, pos, upg.itemPull(), itemHandler, 0)) setChanged();
 
         OreWashingRecipe recipe = findRecipe(level);
         int baseTime   = recipe != null ? recipe.getProcessingTime()    : 200;
         int baseEnergy = recipe != null ? recipe.getEnergyCostPerTick() : 40;
-        this.maxProgress = Math.max(1, (int) (baseTime * timeMultiplier));
-        int effectiveEnergy = Math.max(1, (int) (baseEnergy * energyMultiplier));
+        this.maxProgress = upg.scaleTime(baseTime);
+        int effectiveEnergy = upg.scaleEnergy(baseEnergy);
 
         if (recipe != null) {
             if (energyStorage.getEnergyStored() >= effectiveEnergy) {
@@ -210,7 +161,7 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
                 progress++;
                 isWorking = true;
                 if (progress >= maxProgress) {
-                    craftItem(recipe, parallelCount);
+                    craftItem(recipe, upg.parallel());
                     progress = 0;
                 }
             }
@@ -218,23 +169,7 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
             progress = 0;
         }
 
-        if (itemPusherDir != null) {
-            final Direction d = itemPusherDir;
-            BlockEntity neighbor = level.getBlockEntity(pos.relative(d));
-            if (neighbor != null) {
-                neighbor.getCapability(ForgeCapabilities.ITEM_HANDLER, d.getOpposite()).ifPresent(nh -> {
-                    for (int outSlot : new int[]{1, 2, 3}) {
-                        ItemStack output = itemHandler.getStackInSlot(outSlot);
-                        if (output.isEmpty()) continue;
-                        ItemStack remaining = ItemHandlerHelper.insertItem(nh, output.copy(), false);
-                        if (remaining.getCount() < output.getCount()) {
-                            itemHandler.setStackInSlot(outSlot, remaining.isEmpty() ? ItemStack.EMPTY : remaining);
-                            setChanged();
-                        }
-                    }
-                });
-            }
-        }
+        if (upg.itemPush() != null && MachineIO.pushItems(level, pos, upg.itemPush(), itemHandler, 1, 2, 3)) setChanged();
 
         MachineLit.tick(this, level, pos, state, OreWasherBlock.LIT, isWorking);
 
@@ -246,6 +181,7 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
             ItemStack in = itemHandler.getStackInSlot(0);
             if (in.isEmpty()) return null;
             for (OreWashingRecipe r : level.getRecipeManager().getAllRecipesFor(ModRecipes.ORE_WASHING_TYPE.get())) {
+                if (r.isLateOnly()) continue;   // только для промышленного промывателя
                 if (!r.getInput().test(in) || in.getCount() < r.getInputCount()) continue;
                 if (waterTank.getFluidAmount() < r.getWaterAmount()) continue;
                 if (!outputsFit(r)) continue;
@@ -275,24 +211,41 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
 
     private void craftItem(OreWashingRecipe recipe, int parallelCount) {
 
-        int done = 0;
+        int done = 0, nanite = naniteSlot();
+        ItemStack strain = nanite < 0 ? ItemStack.EMPTY : itemHandler.getStackInSlot(nanite);
         for (int n = 0; n < Math.max(1, parallelCount); n++) {
             if (itemHandler.getStackInSlot(0).getCount() < recipe.getInputCount()) break;
             if (waterTank.getFluidAmount() < recipe.getWaterAmount()) break;
             if (!outputsFit(recipe)) break;
 
+            net.minecraft.world.item.Item input = itemHandler.getStackInSlot(0).getItem();
             itemHandler.extractItem(0, recipe.getInputCount(), false);
             waterTank.drain(recipe.getWaterAmount(), IFluidHandler.FluidAction.EXECUTE);
 
             if (recipe.getResultChance() >= 1.0f || level.random.nextFloat() < recipe.getResultChance()) {
                 insertOutput(recipe.getResult());
+                // переработчик: второй основной продукт, если ему есть место (лишнее не теряем, просто не выдаём)
+                if (NaniteProcessing.extra(level, strain, input, 1) > 0 && fits(recipe.getResult())) insertOutput(recipe.getResult());
             }
             if (recipe.hasByproduct() && level.random.nextFloat() < recipe.getByproductChance()) {
                 insertOutput(recipe.getByproduct());
             }
             done++;
         }
+        if (nanite >= 0 && done > 0) itemHandler.setStackInSlot(nanite, NaniteProcessing.wear(level, strain, done));
         if (done > 0) setChanged();
+    }
+
+    /** Слот апгрейда со штаммом-переработчиком или −1. */
+    private int naniteSlot() {
+        for (int s = 4; s <= 7; s++) if (itemHandler.getStackInSlot(s).getItem() instanceof NaniteStrainItem) return s;
+        return -1;
+    }
+
+    private boolean fits(ItemStack stack) {
+        ItemStack p = stack.copy();
+        for (int s = 1; s <= 3 && !p.isEmpty(); s++) p = itemHandler.insertItem(s, p, true);
+        return p.isEmpty();
     }
 
     @Override

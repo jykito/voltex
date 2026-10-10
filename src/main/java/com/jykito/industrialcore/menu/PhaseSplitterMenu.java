@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
-public class PhaseSplitterMenu extends AbstractContainerMenu {
+public class PhaseSplitterMenu extends MachineMenu {
     public final PhaseSplitterBlockEntity blockEntity;
     private final ContainerData data;
 
@@ -40,12 +40,7 @@ public class PhaseSplitterMenu extends AbstractContainerMenu {
         this.addSlot(new SlotItemHandler(h, 6, 188, 73));
         this.addSlot(new SlotItemHandler(h, 7, 188, 91));
 
-        for (int i = 0; i < 3; ++i)
-            for (int j = 0; j < 9; ++j)
-                this.addSlot(new Slot(inv, j + i * 9 + 9, 43 + j * 19, 134 + i * 19));
-
-        for (int k = 0; k < 9; ++k)
-            this.addSlot(new Slot(inv, k, 43 + k * 19, 197));
+        addPlayerInventory(inv, 43, 134);
 
         addDataSlots(data);
     }
@@ -53,16 +48,14 @@ public class PhaseSplitterMenu extends AbstractContainerMenu {
     public int getScaledProgress() {
         int progress    = this.data.get(4);
         int maxProgress = this.data.get(5);
-        if (maxProgress == 0 || progress == 0) return 0;
-        return Math.min(32, (progress * 32 + maxProgress - 1) / maxProgress);
+        return scaleProgress(progress, maxProgress, 32);
     }
 
-    public int getEnergyStored() { return (data.get(1) << 16) | (data.get(0) & 0xFFFF); }
-    public int getMaxEnergy()    { return (data.get(3) << 16) | (data.get(2) & 0xFFFF); }
+    public int getEnergyStored() { return unpack(data.get(0), data.get(1)); }
+    public int getMaxEnergy()    { return unpack(data.get(2), data.get(3)); }
 
     public int getScaledEnergy() {
-        int energy = getEnergyStored(), maxEnergy = getMaxEnergy();
-        return maxEnergy != 0 && energy != 0 ? (int)((long) energy * 110 / maxEnergy) : 0;
+        return scale(getEnergyStored(), getMaxEnergy(), 110);
     }
 
     @Override

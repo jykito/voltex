@@ -6,31 +6,19 @@ import com.jykito.industrialcore.block.entity.CryoCoreBlockEntity;
 import com.jykito.industrialcore.menu.CryoChamberMenu;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import java.util.List;
 
-public class CryoChamberScreen extends AbstractContainerScreen<CryoChamberMenu> {
+public class CryoChamberScreen extends MachineScreen<CryoChamberMenu> {
 
     private static final ResourceLocation TEXTURE =
             new ResourceLocation(IndustrialCore.MODID, "textures/gui/cryo_chamber_gui.png");
-    private static final ResourceLocation ENERGY_FILL =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/energy_fill_6x_anim.png");
-
-    private static final int TEX_W = 256, TEX_H = 315;
-
-    private static final int FILL_W = 96, FILL_H = 6, ANIM_H = 36, FRAMES = 6, FRAME_TICKS = 32;
-    private int animTick = 0, animFrame = 0;
 
     private static final int TANK_W = 16, TANK_H = 64, TANK_Y = 32;
     private static final int COOLANT_X = 46, HOT_X = 67, PRODUCT_X = 173;
@@ -39,17 +27,21 @@ public class CryoChamberScreen extends AbstractContainerScreen<CryoChamberMenu> 
     private static final int PROG_X = 112, PROG_Y = 37, PROG_W = 32, PROG_H = 12;
     private static final int PROG_SRC_U = 102, PROG_SRC_V = 260;
 
-    /** Рамки вокруг слотов стержней: пустая нарисована в фоне, горящая накладывается сверху. */
+    /** Стержень в слоте: поверх серых уголков слота ложатся бирюзовые (спрайт 20×20, клетка в нём с 1, 1). */
     private static final int FRAME_W = 20, FRAME_H = 20, FRAME_Y = 73;
     private static final int[] FRAME_X = {95, 118, 141};
     private static final int FRAME_SRC_U = 155, FRAME_SRC_V = 268;
 
-    private static final int BAR_X = 73, BAR_W = 110, BAR_H = 6;
-    private static final int DEPTH_Y = 112, ENERGY_Y = 127;
+    /**
+     * Внизу окна две полосы: глубина, под ней энергия с молнией слева, как у остальных машин
+     * (tools/gui_gen/mag_cryo/build.js, там те же координаты).
+     */
+    private static final int BAR_X = 72, BAR_W = 110, BAR_H = 6;
+    private static final int DEPTH_Y = 106, ENERGY_Y = 120;
 
     /**
      * Шкала глубины кусочная: каждая ступень занимает свой отрезок, а не долю от абсолютного
-     * максимума. Линейная растяжка на 2500 давила первые две ступени в левый край, хотя игрок
+     * максимума. Линейная растяжка на 2500 давила первые две ступени в край, хотя игрок
      * почти всё время сидит именно там. Границы отрезков совпадают с рисками на текстуре.
      */
     private static final int[] SEG_PX    = {0, 33, 67, BAR_W};
@@ -63,28 +55,14 @@ public class CryoChamberScreen extends AbstractContainerScreen<CryoChamberMenu> 
 
     public CryoChamberScreen(CryoChamberMenu menu, Inventory inv, Component title) {
         super(menu, inv, title);
-        this.imageWidth = 256;
         this.imageHeight = 228;
     }
 
     @Override
-    protected void init() {
-        super.init();
-        this.inventoryLabelY = 10000;
-        this.titleLabelY = 10000;
-    }
-
-    @Override
-    public void render(GuiGraphics g, int mx, int my, float pt) {
-        this.renderBackground(g);
-        if (++animTick >= FRAME_TICKS) { animTick = 0; animFrame = (animFrame + 1) % FRAMES; }
-        super.render(g, mx, my, pt);
-        this.renderTooltip(g, mx, my);
-
+    protected void renderTooltips(GuiGraphics g, int mx, int my) {
         Bars.energy(g, font, mx, my, leftPos + BAR_X, topPos + ENERGY_Y, BAR_W, BAR_H,
                 menu.getEnergyStored(), menu.getMaxEnergy());
         depthTooltip(g, mx, my);
-
         tankTooltip(g, mx, my, COOLANT_X, menu.blockEntity.coolantTank, "gui.industrial_core.cryo.tank.coolant");
         tankTooltip(g, mx, my, HOT_X,     menu.blockEntity.hotTank,     "gui.industrial_core.cryo.tank.hot");
         tankTooltip(g, mx, my, PRODUCT_X, menu.blockEntity.productTank, "gui.industrial_core.cryo.tank.product");
@@ -108,7 +86,7 @@ public class CryoChamberScreen extends AbstractContainerScreen<CryoChamberMenu> 
                 g.blit(TEXTURE, x + FRAME_X[r], y + FRAME_Y, FRAME_SRC_U, FRAME_SRC_V,
                         FRAME_W, FRAME_H, TEX_W, TEX_H);
 
-        tileBar(g, ENERGY_FILL, x + BAR_X, y + ENERGY_Y, menu.getScaledEnergy(BAR_W));
+        bars.draw(g, FillBar.ENERGY, x + BAR_X, y + ENERGY_Y, menu.getScaledEnergy(BAR_W));
 
         int depthPx = barPx(menu.getDepth());
         if (depthPx > 0)
@@ -161,43 +139,10 @@ public class CryoChamberScreen extends AbstractContainerScreen<CryoChamberMenu> 
     }
 
     private void tank(GuiGraphics g, int x, int y, FluidTank t) {
-        renderFluid(g, t.getFluid(), t.getCapacity(), x, y, TANK_W, TANK_H);
+        FluidGauge.draw(g, t.getFluid(), t.getCapacity(), x, y, TANK_W, TANK_H);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         g.blit(TEXTURE, x, y, GLASS_U, GLASS_V, TANK_W, TANK_H, TEX_W, TEX_H);
-    }
-
-    private void tileBar(GuiGraphics g, ResourceLocation tex, int barX, int barY, int filled) {
-        if (filled <= 0) return;
-        int vOffset = animFrame * FILL_H;
-        int drawX = barX;
-        while (drawX < barX + filled) {
-            int tileW = Math.min(FILL_W, barX + filled - drawX);
-            g.blit(tex, drawX, barY, 0, vOffset, tileW, BAR_H, FILL_W, ANIM_H);
-            drawX += FILL_W;
-        }
-    }
-
-    private void renderFluid(GuiGraphics g, FluidStack stack, int capacity, int x, int y, int width, int height) {
-        if (stack.isEmpty() || capacity <= 0) return;
-        int fluidHeight = Math.min(height, (int)((float) stack.getAmount() / capacity * height));
-        if (fluidHeight <= 0) return;
-        IClientFluidTypeExtensions ext = IClientFluidTypeExtensions.of(stack.getFluid());
-        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(ext.getStillTexture(stack));
-        int color = ext.getTintColor(stack);
-        float r = ((color >> 16) & 0xFF) / 255f, gg = ((color >> 8) & 0xFF) / 255f,
-              b = (color & 0xFF) / 255f, a = ((color >> 24) & 0xFF) / 255f;
-        if (a == 0f) a = 1f;
-        RenderSystem.enableBlend();
-        g.setColor(r, gg, b, a);
-        for (int i = 0; i < width; i += 16) {
-            for (int j = 0; j < fluidHeight; j += 16) {
-                int dw = Math.min(width - i, 16), dh = Math.min(fluidHeight - j, 16);
-                g.blit(x + i, y + height - j - dh, 0, dw, dh, sprite);
-            }
-        }
-        g.setColor(1f, 1f, 1f, 1f);
-        RenderSystem.disableBlend();
     }
 
     /**

@@ -2,8 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "ABA",
-    "C C",
-    "   "
+    "CDC"
   ],
   "key": {
     "A": {
@@ -14,6 +13,9 @@
     },
     "C": {
       "item": "industrial_core:exotic_matter"
+    },
+    "D": {
+      "item": "industrial_core:nexite_helmet"
     }
   },
   "result": {

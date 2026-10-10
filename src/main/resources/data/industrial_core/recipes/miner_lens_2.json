@@ -7,16 +7,18 @@
   ],
   "key": {
     "A": {
-      "item": "minecraft:glass"
+      "item": "minecraft:obsidian"
     },
     "B": {
-      "item": "minecraft:diamond"
+      "tag": "forge:gems/diamond"
     },
     "C": {
-      "item": "minecraft:blaze_powder"
+      "type": "forge:nbt",
+      "item": "industrial_core:capsule",
+      "nbt": "{Fluid:{Amount:1000,FluidName:\"minecraft:lava\"}}"
     },
     "D": {
-      "item": "industrial_core:logic_board"
+      "item": "industrial_core:photonic_lens"
     }
   },
   "result": {

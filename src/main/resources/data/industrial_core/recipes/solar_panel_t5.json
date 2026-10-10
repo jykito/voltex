@@ -19,7 +19,9 @@
       "item": "industrial_core:solar_panel_t4"
     },
     "E": {
-      "item": "industrial_core:amethyst_crystal"
+      "type": "forge:nbt",
+      "item": "industrial_core:capsule",
+      "nbt": "{Fluid:{Amount:1000,FluidName:\"industrial_core:coolant\"}}"
     }
   },
   "result": {

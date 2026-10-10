@@ -1,0 +1,45 @@
+{
+  "type": "industrial_core:assembling",
+  "inputs": [
+    {
+      "item": "industrial_core:mechanism_block"
+    },
+    {
+      "item": "industrial_core:advanced_parallel_module"
+    },
+    {
+      "item": "industrial_core:control_unit",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:quantum_capacitor",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:superconducting_winding",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:crystal_plate",
+      "count": 32
+    },
+    {
+      "item": "industrial_core:emerald_flux_cable",
+      "count": 16
+    },
+    {
+      "item": "industrial_core:kronium_alloy",
+      "count": 4
+    }
+  ],
+  "fluid": {
+    "fluid": "industrial_core:mechanical_alloy",
+    "amount": 8000
+  },
+  "result": {
+    "item": "industrial_core:mechanism_parallel_2",
+    "count": 1
+  },
+  "processingTime": 1200,
+  "energyCostPerTick": 16000
+}

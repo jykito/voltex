@@ -2,6 +2,7 @@ package com.jykito.industrialcore.block.entity;
 
 import com.jykito.industrialcore.block.custom.BaseSolarPanel;
 import com.jykito.industrialcore.block.custom.SolarPanelBlock;
+import com.jykito.industrialcore.energy.MachineEnergy;
 import net.minecraft.world.level.block.Block;
 import com.jykito.industrialcore.menu.SolarPanelMenu;
 import net.minecraft.core.BlockPos;
@@ -20,21 +21,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SolarPanelBlockEntity extends BlockEntity implements MenuProvider {
 
-    private static class SolarBuffer extends EnergyStorage {
-        SolarBuffer(int capacity, int maxTransfer) { super(capacity, maxTransfer, maxTransfer); }
-        @Override public boolean canReceive() { return false; }
-        void addEnergy(int amount) { energy = Math.min(capacity, energy + amount); }
-        void setEnergy(int amount) { energy = Math.max(0, Math.min(capacity, amount)); }
-    }
-
-    private final SolarBuffer buffer;
+    private final MachineEnergy buffer;
     private LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.empty();
     private int currentGeneration = 0;
 
@@ -45,20 +38,22 @@ public class SolarPanelBlockEntity extends BlockEntity implements MenuProvider {
                 case 1 -> (buffer.getEnergyStored()    >> 16) & 0xFFFF;
                 case 2 ->  buffer.getMaxEnergyStored() & 0xFFFF;
                 case 3 -> (buffer.getMaxEnergyStored() >> 16) & 0xFFFF;
-                case 4 ->  currentGeneration;
-                case 5 ->  currentGeneration > 0 ? 1 : 0;
+                // ячейка ContainerData 16-битная, а T5+ даёт больше 32767 → двумя половинами
+                case 4 ->  currentGeneration           & 0xFFFF;
+                case 5 -> (currentGeneration           >> 16) & 0xFFFF;
+                case 6 ->  currentGeneration > 0 ? 1 : 0;
                 default -> 0;
             };
         }
-        @Override public void set(int i, int v) { if (i == 4) currentGeneration = v; }
-        @Override public int getCount() { return 6; }
+        @Override public void set(int i, int v) {}
+        @Override public int getCount() { return 7; }
     };
 
     public SolarPanelBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
         BaseSolarPanel block = (BaseSolarPanel) state.getBlock();
 
-        this.buffer = new SolarBuffer(block.getBufferSize(), block.getBufferSize());
+        this.buffer = MachineEnergy.generator(block.getBufferSize(), block.getBufferSize());
     }
 
     public int getTierLevel() {

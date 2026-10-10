@@ -2,8 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "ABA",
-    "ACA",
-    "ADA"
+    "CDC",
+    "AEA"
   ],
   "key": {
     "A": {
@@ -13,9 +13,12 @@
       "item": "minecraft:glass"
     },
     "C": {
-      "item": "industrial_core:machine_casing"
+      "item": "industrial_core:rubber"
     },
     "D": {
+      "tag": "forge:components/machine_casing"
+    },
+    "E": {
       "item": "industrial_core:electric_motor"
     }
   },

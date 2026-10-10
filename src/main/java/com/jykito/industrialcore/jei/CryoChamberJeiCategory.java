@@ -67,7 +67,7 @@ public class CryoChamberJeiCategory implements IRecipeCategory<CryoRecipe> {
     private static final int[] SEG_DEPTH = {0, 200, 800, CryoCoreBlockEntity.MAX_DEPTH};
     private static final int DEPTH_COLOR = 0xFF40BEC7;
 
-    private static final int INFO_X = 23, INFO_Y = 5;
+    private static final int INFO_X = 23, INFO_Y = 7;   // строка текста в утопленной панели между угловыми плашками (окно К4)
 
     private final RecipeType<CryoRecipe> recipeType;
     private final IDrawable background;

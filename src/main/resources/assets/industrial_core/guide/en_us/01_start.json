@@ -5,16 +5,18 @@
       "name": "Introduction",
       "elements": [
         {
-          "type": "header",
-          "text": "Voltex"
+          "type": "card",
+          "icon": "industrial_core:manual",
+          "title": "Voltex",
+          "subtitle": "A tech mod running on FE"
         },
         {
           "type": "text",
-          "text": "An industrial tech mod powered by FE. The path runs from ore processing to machines, then to heat and multiblocks, to the magnet accelerator and finally the Dyson panel."
+          "text": "You start by crushing ore and setting up your first machines. Later you build a heat network, multiblocks and the magnet, and at the very end you assemble the Dyson panel."
         },
         {
           "type": "text",
-          "text": "Opened with the Information Panel. Here you will find mechanics, how machines and multiblocks work, and the order of progression — what unlocks what and how it functions."
+          "text": "This panel explains how each machine works and what unlocks what. There are no recipes here, only what you need to know to get a machine running."
         }
       ]
     },
@@ -22,12 +24,17 @@
       "name": "First Machines",
       "elements": [
         {
-          "type": "header",
-          "text": "First Machines"
+          "type": "card",
+          "icon": "industrial_core:machine_casing",
+          "title": "First Machines"
         },
         {
           "type": "text",
-          "text": "Everything starts with the machine casing. The Coal Generator gives your first FE. The Crusher doubles ore into dust; the Electric Furnace smelts dust and ore into ingots."
+          "text": "Almost every machine is made from a **machine casing**, so start there. Your first power comes from the **coal generator**: throw coal in and it starts feeding the machines next to it."
+        },
+        {
+          "type": "text",
+          "text": "Next you want a **crusher** and an **electric furnace**. The crusher turns ore into dust, and the furnace smelts the dust into ingots."
         },
         {
           "type": "items",
@@ -37,7 +44,7 @@
             "industrial_core:crusher",
             "industrial_core:electric_furnace"
           ],
-          "label": "Starter set"
+          "label": "First set"
         }
       ]
     },
@@ -45,12 +52,17 @@
       "name": "Ore Doubling",
       "elements": [
         {
-          "type": "header",
-          "text": "Ore Doubling"
+          "type": "card",
+          "icon": "industrial_core:tin_ore",
+          "title": "Ore Doubling"
         },
         {
           "type": "text",
-          "text": "Crush ore or raw material for 2 dust instead of 1 ingot, then smelt the dust. Result: double the metal from every ore."
+          "text": "Do not smelt ore straight away. Put it in the crusher first: one ore gives two dust, while a furnace would give you one ingot. Smelt the dust and you get twice the metal from every ore."
+        },
+        {
+          "type": "tip",
+          "text": "Later the **ore washer** gives even more: three dust per ore and sometimes a rare metal on top."
         },
         {
           "type": "items",
@@ -59,7 +71,7 @@
             "industrial_core:tin_dust",
             "industrial_core:tin_ingot"
           ],
-          "label": "Example: tin"
+          "label": "Tin, for example"
         }
       ]
     },
@@ -72,11 +84,11 @@
         },
         {
           "type": "text",
-          "text": "Everything runs on Forge Energy (FE). Generators produce FE, cables carry it, machines keep a small buffer and spend FE per tick of work."
+          "text": "Every machine runs on **FE**. A generator makes it, a cable carries it to the machines, and each machine keeps a small reserve and spends it while working."
         },
         {
           "type": "text",
-          "text": "Each cable has its own transfer limit; generators and stores have their own capacity. Watch the balance of production and draw."
+          "text": "If a machine keeps stopping and starting, it is short on power: either the generator is too weak or the cable cannot carry enough. A better cable carries more."
         }
       ]
     }

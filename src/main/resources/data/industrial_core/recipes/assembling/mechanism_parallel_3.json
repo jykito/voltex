@@ -1,0 +1,44 @@
+{
+  "type": "industrial_core:assembling",
+  "inputs": [
+    {
+      "item": "industrial_core:mechanism_block"
+    },
+    {
+      "item": "industrial_core:quantum_parallel_module"
+    },
+    {
+      "item": "industrial_core:control_unit",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:singularity_core"
+    },
+    {
+      "item": "industrial_core:star_shard",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:quantum_capacitor",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:exotic_matter",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:netherite_fiber_cable",
+      "count": 8
+    }
+  ],
+  "fluid": {
+    "fluid": "industrial_core:photonic_melt",
+    "amount": 4000
+  },
+  "result": {
+    "item": "industrial_core:mechanism_parallel_3",
+    "count": 1
+  },
+  "processingTime": 1200,
+  "energyCostPerTick": 16000
+}

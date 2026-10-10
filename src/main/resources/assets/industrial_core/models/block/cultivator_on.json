@@ -1,0 +1,7 @@
+{
+  "parent": "industrial_core:block/cultivator",
+  "textures": {
+    "0": "industrial_core:block/cultivator_on",
+    "particle": "industrial_core:block/cultivator"
+  }
+}

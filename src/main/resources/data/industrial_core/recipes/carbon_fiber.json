@@ -1,13 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "AA ",
-    "AA ",
-    "   "
+    " A ",
+    "ABA",
+    " A "
   ],
   "key": {
     "A": {
       "tag": "forge:dusts/coal"
+    },
+    "B": {
+      "item": "industrial_core:tree_resin"
     }
   },
   "result": {

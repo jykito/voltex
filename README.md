@@ -1,6 +1,6 @@
 # Voltex
 
-Voltex is a tech mod for Minecraft 1.20.1 (Forge). It adds machines, FE energy generation and storage, cables and fluid handling, item and fluid logistics, a heat network, a multiblock miner, a multiblock nuclear reactor, a particle accelerator, a full line of solar panels, two armor sets and a number of optional machines.
+Voltex is a tech mod for Minecraft 1.20.1 (Forge). It adds machines, FE energy generation and storage, cables and fluid handling, item and fluid logistics, a heat network, late-game multiblock machines built from ports, nanites, an industrial miner, a cryo chamber, an electromagnet, a full line of solar panels, two armor sets with energy weapons and a number of optional machines.
 
 Downloads, screenshots and the full description are on CurseForge:
 https://www.curseforge.com/minecraft/mc-mods/voltex
@@ -11,12 +11,15 @@ https://www.curseforge.com/minecraft/mc-mods/voltex
 - JEI (optional, recipe viewer)
 - KubeJS (optional, recipe integration for pack makers)
 - Jade (optional, machine status in the block tooltip)
+- Applied Energistics 2 (optional, ME ports for the late-game machines)
 
 The in-game guide is built into the mod and needs nothing extra.
 
 ## For pack makers
 
-Machine recipes use the `industrial_core:machine_recipe` type with a `machine_type` field, plus `processingTime` and `energyCost`. Those two numbers are what JEI shows and what the machine uses, so changing them in the recipe is all that is needed to retune a machine.
+Machine recipes use the `industrial_core:machine_recipe` type with a `machine_type` field, plus `processingTime` and `energyCost`. Those two numbers are what JEI shows and what the machine uses, so changing them in the recipe is all that is needed to retune a machine. The Restructor is the exception: it has no processing time, and `processingTime` in its recipes is ignored.
+
+Two machines have their own recipe types: `industrial_core:assembling` for the Industrial Assembler and `industrial_core:bioreactor_recipe` for the Bioreactor. These two have no KubeJS schema yet, so add them as JSON.
 
 Ore generation is defined in JSON under `data/industrial_core/worldgen` and can be overridden with a datapack. KubeJS integration lives in `compat/kubejs`, and `api/` holds the extension points for solar panel tiers and Restructor recipes.
 

@@ -1,9 +1,8 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "ABA",
-    "BCB",
-    "ABA"
+    "AAA",
+    "BCB"
   ],
   "key": {
     "A": {
@@ -13,7 +12,7 @@
       "item": "industrial_core:heat_resistant_plating"
     },
     "C": {
-      "item": "industrial_core:machine_casing"
+      "tag": "forge:components/machine_casing"
     }
   },
   "result": {

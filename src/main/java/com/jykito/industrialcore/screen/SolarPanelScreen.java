@@ -4,21 +4,13 @@ import com.jykito.industrialcore.IndustrialCore;
 import com.jykito.industrialcore.menu.SolarPanelMenu;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-public class SolarPanelScreen extends AbstractContainerScreen<SolarPanelMenu> {
+public class SolarPanelScreen extends MachineScreen<SolarPanelMenu> {
 
     private final ResourceLocation TEXTURE;
-    private static final ResourceLocation ENERGY_FILL =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/energy_fill_6x_anim.png");
-
-    private static final int TEX_W = 256, TEX_H = 315;
-
-    private static final int FILL_W = 96, FILL_H = 6, ANIM_H = 36, FRAMES = 6, FRAME_TICKS = 32;
-    private int animTick = 0, currentFrame = 0;
 
     private static final int BAR_X = 73, BAR_Y = 97, BAR_W = 110, BAR_H = 6;
 
@@ -38,25 +30,12 @@ public class SolarPanelScreen extends AbstractContainerScreen<SolarPanelMenu> {
 
     public SolarPanelScreen(SolarPanelMenu menu, Inventory inv, Component title) {
         super(menu, inv, title);
-        imageWidth  = 256;
-        imageHeight = 224;
         TEXTURE = new ResourceLocation(IndustrialCore.MODID,
                 "textures/gui/solar_gui_t" + menu.blockEntity.getTierLevel() + ".png");
     }
 
     @Override
-    protected void init() {
-        super.init();
-        inventoryLabelY = 10000;
-        titleLabelY     = 10000;
-    }
-
-    @Override
-    public void render(GuiGraphics g, int mx, int my, float pt) {
-        renderBackground(g);
-        if (++animTick >= FRAME_TICKS) { animTick = 0; currentFrame = (currentFrame + 1) % FRAMES; }
-        super.render(g, mx, my, pt);
-        renderTooltip(g, mx, my);
+    protected void renderTooltips(GuiGraphics g, int mx, int my) {
         Bars.energy(g, font, mx, my, leftPos + BAR_X, topPos + BAR_Y, BAR_W, BAR_H,
                 menu.getEnergyStored(), menu.getMaxEnergy());
     }
@@ -71,13 +50,7 @@ public class SolarPanelScreen extends AbstractContainerScreen<SolarPanelMenu> {
         int filled = menu.getScaledEnergy(BAR_W);
         if (filled > 0) {
             int barX = x + BAR_X, barY = y + BAR_Y;
-            int vOffset = currentFrame * FILL_H;
-            int drawX = barX;
-            while (drawX < barX + filled) {
-                int tileW = Math.min(FILL_W, barX + filled - drawX);
-                g.blit(ENERGY_FILL, drawX, barY, 0, vOffset, tileW, FILL_H, FILL_W, ANIM_H);
-                drawX += FILL_W;
-            }
+            bars.draw(g, FillBar.ENERGY, barX, barY, filled);
         }
     }
 

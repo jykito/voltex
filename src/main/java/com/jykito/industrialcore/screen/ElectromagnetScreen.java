@@ -6,24 +6,16 @@ import com.jykito.industrialcore.menu.ElectromagnetMenu;
 import com.jykito.industrialcore.networking.MagnetThrottlePacket;
 import com.jykito.industrialcore.networking.ModMessages;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.fluids.FluidStack;
 
-public class ElectromagnetScreen extends AbstractContainerScreen<ElectromagnetMenu> {
+public class ElectromagnetScreen extends MachineScreen<ElectromagnetMenu> {
     private static final ResourceLocation TEXTURE = new ResourceLocation(IndustrialCore.MODID, "textures/gui/electromagnet_gui.png");
-    private static final ResourceLocation ENERGY_FILL = new ResourceLocation(IndustrialCore.MODID, "textures/gui/energy_fill_6x_anim.png");
 
-    private static final int FILL_W = 96, FILL_H = 6, ANIM_H = 36, FRAMES = 6, FRAME_TICKS = 32;
-    private static final int BAR_X = 73, BAR_Y = 127, BAR_H = 6;
-    private int animTick = 0, animFrame = 0;
+    /** Энергия — его полоса с молнией слева, как у остальных машин (tools/gui_gen/mag_cryo/build.js, там те же координаты). */
+    private static final int BAR_X = 73, BAR_Y = 122, BAR_H = 6;
 
     private static final int TANK_W = 16, TANK_H = 64;
     private static final int TANK_A_X = 54,  TANK_Y = 32;
@@ -50,28 +42,19 @@ public class ElectromagnetScreen extends AbstractContainerScreen<ElectromagnetMe
 
     public ElectromagnetScreen(ElectromagnetMenu menu, Inventory inv, Component title) {
         super(menu, inv, title);
-        this.imageWidth = 256;
         this.imageHeight = 234;
     }
 
     @Override
-    protected void init() {
-        super.init();
-        this.inventoryLabelY = 10000;
-        this.titleLabelY = 10000;
+    protected void onBarFrame() {
+        thrAnimFrame = (thrAnimFrame + 1) % THR_FRAMES;
     }
 
     @Override
-    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(g);
-        if (++animTick >= FRAME_TICKS) { animTick = 0; animFrame = (animFrame + 1) % FRAMES; thrAnimFrame = (thrAnimFrame + 1) % THR_FRAMES; }
-        super.render(g, mouseX, mouseY, partialTick);
-        this.renderTooltip(g, mouseX, mouseY);
-
+    protected void renderTooltips(GuiGraphics g, int mouseX, int mouseY) {
         ElectromagnetCoreBlockEntity be = menu.blockEntity;
-        renderFluidTooltip(g, mouseX, mouseY, leftPos + TANK_A_X, topPos + TANK_Y, TANK_W, TANK_H, be.tankA.getFluid(), be.tankA.getCapacity());
-        renderFluidTooltip(g, mouseX, mouseY, leftPos + TANK_B_X, topPos + TANK_Y, TANK_W, TANK_H, be.tankB.getFluid(), be.tankB.getCapacity());
-
+        FluidGauge.tooltip(g, font, mouseX, mouseY, leftPos + TANK_A_X, topPos + TANK_Y, TANK_W, TANK_H, be.tankA.getFluid(), be.tankA.getCapacity());
+        FluidGauge.tooltip(g, font, mouseX, mouseY, leftPos + TANK_B_X, topPos + TANK_Y, TANK_W, TANK_H, be.tankB.getFluid(), be.tankB.getCapacity());
         if (isHover(mouseX, mouseY, RES_X, RES_Y - 1, RES_W, RES_H + 4))
             g.renderComponentTooltip(font, java.util.List.of(
                     Component.translatable("gui.industrial_core.magnet.resonance"),
@@ -89,19 +72,11 @@ public class ElectromagnetScreen extends AbstractContainerScreen<ElectromagnetMe
 
         g.blit(TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight, 256, 315);
 
-        int filled = menu.getScaledEnergy();
-        if (filled > 0) {
-            int barX = leftPos + BAR_X, barY = topPos + BAR_Y, vOffset = animFrame * FILL_H, drawX = barX;
-            while (drawX < barX + filled) {
-                int tileW = Math.min(FILL_W, barX + filled - drawX);
-                g.blit(ENERGY_FILL, drawX, barY, 0, vOffset, tileW, BAR_H, FILL_W, ANIM_H);
-                drawX += FILL_W;
-            }
-        }
+        bars.draw(g, FillBar.ENERGY, leftPos + BAR_X, topPos + BAR_Y, menu.getScaledEnergy(), BAR_H);
 
         ElectromagnetCoreBlockEntity be = menu.blockEntity;
-        renderFluidTank(g, be.tankA.getFluid(), be.tankA.getCapacity(), leftPos + TANK_A_X, topPos + TANK_Y, TANK_W, TANK_H);
-        renderFluidTank(g, be.tankB.getFluid(), be.tankB.getCapacity(), leftPos + TANK_B_X, topPos + TANK_Y, TANK_W, TANK_H);
+        FluidGauge.draw(g, be.tankA.getFluid(), be.tankA.getCapacity(), leftPos + TANK_A_X, topPos + TANK_Y, TANK_W, TANK_H);
+        FluidGauge.draw(g, be.tankB.getFluid(), be.tankB.getCapacity(), leftPos + TANK_B_X, topPos + TANK_Y, TANK_W, TANK_H);
 
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -221,41 +196,4 @@ public class ElectromagnetScreen extends AbstractContainerScreen<ElectromagnetMe
         ModMessages.sendToServer(new MagnetThrottlePacket(menu.blockEntity.getBlockPos(), t));
     }
 
-    private void renderFluidTank(GuiGraphics g, FluidStack fluidStack, int capacity, int x, int y, int width, int height) {
-        if (fluidStack.isEmpty()) return;
-        int fluidHeight = Math.min(height, (int) ((float) fluidStack.getAmount() / capacity * height));
-        if (fluidHeight <= 0) return;
-
-        IClientFluidTypeExtensions clientFluid = IClientFluidTypeExtensions.of(fluidStack.getFluid());
-        ResourceLocation texture = clientFluid.getStillTexture(fluidStack);
-        if (texture == null) return;
-        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(texture);
-        int color = clientFluid.getTintColor(fluidStack);
-        if (fluidStack.getFluid() == net.minecraft.world.level.material.Fluids.WATER
-                || fluidStack.getFluid() == net.minecraft.world.level.material.Fluids.FLOWING_WATER) color = 0xFF3F76E4;
-
-        float r = ((color >> 16) & 0xFF) / 255f, gg = ((color >> 8) & 0xFF) / 255f, b = (color & 0xFF) / 255f, a = ((color >> 24) & 0xFF) / 255f;
-        if (a == 0f) a = 1f;
-
-        RenderSystem.enableBlend();
-        g.setColor(r, gg, b, a);
-        for (int i = 0; i < width; i += 16) {
-            for (int j = 0; j < fluidHeight; j += 16) {
-                int drawWidth = Math.min(width - i, 16), drawHeight = Math.min(fluidHeight - j, 16);
-                g.blit(x + i, y + height - j - drawHeight, 0, drawWidth, drawHeight, sprite);
-            }
-        }
-        g.setColor(1f, 1f, 1f, 1f);
-        RenderSystem.disableBlend();
-    }
-
-    private void renderFluidTooltip(GuiGraphics g, int mouseX, int mouseY, int x, int y, int width, int height, FluidStack fluidStack, int capacity) {
-        if (mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height) {
-            Component text;
-            if (fluidStack.isEmpty()) text = Component.translatable("gui.industrial_core.empty");
-            else text = Component.literal("").append(fluidStack.getFluid().getFluidType().getDescription(fluidStack))
-                    .append(": " + fluidStack.getAmount() + " / " + capacity + " mB");
-            g.renderTooltip(this.font, text, mouseX, mouseY);
-        }
-    }
 }

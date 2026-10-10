@@ -1,0 +1,14 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:compressing",
+  "ingredient": {
+    "item": "minecraft:ice"
+  },
+  "inputCount": 9,
+  "result": {
+    "item": "minecraft:packed_ice",
+    "count": 1
+  },
+  "processingTime": 120,
+  "energyCost": 60
+}

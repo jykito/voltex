@@ -15,6 +15,8 @@ import org.jetbrains.annotations.Nullable;
 public class OreWashingRecipe implements Recipe<SimpleContainer> {
 
     private final ResourceLocation id;
+    /** Рецепт только для лейт-машины (её промышленный режим); малая машина его не видит. */
+    private boolean lateOnly;
     private final Ingredient input;
     private final int inputCount;
     private final int waterAmount;
@@ -40,8 +42,11 @@ public class OreWashingRecipe implements Recipe<SimpleContainer> {
         this.energyCostPerTick = energyCostPerTick;
     }
 
+    public boolean isLateOnly() { return lateOnly; }
+
     @Override
     public boolean matches(SimpleContainer container, Level level) {
+        if (lateOnly) return false;
         if (level.isClientSide()) return false;
         return input.test(container.getItem(0)) && container.getItem(0).getCount() >= inputCount;
     }
@@ -89,7 +94,9 @@ public class OreWashingRecipe implements Recipe<SimpleContainer> {
             float byprodChance = GsonHelper.getAsFloat(json, "byproductChance", 1.0f);
             int processingTime = GsonHelper.getAsInt(json, "processingTime", 200);
             int energyCost     = GsonHelper.getAsInt(json, "energyCostPerTick", 40);
-            return new OreWashingRecipe(id, input, inputCount, waterAmount, result, resultChance, byprod, byprodChance, processingTime, energyCost);
+            OreWashingRecipe recipe__ = new OreWashingRecipe(id, input, inputCount, waterAmount, result, resultChance, byprod, byprodChance, processingTime, energyCost);
+            recipe__.lateOnly = GsonHelper.getAsBoolean(json, "lateOnly", false);
+            return recipe__;
         }
 
         @Override
@@ -103,7 +110,9 @@ public class OreWashingRecipe implements Recipe<SimpleContainer> {
             float byprodChance = buf.readFloat();
             int processingTime = buf.readInt();
             int energyCost     = buf.readInt();
-            return new OreWashingRecipe(id, input, inputCount, waterAmount, result, resultChance, byprod, byprodChance, processingTime, energyCost);
+            OreWashingRecipe recipe__ = new OreWashingRecipe(id, input, inputCount, waterAmount, result, resultChance, byprod, byprodChance, processingTime, energyCost);
+            recipe__.lateOnly = buf.readBoolean();
+            return recipe__;
         }
 
         @Override
@@ -117,6 +126,7 @@ public class OreWashingRecipe implements Recipe<SimpleContainer> {
             buf.writeFloat(r.byproductChance);
             buf.writeInt(r.processingTime);
             buf.writeInt(r.energyCostPerTick);
+            buf.writeBoolean(r.lateOnly);
         }
     }
 }

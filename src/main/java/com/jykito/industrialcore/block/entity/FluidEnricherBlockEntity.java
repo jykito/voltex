@@ -1,11 +1,12 @@
 package com.jykito.industrialcore.block.entity;
 
 import com.jykito.industrialcore.block.custom.FluidEnricherBlock;
+import com.jykito.industrialcore.energy.MachineEnergy;
 import com.jykito.industrialcore.item.ModItems;
+import com.jykito.industrialcore.item.upgrade.MachineUpgrades;
+import com.jykito.industrialcore.item.upgrade.UpgradeTargets;
 import com.jykito.industrialcore.recipe.FluidEnricherRecipe;
 import com.jykito.industrialcore.recipe.ModRecipes;
-import com.jykito.industrialcore.item.upgrade.AcceleratorItem;
-import com.jykito.industrialcore.item.upgrade.DirectionalUpgradeItem;
 import com.jykito.industrialcore.menu.FluidEnricherMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -32,7 +33,6 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.ArrayList;
@@ -58,7 +58,7 @@ public class FluidEnricherBlockEntity extends BlockEntity implements MenuProvide
                 case 1, 5 -> true;
                 case 2, 3 -> isReagent(stack);
                 case 4 -> stack.getItem() == ModItems.UNIVERSAL_CAPSULE.get();
-                case 6, 7, 8, 9 -> stack.getItem() instanceof com.jykito.industrialcore.item.upgrade.MachineUpgradeItem;
+                case 6, 7, 8, 9 -> UpgradeTargets.works(getBlockState().getBlock(), stack);
                 default -> false;
             };
         }
@@ -85,12 +85,7 @@ public class FluidEnricherBlockEntity extends BlockEntity implements MenuProvide
 
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
-    private static class EnricherEnergy extends EnergyStorage {
-        EnricherEnergy(int capacity, int maxReceive) { super(capacity, maxReceive, 0); }
-        void consumeEnergy(int amount) { this.energy = Math.max(0, this.energy - amount); }
-        void setEnergy(int amount) { this.energy = Math.min(getMaxEnergyStored(), Math.max(0, amount)); }
-    }
-    private final EnricherEnergy energyStorage = new EnricherEnergy(50000, 50000); // приём = буфер, без потолка на вход
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(50000, 50000); // приём = буфер, без потолка на вход
     private LazyOptional<EnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
     private final IFluidHandler combinedFluidHandler = new IFluidHandler() {
@@ -171,86 +166,29 @@ public class FluidEnricherBlockEntity extends BlockEntity implements MenuProvide
 
         boolean isWorking = false;
 
-        Direction fluidPusherDir = null;
-        Direction fluidPullerDir = null;
-        Direction itemPusherDir  = null;
-        Direction itemPullerDir  = null;
-        float timeMultiplier   = 1.0f;
-        float energyMultiplier = 1.0f;
-        int parallel = 1;
-
-        for (int s = 6; s <= 9; s++) {
-            ItemStack upgrade = itemHandler.getStackInSlot(s);
-            if (upgrade.isEmpty()) continue;
-            if (upgrade.getItem() instanceof DirectionalUpgradeItem dir) {
-                Direction d = DirectionalUpgradeItem.getStoredDirection(upgrade);
-                if (d != null) switch (dir.getMode()) {
-                    case FLUID_PUSH -> fluidPusherDir = d;
-                    case FLUID_PULL -> fluidPullerDir = d;
-                    case ITEM_PUSH  -> itemPusherDir  = d;
-                    case ITEM_PULL  -> itemPullerDir  = d;
-                }
-            } else if (upgrade.getItem() instanceof AcceleratorItem acc) {
-                for (int c = 0; c < upgrade.getCount(); c++) {
-                    timeMultiplier   *= acc.getSpeedMultiplier();
-                    energyMultiplier *= acc.getEnergyMultiplier();
-                }
-            } else if (upgrade.getItem() instanceof com.jykito.industrialcore.item.upgrade.ParallelModuleItem pm) {
-                parallel = Math.max(parallel, pm.getParallelCount());
-            } else if (upgrade.getItem() instanceof com.jykito.industrialcore.item.upgrade.AdvancedParallelModuleItem adv) {
-                parallel = Math.max(parallel, adv.getParallelCount());
-            }
-        }
+        MachineUpgrades upg = MachineUpgrades.scan(itemHandler, 6, 9);
 
         // Оба бака растут: партия ×64 и берёт, и отдаёт в 64 раза больше.
-        boolean resized = AdaptiveTank.resize(inputTank,  TANK_BASE, parallel);
-        resized        |= AdaptiveTank.resize(outputTank, TANK_BASE, parallel);
+        boolean resized = AdaptiveTank.resize(inputTank,  TANK_BASE, upg.parallel());
+        resized        |= AdaptiveTank.resize(outputTank, TANK_BASE, upg.parallel());
         if (resized) level.sendBlockUpdated(pos, state, state, 3);
 
         FluidEnricherRecipe currentRecipe = findRecipe(level);
         int baseTime   = currentRecipe != null ? currentRecipe.getProcessingTime()    : 100;
         int baseEnergy = currentRecipe != null ? currentRecipe.getEnergyCostPerTick() : 50;
-        this.maxProgress = Math.max(1, (int)(baseTime   * timeMultiplier));
-        int effectiveEnergy = Math.max(1, (int)(baseEnergy * energyMultiplier));
+        this.maxProgress = upg.scaleTime(baseTime);
+        int effectiveEnergy = upg.scaleEnergy(baseEnergy);
 
-        if (itemPullerDir != null) {
-            final Direction pullDir = itemPullerDir;
-            BlockEntity neighbor = level.getBlockEntity(pos.relative(pullDir));
-            if (neighbor != null) {
-                neighbor.getCapability(ForgeCapabilities.ITEM_HANDLER, pullDir.getOpposite())
-                        .ifPresent(nh -> {
-                            outer:
-                            for (int i = 0; i < nh.getSlots(); i++) {
-                                ItemStack extracted = nh.extractItem(i, 64, true);
-                                if (extracted.isEmpty()) continue;
-                                for (int target : new int[]{2, 3, 4, 0}) {
-                                    ItemStack remaining = itemHandler.insertItem(target, extracted.copy(), true);
-                                    int inserted = extracted.getCount() - remaining.getCount();
-                                    if (inserted > 0) {
-                                        itemHandler.insertItem(target, nh.extractItem(i, inserted, false), false);
-                                        setChanged();
-                                        break outer;
-                                    }
-                                }
-                            }
-                        });
-            }
-        }
+        if (upg.itemPull() != null && MachineIO.pullItems(level, pos, upg.itemPull(), itemHandler, 2, 3, 4, 0)) setChanged();
 
-        if (fluidPullerDir != null && inputTank.getSpace() > 0) {
-            final Direction pullDir = fluidPullerDir;
-            BlockEntity neighbor = level.getBlockEntity(pos.relative(pullDir));
-            if (neighbor != null) {
-                neighbor.getCapability(ForgeCapabilities.FLUID_HANDLER, pullDir.getOpposite())
-                        .ifPresent(nh -> {
-
-                            FluidStack sim = nh.drain(Math.min(1000, inputTank.getSpace()), IFluidHandler.FluidAction.SIMULATE);
-                            if (sim.isEmpty()) return;
-                            int canFill = inputTank.fill(sim, IFluidHandler.FluidAction.SIMULATE);
-                            if (canFill <= 0) return;
-                            inputTank.fill(nh.drain(canFill, IFluidHandler.FluidAction.EXECUTE), IFluidHandler.FluidAction.EXECUTE);
-                        });
-            }
+        if (upg.fluidPull() != null && inputTank.getSpace() > 0) {
+            MachineIO.neighbor(level, pos, upg.fluidPull(), ForgeCapabilities.FLUID_HANDLER).ifPresent(nh -> {
+                FluidStack sim = nh.drain(Math.min(1000, inputTank.getSpace()), IFluidHandler.FluidAction.SIMULATE);
+                if (sim.isEmpty()) return;
+                int canFill = inputTank.fill(sim, IFluidHandler.FluidAction.SIMULATE);
+                if (canFill <= 0) return;
+                inputTank.fill(nh.drain(canFill, IFluidHandler.FluidAction.EXECUTE), IFluidHandler.FluidAction.EXECUTE);
+            });
         }
 
         transferFluidFromItem(0, 1, inputTank);
@@ -263,7 +201,7 @@ public class FluidEnricherBlockEntity extends BlockEntity implements MenuProvide
                 progress++;
                 isWorking = true;
                 if (progress >= maxProgress) {
-                    int actualParallel = Math.max(1, Math.min(parallel, maxRunsForInputs(currentRecipe)));
+                    int actualParallel = Math.max(1, Math.min(upg.parallel(), maxRunsForInputs(currentRecipe)));
                     craftItem(currentRecipe, actualParallel);
                     progress = 0;
                 }
@@ -272,37 +210,15 @@ public class FluidEnricherBlockEntity extends BlockEntity implements MenuProvide
             progress = 0;
         }
 
-        if (itemPusherDir != null) {
-            final Direction pushDir = itemPusherDir;
-            BlockEntity neighbor = level.getBlockEntity(pos.relative(pushDir));
-            if (neighbor != null) {
-                neighbor.getCapability(ForgeCapabilities.ITEM_HANDLER, pushDir.getOpposite())
-                        .ifPresent(nh -> {
-                            for (int outputSlot : new int[]{1, 5}) {
-                                ItemStack output = itemHandler.getStackInSlot(outputSlot);
-                                if (output.isEmpty()) continue;
-                                ItemStack remaining = ItemHandlerHelper.insertItem(nh, output.copy(), false);
-                                if (remaining.getCount() < output.getCount()) {
-                                    itemHandler.setStackInSlot(outputSlot, remaining.isEmpty() ? ItemStack.EMPTY : remaining);
-                                    setChanged();
-                                }
-                            }
-                        });
-            }
-        }
+        if (upg.itemPush() != null && MachineIO.pushItems(level, pos, upg.itemPush(), itemHandler, 1, 5)) setChanged();
 
-        if (fluidPusherDir != null && !outputTank.isEmpty()) {
-            final Direction pushDir = fluidPusherDir;
-            BlockEntity neighbor = level.getBlockEntity(pos.relative(pushDir));
-            if (neighbor != null) {
-                neighbor.getCapability(ForgeCapabilities.FLUID_HANDLER, pushDir.getOpposite())
-                        .ifPresent(nh -> {
-                            int toTransfer = Math.min(outputTank.getFluidAmount(), 1000);
-                            FluidStack toSend = new FluidStack(outputTank.getFluid().getFluid(), toTransfer);
-                            int accepted = nh.fill(toSend, IFluidHandler.FluidAction.EXECUTE);
-                            if (accepted > 0) outputTank.drain(accepted, IFluidHandler.FluidAction.EXECUTE);
-                        });
-            }
+        if (upg.fluidPush() != null && !outputTank.isEmpty()) {
+            MachineIO.neighbor(level, pos, upg.fluidPush(), ForgeCapabilities.FLUID_HANDLER).ifPresent(nh -> {
+                int toTransfer = Math.min(outputTank.getFluidAmount(), 1000);
+                FluidStack toSend = new FluidStack(outputTank.getFluid().getFluid(), toTransfer);
+                int accepted = nh.fill(toSend, IFluidHandler.FluidAction.EXECUTE);
+                if (accepted > 0) outputTank.drain(accepted, IFluidHandler.FluidAction.EXECUTE);
+            });
         }
 
         MachineLit.tick(this, level, pos, state, FluidEnricherBlock.LIT, isWorking);
@@ -316,6 +232,7 @@ public class FluidEnricherBlockEntity extends BlockEntity implements MenuProvide
         Level lvl = this.level;
         if (lvl == null) return true; // до привязки к миру рецептов не спросить, не мешаем загрузке сейва
         for (FluidEnricherRecipe r : lvl.getRecipeManager().getAllRecipesFor(ModRecipes.FLUID_ENRICHER_TYPE.get())) {
+            if (r.isLateOnly()) continue;   // только для промышленного обогатителя
             if (r.getItemIngredient().test(stack)) return true;
             if (r.hasSecondReagent() && r.getItemIngredient2().test(stack)) return true;
         }
@@ -325,7 +242,7 @@ public class FluidEnricherBlockEntity extends BlockEntity implements MenuProvide
     private FluidEnricherRecipe findRecipe(Level level) {
         return recipeCache.get(() -> {
         for (FluidEnricherRecipe r : level.getRecipeManager().getAllRecipesFor(ModRecipes.FLUID_ENRICHER_TYPE.get())) {
-
+            if (r.isLateOnly()) continue;
             if (!r.reagentsMatch(itemHandler.getStackInSlot(2), itemHandler.getStackInSlot(3))) continue;
 
             FluidStack needed = r.makeFluidInput();

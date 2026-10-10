@@ -12,52 +12,85 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
-public class CultivatorMenu extends AbstractContainerMenu {
+import static com.jykito.industrialcore.block.entity.CultivatorBlockEntity.*;
+
+/** Меню взрастителя. Слоты меню идут в порядке слотов машины, поэтому номер слота меню = номер в машине. */
+public class CultivatorMenu extends MachineMenu {
+
+    /** T2, окно «Ряды»: линии друг под другом, у каждой вход, стрелка, выход; модуль справа, апгрейды столбиком. */
+    public static final int T2_IN_X = 102, T2_OUT_X = 144, T2_ROW_Y = 37, T2_ROW_STEP = 20;
+    public static final int T2_MODULE_X = 167, T2_MODULE_Y = 57, T2_UPG_X = 190, T2_UPG_Y = 36, T2_UPG_STEP = 18;
 
     public final CultivatorBlockEntity blockEntity;
     private final ContainerData data;
+    private final int lanes;
 
     public CultivatorMenu(int containerId, Inventory inv, FriendlyByteBuf buf) {
         this(containerId, inv, inv.player.level().getBlockEntity(buf.readBlockPos()), new SimpleContainerData(6));
     }
 
     public CultivatorMenu(int containerId, Inventory inv, BlockEntity entity, ContainerData data) {
-        super(ModMenuTypes.CULTIVATOR_MENU.get(), containerId);
+        this(ModMenuTypes.CULTIVATOR_MENU.get(), containerId, inv, entity, data, 1);
+    }
+
+    public static CultivatorMenu t2(int containerId, Inventory inv, FriendlyByteBuf buf) {
+        return t2(containerId, inv, inv.player.level().getBlockEntity(buf.readBlockPos()), new SimpleContainerData(4 + 2 * T2_LANES));
+    }
+
+    public static CultivatorMenu t2(int containerId, Inventory inv, BlockEntity entity, ContainerData data) {
+        return new CultivatorMenu(ModMenuTypes.CULTIVATOR_T2_MENU.get(), containerId, inv, entity, data, T2_LANES);
+    }
+
+    private CultivatorMenu(MenuType<?> type, int containerId, Inventory inv, BlockEntity entity, ContainerData data, int lanes) {
+        super(type, containerId);
         this.blockEntity = (CultivatorBlockEntity) entity;
         this.data = data;
+        this.lanes = lanes;
 
         var h = this.blockEntity.getItemHandler();
-        this.addSlot(new SlotItemHandler(h, 0, 102, 58));
-        this.addSlot(new SlotItemHandler(h, 1, 144, 58) {
-            @Override public boolean mayPlace(@NotNull ItemStack stack) { return false; }
-        });
-        this.addSlot(new SlotItemHandler(h, 2, 123, 77));
-        this.addSlot(new SlotItemHandler(h, 3, 94, 32));
-        this.addSlot(new SlotItemHandler(h, 4, 114, 32));
-        this.addSlot(new SlotItemHandler(h, 5, 134, 32));
-        this.addSlot(new SlotItemHandler(h, 6, 154, 32));
+        if (lanes == 1) {
+            this.addSlot(new SlotItemHandler(h, 0, 102, 58));
+            this.addSlot(outputSlot(h, 1, 144, 58));
+            this.addSlot(new SlotItemHandler(h, SLOT_MODULE, 123, 77));
+            for (int i = 0; i < 4; i++) this.addSlot(new SlotItemHandler(h, SLOT_UPG_FIRST + i, 94 + 20 * i, 32));
+        } else {
+            this.addSlot(new SlotItemHandler(h, 0, T2_IN_X, T2_ROW_Y));
+            this.addSlot(outputSlot(h, 1, T2_OUT_X, T2_ROW_Y));
+            this.addSlot(new SlotItemHandler(h, SLOT_MODULE, T2_MODULE_X, T2_MODULE_Y));
+            for (int i = 0; i < 4; i++) this.addSlot(new SlotItemHandler(h, SLOT_UPG_FIRST + i, T2_UPG_X, T2_UPG_Y + T2_UPG_STEP * i));
+            for (int lane = 1; lane < lanes; lane++) {
+                int y = T2_ROW_Y + T2_ROW_STEP * lane;
+                this.addSlot(new SlotItemHandler(h, inSlot(lane), T2_IN_X, y));
+                this.addSlot(outputSlot(h, outSlot(lane), T2_OUT_X, y));
+            }
+        }
 
-        for (int i = 0; i < 3; i++)
-            for (int j = 0; j < 9; j++)
-                this.addSlot(new Slot(inv, j + i * 9 + 9, 44 + j * 19, 133 + i * 19));
-        for (int k = 0; k < 9; k++)
-            this.addSlot(new Slot(inv, k, 44 + k * 19, 196));
+        addPlayerInventory(inv, 44, 133);
 
         addDataSlots(data);
     }
 
-    public int getEnergyStored() { return (data.get(3) << 16) | (data.get(2) & 0xFFFF); }
-    public int getMaxEnergy()    { return (data.get(5) << 16) | (data.get(4) & 0xFFFF); }
-
-    public int getScaledEnergy() {
-        int energy = getEnergyStored(), maxEnergy = getMaxEnergy();
-        return maxEnergy != 0 && energy != 0 ? (int) ((long) energy * 110 / maxEnergy) : 0;
+    private static SlotItemHandler outputSlot(net.minecraftforge.items.IItemHandler h, int slot, int x, int y) {
+        return new SlotItemHandler(h, slot, x, y) {
+            @Override public boolean mayPlace(@NotNull ItemStack stack) { return false; }
+        };
     }
 
-    public int getScaledProgress() {
-        int progress = data.get(0), maxProgress = data.get(1);
-        if (maxProgress == 0 || progress == 0) return 0;
-        return Math.min(22, (progress * 22 + maxProgress - 1) / maxProgress);
+    public int getLanes() { return lanes; }
+
+    public int getEnergyStored() { return unpack(data.get(2), data.get(3)); }
+    public int getMaxEnergy()    { return unpack(data.get(4), data.get(5)); }
+
+    public int getScaledEnergy() {
+        return scale(getEnergyStored(), getMaxEnergy(), 110);
+    }
+
+    public int getScaledProgress() { return getScaledProgress(0); }
+
+    /** Стрелка линии: у первой ячейки 0 и 1 (как у T1), у остальных по паре после энергии. */
+    public int getScaledProgress(int lane) {
+        int i = lane == 0 ? 0 : 4 + 2 * lane;
+        return scaleProgress(data.get(i), data.get(i + 1), 22);
     }
 
     @Override
@@ -67,18 +100,22 @@ public class CultivatorMenu extends AbstractContainerMenu {
         ItemStack sourceStack = sourceSlot.getItem();
         ItemStack copyStack = sourceStack.copy();
 
-        final int MACHINE_SLOTS = 7;
+        final int MACHINE_SLOTS = blockEntity.getItemHandler().getSlots();
         final int INV_END = MACHINE_SLOTS + 36;
 
         if (index < MACHINE_SLOTS) {
             if (!moveItemStackTo(sourceStack, MACHINE_SLOTS, INV_END, true)) return ItemStack.EMPTY;
         } else {
             if (sourceStack.getItem() instanceof CultivatorUpgradeItem) {
-                if (!moveItemStackTo(sourceStack, 2, 3, false)) return ItemStack.EMPTY;
+                if (!moveItemStackTo(sourceStack, SLOT_MODULE, SLOT_MODULE + 1, false)) return ItemStack.EMPTY;
             } else if (sourceStack.getItem() instanceof MachineUpgradeItem) {
-                if (!moveItemStackTo(sourceStack, 3, MACHINE_SLOTS, false)) return ItemStack.EMPTY;
-            } else if (!moveItemStackTo(sourceStack, 0, 1, false)) {
-                return ItemStack.EMPTY;
+                if (!moveItemStackTo(sourceStack, SLOT_UPG_FIRST, SLOT_UPG_LAST + 1, false)) return ItemStack.EMPTY;
+            } else {
+                // входы не подряд (0, 7, 9): по очереди, первая линия первой
+                boolean moved = false;
+                for (int lane = 0; lane < lanes && !sourceStack.isEmpty(); lane++)
+                    moved |= moveItemStackTo(sourceStack, inSlot(lane), inSlot(lane) + 1, false);
+                if (!moved) return ItemStack.EMPTY;
             }
         }
 

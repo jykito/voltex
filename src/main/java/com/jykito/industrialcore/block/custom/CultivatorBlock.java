@@ -31,8 +31,16 @@ public class CultivatorBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
+    /** T2: три линии (см. CultivatorBlockEntity). */
+    private final boolean t2;
+
     public CultivatorBlock(Properties props) {
+        this(props, false);
+    }
+
+    public CultivatorBlock(Properties props, boolean t2) {
         super(props);
+        this.t2 = t2;
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH).setValue(LIT, false));
     }
@@ -46,7 +54,7 @@ public class CultivatorBlock extends BaseEntityBlock {
 
     @Nullable @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new CultivatorBlockEntity(pos, state);
+        return t2 ? CultivatorBlockEntity.t2(pos, state) : new CultivatorBlockEntity(pos, state);
     }
 
     @Override
@@ -65,7 +73,7 @@ public class CultivatorBlock extends BaseEntityBlock {
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
                                                                   BlockEntityType<T> t) {
         if (level.isClientSide()) return null;
-        return createTickerHelper(t, ModBlockEntities.CULTIVATOR_BE.get(),
+        return createTickerHelper(t, t2 ? ModBlockEntities.CULTIVATOR_T2_BE.get() : ModBlockEntities.CULTIVATOR_BE.get(),
                 (lvl, pos, st, be) -> be.tick(lvl, pos, st));
     }
 

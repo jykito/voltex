@@ -1,0 +1,56 @@
+{
+  "type": "industrial_core:assembling",
+  "inputs": [
+    {
+      "item": "industrial_core:multiblock_output_port"
+    },
+    {
+      "item": "ae2:interface",
+      "count": 2
+    },
+    {
+      "item": "ae2:logic_processor",
+      "count": 4
+    },
+    {
+      "item": "ae2:fluix_crystal",
+      "count": 16
+    },
+    {
+      "item": "industrial_core:control_unit",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:armor_sheet",
+      "count": 8
+    },
+    {
+      "item": "industrial_core:superconducting_wire",
+      "count": 16
+    },
+    {
+      "item": "ae2:calculation_processor",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:emerald_flux_cable",
+      "count": 8
+    }
+  ],
+  "fluid": {
+    "fluid": "industrial_core:mechanical_alloy",
+    "amount": 4000
+  },
+  "result": {
+    "item": "industrial_core:me_output_port",
+    "count": 1
+  },
+  "processingTime": 1200,
+  "energyCostPerTick": 16000,
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "ae2"
+    }
+  ]
+}

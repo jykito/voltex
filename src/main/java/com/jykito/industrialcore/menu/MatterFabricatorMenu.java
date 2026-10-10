@@ -5,7 +5,6 @@ import com.jykito.industrialcore.block.entity.MatterFabricatorBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
@@ -15,7 +14,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
-public class MatterFabricatorMenu extends AbstractContainerMenu {
+public class MatterFabricatorMenu extends MachineMenu {
     public final MatterFabricatorBlockEntity blockEntity;
     private final ContainerData data;
 
@@ -36,18 +35,14 @@ public class MatterFabricatorMenu extends AbstractContainerMenu {
 
         this.addSlot(new SlotItemHandler(h, 1, 119, 91));
 
-        for (int i = 0; i < 3; i++)
-            for (int j = 0; j < 9; j++)
-                this.addSlot(new Slot(inv, j + i * 9 + 9, 44 + j * 19, 133 + i * 19));
-        for (int k = 0; k < 9; k++)
-            this.addSlot(new Slot(inv, k, 44 + k * 19, 196));
+        addPlayerInventory(inv, 44, 133);
 
         addDataSlots(data);
     }
 
     public int getScaledEnergy(int barSize) {
-        int energy = (data.get(1) << 16) | (data.get(0) & 0xFFFF);
-        int cost = (data.get(3) << 16) | (data.get(2) & 0xFFFF);
+        int energy = unpack(data.get(0), data.get(1));
+        int cost = unpack(data.get(2), data.get(3));
         if (cost == 0) return 0;
         return Math.min(barSize, (int) ((long) energy * barSize / cost));
     }

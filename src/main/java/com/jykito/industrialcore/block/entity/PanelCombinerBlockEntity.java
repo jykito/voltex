@@ -2,6 +2,7 @@ package com.jykito.industrialcore.block.entity;
 
 import com.jykito.industrialcore.block.custom.SolarPanelBlock;
 import com.jykito.industrialcore.block.custom.SolarPanelTier;
+import com.jykito.industrialcore.energy.MachineEnergy;
 import com.jykito.industrialcore.menu.PanelCombinerMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -20,7 +21,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -31,7 +31,9 @@ import org.jetbrains.annotations.Nullable;
 public class PanelCombinerBlockEntity extends BlockEntity implements MenuProvider {
 
     public static final int PANEL_SLOTS = 18;
-    public static final int BUFFER_SIZE = 1_000_000_000;
+    // Потолок int: энергия Forge целочисленная, больше за раз не принять и не отдать.
+    // Раньше буфер был 1 млрд, и всё, что панели давали сверх него за тик, сгорало.
+    public static final int BUFFER_SIZE = Integer.MAX_VALUE;
     public static final int MAX_OUTPUT  = Integer.MAX_VALUE;
 
     private final ItemStackHandler itemHandler = new ItemStackHandler(PANEL_SLOTS) {
@@ -57,12 +59,12 @@ public class PanelCombinerBlockEntity extends BlockEntity implements MenuProvide
         @Override public boolean isItemValid(int slot, @NotNull ItemStack s) { return itemHandler.isItemValid(slot, s); }
     };
 
-    private final EnergyBuffer buffer = new EnergyBuffer(BUFFER_SIZE, MAX_OUTPUT);
+    private final MachineEnergy buffer = MachineEnergy.generator(BUFFER_SIZE, MAX_OUTPUT);
     private LazyOptional<IItemHandler>   lazyItems  = LazyOptional.empty();
     private LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.empty();
 
-    private int currentGeneration = 0;
-    private int currentOutput     = 0;
+    private long currentGeneration = 0;   // сумма панелей может быть больше int (T10: до ~57 млрд/тик)
+    private int  currentOutput     = 0;
 
     protected final ContainerData data = new ContainerData() {
         @Override public int get(int i) {
@@ -71,15 +73,17 @@ public class PanelCombinerBlockEntity extends BlockEntity implements MenuProvide
                 case 1 -> (buffer.getEnergyStored()    >> 16) & 0xFFFF;
                 case 2 ->  buffer.getMaxEnergyStored() & 0xFFFF;
                 case 3 -> (buffer.getMaxEnergyStored() >> 16) & 0xFFFF;
-                case 4 ->  currentGeneration           & 0xFFFF;
-                case 5 -> (currentGeneration           >> 16) & 0xFFFF;
-                case 6 ->  currentOutput               & 0xFFFF;
-                case 7 -> (currentOutput               >> 16) & 0xFFFF;
+                case 4 -> (int) ( currentGeneration         & 0xFFFF);   // генерация — long, 4 ячейки
+                case 5 -> (int) ((currentGeneration >> 16) & 0xFFFF);
+                case 6 -> (int) ((currentGeneration >> 32) & 0xFFFF);
+                case 7 -> (int) ((currentGeneration >> 48) & 0xFFFF);
+                case 8 ->  currentOutput               & 0xFFFF;
+                case 9 -> (currentOutput               >> 16) & 0xFFFF;
                 default -> 0;
             };
         }
         @Override public void set(int i, int v) {}
-        @Override public int getCount() { return 8; }
+        @Override public int getCount() { return 10; }
     };
 
     public PanelCombinerBlockEntity(BlockPos pos, BlockState state) {
@@ -94,7 +98,7 @@ public class PanelCombinerBlockEntity extends BlockEntity implements MenuProvide
 
         boolean canSee = level.canSeeSky(pos.above());
         boolean isDay  = level.isDay();
-        int total = 0;
+        long total = 0;   // в int переполнялось после ~2,1 млрд и уходило в минус → генерация 0
 
         if (canSee) {
             for (int i = 0; i < PANEL_SLOTS; i++) {
@@ -104,13 +108,13 @@ public class PanelCombinerBlockEntity extends BlockEntity implements MenuProvide
                 if (!(bi.getBlock() instanceof SolarPanelBlock sp)) continue;
                 SolarPanelTier tier = sp.tier;
                 int gen = isDay ? tier.dayGen : tier.nightGen;
-                total += gen * stack.getCount();
+                total += (long) gen * stack.getCount();
             }
         }
 
         currentGeneration = total;
         if (total > 0) {
-            buffer.addEnergy(total);
+            buffer.addEnergy((int) Math.min(total, Integer.MAX_VALUE)); // излишек сверх буфера теряется
             changed = true;
         }
 
@@ -184,10 +188,4 @@ public class PanelCombinerBlockEntity extends BlockEntity implements MenuProvide
         buffer.setEnergy(tag.getInt("energy"));
     }
 
-    private static class EnergyBuffer extends EnergyStorage {
-        EnergyBuffer(int capacity, int maxTransfer) { super(capacity, maxTransfer, maxTransfer); }
-        @Override public boolean canReceive() { return false; }
-        void addEnergy(int amount) { energy = (int) Math.min((long) capacity, (long) energy + amount); }
-        void setEnergy(int amount) { energy = Math.max(0, Math.min(capacity, amount)); }
-    }
 }

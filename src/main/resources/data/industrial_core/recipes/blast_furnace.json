@@ -2,21 +2,24 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "ABA",
-    "ACA",
-    "ADA"
+    "CDC",
+    "AEA"
   ],
   "key": {
     "A": {
       "item": "minecraft:bricks"
     },
     "B": {
-      "tag": "forge:plates/iron"
+      "item": "industrial_core:heat_conductor"
     },
     "C": {
-      "item": "industrial_core:electric_furnace"
+      "item": "minecraft:obsidian"
     },
     "D": {
-      "item": "industrial_core:heat_conductor"
+      "item": "industrial_core:electric_furnace"
+    },
+    "E": {
+      "tag": "forge:plates/iron"
     }
   },
   "result": {

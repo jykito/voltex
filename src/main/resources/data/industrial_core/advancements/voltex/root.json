@@ -1,0 +1,37 @@
+{
+  "display": {
+    "icon": {
+      "item": "industrial_core:manual"
+    },
+    "title": {
+      "translate": "advancements.industrial_core.root.title"
+    },
+    "description": {
+      "translate": "advancements.industrial_core.root.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "industrial_core:textures/block/machine/machine_casing.png"
+  },
+  "criteria": {
+    "has_manual": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "industrial_core:manual"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_manual"
+    ]
+  ]
+}

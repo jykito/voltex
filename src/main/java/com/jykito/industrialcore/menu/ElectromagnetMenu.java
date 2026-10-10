@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
  * Меню ускорителя. Слоты: 0..7 — кольцо входов, 8 — выход, 9/10 — улучшения (пока заблокированы).
  * Энергия синкается через ContainerData(6); жидкости читаются из BE напрямую (синк getUpdateTag).
  */
-public class ElectromagnetMenu extends AbstractContainerMenu {
+public class ElectromagnetMenu extends MachineMenu {
     public final ElectromagnetCoreBlockEntity blockEntity;
     private final ContainerData data;
     private final BlockPos anchorPos;   // якорь дистанции stillValid: ядро при обычном открытии, контроллер при удалённом
@@ -52,23 +52,20 @@ public class ElectromagnetMenu extends AbstractContainerMenu {
         this.addSlot(new SlotItemHandler(h, 8, 120, 52) {            // выход
             @Override public boolean mayPlace(@NotNull ItemStack stack) { return false; }
         });
-        this.addSlot(new SlotItemHandler(h, 9, 186, 108) {           // апгрейд: Фазозахват (авто-×2)
+        // Апгрейд и катушка — клетки вровень с полосами резонанса и мощности (y 101..118), под ними место для молнии энергии.
+        this.addSlot(new SlotItemHandler(h, 9, 186, 102) {           // апгрейд: Фазозахват (авто-×2)
             @Override public boolean mayPlace(@NotNull ItemStack stack) {
                 return stack.getItem() == com.jykito.industrialcore.item.ModItems.PHASE_LOCK_UPGRADE.get();
             }
         });
-        this.addSlot(new SlotItemHandler(h, 10, 54, 107) {           // катушка: вставить/вынуть (читается ядром)
+        this.addSlot(new SlotItemHandler(h, 10, 54, 102) {           // катушка: вставить/вынуть (читается ядром)
             @Override public boolean mayPlace(@NotNull ItemStack stack) {
                 return stack.getItem() instanceof com.jykito.industrialcore.item.custom.MagnetCoilItem;
             }
             @Override public int getMaxStackSize() { return 1; }
         });
 
-        for (int i = 0; i < 3; ++i)
-            for (int j = 0; j < 9; ++j)
-                this.addSlot(new Slot(inv, j + i * 9 + 9, 44 + j * 19, 143 + i * 19));  // GUI подрос на 10px → инвентарь ниже
-        for (int k = 0; k < 9; ++k)
-            this.addSlot(new Slot(inv, k, 44 + k * 19, 206));                            // хотбар: было 196, +10
+        addPlayerInventory(inv, 44, 143);
 
         addDataSlots(data);
     }
@@ -87,8 +84,8 @@ public class ElectromagnetMenu extends AbstractContainerMenu {
     }
 
     public int getScaledEnergy() {
-        int energy = (this.data.get(3) << 16) | (this.data.get(2) & 0xFFFF);
-        int maxEnergy = (this.data.get(5) << 16) | (this.data.get(4) & 0xFFFF);
+        int energy = unpack(data.get(2), data.get(3));
+        int maxEnergy = unpack(data.get(4), data.get(5));
         int energyBarSize = 110;
         return maxEnergy != 0 && energy != 0 ? energy * energyBarSize / maxEnergy : 0;
     }

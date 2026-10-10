@@ -1,16 +1,15 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "ABC",
-    "BDB",
-    "CBA"
+    "ABA",
+    "CDC"
   ],
   "key": {
     "A": {
-      "item": "industrial_core:textolite_board"
+      "tag": "forge:plates/invar"
     },
     "B": {
-      "tag": "forge:plates/invar"
+      "item": "industrial_core:textolite_board"
     },
     "C": {
       "tag": "forge:plates/gold"

@@ -3,20 +3,23 @@
   "pattern": [
     "ABA",
     "CDC",
-    "ABA"
+    "AEA"
   ],
   "key": {
     "A": {
-      "item": "industrial_core:amethyst_crystal"
+      "item": "minecraft:quartz"
     },
     "B": {
-      "item": "industrial_core:crystal_fiber"
+      "item": "industrial_core:amethyst_crystal"
     },
     "C": {
-      "item": "industrial_core:crystal_plate"
+      "item": "industrial_core:crystal_fiber"
     },
     "D": {
       "item": "industrial_core:data_transfer_matrix"
+    },
+    "E": {
+      "item": "industrial_core:crystal_plate"
     }
   },
   "result": {

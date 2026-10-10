@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
-public class CapsuleFillerMenu extends AbstractContainerMenu {
+public class CapsuleFillerMenu extends MachineMenu {
 
     public final CapsuleFillerBlockEntity blockEntity;
     private final ContainerData data;
@@ -35,27 +35,21 @@ public class CapsuleFillerMenu extends AbstractContainerMenu {
         this.addSlot(new SlotItemHandler(h, 4, 174, 43));
         this.addSlot(new SlotItemHandler(h, 5, 174, 69));
 
-        for (int i = 0; i < 3; i++)
-            for (int j = 0; j < 9; j++)
-                this.addSlot(new Slot(inv, j + i * 9 + 9, 44 + j * 19, 133 + i * 19));
-        for (int k = 0; k < 9; k++)
-            this.addSlot(new Slot(inv, k, 44 + k * 19, 196));
+        addPlayerInventory(inv, 44, 133);
 
         addDataSlots(data);
     }
 
-    public int getEnergyStored() { return (data.get(3) << 16) | (data.get(2) & 0xFFFF); }
-    public int getMaxEnergy()    { return (data.get(5) << 16) | (data.get(4) & 0xFFFF); }
+    public int getEnergyStored() { return unpack(data.get(2), data.get(3)); }
+    public int getMaxEnergy()    { return unpack(data.get(4), data.get(5)); }
 
     public int getScaledEnergy() {
-        int energy = getEnergyStored(), maxEnergy = getMaxEnergy();
-        return maxEnergy != 0 && energy != 0 ? (int) ((long) energy * 110 / maxEnergy) : 0;
+        return scale(getEnergyStored(), getMaxEnergy(), 110);
     }
 
     public int getScaledProgress() {
         int progress = data.get(0), maxProgress = data.get(1);
-        if (maxProgress == 0 || progress == 0) return 0;
-        return Math.min(13, (progress * 13 + maxProgress - 1) / maxProgress);
+        return scaleProgress(progress, maxProgress, 13);
     }
 
     @Override

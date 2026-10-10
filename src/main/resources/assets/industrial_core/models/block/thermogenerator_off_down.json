@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "industrial_core:block/machine/thermogenerator_side",
+    "north": "industrial_core:block/machine/thermogenerator_front_off",
+    "south": "industrial_core:block/machine/thermogenerator_top",
+    "east": "industrial_core:block/machine/thermogenerator_side",
+    "west": "industrial_core:block/machine/thermogenerator_side",
+    "up": "industrial_core:block/machine/thermogenerator_side",
+    "down": "industrial_core:block/machine/thermogenerator_side"
+  }
+}

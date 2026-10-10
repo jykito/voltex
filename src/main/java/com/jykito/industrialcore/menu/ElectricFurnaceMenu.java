@@ -12,7 +12,7 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
-public class ElectricFurnaceMenu extends AbstractContainerMenu {
+public class ElectricFurnaceMenu extends MachineMenu {
     public final ElectricFurnaceBlockEntity blockEntity;
     private final ContainerData data;
 
@@ -41,26 +41,16 @@ public class ElectricFurnaceMenu extends AbstractContainerMenu {
         this.addSlot(new SlotItemHandler(iItemHandler, 4, 189, 73));
         this.addSlot(new SlotItemHandler(iItemHandler, 5, 189, 91));
 
-        for (int i = 0; i < 3; ++i) {
-            for (int j = 0; j < 9; ++j) {
-                this.addSlot(new Slot(inv, j + i * 9 + 9, 44 + j * 19, 133 + i * 19));
-            }
-        }
-        for (int k = 0; k < 9; ++k) {
-            this.addSlot(new Slot(inv, k, 44 + k * 19, 196));
-        }
+        addPlayerInventory(inv, 44, 133);
         addDataSlots(data);
     }
 
-    public int getScaledProgress() {
-        int progress = this.data.get(4);
-        int maxProgress = this.data.get(5);
-        if (maxProgress == 0 || progress == 0) return 0;
-        return Math.min(24, (progress * 24 + maxProgress - 1) / maxProgress);
+    public int getScaledProgress(int barWidth) {
+        return scaleProgress(data.get(4), data.get(5), barWidth);
     }
 
-    public int getEnergyStored() { return (data.get(1) << 16) | (data.get(0) & 0xFFFF); }
-    public int getMaxEnergy()    { return (data.get(3) << 16) | (data.get(2) & 0xFFFF); }
+    public int getEnergyStored() { return unpack(data.get(0), data.get(1)); }
+    public int getMaxEnergy()    { return unpack(data.get(2), data.get(3)); }
 
     public int getScaledEnergy(int barWidth) {
         int maxEnergy = getMaxEnergy();

@@ -1,19 +1,22 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "ACA",
-    "CMC",
-    "ACA"
+    "AAA",
+    "BCB",
+    "DDD"
   ],
   "key": {
     "A": {
       "item": "industrial_core:cryo_crystal"
     },
-    "C": {
-      "item": "industrial_core:superconductor_coil"
+    "B": {
+      "item": "industrial_core:superconducting_strand"
     },
-    "M": {
+    "C": {
       "item": "industrial_core:depth_module_2"
+    },
+    "D": {
+      "item": "industrial_core:superconducting_wire"
     }
   },
   "result": {

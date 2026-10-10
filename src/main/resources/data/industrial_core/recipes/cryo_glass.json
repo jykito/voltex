@@ -1,13 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "GGG",
-    "GCG",
-    "GGG"
+    "AAA",
+    "BCB",
+    "AAA"
   ],
   "key": {
-    "G": {
+    "A": {
       "item": "minecraft:glass"
+    },
+    "B": {
+      "tag": "forge:plates/aluminum"
     },
     "C": {
       "item": "industrial_core:cryolite"

@@ -1,6 +1,7 @@
 package com.jykito.industrialcore.block.entity;
 
 import com.jykito.industrialcore.block.custom.BatteryChargerBlock;
+import com.jykito.industrialcore.energy.MachineEnergy;
 import com.jykito.industrialcore.menu.BatteryChargerMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -27,23 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class BatteryChargerBlockEntity extends BlockEntity implements MenuProvider {
 
-    private static class ChargerEnergyStorage extends EnergyStorage {
-        public ChargerEnergyStorage(int capacity, int maxReceive) {
-            super(capacity, maxReceive, 0);
-        }
-        @Override
-        public boolean canExtract() { return false; }
-
-        public void consumeInternal(int amount) {
-            this.energy = Math.max(0, this.energy - amount);
-        }
-
-        public void setEnergy(int amount) {
-            this.energy = Math.max(0, Math.min(this.capacity, amount));
-        }
-    }
-
-    private final ChargerEnergyStorage energyStorage = new ChargerEnergyStorage(1000000, 50000);
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(1000000, 50000);
     private LazyOptional<EnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
     private final ItemStackHandler itemHandler = new ItemStackHandler(1) {
@@ -93,7 +78,7 @@ public class BatteryChargerBlockEntity extends BlockEntity implements MenuProvid
 
                     int accepted = itemEnergy.receiveEnergy(maxTransfer, false);
 
-                    this.energyStorage.consumeInternal(accepted);
+                    this.energyStorage.consumeEnergy(accepted);
 
                     isCharging = true;
                     setChanged();

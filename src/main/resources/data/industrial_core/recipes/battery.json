@@ -3,20 +3,23 @@
   "pattern": [
     " A ",
     "BCB",
-    "DDD"
+    "DED"
   ],
   "key": {
     "A": {
-      "tag": "forge:plates/copper"
+      "item": "industrial_core:copper_cable"
     },
     "B": {
-      "tag": "forge:plates/tin"
+      "tag": "forge:plates/lead"
     },
     "C": {
-      "tag": "forge:dusts/redstone"
+      "tag": "minecraft:wool"
     },
     "D": {
-      "item": "industrial_core:rubber"
+      "tag": "forge:plates/tin"
+    },
+    "E": {
+      "tag": "forge:dusts/redstone"
     }
   },
   "result": {

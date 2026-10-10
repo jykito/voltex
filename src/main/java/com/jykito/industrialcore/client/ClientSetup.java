@@ -54,18 +54,23 @@ public final class ClientSetup {
             MenuScreens.register(ModMenuTypes.FLUID_ENRICHER_MENU.get(), FluidEnricherScreen::new);
             MenuScreens.register(ModMenuTypes.LIQUEFIER_MENU.get(), LiquefierScreen::new);
             MenuScreens.register(ModMenuTypes.CRYSTALLIZER_MENU.get(), CrystallizerScreen::new);
+            MenuScreens.register(ModMenuTypes.EVOLUTION_CHAMBER_MENU.get(), EvolutionChamberScreen::new);
+            MenuScreens.register(ModMenuTypes.NANITE_LAB_MENU.get(), NaniteLabScreen::new);
             MenuScreens.register(ModMenuTypes.CRYO_CHAMBER_MENU.get(), CryoChamberScreen::new);
             MenuScreens.register(ModMenuTypes.FLUID_GENERATOR_MENU.get(), FluidGeneratorScreen::new);
             MenuScreens.register(ModMenuTypes.STONE_GENERATOR_MENU.get(), StoneGeneratorScreen::new);
             MenuScreens.register(ModMenuTypes.CAPSULE_FILLER_MENU.get(), CapsuleFillerScreen::new);
             MenuScreens.register(ModMenuTypes.CULTIVATOR_MENU.get(), CultivatorScreen::new);
+            MenuScreens.register(ModMenuTypes.CULTIVATOR_T2_MENU.get(), com.jykito.industrialcore.screen.CultivatorT2Screen::new);
             MenuScreens.register(ModMenuTypes.ORE_WASHER_MENU.get(), OreWasherScreen::new);
+            MenuScreens.register(ModMenuTypes.BIOREACTOR_MENU.get(), BioreactorScreen::new);
             MenuScreens.register(ModMenuTypes.RECIPE_EXPORTER_MENU.get(), RecipeExporterScreen::new);
             MenuScreens.register(ModMenuTypes.MATTER_FABRICATOR_MENU.get(), MatterFabricatorScreen::new);
             MenuScreens.register(ModMenuTypes.ROD_FABRICATOR_MENU.get(), RodFabricatorScreen::new);
             MenuScreens.register(ModMenuTypes.EXTRACTOR_MENU.get(), ExtractorScreen::new);
             MenuScreens.register(ModMenuTypes.PHASE_SPLITTER_MENU.get(), PhaseSplitterScreen::new);
             MenuScreens.register(ModMenuTypes.RESTRUCTOR_MENU.get(), RestructorScreen::new);
+            MenuScreens.register(ModMenuTypes.RESTRUCTOR_T2_MENU.get(), com.jykito.industrialcore.screen.RestructorT2Screen::new);
             MenuScreens.register(ModMenuTypes.MINER_CORE_MENU.get(), MinerCoreScreen::new);
             MenuScreens.register(ModMenuTypes.LOGISTICS_NODE_MENU.get(), LogisticsNodeScreen::new);
             MenuScreens.register(ModMenuTypes.HUB_MENU.get(), HubScreen::new);
@@ -75,6 +80,12 @@ public final class ClientSetup {
             MenuScreens.register(ModMenuTypes.CRATE_MENU.get(), CrateScreen::new);
             MenuScreens.register(ModMenuTypes.THERMOSTATION_MENU.get(), ThermostationScreen::new);
             MenuScreens.register(ModMenuTypes.ENERGY_BANK_MENU.get(), EnergyBankScreen::new);
+            MenuScreens.register(ModMenuTypes.ITEM_FLUID_PORT_MENU.get(), ItemFluidPortScreen::new);
+            MenuScreens.register(ModMenuTypes.ME_PORT_MENU.get(), MePortScreen::new);
+            MenuScreens.register(ModMenuTypes.ENERGY_PORT_MENU.get(), EnergyPortScreen::new);
+            MenuScreens.register(ModMenuTypes.LATE_MACHINE_CORE_MENU.get(), LateMachineCoreScreen::new);
+            MenuScreens.register(ModMenuTypes.INDUSTRIAL_MINER_MENU.get(), IndustrialMinerScreen::new);
+            MenuScreens.register(ModMenuTypes.DRILL_BEACON_MENU.get(), DrillBeaconScreen::new);
         });
     }
 
@@ -84,12 +95,19 @@ public final class ClientSetup {
     }
 
     @SubscribeEvent
+    public static void onRegisterLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        com.jykito.industrialcore.client.armor.PowerSuitModel.registerLayers(event);
+    }
+
+    /** Слои пересобраны после перезагрузки ресурсов: модели брони берутся заново. */
+    @SubscribeEvent
+    public static void onAddLayers(EntityRenderersEvent.AddLayers event) {
+        com.jykito.industrialcore.client.armor.PowerSuitModel.clearCache();
+    }
+
+    @SubscribeEvent
     public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.PLASMA_WAVE.get(), PlasmaWaveRenderer::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.RESTRUCTOR_BE.get(),
-                RestructorRenderer::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.CULTIVATOR_BE.get(),
-                CultivatorRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.MINER_CORE_BE.get(),
                 MinerCoreBER::new);
         event.registerBlockEntityRenderer(ModBlockEntities.LOGISTICS_NODE_BE.get(),
@@ -103,6 +121,17 @@ public final class ClientSetup {
                 DistantControllerBER::new);
         event.registerBlockEntityRenderer(ModBlockEntities.ANTIGRAV_COLUMN_BE.get(),
                 AntigravColumnBER::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.INDUSTRIAL_MINER_CORE_BE.get(),
+                com.jykito.industrialcore.client.miner.IndustrialMinerBER::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.DRILL_BEACON_BE.get(),
+                com.jykito.industrialcore.client.miner.DrillBeaconBER::new);
+    }
+
+    /** Модель промышленного шахтёра читается из ресурсов один раз — после перезагрузки ресурсов перечитать. */
+    @SubscribeEvent
+    public static void onRegisterReloadListeners(net.minecraftforge.client.event.RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener((net.minecraft.server.packs.resources.ResourceManagerReloadListener) rm ->
+                com.jykito.industrialcore.client.miner.IndustrialMinerModel.clear());
     }
 
     @SubscribeEvent
@@ -115,8 +144,26 @@ public final class ClientSetup {
         event.register(ElectromagnetCoreBER.COIL_MODEL);
         event.register(ElectromagnetCoreBER.COIL_MODEL_2);
         event.register(ElectromagnetCoreBER.COIL_MODEL_3);
+        event.register(ElectromagnetCoreBER.BODY_GLOW);
+        event.register(ElectromagnetCoreBER.PILONS_GLOW);
+        event.register(ElectromagnetCoreBER.COIL_GLOW_2);
+        event.register(ElectromagnetCoreBER.COIL_GLOW_3);
         event.register(AntigravColumnBER.PILON_MODEL);
         event.register(AntigravColumnBER.PILON_GLOW_MODEL);
+        event.register(AntigravColumnBER.PILON_CURRENT_MODEL);
+    }
+
+    /** Структурное стекло: узел рамки во внутреннем углу Г-образной постройки (см. {@link GlassCtmModel}). */
+    @SubscribeEvent
+    public static void onModifyBakingResult(ModelEvent.ModifyBakingResult event) {
+        for (net.minecraft.world.level.block.Block block : new net.minecraft.world.level.block.Block[]{
+                com.jykito.industrialcore.block.ModBlocks.STRUCTURAL_GLASS.get(), com.jykito.industrialcore.block.ModBlocks.STRUCTURAL_GLASS_ADVANCED.get()}) {
+            for (net.minecraft.world.level.block.state.BlockState s : block.getStateDefinition().getPossibleStates()) {
+                ResourceLocation key = net.minecraft.client.renderer.block.BlockModelShaper.stateToModelLocation(s);
+                net.minecraft.client.resources.model.BakedModel model = event.getModels().get(key);
+                if (model != null && !(model instanceof GlassCtmModel)) event.getModels().put(key, new GlassCtmModel(model));
+            }
+        }
     }
 
     @SubscribeEvent
@@ -126,6 +173,18 @@ public final class ClientSetup {
             if (tintIndex != 1) return 0xFFFFFFFF;
             return FluidUtil.getFluidContained(stack).map(ClientSetup::capsuleFluidColor).orElse(0xFFFFFFFF);
         }, ModItems.UNIVERSAL_CAPSULE.get());
+
+        // штамм нанитов: окрашенные части (слой 1) в цвет главной руды штамма
+        event.register((stack, tintIndex) -> tintIndex != 1 ? 0xFFFFFFFF
+                : stack.hasTag() && stack.getTag().contains(com.jykito.industrialcore.nanite.NaniteAtlas.COLOR_TAG) ? stack.getTag().getInt(com.jykito.industrialcore.nanite.NaniteAtlas.COLOR_TAG)   // иконки атласа: силуэт, цвет черты
+                : com.jykito.industrialcore.nanite.NaniteColors.of(
+                com.jykito.industrialcore.nanite.NaniteGenome.read(stack).dominant()), ModItems.NANITE_STRAIN.get());
+
+        // карты данных: корпус (слой 1) в цвет темы, пустая — серая
+        event.register((stack, tintIndex) -> tintIndex == 1 && stack.getItem() instanceof com.jykito.industrialcore.item.custom.DataCardItem d
+                ? com.jykito.industrialcore.nanite.NaniteColors.theme(d.theme()) : 0xFFFFFFFF,
+                java.util.stream.Stream.concat(java.util.stream.Stream.of(ModItems.DATA_CARD_BLANK), ModItems.DATA_CARDS.stream())
+                        .map(r -> (net.minecraft.world.level.ItemLike) r.get()).toArray(net.minecraft.world.level.ItemLike[]::new));
     }
 
     private static final java.util.Map<net.minecraft.world.level.material.Fluid, Integer> CAPSULE_FLUID_COLOR = new java.util.HashMap<>();

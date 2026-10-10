@@ -1,6 +1,9 @@
 package com.jykito.industrialcore.block.entity;
 
 import com.jykito.industrialcore.block.RodFabricatorBlock;
+import com.jykito.industrialcore.energy.MachineEnergy;
+import com.jykito.industrialcore.item.upgrade.MachineUpgrades;
+import com.jykito.industrialcore.item.upgrade.UpgradeTargets;
 import com.jykito.industrialcore.menu.RodFabricatorMenu;
 import com.jykito.industrialcore.recipe.RodFabricatorRecipe;
 import com.jykito.industrialcore.recipe.ModRecipes;
@@ -20,7 +23,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -29,14 +31,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class RodFabricatorBlockEntity extends net.minecraft.world.level.block.entity.BlockEntity implements MenuProvider {
-
-    private static class RodFabricatorEnergyStorage extends EnergyStorage {
-        public RodFabricatorEnergyStorage(int capacity, int maxReceive) {
-            super(capacity, maxReceive, 0);
-        }
-        public void consumeEnergy(int amount) { this.energy = Math.max(0, this.energy - amount); }
-        public void setEnergy(int amount) { this.energy = amount; }
-    }
 
     private static final int MAX_ENERGY  = 100_000;
     private static final int MAX_RECEIVE = MAX_ENERGY; // приём = буфер, без потолка на вход
@@ -55,7 +49,7 @@ public class RodFabricatorBlockEntity extends net.minecraft.world.level.block.en
             return switch (slot) {
                 case 0, 1 -> !(stack.getItem() instanceof com.jykito.industrialcore.item.upgrade.MachineUpgradeItem);
                 case 2    -> false;
-                case 3, 4, 5, 6 -> stack.getItem() instanceof com.jykito.industrialcore.item.upgrade.MachineUpgradeItem;
+                case 3, 4, 5, 6 -> UpgradeTargets.works(getBlockState().getBlock(), stack);
                 default   -> false;
             };
         }
@@ -79,7 +73,7 @@ public class RodFabricatorBlockEntity extends net.minecraft.world.level.block.en
 
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
-    private final RodFabricatorEnergyStorage energyStorage = new RodFabricatorEnergyStorage(MAX_ENERGY, MAX_RECEIVE);
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(MAX_ENERGY, MAX_RECEIVE);
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
     private LazyOptional<IEnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
@@ -133,35 +127,13 @@ public class RodFabricatorBlockEntity extends net.minecraft.world.level.block.en
         boolean hasChanges = false;
         boolean isWorking  = false;
 
-        float timeMultiplier   = 1.0f;
-        float energyMultiplier = 1.0f;
-        int parallel = 1;
-        Direction itemPullDir = null, itemPushDir = null;
-        for (int s = 3; s <= 6; s++) {
-            ItemStack up = itemHandler.getStackInSlot(s);
-            if (up.getItem() instanceof com.jykito.industrialcore.item.upgrade.AcceleratorItem acc) {
-                for (int c = 0; c < up.getCount(); c++) {
-                    timeMultiplier   *= acc.getSpeedMultiplier();
-                    energyMultiplier *= acc.getEnergyMultiplier();
-                }
-            } else if (up.getItem() instanceof com.jykito.industrialcore.item.upgrade.ParallelModuleItem pm) {
-                parallel = Math.max(parallel, pm.getParallelCount());
-            } else if (up.getItem() instanceof com.jykito.industrialcore.item.upgrade.AdvancedParallelModuleItem adv) {
-                parallel = Math.max(parallel, adv.getParallelCount());
-            } else if (up.getItem() instanceof com.jykito.industrialcore.item.upgrade.DirectionalUpgradeItem dir) {
-                Direction d = com.jykito.industrialcore.item.upgrade.DirectionalUpgradeItem.getStoredDirection(up);
-                if (d != null) {
-                    if (dir.getMode() == com.jykito.industrialcore.item.upgrade.DirectionalUpgradeItem.Mode.ITEM_PULL) itemPullDir = d;
-                    else if (dir.getMode() == com.jykito.industrialcore.item.upgrade.DirectionalUpgradeItem.Mode.ITEM_PUSH) itemPushDir = d;
-                }
-            }
-        }
+        MachineUpgrades upg = MachineUpgrades.scan(itemHandler, 3, 6);
 
         java.util.Optional<RodFabricatorRecipe> recipe = getRecipe(level);
         if (recipe.isPresent()) {
             RodFabricatorRecipe r  = recipe.get();
-            maxProgress      = Math.max(1, (int)(r.getProcessingTime()    * timeMultiplier));
-            energyPerTick    = Math.max(1, (int)(r.getEnergyCostPerTick() * energyMultiplier));
+            maxProgress      = upg.scaleTime(r.getProcessingTime());
+            energyPerTick    = upg.scaleEnergy(r.getEnergyCostPerTick());
             ItemStack result = r.getResultItem(level.registryAccess());
             ItemStack output = itemHandler.getStackInSlot(2);
             boolean canFit   = output.isEmpty()
@@ -183,7 +155,7 @@ public class RodFabricatorBlockEntity extends net.minecraft.world.level.block.en
                     int outRuns  = (output.isEmpty()
                             ? result.getMaxStackSize()
                             : output.getMaxStackSize() - output.getCount()) / resCount;
-                    int actualParallel = Math.max(1, Math.min(parallel, Math.min(inputRuns, outRuns)));
+                    int actualParallel = Math.max(1, Math.min(upg.parallel(), Math.min(inputRuns, outRuns)));
 
                     itemHandler.extractItem(0, r.getCount1() * actualParallel, false);
                     itemHandler.extractItem(1, r.getCount2() * actualParallel, false);
@@ -200,10 +172,8 @@ public class RodFabricatorBlockEntity extends net.minecraft.world.level.block.en
             if (progress > 0) { progress = 0; hasChanges = true; }
         }
 
-        if (itemPullDir != null) {
-            final Direction d = itemPullDir;
-            var n = level.getBlockEntity(pos.relative(d));
-            if (n != null) n.getCapability(ForgeCapabilities.ITEM_HANDLER, d.getOpposite()).ifPresent(src -> {
+        if (upg.itemPull() != null) {
+            MachineIO.neighbor(level, pos, upg.itemPull(), ForgeCapabilities.ITEM_HANDLER).ifPresent(src -> {
                 for (int i = 0; i < src.getSlots(); i++) {
                     ItemStack sim = src.extractItem(i, 64, true);
                     if (sim.isEmpty()) continue;
@@ -218,12 +188,7 @@ public class RodFabricatorBlockEntity extends net.minecraft.world.level.block.en
             });
         }
 
-        if (itemPushDir != null && !itemHandler.getStackInSlot(2).isEmpty()) {
-            final Direction d = itemPushDir;
-            var n = level.getBlockEntity(pos.relative(d));
-            if (n != null) n.getCapability(ForgeCapabilities.ITEM_HANDLER, d.getOpposite()).ifPresent(dst ->
-                    itemHandler.setStackInSlot(2, net.minecraftforge.items.ItemHandlerHelper.insertItem(dst, itemHandler.getStackInSlot(2), false)));
-        }
+        if (upg.itemPush() != null) MachineIO.pushItems(level, pos, upg.itemPush(), itemHandler, 2);
 
         MachineLit.tick(this, level, pos, state, RodFabricatorBlock.LIT, isWorking);
 

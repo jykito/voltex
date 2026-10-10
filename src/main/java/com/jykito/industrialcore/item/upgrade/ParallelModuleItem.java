@@ -22,5 +22,6 @@ public class ParallelModuleItem extends MachineUpgradeItem {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("tooltip.industrial_core.parallel_count", parallelCount).withStyle(ChatFormatting.GOLD));
+        UpgradeTargets.append(tooltip, UpgradeTargets.PARALLEL);
     }
 }

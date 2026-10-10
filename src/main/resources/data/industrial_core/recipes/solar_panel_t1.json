@@ -13,10 +13,10 @@
       "item": "industrial_core:silicon"
     },
     "C": {
-      "tag": "forge:plates/copper"
+      "tag": "forge:plates/aluminum"
     },
     "D": {
-      "item": "industrial_core:machine_casing"
+      "tag": "forge:components/machine_casing"
     }
   },
   "result": {

@@ -1,19 +1,25 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    " A ",
-    "BCB",
-    " A "
+    "ABA",
+    "CDC",
+    "AEA"
   ],
   "key": {
     "A": {
-      "item": "industrial_core:bare_copper_wire"
+      "tag": "forge:plates/iron"
     },
     "B": {
       "item": "industrial_core:rubber"
     },
     "C": {
-      "tag": "forge:plates/iron"
+      "item": "industrial_core:copper_solenoid"
+    },
+    "D": {
+      "tag": "forge:ingots/iron"
+    },
+    "E": {
+      "item": "industrial_core:solder"
     }
   },
   "result": {

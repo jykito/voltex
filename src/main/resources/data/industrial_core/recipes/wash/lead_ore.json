@@ -9,7 +9,11 @@
     "item": "industrial_core:lead_dust",
     "count": 3
   },
-  "byproductChance": 1,
+  "byproduct": {
+    "item": "industrial_core:silver_dust",
+    "count": 1
+  },
+  "byproductChance": 0.2,
   "processingTime": 200,
   "energyCostPerTick": 40
 }

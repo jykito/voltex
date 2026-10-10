@@ -16,6 +16,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class MachineRecipe implements Recipe<SimpleContainer> {
     private final ResourceLocation id;
+    /** Рецепт только для лейт-машины (её промышленный режим); малая машина его не видит. */
+    private boolean lateOnly;
     private final Ingredient input;
     private final int inputCount;
     private final ItemStack output;
@@ -36,8 +38,11 @@ public class MachineRecipe implements Recipe<SimpleContainer> {
         this.type = type;
     }
 
+    public boolean isLateOnly() { return lateOnly; }
+
     @Override
     public boolean matches(SimpleContainer pContainer, Level pLevel) {
+        if (lateOnly) return false;
         if (pLevel.isClientSide()) return false;
         if (!input.test(pContainer.getItem(0)) || pContainer.getItem(0).getCount() < inputCount) return false;
         if (catalystId == null) return true;
@@ -112,7 +117,9 @@ public class MachineRecipe implements Recipe<SimpleContainer> {
             String catalystId = pSerializedRecipe.has("catalyst")
                     ? GsonHelper.getAsString(pSerializedRecipe, "catalyst") : null;
 
-            return new MachineRecipe(pRecipeId, input, inputCount, output, processingTime, energyCost, catalystId, recipeType);
+            MachineRecipe recipe__ = new MachineRecipe(pRecipeId, input, inputCount, output, processingTime, energyCost, catalystId, recipeType);
+            recipe__.lateOnly = GsonHelper.getAsBoolean(pSerializedRecipe, "lateOnly", false);
+            return recipe__;
         }
 
         @Override
@@ -133,7 +140,9 @@ public class MachineRecipe implements Recipe<SimpleContainer> {
                 }
             }
 
-            return new MachineRecipe(pRecipeId, input, inputCount, output, processingTime, energyCost, catalystId, recipeType);
+            MachineRecipe recipe__ = new MachineRecipe(pRecipeId, input, inputCount, output, processingTime, energyCost, catalystId, recipeType);
+            recipe__.lateOnly = pBuffer.readBoolean();
+            return recipe__;
         }
 
         @Override
@@ -151,6 +160,7 @@ public class MachineRecipe implements Recipe<SimpleContainer> {
                     .filter(e -> e.get() == pRecipe.getType())
                     .findFirst().get().getId();
             pBuffer.writeUtf(typeId.toString());
+            pBuffer.writeBoolean(pRecipe.lateOnly);
         }
     }
 }

@@ -1,7 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    " A ",
+    "DAD",
     " B ",
     " C "
   ],
@@ -14,6 +14,9 @@
     },
     "C": {
       "item": "industrial_core:hardened_steel_ingot"
+    },
+    "D": {
+      "tag": "forge:dusts/diamond"
     }
   },
   "result": {

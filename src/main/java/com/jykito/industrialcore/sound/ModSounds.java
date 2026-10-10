@@ -30,6 +30,11 @@ public class ModSounds {
             () -> SoundEvent.createVariableRangeEvent(
                     new ResourceLocation(IndustrialCore.MODID, "magnet_powerup")));
 
+    // Бур: петля, пока игрок копает буром (DrillSound; звук — tools/sounds/drill_sound.js)
+    public static final RegistryObject<SoundEvent> DRILL_RUN = SOUNDS.register("drill_run",
+            () -> SoundEvent.createVariableRangeEvent(
+                    new ResourceLocation(IndustrialCore.MODID, "drill_run")));
+
     public static void register(IEventBus eventBus) {
         SOUNDS.register(eventBus);
     }

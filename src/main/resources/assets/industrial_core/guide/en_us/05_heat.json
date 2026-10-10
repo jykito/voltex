@@ -2,15 +2,16 @@
   "name": "Heat",
   "entries": [
     {
-      "name": "Heat as a Resource",
+      "name": "Heat Network",
       "elements": [
         {
-          "type": "header",
-          "text": "Thermal Network"
+          "type": "card",
+          "icon": "industrial_core:thermogenerator",
+          "title": "Heat Network"
         },
         {
           "type": "text",
-          "text": "Heat is a separate resource, not FE. The Thermogenerator turns FE into heat, heat pipes carry it, and the Blast Furnace, Liquefier and Thermostation consume it."
+          "text": "Heat is separate from power here. The **thermogenerator** turns power into heat, **heat pipes** carry it, and the blast furnace, liquefier, thermostation and cryo chamber use it up."
         },
         {
           "type": "items",
@@ -26,31 +27,74 @@
       "name": "Thermogenerator",
       "elements": [
         {
-          "type": "header",
-          "text": "Thermogenerator"
+          "type": "card",
+          "icon": "industrial_core:thermogenerator",
+          "title": "Thermogenerator"
         },
         {
           "type": "text",
-          "text": "Converts FE into heat and feeds it to the block it faces. Motor and conductor upgrades raise output. The heart of any thermal chain."
+          "text": "Takes power and puts out heat into the block it faces. Every heat line starts here."
+        },
+        {
+          "type": "text",
+          "text": "One part goes into its upgrade slot, and it decides how much heat it gives and how much power it uses."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "No upgrade",
+              "value": "3 heat per tick, 200 FE/t"
+            },
+            {
+              "key": "Electric motor",
+              "value": "5 heat, 400 FE/t"
+            },
+            {
+              "key": "Heat conductor",
+              "value": "9 heat, 800 FE/t"
+            },
+            {
+              "key": "Advanced heat exchanger",
+              "value": "17 heat, 2,000 FE/t"
+            }
+          ]
         },
         {
           "type": "items",
           "items": [
-            "industrial_core:thermogenerator"
+            "industrial_core:thermogenerator",
+            "industrial_core:electric_motor",
+            "industrial_core:heat_conductor",
+            "industrial_core:advanced_heat_exchanger"
           ]
         }
       ]
     },
     {
-      "name": "Blast Furnace",
+      "name": "Small Blast Furnace",
       "elements": [
         {
-          "type": "header",
-          "text": "Blast Furnace"
+          "type": "card",
+          "icon": "industrial_core:blast_furnace",
+          "title": "Small Blast Furnace"
         },
         {
           "type": "text",
-          "text": "Runs on heat, not FE. Smelts high-temperature alloys: invar, electrum, hardened steel, the crystal ingot. Upgrades speed it up and add parallelism."
+          "text": "Runs on heat, not power. It smelts the alloys a regular furnace cannot: invar, electrum and hardened steel."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Forced Air",
+              "value": "smelts 30% faster"
+            },
+            {
+              "key": "Oxygen Boost",
+              "value": "75% faster and 4 at a time"
+            }
+          ]
         },
         {
           "type": "items",
@@ -66,19 +110,56 @@
       "name": "Heat Pipes",
       "elements": [
         {
-          "type": "header",
-          "text": "Heat Pipes"
+          "type": "card",
+          "icon": "industrial_core:heat_pipe",
+          "title": "Heat Pipes"
         },
         {
           "type": "text",
-          "text": "Carry heat from generator to consumers. T1 has small losses, T2 is lossless with higher throughput. Insulation reduces leakage."
+          "text": "Carry heat from the generator to whatever uses it. Pipes connect by themselves, and you can shut off a side you do not need with the wrench."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Heat pipe",
+              "value": "up to 128 heat per tick to each neighbour"
+            },
+            {
+              "key": "Heat pipe T2",
+              "value": "up to 512"
+            }
+          ]
         },
         {
           "type": "items",
           "items": [
             "industrial_core:heat_pipe",
-            "industrial_core:heat_pipe_t2",
-            "industrial_core:thermal_insulation"
+            "industrial_core:heat_pipe_t2"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Heat Probe",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:heat_probe",
+          "title": "Heat Probe"
+        },
+        {
+          "type": "text",
+          "text": "Shows what is going on in a heat network. Click a heat pipe, or a block next to one, and you get a summary in chat: how many pipes and consumers the network has, how much heat arrives per tick out of the possible maximum, and how much is sitting in the pipes."
+        },
+        {
+          "type": "text",
+          "text": "The last line tells you where the bottleneck is: no consumers, the pipes cannot carry more, not enough heat is supplied, or everything is fine and the consumers simply take what they need."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:heat_probe"
           ]
         }
       ]
@@ -87,12 +168,21 @@
       "name": "Thermostation",
       "elements": [
         {
-          "type": "header",
-          "text": "Thermostation"
+          "type": "card",
+          "icon": "industrial_core:thermostation_core",
+          "title": "Thermostation"
         },
         {
           "type": "text",
-          "text": "A vertical tower: core at the bottom, expanders above, radiators at the back. It pools heat from several thermogenerators into one buffer and outputs downward. Overheating halts the cycle."
+          "text": "A tower: the core at the bottom, expanders above it. Place thermogenerators right against the sides of the tower, on any level: their heat gathers in the core, and the core sends it down into a pipe."
+        },
+        {
+          "type": "text",
+          "text": "Expanders raise how much heat it stores, and radiators on the back raise how much it puts out per tick."
+        },
+        {
+          "type": "tip",
+          "text": "If the store fills up completely, the station stops and starts again once it is down to half."
         },
         {
           "type": "items",

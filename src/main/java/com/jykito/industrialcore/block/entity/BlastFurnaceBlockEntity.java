@@ -2,6 +2,7 @@ package com.jykito.industrialcore.block.entity;
 
 import com.jykito.industrialcore.block.custom.BlastFurnaceBlock;
 import com.jykito.industrialcore.item.upgrade.DirectionalUpgradeItem;
+import com.jykito.industrialcore.item.upgrade.MachineUpgrades;
 import com.jykito.industrialcore.menu.BlastFurnaceMenu;
 import com.jykito.industrialcore.recipe.BlastFurnaceRecipe;
 import com.jykito.industrialcore.recipe.ModRecipes;
@@ -24,7 +25,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -204,39 +204,9 @@ public class BlastFurnaceBlockEntity extends BlockEntity implements MenuProvider
             setChanged();
         }
 
-        Direction itemPullDir = null, itemPushDir = null;
-        for (int s = 3; s <= 6; s++) {
-            ItemStack up = itemHandler.getStackInSlot(s);
-            if (up.getItem() instanceof DirectionalUpgradeItem dir) {
-                Direction d = DirectionalUpgradeItem.getStoredDirection(up);
-                if (d == null) continue;
-                if (dir.getMode() == DirectionalUpgradeItem.Mode.ITEM_PULL) itemPullDir = d;
-                else if (dir.getMode() == DirectionalUpgradeItem.Mode.ITEM_PUSH) itemPushDir = d;
-            }
-        }
-        if (itemPullDir != null) {
-            final Direction d = itemPullDir;
-            BlockEntity n = level.getBlockEntity(pos.relative(d));
-            if (n != null) n.getCapability(ForgeCapabilities.ITEM_HANDLER, d.getOpposite()).ifPresent(src -> {
-                for (int i = 0; i < src.getSlots(); i++) {
-                    ItemStack sim = src.extractItem(i, 64, true);
-                    if (sim.isEmpty()) continue;
-                    for (int target : new int[]{0, 1}) {
-                        int accepted = sim.getCount() - itemHandler.insertItem(target, sim, true).getCount();
-                        if (accepted > 0) {
-                            itemHandler.insertItem(target, src.extractItem(i, accepted, false), false);
-                            return;
-                        }
-                    }
-                }
-            });
-        }
-        if (itemPushDir != null && !itemHandler.getStackInSlot(2).isEmpty()) {
-            final Direction d = itemPushDir;
-            BlockEntity n = level.getBlockEntity(pos.relative(d));
-            if (n != null) n.getCapability(ForgeCapabilities.ITEM_HANDLER, d.getOpposite()).ifPresent(dst ->
-                    itemHandler.setStackInSlot(2, ItemHandlerHelper.insertItem(dst, itemHandler.getStackInSlot(2), false)));
-        }
+        MachineUpgrades upg = MachineUpgrades.scan(itemHandler, 3, 6);
+        if (upg.itemPull() != null) MachineIO.pullItems(level, pos, upg.itemPull(), itemHandler, 0, 1);
+        if (upg.itemPush() != null) MachineIO.pushItems(level, pos, upg.itemPush(), itemHandler, 2);
 
         MachineLit.tick(this, level, pos, state, BlockStateProperties.LIT, isWorking);
     }

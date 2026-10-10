@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
-public class MinerCoreMenu extends AbstractContainerMenu {
+public class MinerCoreMenu extends MachineMenu {
     public final MinerCoreBlockEntity blockEntity;
     private final ContainerData data;
 
@@ -47,11 +47,7 @@ public class MinerCoreMenu extends AbstractContainerMenu {
             });
         }
 
-        for (int i = 0; i < 3; ++i)
-            for (int j = 0; j < 9; ++j)
-                this.addSlot(new Slot(inv, j + i * 9 + 9, 44 + j * 19, 139 + i * 19));
-        for (int k = 0; k < 9; ++k)
-            this.addSlot(new Slot(inv, k, 44 + k * 19, 202));
+        addPlayerInventory(inv, 44, 139);
 
         addDataSlots(data);
     }

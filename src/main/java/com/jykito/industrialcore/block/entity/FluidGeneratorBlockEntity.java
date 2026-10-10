@@ -1,8 +1,10 @@
 package com.jykito.industrialcore.block.entity;
 
 import com.jykito.industrialcore.block.custom.FluidGeneratorBlock;
+import com.jykito.industrialcore.energy.MachineEnergy;
 import com.jykito.industrialcore.item.upgrade.AcceleratorItem;
 import com.jykito.industrialcore.item.upgrade.DirectionalUpgradeItem;
+import com.jykito.industrialcore.item.upgrade.MachineUpgrades;
 import com.jykito.industrialcore.menu.FluidGeneratorMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -24,10 +26,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.IItemHandler;
@@ -61,12 +61,7 @@ public class FluidGeneratorBlockEntity extends BlockEntity implements MenuProvid
     };
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
-    private static class GenEnergy extends EnergyStorage {
-        GenEnergy(int capacity, int maxReceive) { super(capacity, maxReceive, 0); }
-        void consume(int amount) { this.energy = Math.max(0, this.energy - amount); }
-        void set(int amount)     { this.energy = Math.min(getMaxEnergyStored(), Math.max(0, amount)); }
-    }
-    private final GenEnergy energyStorage;
+    private final MachineEnergy energyStorage;
     private LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.empty();
 
     public final FluidTank outputTank;
@@ -80,7 +75,7 @@ public class FluidGeneratorBlockEntity extends BlockEntity implements MenuProvid
         super(beType, pos, state);
         this.type = type;
         this.maxProgress = type.processTicks;
-        this.energyStorage = new GenEnergy(type.feBuffer, type.feMaxReceive);
+        this.energyStorage = MachineEnergy.consumer(type.feBuffer, type.feMaxReceive);
         this.outputTank = new FluidTank(type.tankCapacity, fs -> fs.getFluid() == type.fluid) {
             @Override protected void onContentsChanged() {
                 setChanged();
@@ -115,24 +110,13 @@ public class FluidGeneratorBlockEntity extends BlockEntity implements MenuProvid
 
         int fluidBefore = outputTank.getFluidAmount();
 
-        float speedMul = 1.0f, energyMul = 1.0f;
-        Direction fluidPushDir = null;
-        for (int s = 0; s <= 1; s++) {
-            ItemStack up = itemHandler.getStackInSlot(s);
-            if (up.getItem() instanceof AcceleratorItem acc) {
-                for (int c = 0; c < up.getCount(); c++) { speedMul *= acc.getSpeedMultiplier(); energyMul *= acc.getEnergyMultiplier(); }
-            } else if (up.getItem() instanceof DirectionalUpgradeItem dir
-                    && dir.getMode() == DirectionalUpgradeItem.Mode.FLUID_PUSH) {
-                Direction d = DirectionalUpgradeItem.getStoredDirection(up);
-                if (d != null) fluidPushDir = d;
-            }
-        }
-        maxProgress = Math.max(1, (int) (type.processTicks * speedMul));
-        int fePerTick = Math.max(1, (int) (type.fePerTick * energyMul));
+        MachineUpgrades upg = MachineUpgrades.scan(itemHandler, 0, 1);
+        maxProgress = upg.scaleTime(type.processTicks);
+        int fePerTick = upg.scaleEnergy(type.fePerTick);
 
         boolean working = false;
         if (energyStorage.getEnergyStored() >= fePerTick && outputTank.getSpace() >= type.mbPerCycle) {
-            energyStorage.consume(fePerTick);
+            energyStorage.consumeEnergy(fePerTick);
             progress++;
             working = true;
             if (progress >= maxProgress) {
@@ -143,12 +127,7 @@ public class FluidGeneratorBlockEntity extends BlockEntity implements MenuProvid
             progress = 0;
         }
 
-        if (fluidPushDir != null && !outputTank.isEmpty()) {
-            final Direction fpd = fluidPushDir;
-            BlockEntity n = level.getBlockEntity(pos.relative(fpd));
-            if (n != null) n.getCapability(ForgeCapabilities.FLUID_HANDLER, fpd.getOpposite()).ifPresent(dst ->
-                    FluidUtil.tryFluidTransfer(dst, outputTank, outputTank.getFluidAmount(), true));
-        }
+        if (upg.fluidPush() != null) MachineIO.pushFluid(level, pos, upg.fluidPush(), outputTank);
 
         MachineLit.tick(this, level, pos, state, FluidGeneratorBlock.LIT, working);setChanged();
     }
@@ -198,7 +177,7 @@ public class FluidGeneratorBlockEntity extends BlockEntity implements MenuProvid
     @Override public void load(CompoundTag tag) {
         super.load(tag);
         itemHandler.deserializeNBT(tag.getCompound("inventory"));
-        energyStorage.set(tag.getInt("energy"));
+        energyStorage.setEnergy(tag.getInt("energy"));
         outputTank.readFromNBT(tag.getCompound("outputTank"));
         progress = tag.getInt("progress");
     }

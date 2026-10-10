@@ -86,6 +86,11 @@ dependencies {
     // Не бандлится и в рантайме не нужна: без Jade класс плагина никто не грузит.
     compileOnly files('libs/Jade-1.20.1-Forge-11.13.2.jar')
 
+    // AE2 — опциональная зависимость для МЭ-портов лейт-мультиблоков, только для компиляции.
+    // Полный jar, а не :api: порту шаблонов нужен PatternContainer (терминал доступа к шаблонам), он вне API.
+    // Без AE2 в сборке классы интеграции никто не грузит (см. compat/ae2).
+    compileOnly fg.deobf("appeng:appliedenergistics2-forge:15.4.10")
+
     // KubeJS — опциональная зависимость, не бандлится в jar
     compileOnly fg.deobf("dev.latvian.mods:rhino-forge:2001.2.2-build.17")
     compileOnly fg.deobf("dev.architectury:architectury-forge:9.1.12")

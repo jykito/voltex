@@ -1,0 +1,64 @@
+{
+  "variants": {
+    "facing=north,formed=false,lit=false": {
+      "model": "industrial_core:block/industrial_miner_core"
+    },
+    "facing=north,formed=false,lit=true": {
+      "model": "industrial_core:block/industrial_miner_core_on"
+    },
+    "facing=north,formed=true,lit=false": {
+      "model": "industrial_core:block/industrial_miner_core"
+    },
+    "facing=north,formed=true,lit=true": {
+      "model": "industrial_core:block/industrial_miner_core_on"
+    },
+    "facing=east,formed=false,lit=false": {
+      "model": "industrial_core:block/industrial_miner_core",
+      "y": 90
+    },
+    "facing=east,formed=false,lit=true": {
+      "model": "industrial_core:block/industrial_miner_core_on",
+      "y": 90
+    },
+    "facing=east,formed=true,lit=false": {
+      "model": "industrial_core:block/industrial_miner_core",
+      "y": 90
+    },
+    "facing=east,formed=true,lit=true": {
+      "model": "industrial_core:block/industrial_miner_core_on",
+      "y": 90
+    },
+    "facing=south,formed=false,lit=false": {
+      "model": "industrial_core:block/industrial_miner_core",
+      "y": 180
+    },
+    "facing=south,formed=false,lit=true": {
+      "model": "industrial_core:block/industrial_miner_core_on",
+      "y": 180
+    },
+    "facing=south,formed=true,lit=false": {
+      "model": "industrial_core:block/industrial_miner_core",
+      "y": 180
+    },
+    "facing=south,formed=true,lit=true": {
+      "model": "industrial_core:block/industrial_miner_core_on",
+      "y": 180
+    },
+    "facing=west,formed=false,lit=false": {
+      "model": "industrial_core:block/industrial_miner_core",
+      "y": 270
+    },
+    "facing=west,formed=false,lit=true": {
+      "model": "industrial_core:block/industrial_miner_core_on",
+      "y": 270
+    },
+    "facing=west,formed=true,lit=false": {
+      "model": "industrial_core:block/industrial_miner_core",
+      "y": 270
+    },
+    "facing=west,formed=true,lit=true": {
+      "model": "industrial_core:block/industrial_miner_core_on",
+      "y": 270
+    }
+  }
+}

@@ -8,6 +8,9 @@ import com.jykito.industrialcore.networking.ModMessages;
 import com.jykito.industrialcore.recipe.*;
 import net.minecraft.world.item.Items;
 import com.jykito.industrialcore.screen.HubScreen;
+import com.jykito.industrialcore.screen.MePortScreen;
+import com.jykito.industrialcore.networking.MePortPacket;
+import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
@@ -60,6 +63,9 @@ public class IndustrialCoreJeiPlugin implements IModPlugin {
             RecipeType.create(IndustrialCore.MODID, "rod_fabricator_jei", RodFabricatorRecipe.class);
     public static final RecipeType<FluidEnricherRecipe> FLUID_ENRICHER =
             RecipeType.create(IndustrialCore.MODID, "fluid_enricher_jei", FluidEnricherRecipe.class);
+    public static final RecipeType<BioreactorRecipe> BIOREACTOR =
+            RecipeType.create(IndustrialCore.MODID, "bioreactor_jei", BioreactorRecipe.class);
+
     public static final RecipeType<OreWashingRecipe> ORE_WASHING =
             RecipeType.create(IndustrialCore.MODID, "ore_washer_jei", OreWashingRecipe.class);
 
@@ -90,6 +96,45 @@ public class IndustrialCoreJeiPlugin implements IModPlugin {
             RecipeType.create(IndustrialCore.MODID, "capsule_filler", CapsuleFillerJeiRecipe.class);
     public static final RecipeType<AcceleratorRecipe> MAGNET =
             RecipeType.create(IndustrialCore.MODID, "magnet_jei", AcceleratorRecipe.class);
+
+    /**
+     * Окна лейт-машин (Л1, LateJeiCategory) — только то, чего нет в окнах малых машин: рецепты промышленного режима
+     * (lateOnly; малые машины их не выполняют, поэтому из их окон они убраны) и сборка (малого сборщика нет).
+     * Обычные рецепты лейт-машины остаются в окнах малых машин, ядро там — катализатор.
+     */
+    private record Late(RecipeType<LateJeiCategory.Entry> type, java.util.function.Supplier<net.minecraft.world.level.block.Block> core, String mode) {}
+    private static Late late(String id, java.util.function.Supplier<net.minecraft.world.level.block.Block> core, String mode) {
+        return new Late(RecipeType.create(IndustrialCore.MODID, "late_" + id, LateJeiCategory.Entry.class), core, mode);
+    }
+    private static final List<Late> LATE = List.of(
+            late("compressor", ModBlocks.MULTIBLOCK_COMPRESSOR, "industrial"),
+            late("blast_furnace", ModBlocks.MULTIBLOCK_BLAST_FURNACE, "industrial"),
+            late("rolling_mill", ModBlocks.MULTIBLOCK_ROLLING_MILL, "industrial"),
+            late("washer", ModBlocks.MULTIBLOCK_WASHER, "industrial"),
+            late("fluid_enricher", ModBlocks.MULTIBLOCK_FLUID_ENRICHER, "industrial"),
+            late("magnet", ModBlocks.MULTIBLOCK_MAGNET, "industrial"),
+            late("crafter", ModBlocks.MULTIBLOCK_CRAFTER, "single"));
+    /** Рецепты окна: из режима ядра; подпись режима — если у ядра их несколько. Считаются в registerCategories (по ним раскладка). */
+    private final java.util.Map<Late, List<LateJeiCategory.Entry>> lateEntries = new java.util.HashMap<>();
+
+    private static List<LateJeiCategory.Entry> lateEntries(Late l) {
+        var level = Minecraft.getInstance().level;
+        if (level == null || !(l.core().get() instanceof com.jykito.industrialcore.block.custom.LateMachineCoreBlock core)) return List.of();
+        var modes = core.modes();
+        return modes.stream().filter(m -> m.key().equals(l.mode()))
+                .flatMap(m -> m.source().all(level).stream().map(r -> new LateJeiCategory.Entry(r, modes.size() < 2 ? null
+                        : Component.translatable("gui.industrial_core.late_core.mode", Component.translatable("gui.industrial_core.late_core.mode." + m.key())))))
+                .toList();
+    }
+
+    /** Нанолаборатория (Н3 «Лестница тем»): по рецепту на тему — откуда берутся карты данных. */
+    public static final RecipeType<NaniteLabJeiCategory.Theme> NANITE_LAB =
+            RecipeType.create(IndustrialCore.MODID, "nanite_lab", NaniteLabJeiCategory.Theme.class);
+
+    /** Рецепты «только для лейт» малые машины не выполняют (matches → false): в их окнах их нет. */
+    private static <T> List<T> regular(List<T> recipes, java.util.function.Predicate<T> lateOnly) {
+        return recipes.stream().filter(r -> !lateOnly.test(r)).toList();
+    }
 
     @Override
     public ResourceLocation getPluginUid() {
@@ -141,7 +186,7 @@ public class IndustrialCoreJeiPlugin implements IModPlugin {
                 new MachineCropCategory(gui, ELECTRIC_SMELTING,
                         new ItemStack(ModBlocks.ELECTRIC_FURNACE.get()),
                         Component.translatable("block.industrial_core.electric_furnace"),
-                        jeiTex("jei_electric_furnace"), 154,140, 154,84, 44,30, 94,30, 44,64,66, 65,33,24,10, 69,102, 56,48),
+                        jeiTex("jei_electric_furnace"), 154,140, 154,84, 44,30, 94,30, 44,64,66, 70,32,16,12, 71,107, 56,48),
 
                 new MachineCropCategory(gui, ROLLING,
                         new ItemStack(ModBlocks.METAL_FORMER.get()),
@@ -177,6 +222,10 @@ public class IndustrialCoreJeiPlugin implements IModPlugin {
                 new OreWasherJeiCategory(gui, ORE_WASHING,
                         new ItemStack(ModBlocks.ORE_WASHER.get()),
                         Component.translatable("block.industrial_core.ore_washer")),
+
+                new BioreactorJeiCategory(gui, BIOREACTOR,
+                        new ItemStack(ModBlocks.BIOREACTOR.get()),
+                        Component.translatable("block.industrial_core.bioreactor")),
 
                 new LiquefierJeiCategory(gui, LIQUEFYING,
                         new ItemStack(ModBlocks.LIQUEFIER.get()),
@@ -224,25 +273,35 @@ public class IndustrialCoreJeiPlugin implements IModPlugin {
                         new ItemStack(ModBlocks.ELECTROMAGNET_CORE.get()),
                         Component.translatable("block.industrial_core.electromagnet_core"))
         );
+        registration.addRecipeCategories(new NaniteLabJeiCategory(gui, NANITE_LAB, new ItemStack(ModBlocks.NANITE_LAB.get()),
+                Component.translatable("block.industrial_core.nanite_lab")));
+        lateEntries.clear();
+        for (Late l : LATE) {
+            List<LateJeiCategory.Entry> entries = lateEntries(l);
+            lateEntries.put(l, entries);
+            var core = l.core().get();
+            registration.addRecipeCategories(new LateJeiCategory(gui, l.type(), new ItemStack(core), Component.translatable(core.getDescriptionId()), entries));
+        }
     }
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
         var rm = Minecraft.getInstance().level.getRecipeManager();
 
-        registration.addRecipes(CRUSHING,        rm.getAllRecipesFor(ModRecipes.CRUSHING_TYPE.get()));
-        registration.addRecipes(COMPRESSING,     rm.getAllRecipesFor(ModRecipes.COMPRESSING_TYPE.get()));
-        registration.addRecipes(ELECTRIC_SMELTING, rm.getAllRecipesFor(ModRecipes.ELECTRIC_SMELTING_TYPE.get()));
-        registration.addRecipes(ROLLING,         rm.getAllRecipesFor(ModRecipes.ROLLING_TYPE.get()));
-        registration.addRecipes(EXTRUDING,        rm.getAllRecipesFor(ModRecipes.EXTRUDING_TYPE.get()));
-        registration.addRecipes(EXTRACTING,      rm.getAllRecipesFor(ModRecipes.EXTRACTING_TYPE.get()));
+        registration.addRecipes(CRUSHING,        regular(rm.getAllRecipesFor(ModRecipes.CRUSHING_TYPE.get()), MachineRecipe::isLateOnly));
+        registration.addRecipes(COMPRESSING,     regular(rm.getAllRecipesFor(ModRecipes.COMPRESSING_TYPE.get()), MachineRecipe::isLateOnly));
+        registration.addRecipes(ELECTRIC_SMELTING, regular(rm.getAllRecipesFor(ModRecipes.ELECTRIC_SMELTING_TYPE.get()), MachineRecipe::isLateOnly));
+        registration.addRecipes(ROLLING,         regular(rm.getAllRecipesFor(ModRecipes.ROLLING_TYPE.get()), MachineRecipe::isLateOnly));
+        registration.addRecipes(EXTRUDING,        regular(rm.getAllRecipesFor(ModRecipes.EXTRUDING_TYPE.get()), MachineRecipe::isLateOnly));
+        registration.addRecipes(EXTRACTING,      regular(rm.getAllRecipesFor(ModRecipes.EXTRACTING_TYPE.get()), MachineRecipe::isLateOnly));
 
         registration.addRecipes(RESTRUCTOR, rm.getAllRecipesFor(ModRecipes.MOLECULAR_TRANSFORMING_TYPE.get()));
 
-        registration.addRecipes(BLAST_FURNACE,  rm.getAllRecipesFor(ModRecipes.BLAST_FURNACE_TYPE.get()));
+        registration.addRecipes(BLAST_FURNACE,  regular(rm.getAllRecipesFor(ModRecipes.BLAST_FURNACE_TYPE.get()), BlastFurnaceRecipe::isLateOnly));
         registration.addRecipes(ROD_FABRICATOR, rm.getAllRecipesFor(ModRecipes.ROD_FABRICATION_TYPE.get()));
-        registration.addRecipes(FLUID_ENRICHER, rm.getAllRecipesFor(ModRecipes.FLUID_ENRICHER_TYPE.get()));
-        registration.addRecipes(ORE_WASHING,    rm.getAllRecipesFor(ModRecipes.ORE_WASHING_TYPE.get()));
+        registration.addRecipes(FLUID_ENRICHER, regular(rm.getAllRecipesFor(ModRecipes.FLUID_ENRICHER_TYPE.get()), FluidEnricherRecipe::isLateOnly));
+        registration.addRecipes(ORE_WASHING,    regular(rm.getAllRecipesFor(ModRecipes.ORE_WASHING_TYPE.get()), OreWashingRecipe::isLateOnly));
+        registration.addRecipes(BIOREACTOR,     rm.getAllRecipesFor(ModRecipes.BIOREACTOR_TYPE.get()));
 
         registration.addRecipes(LIQUEFYING, rm.getAllRecipesFor(ModRecipes.LIQUEFYING_TYPE.get()));
         registration.addRecipes(CRYSTALLIZING, rm.getAllRecipesFor(ModRecipes.CRYSTALLIZING_TYPE.get()));
@@ -315,27 +374,32 @@ public class IndustrialCoreJeiPlugin implements IModPlugin {
         }
         registration.addRecipes(CAPSULE_FILLER, capRecipes);
 
-        registration.addRecipes(MAGNET, rm.getAllRecipesFor(ModRecipes.ACCELERATING_TYPE.get()));
+        registration.addRecipes(MAGNET, regular(rm.getAllRecipesFor(ModRecipes.ACCELERATING_TYPE.get()), AcceleratorRecipe::isLateOnly));
+        for (Late l : LATE) registration.addRecipes(l.type(), lateEntries.getOrDefault(l, List.of()));
+        registration.addRecipes(NANITE_LAB, NaniteLabJeiCategory.themes());
     }
 
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
         registration.addGhostIngredientHandler(HubScreen.class, new HubGhostHandler());
+        registration.addGhostIngredientHandler(MePortScreen.class, new MePortGhostHandler());
 
         recipeArea(registration, com.jykito.industrialcore.screen.CrusherScreen.class,         117,61,16,12, CRUSHING);
         recipeArea(registration, com.jykito.industrialcore.screen.CompressorScreen.class,      116,61,16,12, COMPRESSING);
-        recipeArea(registration, com.jykito.industrialcore.screen.ElectricFurnaceScreen.class, 112,62,24,10, mezz.jei.api.constants.RecipeTypes.SMELTING);
+        recipeArea(registration, com.jykito.industrialcore.screen.ElectricFurnaceScreen.class, 118,61,16,12, mezz.jei.api.constants.RecipeTypes.SMELTING);
 
         recipeArea(registration, com.jykito.industrialcore.screen.MetalFormerScreen.class,     107,60,14,14, ROLLING, EXTRUDING);
         recipeArea(registration, com.jykito.industrialcore.screen.MetalFormerScreen.class,     129,60,11,14, ROLLING, EXTRUDING);
         recipeArea(registration, com.jykito.industrialcore.screen.ExtractorScreen.class,       112,60,23,13, EXTRACTING);
         recipeArea(registration, com.jykito.industrialcore.screen.RestructorScreen.class,      103,77,50,5, RESTRUCTOR);
+        // T2: жила от катализатора (на зарядах свои подсказки)
+        recipeArea(registration, com.jykito.industrialcore.screen.RestructorT2Screen.class,    78,43,19,50, RESTRUCTOR);
         recipeArea(registration, com.jykito.industrialcore.screen.BlastFurnaceScreen.class,    110,49,28,20, BLAST_FURNACE);
         recipeArea(registration, com.jykito.industrialcore.screen.RodFabricatorScreen.class,   108,51,29,25, ROD_FABRICATOR);
 
-        recipeArea(registration, com.jykito.industrialcore.screen.FluidEnricherScreen.class,   79,42,39,26,  FLUID_ENRICHER);
-        recipeArea(registration, com.jykito.industrialcore.screen.FluidEnricherScreen.class,   134,42,37,26, FLUID_ENRICHER);
-        recipeArea(registration, com.jykito.industrialcore.screen.OreWasherScreen.class,       111,54,27,14, ORE_WASHING);
+        recipeArea(registration, com.jykito.industrialcore.screen.FluidEnricherScreen.class,   103,42,46,26, FLUID_ENRICHER);
+        recipeArea(registration, com.jykito.industrialcore.screen.OreWasherScreen.class,       118,56,16,12, ORE_WASHING);
+        recipeArea(registration, com.jykito.industrialcore.screen.BioreactorScreen.class,      118,56,16,12, BIOREACTOR);
         recipeArea(registration, com.jykito.industrialcore.screen.LiquefierScreen.class,       105,47,33,28, LIQUEFYING);
         recipeArea(registration, com.jykito.industrialcore.screen.CrystallizerScreen.class,    115,60,23,16, CRYSTALLIZING);
         recipeArea(registration, com.jykito.industrialcore.screen.CryoChamberScreen.class,     112,37,32,12, CRYO_FREEZING);
@@ -344,6 +408,10 @@ public class IndustrialCoreJeiPlugin implements IModPlugin {
         recipeArea(registration, com.jykito.industrialcore.screen.FluidGeneratorScreen.class,  103,89,50,6, FLUID_GEN);
         recipeArea(registration, com.jykito.industrialcore.screen.CapsuleFillerScreen.class,   127,58,8,13,  CAPSULE_FILLER);
         recipeArea(registration, com.jykito.industrialcore.screen.CultivatorScreen.class,      120,62,22,8,  GROWING_PLANT, GROWING_MINERAL);
+        for (int lane = 0; lane < com.jykito.industrialcore.block.entity.CultivatorBlockEntity.T2_LANES; lane++)
+            recipeArea(registration, com.jykito.industrialcore.screen.CultivatorT2Screen.class,
+                    com.jykito.industrialcore.screen.CultivatorT2Screen.PROG_X, com.jykito.industrialcore.screen.CultivatorT2Screen.PROG_Y + com.jykito.industrialcore.screen.CultivatorT2Screen.PROG_STEP * lane, 22, 8,
+                    GROWING_PLANT, GROWING_MINERAL);
 
         recipeArea(registration, com.jykito.industrialcore.screen.MinerCoreScreen.class,       111,53,30,6,  MINER_LENS);
         recipeArea(registration, com.jykito.industrialcore.screen.MinerCoreScreen.class,       111,75,30,12, MINER_LENS);
@@ -358,6 +426,29 @@ public class IndustrialCoreJeiPlugin implements IModPlugin {
     private void recipeArea(IGuiHandlerRegistration reg, Class<? extends AbstractContainerScreen<?>> cls,
                             int x, int y, int w, int h, RecipeType<?>... types) {
         reg.addRecipeClickArea(cls, x, y, w, h, types);
+    }
+
+    /** Клетки настройки МЭ-входа: предмет из JEI задаёт полную стопку, жидкость — ведро. */
+    private static class MePortGhostHandler implements IGhostIngredientHandler<MePortScreen> {
+        @Override
+        public <I> List<Target<I>> getTargetsTyped(MePortScreen gui, ITypedIngredient<I> ingredient, boolean doStart) {
+            boolean fluid = ingredient.getType() == ForgeTypes.FLUID_STACK;
+            if (!fluid && ingredient.getType() != VanillaTypes.ITEM_STACK) return List.of();
+            int containerId = gui.getMenu().containerId;
+            List<Target<I>> targets = new ArrayList<>();
+            for (MePortScreen.GhostTarget t : gui.ghostTargets(fluid))
+                targets.add(new Target<>() {
+                    @Override public Rect2i getArea() { return t.area(); }
+                    @Override public void accept(I value) {
+                        if (value instanceof FluidStack f)
+                            ModMessages.sendToServer(MePortPacket.ghost(containerId, t.index(), ItemStack.EMPTY, f));
+                        else if (value instanceof ItemStack stack)
+                            ModMessages.sendToServer(MePortPacket.ghost(containerId, t.index(), stack, FluidStack.EMPTY));
+                    }
+                });
+            return targets;
+        }
+        @Override public void onComplete() {}
     }
 
     private static class HubGhostHandler implements IGhostIngredientHandler<HubScreen> {
@@ -402,15 +493,25 @@ public class IndustrialCoreJeiPlugin implements IModPlugin {
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.RESTRUCTOR.get()), RESTRUCTOR);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.RESTRUCTOR_T2.get()), RESTRUCTOR);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.CRUSHER.get()),        CRUSHING);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.MULTIBLOCK_MACERATOR.get()), CRUSHING);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.COMPRESSOR.get()),     COMPRESSING);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.ELECTRIC_FURNACE.get()), mezz.jei.api.constants.RecipeTypes.SMELTING);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.MULTIBLOCK_FURNACE.get()), mezz.jei.api.constants.RecipeTypes.SMELTING);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.METAL_FORMER.get()),   ROLLING, EXTRUDING);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.MULTIBLOCK_ROLLING_MILL.get()), ROLLING, EXTRUDING);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.MULTIBLOCK_COMPRESSOR.get()), COMPRESSING);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.MULTIBLOCK_LIQUEFIER.get()), LIQUEFYING);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.BLAST_FURNACE.get()),   BLAST_FURNACE);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.MULTIBLOCK_BLAST_FURNACE.get()), BLAST_FURNACE);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.ROD_FABRICATOR.get()),  ROD_FABRICATOR);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.EXTRACTOR.get()),        EXTRACTING);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.FLUID_ENRICHER.get()),   FLUID_ENRICHER);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.MULTIBLOCK_FLUID_ENRICHER.get()), FLUID_ENRICHER);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.ORE_WASHER.get()),        ORE_WASHING);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.BIOREACTOR.get()),        BIOREACTOR);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.MULTIBLOCK_WASHER.get()), ORE_WASHING);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.LIQUEFIER.get()),          LIQUEFYING);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.CRYSTALLIZER.get()),      CRYSTALLIZING);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.CRYO_CORE.get()),         CRYO_FREEZING);
@@ -422,6 +523,7 @@ public class IndustrialCoreJeiPlugin implements IModPlugin {
         registration.addRecipeCatalyst(new ItemStack(ModItems.MINER_LENS_4.get()), MINER_LENS);
 
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.CULTIVATOR.get()),       GROWING_PLANT, GROWING_MINERAL);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.CULTIVATOR_T2.get()),    GROWING_PLANT, GROWING_MINERAL);
         registration.addRecipeCatalyst(new ItemStack(ModItems.CULTIVATOR_BIOSTIMULATOR.get()), GROWING_PLANT);
         registration.addRecipeCatalyst(new ItemStack(ModItems.CULTIVATOR_RESONATOR.get()),     GROWING_MINERAL);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.STONE_GENERATOR.get()),   STONE_GEN);
@@ -429,5 +531,8 @@ public class IndustrialCoreJeiPlugin implements IModPlugin {
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.WATER_GENERATOR.get()),   FLUID_GEN);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.CAPSULE_FILLER.get()),    CAPSULE_FILLER);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.ELECTROMAGNET_CORE.get()), MAGNET);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.MULTIBLOCK_MAGNET.get()), MAGNET);
+        for (Late l : LATE) registration.addRecipeCatalyst(new ItemStack(l.core().get()), l.type());
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.NANITE_LAB.get()), NANITE_LAB);
     }
 }

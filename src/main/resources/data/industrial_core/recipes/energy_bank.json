@@ -3,20 +3,25 @@
   "pattern": [
     "ABA",
     "CDC",
-    "ABA"
+    "EEE"
   ],
   "key": {
     "A": {
-      "tag": "forge:plates/electrum"
+      "item": "industrial_core:lithium_battery"
     },
     "B": {
-      "item": "industrial_core:superconductor_coil"
+      "type": "forge:nbt",
+      "item": "industrial_core:capsule",
+      "nbt": "{Fluid:{Amount:1000,FluidName:\"industrial_core:coolant\"}}"
     },
     "C": {
       "item": "industrial_core:composite"
     },
     "D": {
-      "item": "industrial_core:machine_casing"
+      "tag": "forge:components/machine_casing"
+    },
+    "E": {
+      "tag": "forge:plates/electrum"
     }
   },
   "result": {

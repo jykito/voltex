@@ -17,6 +17,8 @@ import org.jetbrains.annotations.Nullable;
 public class FluidEnricherRecipe implements Recipe<SimpleContainer> {
 
     private final ResourceLocation id;
+    /** Рецепт только для лейт-машины (её промышленный режим); малая машина его не видит. */
+    private boolean lateOnly;
     private final Ingredient itemIngredient;
     private final int itemCount;
     private final Ingredient itemIngredient2;
@@ -47,8 +49,11 @@ public class FluidEnricherRecipe implements Recipe<SimpleContainer> {
         this.energyCostPerTick = energyCostPerTick;
     }
 
+    public boolean isLateOnly() { return lateOnly; }
+
     @Override
     public boolean matches(SimpleContainer container, Level level) {
+        if (lateOnly) return false;
         if (level.isClientSide()) return false;
         return itemIngredient.test(container.getItem(0)) && container.getItem(0).getCount() >= itemCount;
     }
@@ -125,8 +130,10 @@ public class FluidEnricherRecipe implements Recipe<SimpleContainer> {
             int        fluidOutAmt     = GsonHelper.getAsInt(json, "fluidOutputAmount", 1000);
             int        processingTime  = GsonHelper.getAsInt(json, "processingTime", 100);
             int        energyCostPerTick = GsonHelper.getAsInt(json, "energyCostPerTick", 50);
-            return new FluidEnricherRecipe(id, itemIngredient, itemCount, itemIngredient2, itemCount2,
+            FluidEnricherRecipe recipe__ = new FluidEnricherRecipe(id, itemIngredient, itemCount, itemIngredient2, itemCount2,
                     fluidIn, fluidInAmt, fluidOut, fluidOutAmt, processingTime, energyCostPerTick);
+            recipe__.lateOnly = GsonHelper.getAsBoolean(json, "lateOnly", false);
+            return recipe__;
         }
 
         @Override
@@ -141,8 +148,10 @@ public class FluidEnricherRecipe implements Recipe<SimpleContainer> {
             int        fluidOutAmt      = buf.readInt();
             int        processingTime   = buf.readInt();
             int        energyCostPerTick = buf.readInt();
-            return new FluidEnricherRecipe(id, itemIngredient, itemCount, itemIngredient2, itemCount2,
+            FluidEnricherRecipe recipe__ = new FluidEnricherRecipe(id, itemIngredient, itemCount, itemIngredient2, itemCount2,
                     fluidIn, fluidInAmt, fluidOut, fluidOutAmt, processingTime, energyCostPerTick);
+            recipe__.lateOnly = buf.readBoolean();
+            return recipe__;
         }
 
         @Override
@@ -157,6 +166,7 @@ public class FluidEnricherRecipe implements Recipe<SimpleContainer> {
             buf.writeInt(r.fluidOutputAmount);
             buf.writeInt(r.processingTime);
             buf.writeInt(r.energyCostPerTick);
+            buf.writeBoolean(r.lateOnly);
         }
     }
 }

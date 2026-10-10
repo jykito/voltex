@@ -1,13 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "AAA",
-    "A A",
+    "ABA",
+    "C C",
     "AAA"
   ],
   "key": {
     "A": {
       "tag": "forge:plates/tin"
+    },
+    "B": {
+      "item": "industrial_core:rubber"
+    },
+    "C": {
+      "item": "minecraft:glass"
     }
   },
   "result": {
