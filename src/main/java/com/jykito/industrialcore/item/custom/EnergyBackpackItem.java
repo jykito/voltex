@@ -64,16 +64,28 @@ public class EnergyBackpackItem extends Item {
             }
         }
 
+        // «Всё» — как и обещают название и гайд: вторая рука, надетая броня и остальной инвентарь
+        // (раньше только вторая рука: броня и рюкзак игрока не заряжались ни в каком режиме — 10-10, 3.0.1)
         if (mode >= MODE_ALL && budget - spent > 0) {
             ItemStack offhand = player.getOffhandItem();
             if (offhand != stack) spent += tryCharge(offhand, budget - spent);
+            for (ItemStack armor : player.getInventory().armor) {
+                if (budget - spent <= 0) break;
+                if (armor != stack) spent += tryCharge(armor, budget - spent);
+            }
+            for (int i = 9; i < player.getInventory().items.size() && budget - spent > 0; i++) {
+                ItemStack slot = player.getInventory().items.get(i);
+                if (slot == stack || slot == mainHand) continue;
+                spent += tryCharge(slot, budget - spent);
+            }
         }
 
         if (spent > 0) setEnergy(stack, stored - spent);
     }
 
     private int tryCharge(ItemStack target, int budget) {
-        if (target.isEmpty() || budget <= 0) return 0;
+        // другие амулеты/аккумуляторы не трогаем: два в режиме «Всё» гоняли бы энергию друг другу
+        if (target.isEmpty() || budget <= 0 || target.getItem() instanceof EnergyBackpackItem) return 0;
         return target.getCapability(ForgeCapabilities.ENERGY).map(e -> {
             if (!e.canReceive()) return 0;
             return e.receiveEnergy(budget, false);

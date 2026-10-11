@@ -141,7 +141,7 @@
         },
         {
           "type": "text",
-          "text": "You carry them in your inventory: they charge your tools and armor and let you take power with you. From smallest to largest: battery, lithium battery, flux core and plasma core."
+          "text": "They store power and go into crafting: the **charging amulet**, the **charging packs** and other powered gear are built from them. They don't charge anything by themselves. To top up your tools on the go, carry a charging amulet or pack. From smallest to largest: battery, lithium battery, flux core and plasma core."
         },
         {
           "type": "items",

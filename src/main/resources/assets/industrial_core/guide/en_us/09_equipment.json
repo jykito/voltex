@@ -36,7 +36,7 @@
         },
         {
           "type": "text",
-          "text": "They run on power from a cell in your inventory or from the backpack. The **wrench** configures machines and picks them up in one click, dropping their contents next to you. The **electric drill** and **industrial drill** dig fast and over an area, and the drill tip decides what the drill can mine. Both drills are built on a **tool base**."
+          "text": "Each holds its own charge. Charge them in the **battery charger**, or on the go with a **charging amulet** or **charging pack**. The **wrench** configures machines and picks them up in one click, dropping their contents next to you. The **electric drill** and **industrial drill** dig fast and over an area, and the drill tip decides what the drill can mine. Both drills are built on a **tool base**."
         },
         {
           "type": "items",
@@ -51,16 +51,16 @@
       ]
     },
     {
-      "name": "Energy Backpack",
+      "name": "Charging Amulet and Packs",
       "elements": [
         {
           "type": "card",
           "icon": "industrial_core:energy_backpack_t1",
-          "title": "Energy Backpack"
+          "title": "Charging Amulet and Packs"
         },
         {
           "type": "text",
-          "text": "You wear it on your back and it charges your tools and armor by itself. It comes in 1M, 10M and 100M FE. You choose what it charges: just the item in your hand, the whole hotbar, or your whole inventory."
+          "text": "Keep it anywhere in your inventory and it tops up your tools and armor by itself. The **charging amulet** holds 1M FE, the **charging packs** T2 and T3 hold 10M and 100M. **Shift + right click** switches what it charges: the item in your hand, the hotbar, or everything including the armor you wear. Charge the amulet or pack itself in the **battery charger**."
         },
         {
           "type": "items",

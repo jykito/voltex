@@ -441,7 +441,7 @@
   "tooltip.industrial_core.backpack_mode_hand": "Режим: Рука",
   "tooltip.industrial_core.backpack_mode_hotbar": "Режим: Хотбар",
   "tooltip.industrial_core.backpack_mode_all": "Режим: Всё",
-  "tooltip.industrial_core.backpack_hint": "Шифт+ПКМ — сменить режим зарядки",
+  "tooltip.industrial_core.backpack_hint": "Шифт+ПКМ: сменить режим зарядки",
   "item.industrial_core.logistics_linker": "Линкер",
   "block.industrial_core.distant_controller": "Дистанционный контроллер",
   "block.industrial_core.thermostation_core": "Термостанция",

@@ -441,7 +441,7 @@
   "tooltip.industrial_core.backpack_mode_hand": "Mode: Hand",
   "tooltip.industrial_core.backpack_mode_hotbar": "Mode: Hotbar",
   "tooltip.industrial_core.backpack_mode_all": "Mode: All",
-  "tooltip.industrial_core.backpack_hint": "Shift+RMB — switch charging mode",
+  "tooltip.industrial_core.backpack_hint": "Shift+RMB: switch charging mode",
   "item.industrial_core.logistics_linker": "Linker",
   "block.industrial_core.distant_controller": "Distant Controller",
   "block.industrial_core.thermostation_core": "Thermal Station",
