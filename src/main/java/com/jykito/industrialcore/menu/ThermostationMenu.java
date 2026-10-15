@@ -29,7 +29,7 @@ public class ThermostationMenu extends MachineMenu {
         this.data = data;
 
         var handler = this.blockEntity.getItemHandler();
-        this.addSlot(new SlotItemHandler(handler, 0, 120, 63) {          // x2-апгрейд слот — пока ЗАЛОЧЕН
+        this.addSlot(new SlotItemHandler(handler, 0, 120, 63) {          // x2 upgrade slot, LOCKED for now
             @Override public boolean mayPlace(@NotNull ItemStack s) { return false; }
         });
 

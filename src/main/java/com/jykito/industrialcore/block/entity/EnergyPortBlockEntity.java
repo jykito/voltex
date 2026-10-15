@@ -24,12 +24,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Энергетический разъём мультиблока: только вход FE, наружу не отдаёт. Ёмкость задаёт
- * улучшение порта. Ядро забирает энергию напрямую через {@link #getEnergy()}.
+ * Multiblock energy connector: FE input only, gives nothing outside. Capacity is set by
+ * the port upgrade. The core takes energy directly through {@link #getEnergy()}.
  */
 public class EnergyPortBlockEntity extends BlockEntity implements MenuProvider {
 
-    /** Буфер с изменяемой ёмкостью: приём без лимита за вызов, отдачи наружу нет. */
+    /** Buffer with variable capacity: no per-call intake limit, nothing goes outside. */
     public static class PortEnergy extends MachineEnergy {
         PortEnergy() { super(PortUpgradeItem.energy(0), Integer.MAX_VALUE, 0); }
         void setCapacity(int cap) { capacity = cap; energy = Math.min(energy, cap); }
@@ -48,7 +48,7 @@ public class EnergyPortBlockEntity extends BlockEntity implements MenuProvider {
     private final ItemStackHandler upgrade = new ItemStackHandler(1) {
         @Override public int getSlotLimit(int slot) { return 1; }
         @Override public boolean isItemValid(int slot, @NotNull ItemStack stack) { return stack.getItem() instanceof PortUpgradeItem; }
-        /** Снять улучшение можно, только если заряд влезет в буфер без него. */
+        /** The upgrade can be removed only if the charge fits into the buffer without it. */
         @Override public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
             return energy.getEnergyStored() <= PortUpgradeItem.energy(0) ? super.extractItem(slot, amount, simulate) : ItemStack.EMPTY;
         }

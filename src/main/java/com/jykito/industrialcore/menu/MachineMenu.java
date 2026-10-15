@@ -6,19 +6,19 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
 
-/** Общее для меню машин: инвентарь игрока в сетке GUI мода и распаковка синхронизированных чисел. */
+/** Shared by machine menus: the player inventory in the mod's GUI grid and unpacking synced numbers. */
 public abstract class MachineMenu extends AbstractContainerMenu {
 
-    /** Шаг сетки слотов в артах мода (у ванили 18). */
+    /** Slot grid step in the mod's art (vanilla uses 18). */
     protected static final int SLOT_STEP = 19;
-    /** Хотбар ниже верхнего ряда инвентаря: три ряда плюс зазор 6 px. */
+    /** Hotbar below the top inventory row: three rows plus a 6 px gap. */
     private static final int HOTBAR_OFFSET = 3 * SLOT_STEP + 6;
 
     protected MachineMenu(@Nullable MenuType<?> type, int containerId) {
         super(type, containerId);
     }
 
-    /** Инвентарь игрока 3×9 с левым верхним слотом в (x, y) и хотбар под ним. */
+    /** Player inventory 3x9 with the top-left slot at (x, y) and the hotbar below it. */
     protected void addPlayerInventory(Inventory inv, int x, int y) {
         for (int i = 0; i < 3; i++)
             for (int j = 0; j < 9; j++)
@@ -28,19 +28,19 @@ public abstract class MachineMenu extends AbstractContainerMenu {
     }
 
     /**
-     * ContainerData передаёт клиенту только 16 бит на ячейку, поэтому int больше 32767
-     * (энергия, ёмкости) идёт двумя ячейками. Младшую маскируем: иначе её знак портит число.
+     * ContainerData only sends 16 bits per cell to the client, so an int above 32767
+     * (energy, capacities) goes in two cells. The low half is masked, otherwise its sign spoils the number.
      */
     protected static int unpack(int lo, int hi) {
         return (hi << 16) | (lo & 0xFFFF);
     }
 
-    /** Длина заливки полоски в пикселях, с округлением вниз. */
+    /** Fill length of a bar in pixels, rounded down. */
     protected static int scale(int value, int max, int px) {
         return max != 0 && value != 0 ? (int) ((long) value * px / max) : 0;
     }
 
-    /** Длина стрелки прогресса: первый же тик уже виден (округление вверх), не длиннее px. */
+    /** Progress arrow length: the very first tick is already visible (rounded up), no longer than px. */
     protected static int scaleProgress(int progress, int max, int px) {
         if (max == 0 || progress == 0) return 0;
         return Math.min(px, (progress * px + max - 1) / max);

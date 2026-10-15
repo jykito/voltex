@@ -29,8 +29,8 @@ import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Ядро лейт-мультиблока: лицо смотрит на игрока при установке, LIT включает анимацию лица.
- * Форма структуры и тип рецептов задаются при регистрации, логика общая
+ * Late multiblock core: the face turns to the player on placement, LIT enables the face animation.
+ * The structure shape and recipe type are set at registration, the logic is shared
  * ({@link LateMachineCoreBlockEntity}).
  */
 public class LateMachineCoreBlock extends HorizontalDirectionalBlock implements EntityBlock {
@@ -40,12 +40,12 @@ public class LateMachineCoreBlock extends HorizontalDirectionalBlock implements 
     private final LateMultiblockPattern pattern;
     private final java.util.List<LateRecipe.Mode> modes;
 
-    /** Ядро с одним набором рецептов: режимов нет, кнопки в GUI тоже. */
+    /** Core with a single recipe set: no modes, and no button in the GUI. */
     public LateMachineCoreBlock(Properties props, LateMultiblockPattern pattern, LateRecipe.Source recipes) {
         this(props, pattern, new LateRecipe.Mode("single", recipes));
     }
 
-    /** Ядро с режимами: игрок переключает их кнопкой в GUI, у каждого свои рецепты. */
+    /** Core with modes: the player switches them with a button in the GUI, each has its own recipes. */
     public LateMachineCoreBlock(Properties props, LateMultiblockPattern pattern, LateRecipe.Mode... modes) {
         super(props);
         this.pattern = pattern;
@@ -55,7 +55,7 @@ public class LateMachineCoreBlock extends HorizontalDirectionalBlock implements 
 
     public LateMultiblockPattern pattern() { return pattern; }
     public java.util.List<LateRecipe.Mode> modes() { return modes; }
-    /** Рецепты режима; номер вне списка (например, после смены блока) — первый режим. */
+    /** Recipes of a mode; an index outside the list (for example after the block changed) means the first mode. */
     public LateRecipe.Source recipes(int mode) { return modes.get(mode >= 0 && mode < modes.size() ? mode : 0).source(); }
 
     @Override
@@ -78,7 +78,7 @@ public class LateMachineCoreBlock extends HorizontalDirectionalBlock implements 
         return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
 
-    /** Штамм из слота промывщика падает отдельно: лут-таблица отдаёт только сам блок. */
+    /** The strain in the washer slot drops separately: the loot table only drops the block itself. */
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moving) {
         if (state.getBlock() != newState.getBlock() && level.getBlockEntity(pos) instanceof LateMachineCoreBlockEntity be)

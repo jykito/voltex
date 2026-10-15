@@ -9,7 +9,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 
-/** Гайд-мануал: ПКМ открывает нативный экран-справочник (клиентски). */
+/** Guide manual: RMB opens the native reference screen (client side). */
 public class ManualItem extends Item {
     public ManualItem(Properties p) { super(p); }
 

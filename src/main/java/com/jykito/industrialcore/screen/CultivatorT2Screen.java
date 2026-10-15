@@ -9,7 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-/** Взраститель T2, окно «Ряды»: три линии со своими стрелками, общие бак, энергия и модуль. Арт — tools/gui_gen/t2_gui.js. */
+/** Cultivator T2, the "Rows" window: three lines with their own arrows, shared tank, energy and module. Art: tools/gui_gen/t2_gui.js. */
 public class CultivatorT2Screen extends MachineScreen<CultivatorMenu> {
 
     private static final ResourceLocation TEXTURE =
@@ -17,7 +17,7 @@ public class CultivatorT2Screen extends MachineScreen<CultivatorMenu> {
 
     private static final int ENERGY_X = 72, ENERGY_Y = 103;
 
-    /** Стрелка линии: слева сверху (PROG_X, PROG_Y + PROG_STEP * линия); спрайт заливки — его, из окна T1. */
+    /** Line arrow: top left (PROG_X, PROG_Y + PROG_STEP * line); the fill sprite is the author's, from the T1 window. */
     public static final int PROG_X = 120, PROG_Y = 41, PROG_STEP = CultivatorMenu.T2_ROW_STEP, PROG_W = 22, PROG_H = 8;
     private static final int PROG_SRC_U = 120, PROG_SRC_V = 255;
 

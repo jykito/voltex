@@ -26,9 +26,9 @@ import net.minecraftforge.fml.common.Mod;
 public final class ClientForgeEvents {
 
     /**
-     * Под шлемом Nexite или Plasma голова и второй слой скина не рисуются: шлем скруглённый и меньше куба головы,
-     * иначе сквозь срезанные углы торчал бы скин. Видимость сама вернётся на следующем кадре
-     * (PlayerRenderer заново включает части модели перед этим событием).
+     * Under a Nexite or Plasma helmet the head and the second skin layer are not drawn: the helmet is rounded and smaller than the head cube,
+     * otherwise the skin would poke through the cut corners. Visibility comes back by itself on the next frame
+     * (PlayerRenderer re-enables the model parts before this event).
      */
     @SubscribeEvent
     public static void onRenderPlayerPre(net.minecraftforge.client.event.RenderPlayerEvent.Pre event) {
@@ -40,17 +40,17 @@ public final class ClientForgeEvents {
     }
 
     /**
-     * Рука от первого лица в нагруднике Nexite или Plasma. Ваниль броню на руке не рисует вообще, поэтому рисуем сами:
-     * сначала обычную руку (она же выставляет позу под широкую или тонкую модель скина), потом поверх неё кость руки
-     * силовой модели в той же позе. Ванильный вызов отменяется, чтобы рука не рисовалась дважды.
-     * ⚠ Событие шлёт сам PlayerRenderer.renderRightHand/renderLeftHand, поэтому наш вызов руки снова попадает сюда:
-     * без флага это бесконечная рекурсия и краш (переполнение стека, в отчёте маскируется под LinkageError log4j).
+     * First-person arm in a Nexite or Plasma chestplate. Vanilla does not draw armor on the arm at all, so we draw it ourselves:
+     * first the normal arm (it also sets the pose for the wide or slim skin model), then on top of it the arm bone
+     * of the power suit model in the same pose. The vanilla call is cancelled so the arm is not drawn twice.
+     * ⚠ The event is fired by PlayerRenderer.renderRightHand/renderLeftHand itself, so our arm call lands here again:
+     * without the flag that is infinite recursion and a crash (stack overflow, which the report disguises as a log4j LinkageError).
      */
     private static boolean renderingArm;
 
     @SubscribeEvent
     public static void onRenderArm(net.minecraftforge.client.event.RenderArmEvent event) {
-        if (renderingArm) return;   // вложенный вызов из renderRightHand: обычная рука
+        if (renderingArm) return;   // nested call from renderRightHand: the normal arm
         var player = event.getPlayer();
         ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
         if (!(chest.getItem() instanceof com.jykito.industrialcore.item.custom.NexiteArmorItem) && !(chest.getItem() instanceof PlasmaArmorItem)) return;
@@ -78,7 +78,7 @@ public final class ClientForgeEvents {
         if (event.phase != TickEvent.Phase.END) return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
-        com.jykito.industrialcore.client.drill.DrillSound.clientTick(mc);   // звук бура, пока копаешь
+        com.jykito.industrialcore.client.drill.DrillSound.clientTick(mc);   // drill sound while digging
 
         if (mc.screen == null) {
             while (ModKeyBindings.DRILL_MODE.consumeClick()) {

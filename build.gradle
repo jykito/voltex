@@ -74,24 +74,24 @@ repositories {
     }
 }
 
-// === ДОБАВЛЕНА ЗАВИСИМОСТЬ MEKANISM С ДЕОБФУСКАЦИЕЙ ===
+// === Mekanism dependency with deobfuscation ===
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    // JEI — compileOnly чтобы не бандлить в jar, runtimeOnly чтобы работал при запуске из IDE
+    // JEI: compileOnly so it is not bundled in the jar, runtimeOnly so it works when launched from the IDE
     compileOnly fg.deobf("mezz.jei:jei-1.20.1-forge:15.3.0.4")
     runtimeOnly fg.deobf("mezz.jei:jei-1.20.1-forge:15.3.0.4")
 
-    // Jade — опциональная зависимость, только чтобы скомпилировать плагин-подсказчик.
-    // Не бандлится и в рантайме не нужна: без Jade класс плагина никто не грузит.
+    // Jade: optional dependency, only to compile the tooltip plugin.
+    // Not bundled and not needed at runtime: without Jade nothing loads the plugin class.
     compileOnly files('libs/Jade-1.20.1-Forge-11.13.2.jar')
 
-    // AE2 — опциональная зависимость для МЭ-портов лейт-мультиблоков, только для компиляции.
-    // Полный jar, а не :api: порту шаблонов нужен PatternContainer (терминал доступа к шаблонам), он вне API.
-    // Без AE2 в сборке классы интеграции никто не грузит (см. compat/ae2).
+    // AE2: optional dependency for the ME ports of late multiblocks, compile only.
+    // The full jar, not :api: the pattern port needs PatternContainer (pattern access terminal), which is outside the API.
+    // Without AE2 in the pack nothing loads the integration classes (see compat/ae2).
     compileOnly fg.deobf("appeng:appliedenergistics2-forge:15.4.10")
 
-    // KubeJS — опциональная зависимость, не бандлится в jar
+    // KubeJS: optional dependency, not bundled in the jar
     compileOnly fg.deobf("dev.latvian.mods:rhino-forge:2001.2.2-build.17")
     compileOnly fg.deobf("dev.architectury:architectury-forge:9.1.12")
     compileOnly fg.deobf("dev.latvian.mods:kubejs-forge:2001.6.5-build.26")

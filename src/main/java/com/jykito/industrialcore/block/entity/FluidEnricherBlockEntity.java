@@ -53,8 +53,8 @@ public class FluidEnricherBlockEntity extends BlockEntity implements MenuProvide
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             return switch (slot) {
                 case 0 -> stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).isPresent();
-                // 1 и 5 — выходы. Разрешены, потому что машина кладёт туда результат
-                // через этот же insertItem; закрыты они в automationHandler.
+                // 1 and 5 are outputs. They are allowed because the machine puts the result there
+                // through this same insertItem; they are closed in automationHandler.
                 case 1, 5 -> true;
                 case 2, 3 -> isReagent(stack);
                 case 4 -> stack.getItem() == ModItems.UNIVERSAL_CAPSULE.get();
@@ -70,12 +70,12 @@ public class FluidEnricherBlockEntity extends BlockEntity implements MenuProvide
         @Override public int getSlots() { return itemHandler.getSlots(); }
         @Override public @NotNull ItemStack getStackInSlot(int slot) { return itemHandler.getStackInSlot(slot); }
         @Override public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-            // извне пишем только во входы: 1 и 5 — выходы, 6-9 — улучшения
+            // from outside we write only into inputs: 1 and 5 are outputs, 6-9 upgrades
             if (slot != 0 && slot != 2 && slot != 3 && slot != 4) return stack;
             return itemHandler.insertItem(slot, stack, simulate);
         }
         @Override public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
-            // выходы плюс слоты реагентов, чтобы застрявшее сырьё можно было выкачать трубой
+            // outputs plus reagent slots, so stuck input can be pumped out with a pipe
             if (slot != 1 && slot != 5 && slot != 2 && slot != 3) return ItemStack.EMPTY;
             return itemHandler.extractItem(slot, amount, simulate);
         }
@@ -85,7 +85,7 @@ public class FluidEnricherBlockEntity extends BlockEntity implements MenuProvide
 
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
-    private final MachineEnergy energyStorage = MachineEnergy.consumer(50000, 50000); // приём = буфер, без потолка на вход
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(50000, 50000); // intake = buffer, no input cap
     private LazyOptional<EnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
     private final IFluidHandler combinedFluidHandler = new IFluidHandler() {
@@ -168,7 +168,7 @@ public class FluidEnricherBlockEntity extends BlockEntity implements MenuProvide
 
         MachineUpgrades upg = MachineUpgrades.scan(itemHandler, 6, 9);
 
-        // Оба бака растут: партия ×64 и берёт, и отдаёт в 64 раза больше.
+        // Both tanks grow: a x64 batch takes and gives 64 times more.
         boolean resized = AdaptiveTank.resize(inputTank,  TANK_BASE, upg.parallel());
         resized        |= AdaptiveTank.resize(outputTank, TANK_BASE, upg.parallel());
         if (resized) level.sendBlockUpdated(pos, state, state, 3);
@@ -226,13 +226,13 @@ public class FluidEnricherBlockEntity extends BlockEntity implements MenuProvide
         setChanged();
     }
 
-    /** Годится ли предмет в слот реагента: он должен быть ингредиентом хоть одного рецепта обогатителя. */
+    /** Whether an item fits the reagent slot: it must be an ingredient of at least one enricher recipe. */
     private boolean isReagent(ItemStack stack) {
         if (stack.isEmpty()) return false;
         Level lvl = this.level;
-        if (lvl == null) return true; // до привязки к миру рецептов не спросить, не мешаем загрузке сейва
+        if (lvl == null) return true; // before the world is attached we cannot query recipes; do not get in the way of loading the save
         for (FluidEnricherRecipe r : lvl.getRecipeManager().getAllRecipesFor(ModRecipes.FLUID_ENRICHER_TYPE.get())) {
-            if (r.isLateOnly()) continue;   // только для промышленного обогатителя
+            if (r.isLateOnly()) continue;   // industrial enricher only
             if (r.getItemIngredient().test(stack)) return true;
             if (r.hasSecondReagent() && r.getItemIngredient2().test(stack)) return true;
         }

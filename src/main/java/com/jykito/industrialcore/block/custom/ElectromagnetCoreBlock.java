@@ -24,8 +24,8 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Ядро электромагнита — контроллер мультиблока-ускорителя.
- * При сборке структуры 7×7×8 (FORMED) блок-модель прячется, BER рисует корпус (OBJ) поверх скелета.
+ * Electromagnet core: controller of the accelerator multiblock.
+ * When the 7x7x8 structure forms (FORMED) the block model hides and the BER draws the body (OBJ) over the skeleton.
  */
 public class ElectromagnetCoreBlock extends BaseEntityBlock {
 
@@ -51,7 +51,7 @@ public class ElectromagnetCoreBlock extends BaseEntityBlock {
 
     @Override
     public RenderShape getRenderShape(BlockState state) {
-        // сформирован → прячем блок-модель, корпус рисует BER поверх скелета; иначе видно блок-ядро
+        // formed -> hide the block model, the BER draws the body over the skeleton; otherwise the core block is visible
         return state.getValue(FORMED) ? RenderShape.ENTITYBLOCK_ANIMATED : RenderShape.MODEL;
     }
 
@@ -61,7 +61,7 @@ public class ElectromagnetCoreBlock extends BaseEntityBlock {
         return new ElectromagnetCoreBlockEntity(pos, state);
     }
 
-    // ПКМ по собранному ядру → открыть GUI ускорителя (скелет-блоки меню не открывают)
+    // RMB on a formed core -> open the accelerator GUI (skeleton blocks do not open the menu)
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!state.getValue(FORMED)) return InteractionResult.PASS;
@@ -69,14 +69,14 @@ public class ElectromagnetCoreBlock extends BaseEntityBlock {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof ElectromagnetCoreBlockEntity mag)
                 net.minecraftforge.network.NetworkHooks.openScreen((net.minecraft.server.level.ServerPlayer) player, mag, buf -> {
-                    buf.writeBlockPos(pos);   // ядро (данные/BE)
-                    buf.writeBlockPos(pos);   // якорь = само ядро
+                    buf.writeBlockPos(pos);   // core (data/BE)
+                    buf.writeBlockPos(pos);   // anchor = the core itself
                 });
         }
         return InteractionResult.sidedSuccess(level.isClientSide());
     }
 
-    // ── Редстоун-выход: компаратор читает рассогласование резонанса (7 = на цели, >7 перелёт, <7 недолёт) ──
+    // ── Redstone output: a comparator reads the resonance error (7 = on target, >7 overshoot, <7 undershoot) ──
     @Override
     public boolean hasAnalogOutputSignal(BlockState state) {
         return state.getValue(FORMED);
@@ -91,7 +91,7 @@ public class ElectromagnetCoreBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (level.isClientSide) {
-            // клиентский тик — только звук/разгон (гул, пролёты столбов, powerup)
+            // client tick: sound and spin-up only (hum, column passes, powerup)
             return createTickerHelper(type, ModBlockEntities.ELECTROMAGNET_CORE_BE.get(),
                     (lvl, pos, st, be) -> ((ElectromagnetCoreBlockEntity) be).clientTick(lvl, pos, st));
         }
@@ -99,7 +99,7 @@ public class ElectromagnetCoreBlock extends BaseEntityBlock {
                 (lvl, pos, st, be) -> ((ElectromagnetCoreBlockEntity) be).tick(lvl, pos, st));
     }
 
-    // сломали ядро собранного мультиблока → вернуть видимость скелету
+    // the core of a formed multiblock was broken -> make the skeleton visible again
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock() && state.getValue(FORMED)) {

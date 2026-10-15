@@ -7,8 +7,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fml.ModList;
 
 /**
- * Развилка для МЭ-портов без ссылок на AE2: этот класс грузится всегда, классы с API AE2
- * ({@link Ae2PortFactory} и порты) — только когда AE2 установлен. Без AE2 МЭ-порт — обычный порт.
+ * Switch for the ME ports without AE2 references: this class always loads, the classes with the AE2 API
+ * ({@link Ae2PortFactory} and the ports) only when AE2 is installed. Without AE2 an ME port is a regular port.
  */
 public final class MePorts {
 

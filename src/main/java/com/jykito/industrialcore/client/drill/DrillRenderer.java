@@ -22,27 +22,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Объёмные буры в руке, на земле и в рамке (в интерфейсе у предмета остаётся плоская анимированная иконка:
- * модель предмета forge:separate_transforms, вид gui — item/generated). Геометрия из эскиза
- * tools/texture_viewer/drills2.html: восьмигранник = 4 бруска с поворотом 0/45/90/135° вокруг оси, наконечник
- * «конус» из двух закрученных сегментов (drills3.html, вариант Б3). Бур лежит в пространстве предмета как ванильный инструмент на иконке — сверло по диагонали
- * вправо-вверх, рукоять внизу слева, — поэтому подходят настройки показа item/handheld.
- * Сверло крутится всегда, а пока игрок ломает блок, бур мелко дрожит (взмах руки у буров отменён); огоньки заряда на левом боку корпуса (от первого лица он смотрит к центру экрана) горят по уровню энергии; у промышленного в режиме 3×3
- * выдвинуты три малых сверла.
+ * Volumetric drills in hand, on the ground and in item frames (in the inventory the item keeps a flat animated icon:
+ * the item model is forge:separate_transforms, the gui view is item/generated). Geometry from the sketch
+ * tools/texture_viewer/drills2.html: an octagon = 4 bars rotated 0/45/90/135° around the axis, a "cone" tip
+ * of two twisted segments (drills3.html, variant B3). The drill sits in item space like a vanilla tool on an icon: bit diagonally
+ * up and to the right, handle at the bottom left, so the item/handheld display settings fit.
+ * The bit always spins, and while the player breaks a block the drill shakes slightly (the drills' arm swing is cancelled); the charge lights on the left side of the body (in first person it faces the centre of the screen) light up by energy level; on the industrial one in 3x3 mode
+ * three small bits extend.
  */
 public final class DrillRenderer extends BlockEntityWithoutLevelRenderer {
 
     private static final ResourceLocation TEX = new ResourceLocation("industrial_core", "textures/models/drill_parts.png");
     private static final float PX = 1 / 16f;
 
-    /** Плитки атласа 64×64 (16×16, по 4 в ряд) — порядок как в drills2.html exportAtlas. */
+    /** Atlas tiles 64x64 (16x16, 4 per row), in the same order as drills2.html exportAtlas. */
     enum Mat { BLUE, BLUE_D, CYAN, GRAPH, STEEL, RUBBER, IRON, NETH, LED_ON, LED_OFF, CYAN_GLOW, HOT;
         boolean glow() { return this == LED_ON || this == CYAN_GLOW || this == HOT; } }
 
-    /** Брусок w×h×d (пиксели) с центром (x, y, z) и поворотом вокруг оси z. */
+    /** A w x h x d bar (pixels) centred at (x, y, z) and rotated around the z axis. */
     private record Cube(float w, float h, float d, float x, float y, float z, float zRot, Mat mat) {}
 
-    /** Форма бура. grip — бруски рукояти (поворот gripAngle вокруг x в точке gripPivot), hand — где её держит рука. */
+    /** Drill shape. grip: handle bars (rotated gripAngle around x at gripPivot), hand: where the hand holds it. */
     private static final class Shape {
         final List<Cube> body = new ArrayList<>(), grip = new ArrayList<>(), bit = new ArrayList<>(), leds = new ArrayList<>(),
                 sub = new ArrayList<>(), subBit = new ArrayList<>();
@@ -52,7 +52,7 @@ public final class DrillRenderer extends BlockEntityWithoutLevelRenderer {
             float s = 2 * a * (float) Math.tan(Math.toRadians(22.5)), len = Math.abs(z2 - z1), zc = (z1 + z2) / 2;
             for (float r : new float[]{0, 45, 90, 135}) to.add(new Cube(2 * a, s, len, 0, 0, zc, r + tw, m));
         }
-        /** Наконечник «конус»: сегменты {апофема, длина}, каждый закручен на twist, на конце тупой торец tip×tip×tipLen. */
+        /** "Cone" tip: segments {apothem, length}, each twisted by twist, with a blunt end tip x tip x tipLen. */
         static void bit(List<Cube> to, float z0, float[][] segs, Mat m, float twist, float tip, float tipLen) {
             float z = z0; int k = 0;
             for (float[] s : segs) { oct(to, s[0], z, z - s[1], m, k * twist); z -= s[1]; k++; }
@@ -63,34 +63,34 @@ public final class DrillRenderer extends BlockEntityWithoutLevelRenderer {
     private static final Shape ELECTRIC = new Shape(), INDUSTRIAL = new Shape();
     static {
         Shape e = ELECTRIC;
-        Shape.oct(e.body, 4, -2, 8, Mat.BLUE, 0);            // корпус мотора
-        Shape.oct(e.body, 3.4f, 8, 9, Mat.BLUE_D, 0);        // задняя крышка
-        Shape.oct(e.body, 4.15f, 2.6f, 3.2f, Mat.CYAN, 0);   // голубое кольцо
-        Shape.oct(e.body, 4.5f, -3, -2, Mat.GRAPH, 0);       // передний фланец
-        Shape.oct(e.body, 3, -5, -3, Mat.GRAPH, 0);          // нос
-        Shape.oct(e.body, 2, -8, -5, Mat.STEEL, 0);          // патрон
+        Shape.oct(e.body, 4, -2, 8, Mat.BLUE, 0);            // motor housing
+        Shape.oct(e.body, 3.4f, 8, 9, Mat.BLUE_D, 0);        // back cover
+        Shape.oct(e.body, 4.15f, 2.6f, 3.2f, Mat.CYAN, 0);   // blue ring
+        Shape.oct(e.body, 4.5f, -3, -2, Mat.GRAPH, 0);       // front flange
+        Shape.oct(e.body, 3, -5, -3, Mat.GRAPH, 0);          // nose
+        Shape.oct(e.body, 2, -8, -5, Mat.STEEL, 0);          // chuck
         Shape.oct(e.body, 2.35f, -6.8f, -6.2f, Mat.STEEL, 22.5f);
         e.pivotY = -3; e.pivotZ = 5.5f;
         e.grip.add(new Cube(3, 9, 3.6f, 0, -4.5f, 0, 0, Mat.RUBBER));
-        e.body.add(new Cube(1, 2.2f, 1, 0, -4.4f, 2.6f, 0, Mat.CYAN_GLOW));   // курок
-        e.body.add(new Cube(6, 3, 7, 0, -12.2f, 6.6f, 0, Mat.BLUE_D));        // батарея
+        e.body.add(new Cube(1, 2.2f, 1, 0, -4.4f, 2.6f, 0, Mat.CYAN_GLOW));   // trigger
+        e.body.add(new Cube(6, 3, 7, 0, -12.2f, 6.6f, 0, Mat.BLUE_D));        // battery
         e.body.add(new Cube(6.2f, 1, 7.2f, 0, -10.6f, 6.6f, 0, Mat.GRAPH));
-        e.body.add(new Cube(0.4f, 1.6f, 4.2f, -4.1f, 0, 5.7f, 0, Mat.GRAPH));    // планка заряда на левом боку, за кольцом
+        e.body.add(new Cube(0.4f, 1.6f, 4.2f, -4.1f, 0, 5.7f, 0, Mat.GRAPH));    // charge bar on the left side, behind the ring
         for (int i = 0; i < 3; i++) e.leds.add(new Cube(0.4f, 1, 1, -4.25f, 0, 7 - i * 1.3f, 0, Mat.LED_ON));
-        e.body.add(new Cube(1, 0.6f, 1, 0, 4.1f, 6.5f, 0, Mat.LED_ON));       // огонёк состояния
+        e.body.add(new Cube(1, 0.6f, 1, 0, 4.1f, 6.5f, 0, Mat.LED_ON));       // status light
         Shape.bit(e.bit, -8, new float[][]{{1.6f, 2.6f}, {1.1f, 2.2f}}, Mat.IRON, 22.5f, 0.8f, 0.5f);
         e.handY = -7.4f; e.handZ = 4.4f; e.scale = 0.55f;
 
         Shape n = INDUSTRIAL;
         Shape.oct(n.body, 5, -3, 11, Mat.BLUE, 0);
-        for (float z : new float[]{1.5f, 4, 6.5f}) Shape.oct(n.body, 5.6f, z, z + 0.9f, Mat.GRAPH, 0);   // рёбра охлаждения
+        for (float z : new float[]{1.5f, 4, 6.5f}) Shape.oct(n.body, 5.6f, z, z + 0.9f, Mat.GRAPH, 0);   // cooling fins
         Shape.oct(n.body, 4.2f, 11, 12.2f, Mat.BLUE_D, 0);
-        n.body.add(new Cube(2.4f, 2.4f, 0.4f, 0, 0, 12.3f, 0, Mat.HOT));       // выхлоп
+        n.body.add(new Cube(2.4f, 2.4f, 0.4f, 0, 0, 12.3f, 0, Mat.HOT));       // exhaust
         Shape.oct(n.body, 5.4f, -4.2f, -3, Mat.CYAN, 0);
         Shape.oct(n.body, 4, -6.5f, -4.2f, Mat.GRAPH, 0);
         Shape.oct(n.body, 2.8f, -9.5f, -6.5f, Mat.STEEL, 0);
         Shape.oct(n.body, 3.2f, -8.4f, -7.6f, Mat.STEEL, 22.5f);
-        n.body.add(new Cube(1.4f, 3.4f, 1.4f, 0, 6.6f, 0.5f, 0, Mat.GRAPH));  // стойки верхней рукояти
+        n.body.add(new Cube(1.4f, 3.4f, 1.4f, 0, 6.6f, 0.5f, 0, Mat.GRAPH));  // upper handle posts
         n.body.add(new Cube(1.4f, 3.4f, 1.4f, 0, 6.6f, 8, 0, Mat.GRAPH));
         n.body.add(new Cube(2, 1.6f, 9.6f, 0, 8.8f, 4.25f, 0, Mat.RUBBER));
         n.pivotY = -4; n.pivotZ = 8;
@@ -98,7 +98,7 @@ public final class DrillRenderer extends BlockEntityWithoutLevelRenderer {
         n.body.add(new Cube(1.2f, 2.4f, 1.2f, 0, -5.4f, 4.6f, 0, Mat.CYAN_GLOW));
         n.body.add(new Cube(8, 4, 9, 0, -15, 9.4f, 0, Mat.BLUE_D));
         n.body.add(new Cube(8.2f, 1, 9.2f, 0, -12.6f, 9.4f, 0, Mat.GRAPH));
-        n.body.add(new Cube(0.4f, 1.9f, 3.7f, -5.1f, 0, -0.75f, 0, Mat.GRAPH));  // планка заряда за голубым кольцом
+        n.body.add(new Cube(0.4f, 1.9f, 3.7f, -5.1f, 0, -0.75f, 0, Mat.GRAPH));  // charge bar behind the blue ring
         for (int i = 0; i < 4; i++) n.leds.add(new Cube(0.4f, 1.2f, 0.7f, -5.25f, 0, 0.6f - i * 0.9f, 0, Mat.LED_ON));
         n.body.add(new Cube(1.2f, 0.6f, 1.2f, 0, 5.1f, 9.5f, 0, Mat.LED_ON));
         Shape.bit(n.bit, -9.5f, new float[][]{{2.4f, 3.4f}, {1.65f, 3}}, Mat.NETH, 22.5f, 1.1f, 0.6f);
@@ -109,18 +109,18 @@ public final class DrillRenderer extends BlockEntityWithoutLevelRenderer {
     }
 
     /**
-     * Оси бура (сверло −z, верх +y, право +x) -> пространство предмета: сверло по диагонали вправо-вверх, верх бура —
-     * вправо-вниз, право — от зрителя. Так в руке (handheld-трансформы) рукоять уходит в кулак, а батарея вниз;
-     * с верхом влево-вверх бур в руке был перевёрнут (проверено в игре 2026-10-04).
+     * Drill axes (bit −z, top +y, right +x) -> item space: bit diagonally up-right, drill top
+     * down-right, right away from the viewer. That way in hand (handheld transforms) the handle goes into the fist and the battery down;
+     * with the top up-left the drill was upside down in hand (checked in game 2026-10-04).
      */
     private static final Quaternionf TO_ITEM;
     static {
         float r = (float) (1 / Math.sqrt(2));
-        Matrix3f m = new Matrix3f(0, 0, -1,  r, -r, 0,  -r, -r, 0);   // столбцы: образы +x, +y, +z
+        Matrix3f m = new Matrix3f(0, 0, -1,  r, -r, 0,  -r, -r, 0);   // columns: images of +x, +y, +z
         TO_ITEM = new Quaternionf().setFromNormalized(m);
     }
 
-    /** Работа: подача вперёд по оси сверла (пиксели модели) и наклон носа вниз (градусы), плавно за ~0.1 с. */
+    /** Working: feed forward along the bit axis (model pixels) and the nose tilting down (degrees), smoothly over ~0.1 s. */
     private static final float DIG_PUSH = 3f, DIG_TILT = 7f;
     private static float dig;
     private static long digNanos;
@@ -130,7 +130,7 @@ public final class DrillRenderer extends BlockEntityWithoutLevelRenderer {
         float dt = digNanos == 0 ? 0 : Math.min(0.1f, (now - digNanos) / 1e9f);
         digNanos = now;
         dig += ((mining ? 1f : 0f) - dig) * Math.min(1f, dt * 10f);
-        return dig * dig * (3 - 2 * dig);   // плавный разгон и остановка
+        return dig * dig * (3 - 2 * dig);   // smooth spin-up and stop
     }
 
     private static DrillRenderer instance;
@@ -152,15 +152,15 @@ public final class DrillRenderer extends BlockEntityWithoutLevelRenderer {
         Minecraft mc = Minecraft.getInstance();
         boolean mining = mc.player != null && mc.gameMode != null && mc.gameMode.isDestroying() && mc.player.getMainHandItem() == stack;
         float time = (mc.level != null ? mc.level.getGameTime() : 0) + mc.getFrameTime();
-        float spin = time * 0.9f;   // сверло крутится всегда
+        float spin = time * 0.9f;   // the bit always spins
         float charge = drill.getCapacity() > 0 ? EnergyDrillItem.getStoredEnergy(stack) / (float) drill.getCapacity() : 0;
 
         VertexConsumer vc = ItemRenderer.getFoilBufferDirect(buf, RenderType.entityCutoutNoCull(TEX), false, stack.hasFoil());
         ps.pushPose();
-        ps.translate(5.5 * PX, 5.5 * PX, 0.5);          // рукоять там же, где у ванильного инструмента
+        ps.translate(5.5 * PX, 5.5 * PX, 0.5);          // handle in the same place as a vanilla tool
         ps.mulPose(TO_ITEM);
         ps.scale(s.scale, s.scale, s.scale);
-        // при работе бур подаётся вперёд и чуть клюёт носом, поворот вокруг рукояти (юзер 2026-10-10: «наклон при работе и чуть вперёд»)
+        // while working the drill feeds forward and dips its nose slightly, rotating around the handle (author, 2026-10-10: "tilt while working and a bit forward")
         boolean inHand = ctx.firstPerson() || ctx == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND || ctx == ItemDisplayContext.THIRD_PERSON_LEFT_HAND;
         float dig = inHand && mc.player != null && mc.player.getMainHandItem() == stack ? digAmount(mining) : 0;
         if (dig > 0) {
@@ -168,7 +168,7 @@ public final class DrillRenderer extends BlockEntityWithoutLevelRenderer {
             ps.mulPose(Axis.XP.rotationDegrees(-DIG_TILT * dig));
         }
         ps.translate(0, -s.handY * PX, -s.handZ * PX);
-        if (mining) ps.translate(Math.sin(time * 7.3) * 0.12 * PX, Math.sin(time * 9.1) * 0.12 * PX, 0);   // дрожь, пока бурит
+        if (mining) ps.translate(Math.sin(time * 7.3) * 0.12 * PX, Math.sin(time * 9.1) * 0.12 * PX, 0);   // shake while drilling
 
         for (Cube c : s.body) cube(ps, vc, c, light, overlay);
         ps.pushPose();
@@ -184,7 +184,7 @@ public final class DrillRenderer extends BlockEntityWithoutLevelRenderer {
         ps.mulPose(Axis.ZP.rotation(spin));
         for (Cube c : s.bit) cube(ps, vc, c, light, overlay);
         ps.popPose();
-        if (industrial && IndustrialDrillItem.getMode(stack) == 1) {   // режим 3×3: три малых сверла вокруг основного
+        if (industrial && IndustrialDrillItem.getMode(stack) == 1) {   // 3x3 mode: three small bits around the main one
             for (int a : new int[]{90, 210, 330}) {
                 ps.pushPose();
                 double rad = Math.toRadians(a);
@@ -198,7 +198,7 @@ public final class DrillRenderer extends BlockEntityWithoutLevelRenderer {
         ps.popPose();
     }
 
-    /** Брусок: каждая грань берёт плитку своего материала, 1 тексель на пиксель модели (до 16). */
+    /** Bar: each face takes the tile of its material, 1 texel per model pixel (up to 16). */
     private static void cube(PoseStack ps, VertexConsumer vc, Cube c, int light, int overlay) {
         ps.pushPose();
         ps.translate(c.x * PX, c.y * PX, c.z * PX);
@@ -217,7 +217,7 @@ public final class DrillRenderer extends BlockEntityWithoutLevelRenderer {
                 float[][] uv = {{u, v + dv}, {u + du, v + dv}, {u + du, v}, {u, v}};
                 float nx = axis == 0 ? sign : 0, ny = axis == 1 ? sign : 0, nz = axis == 2 ? sign : 0;
                 for (int k = 0; k < 4; k++) {
-                    int kk = sign > 0 ? k : 3 - k;   // обход против часовой снаружи
+                    int kk = sign > 0 ? k : 3 - k;   // counter-clockwise winding from outside
                     float[] p = new float[3];
                     p[axis] = sign * half[axis]; p[b] = corners[kk][0] * half[b]; p[cc] = corners[kk][1] * half[cc];
                     vc.vertex(pose, p[0], p[1], p[2]).color(1f, 1f, 1f, 1f).uv(uv[kk][0], uv[kk][1])

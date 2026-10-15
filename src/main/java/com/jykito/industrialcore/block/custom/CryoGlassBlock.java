@@ -19,21 +19,21 @@ import java.util.EnumMap;
 import java.util.Map;
 
 /**
- * Стеклянная панель криокамеры.
+ * Cryo chamber glass panel.
  * <p>
- * ⚠ НЕ наследуемся от {@code IronBarsBlock}: у ванильной панели логика «цепляйся к любому
- * твёрдому блоку» вшита намертво, и панель липла бы к камню, чужим машинам и обычному стеклу.
- * Здесь соединение — белый список: только блоки самой камеры (см. {@link #connects}).
+ * ⚠ We do NOT extend {@code IronBarsBlock}: the vanilla pane has "attach to any
+ * solid block" hard-wired, and the panel would stick to stone, other mods' machines and plain glass.
+ * Here connection is a whitelist: only the chamber's own blocks (see {@link #connects}).
  * <p>
- * Форма панели зависит от соседей, поэтому {@code getShape} зовётся коллизиями, рейкастом и
- * поиском пути помногу раз за кадр — все 16 комбинаций посчитаны заранее в {@link #SHAPES}.
+ * The panel shape depends on its neighbours, so {@code getShape} is called by collision, raycasts and
+ * pathfinding many times per frame; all 16 combinations are precomputed in {@link #SHAPES}.
  */
 public class CryoGlassBlock extends Block {
 
     /**
-     * Ось одиночной панели. Соседей нет — ориентироваться не по чему, поэтому запоминаем,
-     * куда смотрел игрок при постановке, и разворачиваем панель лицом к нему.
-     * Как только сосед появится, ориентацию задаёт связь, а не это свойство.
+     * Axis of a single panel. With no neighbours there is nothing to orient by, so we remember
+     * where the player was looking when placing it and turn the panel to face them.
+     * As soon as a neighbour appears, the connection sets the orientation, not this property.
      */
     public static final EnumProperty<Direction.Axis> AXIS = EnumProperty.create(
             "axis", Direction.Axis.class, Direction.Axis.X, Direction.Axis.Z);
@@ -44,8 +44,8 @@ public class CryoGlassBlock extends Block {
     public static final BooleanProperty WEST  = BooleanProperty.create("west");
 
     /**
-     * Вертикальные стыки. Геометрию не меняют — только текстуру: когда панель стоит на панели,
-     * шов между ними должен пропасть. Поэтому и живут отдельно от четырёх горизонтальных.
+     * Vertical joints. They do not change the geometry, only the texture: when a panel stands on a panel,
+     * the seam between them must disappear. That is why they are separate from the four horizontal ones.
      */
     public static final BooleanProperty UP   = BooleanProperty.create("up");
     public static final BooleanProperty DOWN = BooleanProperty.create("down");
@@ -60,34 +60,34 @@ public class CryoGlassBlock extends Block {
         PROPERTY_BY_DIRECTION.put(Direction.DOWN,  DOWN);
     }
 
-    /** Порядок бит маски: north, south, east, west. */
+    /** Mask bit order: north, south, east, west. */
     private static final Direction[] HORIZONTAL = { Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST };
 
-    /** Плита модели: 16×16×2 поперёк блока. Пока модель одна, дальше формы разойдутся по вариантам. */
+    /** Model slab: 16x16x2 across the block. While there is one model; later the shapes will split by variant. */
     private static final VoxelShape PANEL_NS = Block.box(0, 0, 7, 16, 16, 9);
     private static final VoxelShape PANEL_EW = Block.box(7, 0, 0, 9, 16, 16);
 
     /**
-     * Косая панель формой не выражается: {@code VoxelShape} умеет только прямоугольники по осям,
-     * диагоналей в движке нет вообще. Поэтому диагональ набирается ЛЕСЕНКОЙ из мелких боксов —
-     * иначе на углу выделение выглядит буквой Г и не совпадает с тем, что видно.
+     * A diagonal panel cannot be expressed as a shape: {@code VoxelShape} only knows axis-aligned boxes,
+     * the engine has no diagonals at all. So the diagonal is built as a STAIRCASE of small boxes,
+     * otherwise at a corner the selection looks like an L and does not match what you see.
      * <p>
-     * База — угол СЕВЕРО-ВОСТОК: отрезок из середины северной грани (8,0) в середину
-     * восточной (16,8), то есть по линии {@code z = x - 8}, толщиной 2 поперёк.
+     * Base case: the NORTH-EAST corner, a segment from the middle of the north face (8,0) to the middle
+     * of the east face (16,8), that is along the line {@code z = x - 8}, 2 thick across.
      */
     private static VoxelShape cornerNE() {
         VoxelShape shape = Shapes.empty();
-        final double halfBand = Math.sqrt(2);           // 2 поперёк наклона = 2.83 вдоль Z, половина от неё
+        final double halfBand = Math.sqrt(2);           // 2 across the slope = 2.83 along Z, half of that
         for (int i = 0; i < 8; i++) {
             double x0 = 8 + i, x1 = x0 + 1;
-            double zc = (x0 + x1) / 2 - 8;              // центр полосы на этом шаге
+            double zc = (x0 + x1) / 2 - 8;              // centre of the strip at this step
             double z0 = Math.max(0, zc - halfBand), z1 = Math.min(16, zc + halfBand);
             shape = Shapes.or(shape, Block.box(x0, 0, z0, x1, 16, z1));
         }
         return shape;
     }
 
-    /** Поворот формы на 90° по часовой (вид сверху): (x,z) -> (16-z, x). */
+    /** Rotate the shape 90° clockwise (top view): (x,z) -> (16-z, x). */
     private static VoxelShape rotateCW(VoxelShape src) {
         VoxelShape[] out = { Shapes.empty() };
         src.forAllBoxes((x0, y0, z0, x1, y1, z1) ->
@@ -97,7 +97,7 @@ public class CryoGlassBlock extends Block {
 
     private static final VoxelShape[] SHAPES = new VoxelShape[16];
     static {
-        // углы: индекс 0 = северо-восток, дальше по часовой, как в блокстейте
+        // corners: index 0 = north-east, then clockwise, as in the blockstate
         VoxelShape[] corner = new VoxelShape[4];
         corner[0] = cornerNE();
         for (int i = 1; i < 4; i++) corner[i] = rotateCW(corner[i - 1]);
@@ -108,17 +108,17 @@ public class CryoGlassBlock extends Block {
             VoxelShape shape;
 
             if (ns && ew) {
-                // смежная пара = угол, ориентация та же, что у модели в блокстейте
+                // adjacent pair = corner, same orientation as the model in the blockstate
                 if (n && e)      shape = corner[0];
                 else if (e && s) shape = corner[1];
                 else if (s && w) shape = corner[2];
                 else             shape = corner[3];
             } else if (ns) {
-                shape = PANEL_EW;                        // стена идёт север-юг
+                shape = PANEL_EW;                        // wall runs north-south
             } else if (ew) {
-                shape = PANEL_NS;                        // стена идёт восток-запад
+                shape = PANEL_NS;                        // wall runs east-west
             } else {
-                shape = PANEL_NS;                        // одиночная панель
+                shape = PANEL_NS;                        // single panel
             }
             SHAPES[mask] = shape.optimize();
         }
@@ -143,15 +143,15 @@ public class CryoGlassBlock extends Block {
         int mask = 0;
         for (int i = 0; i < HORIZONTAL.length; i++)
             if (state.getValue(PROPERTY_BY_DIRECTION.get(HORIZONTAL[i]))) mask |= 1 << i;
-        // одиночная панель формы не имеет от связей — берём по оси, куда её поставил игрок
+        // a single panel gets no shape from connections, so take it from the axis the player placed it on
         if (mask == 0) return state.getValue(AXIS) == Direction.Axis.X ? PANEL_EW : PANEL_NS;
         return SHAPES[mask];
     }
 
     @Nullable @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
-        // Панель ставим лицом к игроку: её плоскость поперёк взгляда, то есть ось совпадает
-        // с осью направления взгляда. Смотрит на север или юг — панель идёт восток-запад.
+        // Place the panel facing the player: its plane is across the view, so its axis matches
+        // the view direction axis. Looking north or south means the panel runs east-west.
         BlockState state = defaultBlockState()
                 .setValue(AXIS, ctx.getHorizontalDirection().getAxis());
         for (Direction d : Direction.values())
@@ -167,9 +167,9 @@ public class CryoGlassBlock extends Block {
     }
 
     /**
-     * Белый список: панель цепляется ТОЛЬКО к блокам криокамеры.
-     * ⚠ Сюда же дописывать структурный блок, внутренний холодильник и ядро, когда появятся —
-     * иначе панель у стены камеры не увидит угол и не станет косой.
+     * Whitelist: the panel attaches ONLY to cryo chamber blocks.
+     * ⚠ Add the structural block, the inner refrigerator and the core here when they exist,
+     * otherwise a panel at the chamber wall will not see the corner and will not turn diagonal.
      */
     private static boolean connects(BlockGetter level, BlockPos pos, Direction dir) {
         return level.getBlockState(pos.relative(dir)).getBlock() instanceof CryoGlassBlock;

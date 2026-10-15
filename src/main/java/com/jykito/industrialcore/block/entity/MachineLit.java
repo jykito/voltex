@@ -10,16 +10,16 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * Анти-мигание LIT у машин. Быстрые рецепты на 1 тик роняют working=false и дёргают
- * свет/текстуру вкл-выкл. Хелпер держит LIT включённым ещё GRACE тиков после остановки,
- * так что краткие паузы между рецептами не мигают. Состояние грейса — в WeakHashMap по BE
- * (чисто визуально, не персистится; ключ слабый — чистится при выгрузке/GC блока).
- * Зовётся КАЖДЫЙ тик (без if-гарда), сам решает когда менять блок. Возвращает дебаунс-состояние LIT.
+ * Anti-flicker for machine LIT. Fast 1-tick recipes drop working=false and toggle
+ * the light/texture on and off. The helper keeps LIT on for GRACE more ticks after stopping,
+ * so short pauses between recipes do not flicker. Grace state is in a WeakHashMap keyed by BE
+ * (purely visual, not persisted; the key is weak, so it is cleaned when the block unloads or is collected).
+ * Called EVERY tick (no if guard), it decides by itself when to change the block. Returns the debounced LIT state.
  */
 public final class MachineLit {
     private MachineLit() {}
 
-    public static final int GRACE = 20; // тиков «дотягивания» света после остановки (1 сек)
+    public static final int GRACE = 20; // ticks the light lingers after stopping (1 sec)
 
     private static final Map<BlockEntity, int[]> GRACE_MAP = new WeakHashMap<>();
 

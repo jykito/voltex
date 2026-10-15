@@ -30,11 +30,11 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Криокамера в JEI.
+ * Cryo chamber in JEI.
  * <p>
- * Главное, что должна сказать карточка, — на какой СТУПЕНИ рецепт работает. Ступень это не
- * сложность крафта, а состояние установки, за которое игрок платит минутами подачи тепла,
- * поэтому шкала глубины залита ровно до нужного порога, а не анимирована.
+ * The main thing the card must say is at which STAGE the recipe works. A stage is not
+ * crafting difficulty but a state of the installation the player pays for with minutes of heat supply,
+ * so the depth gauge is filled exactly to the required threshold, not animated.
  */
 public class CryoChamberJeiCategory implements IRecipeCategory<CryoRecipe> {
 
@@ -62,12 +62,12 @@ public class CryoChamberJeiCategory implements IRecipeCategory<CryoRecipe> {
     private static final int BAR_X = 22, BAR_W = 110, BAR_H = 6;
     private static final int DEPTH_Y = 94, ENERGY_Y = 109;
 
-    /** Границы отрезков шкалы совпадают с рисками на текстуре — как и в панели самой камеры. */
+    /** The gauge segment borders match the ticks on the texture, as in the chamber's own panel. */
     private static final int[] SEG_PX    = {0, 33, 67, BAR_W};
     private static final int[] SEG_DEPTH = {0, 200, 800, CryoCoreBlockEntity.MAX_DEPTH};
     private static final int DEPTH_COLOR = 0xFF40BEC7;
 
-    private static final int INFO_X = 23, INFO_Y = 7;   // строка текста в утопленной панели между угловыми плашками (окно К4)
+    private static final int INFO_X = 23, INFO_Y = 7;   // a text line in the recessed panel between the corner plates (window K4)
 
     private final RecipeType<CryoRecipe> recipeType;
     private final IDrawable background;
@@ -102,7 +102,7 @@ public class CryoChamberJeiCategory implements IRecipeCategory<CryoRecipe> {
         int stage = recipe.getRequiredStage();
         int coolant = CryoCoreBlockEntity.coolantPerTick(stage) * recipe.getProcessingTime();
 
-        // хладагент за всю проварку, а не за тик: игроку важно, во что обойдётся одна партия
+        // coolant for the whole run, not per tick: the player cares what one batch costs
         fluidSlot(builder, RecipeIngredientRole.INPUT, COOLANT_X,
                 new FluidStack(ModFluids.SOURCE_COOLANT.get(), coolant));
         fluidSlot(builder, RecipeIngredientRole.OUTPUT, HOT_X,
@@ -117,7 +117,7 @@ public class CryoChamberJeiCategory implements IRecipeCategory<CryoRecipe> {
             builder.addSlot(RecipeIngredientRole.OUTPUT, OUT_X, SLOT_Y)
                    .addItemStack(recipe.getResult().copy());
 
-        // Стержни не ингредиент, а ускоритель — поэтому катализатор, а не вход.
+        // Rods are not an ingredient but an accelerator, hence a catalyst rather than an input.
         for (int r = 0; r < ROD_X.length; r++)
             builder.addSlot(RecipeIngredientRole.CATALYST, ROD_X[r], ROD_Y)
                    .addItemStack(new ItemStack(ModItems.CRYO_ROD.get()))
@@ -137,7 +137,7 @@ public class CryoChamberJeiCategory implements IRecipeCategory<CryoRecipe> {
     public void draw(CryoRecipe recipe, IRecipeSlotsView slots, GuiGraphics g, double mouseX, double mouseY) {
         progress.draw(g, PROG_X, PROG_Y);
 
-        // рамки стержней горят всегда: в карточке слоты никогда не пустые
+        // rod frames are always lit: on the card the slots are never empty
         for (int r = 0; r < FRAME_X.length; r++)
             g.blit(TEXTURE, FRAME_X[r], FRAME_Y, FRAME_SRC_U, FRAME_SRC_V, FRAME_W, FRAME_H, TEX_W, TEX_H);
 

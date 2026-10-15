@@ -1,20 +1,20 @@
 package com.jykito.industrialcore.heat;
 
 /**
- * Тепло как ресурс: уровень (условная температура) 0..max.
- * Передача только «толчком» (receiveHeat) от горячего к холодному — как теплопроводность.
+ * Heat as a resource: level (nominal temperature) 0..max.
+ * Transfer only by "push" (receiveHeat) from hot to cold, like heat conduction.
  */
 public interface IHeatHandler {
 
-    /** Текущий уровень тепла. */
+    /** Current heat level. */
     int getHeat();
 
-    /** Максимум. */
+    /** Maximum. */
     int getMaxHeat();
 
     /**
-     * Принять тепло. Возвращает сколько реально принято (ограничено ёмкостью).
-     * @param simulate если true — только прикинуть, не менять состояние.
+     * Accept heat. Returns how much was actually accepted (limited by capacity).
+     * @param simulate if true, only estimate, do not change state.
      */
     int receiveHeat(int amount, boolean simulate);
 }

@@ -7,7 +7,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-/** Атлас видов нанитов уходит клиенту при входе в мир: дальше его обновляет само открытие видов. */
+/** The nanite species atlas is sent to the client on joining the world: after that, discovering species updates it. */
 @Mod.EventBusSubscriber(modid = IndustrialCore.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class NaniteAtlasEvents {
 

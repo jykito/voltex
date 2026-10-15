@@ -82,7 +82,7 @@ public class RestructorJeiCategory implements IRecipeCategory<MachineRecipe> {
         anim.advance();
         JeiGui.tileFill(g, JeiGui.ENERGY_FILL, EBAR_X, EBAR_Y, EBAR_W, anim.frame());
         var font = Minecraft.getInstance().font;
-        // у реструктора нет времени: предмет + накопленная энергия = результат, стоимость — на весь крафт
+        // the restructor has no time: item + accumulated energy = result, the cost is for the whole craft
         JeiGui.smallText(g, font, JeiGui.fe(recipe.getEnergyCost()) + " FE", INFO_X, INFO_Y, JeiGui.ENERGY);
     }
 

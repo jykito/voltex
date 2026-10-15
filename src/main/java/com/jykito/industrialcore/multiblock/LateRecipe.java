@@ -15,38 +15,38 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * Рецепт глазами ядра лейт-мультиблока: ингредиенты с количеством на одну операцию,
- * необязательная жидкость на входе, предмет и/или жидкость на выходе, время цикла и расход FE
- * за тик на одну операцию. У предмета может быть шанс и побочный продукт со своим шансом
- * (промывка) — шанс бросается на каждую операцию партии отдельно. {@code heat} — порог тепла в тепловых
- * портах, ниже которого цикл стоит (сжижитель); тепло не тратится, как у малого сжижителя.
- * Ядру всё равно, из какого типа рецепта это пришло.
+ * A recipe as the late multiblock core sees it: ingredients with counts per operation,
+ * optional fluid in, item and/or fluid out, cycle time and FE usage
+ * per tick per operation. The item can have a chance and a by-product with its own chance
+ * (washing); the chance is rolled for each operation of the batch separately. {@code heat} is the heat threshold in the heat
+ * ports below which the cycle stops (liquefier); heat is not spent, as with the small liquefier.
+ * The core does not care which recipe type it came from.
  */
 public record LateRecipe(ResourceLocation id, Ingredient[] items, int[] counts, FluidStack fluid,
                          ItemStack result, float resultChance, ItemStack byproduct, float byproductChance,
                          FluidStack fluidResult, int time, int energyPerTick, int heat) {
 
-    /** Без шансов, побочного продукта и тепла: так устроено большинство рецептов. */
+    /** No chances, by-product or heat: that is how most recipes are. */
     public LateRecipe(ResourceLocation id, Ingredient[] items, int[] counts, FluidStack fluid,
                       ItemStack result, FluidStack fluidResult, int time, int energyPerTick) {
         this(id, items, counts, fluid, result, 1f, ItemStack.EMPTY, 0f, fluidResult, time, energyPerTick, 0);
     }
 
-    /** Откуда ядро берёт свои рецепты. */
+    /** Where the core gets its recipes. */
     @FunctionalInterface
     public interface Source {
         List<LateRecipe> all(Level level);
     }
 
     /**
-     * Режим ядра: имя (ключ lang {@code gui.industrial_core.late_core.mode.<key>}) и свой набор рецептов.
-     * Режим выбирает игрок, а не вход: в сборке у разных режимов могут оказаться рецепты из одного сырья.
+     * Core mode: name (lang key {@code gui.industrial_core.late_core.mode.<key>}) and its own recipe set.
+     * The player picks the mode, not the input: in a modpack different modes may get recipes from the same input.
      */
     public record Mode(String key, Source source) {}
 
-    /** Обычные машинные рецепты с одним входом (дробилка, компрессор, …). */
+    /** Regular single-input machine recipes (crusher, compressor, ...). */
     public static Source machine(Supplier<RecipeType<MachineRecipe>> type) { return machine(type, false); }
-    /** {@code industrial} — промышленный режим: только рецепты lateOnly; обычный режим — только общие с малой машиной. */
+    /** {@code industrial}: the industrial mode, lateOnly recipes only; the regular mode, only the ones shared with the small machine. */
     public static Source machine(Supplier<RecipeType<MachineRecipe>> type, boolean industrial) {
         return level -> level.getRecipeManager().getAllRecipesFor(type.get()).stream()
                 .filter(r -> r.isLateOnly() == industrial)
@@ -55,7 +55,7 @@ public record LateRecipe(ResourceLocation id, Ingredient[] items, int[] counts, 
                 .toList();
     }
 
-    /** Рецепты сборщика. */
+    /** Assembler recipes. */
     public static Source assembling() {
         return level -> level.getRecipeManager().getAllRecipesFor(ModRecipes.ASSEMBLING_TYPE.get()).stream()
                 .map(r -> new LateRecipe(r.getId(), r.getInputs(), r.getCounts(), r.getFluid(), r.getResult(),
@@ -64,8 +64,8 @@ public record LateRecipe(ResourceLocation id, Ingredient[] items, int[] counts, 
     }
 
     /**
-     * Ванильная плавка, как у электропечи: время и расход на операцию — её же константы,
-     * ванильный cookingtime не используется (JEI и малая печь показывают то же самое).
+     * Vanilla smelting, as in the electric furnace: time and usage per operation are its constants,
+     * the vanilla cookingtime is not used (JEI and the small furnace show the same).
      */
     public static Source smelting() {
         return level -> level.getRecipeManager().getAllRecipesFor(RecipeType.SMELTING).stream()
@@ -76,7 +76,7 @@ public record LateRecipe(ResourceLocation id, Ingredient[] items, int[] counts, 
                 .toList();
     }
 
-    /** Рецепты промывки руды: вода из портов, основной продукт и побочный — каждый со своим шансом. */
+    /** Ore washing recipes: water from the ports, main product and by-product, each with its own chance. */
     public static Source washing() { return washing(false); }
     public static Source washing(boolean industrial) {
         return level -> level.getRecipeManager().getAllRecipesFor(ModRecipes.ORE_WASHING_TYPE.get()).stream()
@@ -88,7 +88,7 @@ public record LateRecipe(ResourceLocation id, Ingredient[] items, int[] counts, 
                 .toList();
     }
 
-    /** Рецепты обогатителя: жидкость плюс один-два реагента в другую жидкость. */
+    /** Enricher recipes: a fluid plus one or two reagents into another fluid. */
     public static Source enriching() { return enriching(false); }
     public static Source enriching(boolean industrial) {
         return level -> level.getRecipeManager().getAllRecipesFor(ModRecipes.FLUID_ENRICHER_TYPE.get()).stream()
@@ -101,11 +101,11 @@ public record LateRecipe(ResourceLocation id, Ingredient[] items, int[] counts, 
     }
 
     /**
-     * Рецепты ускорения старого магнита. Поздний магнит берёт входы, результат, время и расход;
-     * катушка ({@code minTier}) и полоса нестабильности у него не участвуют.
+     * Old magnet acceleration recipes. The late magnet takes inputs, result, time and usage;
+     * the coil ({@code minTier}) and the instability band play no part for it.
      */
     public static Source accelerating() { return accelerating(false); }
-    /** Промышленный режим лейт-магнита: рецепты lateOnly, у них может быть жидкость на входе (Сердце Вольтекса). */
+    /** Industrial mode of the late magnet: lateOnly recipes, they can have a fluid input (Heart of Voltex). */
     public static Source accelerating(boolean industrial) {
         return level -> level.getRecipeManager().getAllRecipesFor(ModRecipes.ACCELERATING_TYPE.get()).stream()
                 .filter(r -> r.isLateOnly() == industrial)
@@ -114,7 +114,7 @@ public record LateRecipe(ResourceLocation id, Ingredient[] items, int[] counts, 
                 .toList();
     }
 
-    /** Рецепты сжижителя: один-два предмета в жидкость, с порогом тепла из рецепта. */
+    /** Liquefier recipes: one or two items into a fluid, with a heat threshold from the recipe. */
     public static Source liquefying() {
         return level -> level.getRecipeManager().getAllRecipesFor(ModRecipes.LIQUEFYING_TYPE.get()).stream()
                 .map(r -> new LateRecipe(r.getId(),
@@ -125,12 +125,12 @@ public record LateRecipe(ResourceLocation id, Ingredient[] items, int[] counts, 
                 .toList();
     }
 
-    /** Расход FE за тик на операцию у доменки 2-го тира: у рецептов малой доменки энергии нет (она греется теплом). */
+    /** FE usage per tick per operation of the tier 2 blast furnace: small blast furnace recipes have no energy (it is heated). */
     public static final int BLAST_ENERGY_PER_TICK = 40;
 
     /**
-     * Рецепты доменки — те же json, что у малой: сырьё и топливо, время и порог тепла из рецепта.
-     * Малая берёт их из двух слотов в любом порядке, ядро — из входных портов, порядок не важен.
+     * Blast furnace recipes are the same json as the small one's: input and fuel, time and heat threshold from the recipe.
+     * The small one takes them from two slots in any order, the core from the input ports, order does not matter.
      */
     public static Source blasting() { return blasting(false); }
     public static Source blasting(boolean industrial) {

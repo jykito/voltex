@@ -13,7 +13,7 @@ public class EnergyPortScreen extends MachineScreen<EnergyPortMenu> {
     private static final ResourceLocation TEXTURE =
             new ResourceLocation(IndustrialCore.MODID, "textures/gui/multiblock_energy_port_gui.png");
 
-    // заливка внутри стандартной полосы энергии (рамка 154×8 с молнией слева)
+    // fill inside the standard energy bar (154x8 frame with a bolt on the left)
     private static final int BAR_X = 56, BAR_Y = 60, BAR_W = 152, BAR_H = 6;
     private static final int INFO_X = 48;
 
@@ -29,7 +29,7 @@ public class EnergyPortScreen extends MachineScreen<EnergyPortMenu> {
         int x = leftPos, y = topPos;
         g.blit(TEXTURE, x, y, 0, 0, imageWidth, imageHeight, TEX_W, TEX_H);
         bars.draw(g, FillBar.ENERGY, x + BAR_X, y + BAR_Y, menu.getScaledEnergy(BAR_W), BAR_H);
-        // заряд и ёмкость — в подсказке полосы, на экране только назначение блока
+        // charge and capacity are in the bar tooltip, the screen shows only what the block is for
         drawScaled(g, Component.translatable("gui.industrial_core.port.energy_in_only").getString(), x + INFO_X, y + 98, C_LABEL, 0.8f);
     }
 

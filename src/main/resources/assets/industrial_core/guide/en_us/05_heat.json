@@ -57,6 +57,10 @@
             {
               "key": "Advanced heat exchanger",
               "value": "17 heat, 2,000 FE/t"
+            },
+            {
+              "key": "Cryogenic heat exchanger",
+              "value": "60 heat, 4,200 FE/t, only when feeding a thermostation"
             }
           ]
         },
@@ -66,7 +70,8 @@
             "industrial_core:thermogenerator",
             "industrial_core:electric_motor",
             "industrial_core:heat_conductor",
-            "industrial_core:advanced_heat_exchanger"
+            "industrial_core:advanced_heat_exchanger",
+            "industrial_core:cryogenic_heat_exchanger"
           ]
         }
       ]
@@ -181,8 +186,29 @@
           "text": "Expanders raise how much heat it stores, and radiators on the back raise how much it puts out per tick."
         },
         {
+          "type": "text",
+          "text": "Pushing heat out costs power: 5 FE per unit of heat. Connect the cable to the back face of the core."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Store",
+              "value": "40,000, plus 20,000 per expander"
+            },
+            {
+              "key": "Output",
+              "value": "100 heat per tick, plus 120 per radiator"
+            },
+            {
+              "key": "Energy",
+              "value": "5 FE per unit of heat"
+            }
+          ]
+        },
+        {
           "type": "tip",
-          "text": "If the store fills up completely, the station stops and starts again once it is down to half."
+          "text": "A full store does not stop the station: it keeps putting heat out, the thermogenerators simply stop topping it up."
         },
         {
           "type": "items",

@@ -10,15 +10,15 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import java.util.Map;
 
 /**
- * Формы соединяющихся блоков (кабель, теплотруба, хаб): куб по центру плюс отросток к каждой
- * соединённой грани.
+ * Shapes of connected blocks (cable, heat pipe, hub): a cube in the centre plus an arm to every
+ * connected face.
  * <p>
- * getShape зовут коллизии, луч прицела, пасфайндинг и обновления соседей, то есть очень часто,
- * а собирать форму через Shapes.or каждый раз дорого. Комбинаций всего 64, поэтому все они
- * считаются один раз при загрузке класса блока.
+ * getShape is called by collision, the crosshair ray, pathfinding and neighbour updates, so very often,
+ * and building the shape with Shapes.or every time is expensive. There are only 64 combinations, so all of them
+ * are computed once when the block class loads.
  * <p>
- * Размеры в пикселях блока (0..16). Отростки симметричны: сечение {@code armMin..armMax},
- * длина от грани блока внутрь {@code armLen}.
+ * Sizes in block pixels (0..16). Arms are symmetric: cross-section {@code armMin..armMax},
+ * length from the block face inwards {@code armLen}.
  */
 public final class ConnectedShapes {
 
@@ -29,13 +29,13 @@ public final class ConnectedShapes {
     }
 
     /**
-     * С отдельным узлом: если соединения образуют прямой участок (ровно две противоположные стороны),
-     * центр — {@code coreMin..coreMax}, иначе (развилка, угол, конец, одиночный) — узел {@code hubMin..hubMax}.
+     * With a separate hub: if the connections form a straight run (exactly two opposite sides),
+     * the centre is {@code coreMin..coreMax}, otherwise (fork, corner, end, single) the hub is {@code hubMin..hubMax}.
      */
     public ConnectedShapes(double coreMin, double coreMax, double armMin, double armMax, double armLen, double hubMin, double hubMax) {
         VoxelShape core = Block.box(coreMin, coreMin, coreMin, coreMax, coreMax, coreMax);
         VoxelShape hub = Block.box(hubMin, hubMin, hubMin, hubMax, hubMax, hubMax);
-        VoxelShape[] arms = new VoxelShape[6]; // индекс = Direction.get3DDataValue()
+        VoxelShape[] arms = new VoxelShape[6]; // index = Direction.get3DDataValue()
         arms[Direction.DOWN.get3DDataValue()]  = Block.box(armMin, 0, armMin, armMax, armLen, armMax);
         arms[Direction.UP.get3DDataValue()]    = Block.box(armMin, 16 - armLen, armMin, armMax, 16, armMax);
         arms[Direction.NORTH.get3DDataValue()] = Block.box(armMin, armMin, 0, armMax, armMax, armLen);
@@ -47,16 +47,16 @@ public final class ConnectedShapes {
             VoxelShape shape = isStraight(mask) ? core : hub;
             for (int i = 0; i < 6; i++)
                 if ((mask & (1 << i)) != 0) shape = Shapes.or(shape, arms[i]);
-            shapes[mask] = shape.optimize();   // разово упрощаем, все последующие проверки дешевле
+            shapes[mask] = shape.optimize();   // simplify once, every later check is cheaper
         }
     }
 
-    /** Ровно две противоположные стороны: низ+верх, север+юг или запад+восток (биты по get3DDataValue). */
+    /** Exactly two opposite sides: down+up, north+south or west+east (bits by get3DDataValue). */
     private static boolean isStraight(int mask) {
         return mask == 0b000011 || mask == 0b001100 || mask == 0b110000;
     }
 
-    /** Форма по соединениям в blockstate. Прочие свойства (нагрев, вода) в маску не входят. */
+    /** Shape from the connections in the blockstate. Other properties (heat, water) are not part of the mask. */
     public VoxelShape get(BlockState state, Map<Direction, BooleanProperty> connections) {
         int mask = 0;
         for (Map.Entry<Direction, BooleanProperty> e : connections.entrySet())

@@ -32,13 +32,13 @@ public class NexiteArmorItem extends ArmorItem {
         super(material, type, properties);
     }
 
-    /** Одна текстура на все детали своей модели (узор Nexite, см. PowerSuitModel). */
+    /** One texture for all parts of its model (Nexite pattern, see PowerSuitModel). */
     @Override
     public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
         return IndustrialCore.MODID + ":textures/models/armor/nexite_suit.png";
     }
 
-    /** Своя модель брони вместо ванильной развёртки. Класс модели клиентский: грузится только отсюда, на клиенте. */
+    /** Our own armor model instead of the vanilla layout. The model class is client only: it is loaded only from here, on the client. */
     @Override
     public void initializeClient(java.util.function.Consumer<net.minecraftforge.client.extensions.common.IClientItemExtensions> consumer) {
         consumer.accept(new net.minecraftforge.client.extensions.common.IClientItemExtensions() {
@@ -48,7 +48,7 @@ public class NexiteArmorItem extends ArmorItem {
                 return com.jykito.industrialcore.client.armor.PowerSuitModel.forSlot(slot);
             }
 
-            /** 3D-иконка: предмет рисуется самой деталью брони. */
+            /** 3D icon: the item is drawn as the armor part itself. */
             @Override
             public net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer getCustomRenderer() {
                 return com.jykito.industrialcore.client.armor.ArmorIconRenderer.get();

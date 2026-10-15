@@ -55,7 +55,7 @@ public class PanelCombinerMenu extends MachineMenu {
 
     public int getEnergyStored()   { return unpack(data.get(0), data.get(1)); }
     public int getMaxEnergy()      { return unpack(data.get(2), data.get(3)); }
-    /** Генерация может быть больше int, поэтому идёт четырьмя ячейками. */
+    /** Generation can exceed int, so it goes in four cells. */
     public long getCurrentGen() {
         long lo = unpack(data.get(4), data.get(5)) & 0xFFFFFFFFL;
         long hi = unpack(data.get(6), data.get(7));

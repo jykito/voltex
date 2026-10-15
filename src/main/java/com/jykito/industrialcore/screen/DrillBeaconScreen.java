@@ -17,8 +17,8 @@ import net.minecraft.world.level.Level;
 import java.util.List;
 
 /**
- * Окно бурового маяка 256×228: табло, ход скана и слот линзы, слой глубины (стрелки у каждой границы, кнопка
- * пересканировать), пять главных руд слоя с долями.
+ * Drill beacon window 256x228: display, scan progress and lens slot, depth layer (arrows at each bound, a rescan
+ * button), the layer's top five ores with their shares.
  */
 public class DrillBeaconScreen extends MachineScreen<DrillBeaconMenu> {
 
@@ -27,7 +27,7 @@ public class DrillBeaconScreen extends MachineScreen<DrillBeaconMenu> {
     private static final int WINDOW_H = 228;
     private static final int STATUS_X = 20, STATUS_Y = 16, BAR_X = 23, BAR_Y = 47, BAR_W = 190, BAR_H = 6;
     private static final int BAND_Y = 59, LIST_Y = 74, ROW = 11, PCT_X = 140, PCT_W = 64;
-    /** Кнопки слоя: x левого края, ширина, id на сервере. */
+    /** Layer buttons: x of the left edge, width, id on the server. */
     private static final int[][] BTN = {{78, 9, 0}, {112, 9, 1}, {146, 9, 2}, {180, 9, 3}, {200, 41, 4}};
 
     private static final int C_OK = 0xFF6BE06B, C_BAD = 0xFFFF7A6B, C_LABEL = 0xFF9AA0A6, C_VALUE = 0xFFE0E0E0, C_GREEN = 0xFF05FF00;
@@ -69,7 +69,7 @@ public class DrillBeaconScreen extends MachineScreen<DrillBeaconMenu> {
             boolean hover = in(mx, my, b[0], BAND_Y, b[1], 10);
             g.fill(x + b[0], y + BAND_Y, x + b[0] + b[1], y + BAND_Y + 10, 0xFF1B1B1B);
             g.fill(x + b[0] + 1, y + BAND_Y + 1, x + b[0] + b[1] - 1, y + BAND_Y + 9, hover ? 0xFF4A4A4A : 0xFF2E2E2E);
-            // ширина знака без пробела за ним (font.width его включает); «+» и «−» 5×5, без масштаба — ровно по центру кнопки
+            // glyph width without the trailing space (font.width includes it); "+" and "−" are 5x5, unscaled, exactly centred in the button
             String label = b[2] == 4 ? tr("rescan") : b[2] % 2 == 0 ? "−" : "+";
             int ink = font.width(label) - 1;
             if (b[2] == 4) small(g, label, x + b[0] + (b[1] - (int) (ink * 0.7f)) / 2, y + BAND_Y + 2, hover ? 0xFFFFFFFF : C_VALUE);
@@ -115,7 +115,7 @@ public class DrillBeaconScreen extends MachineScreen<DrillBeaconMenu> {
             g.renderTooltip(font, font.split(Component.literal(tr("lens_hint")), 220), mx, my);
     }
 
-    /** Какая линза нужна в измерении, где стоит маяк. */
+    /** Which lens the beacon's dimension needs. */
     private String lensName() {
         var dim = minecraft.level == null ? Level.OVERWORLD : minecraft.level.dimension();
         String key = dim == Level.NETHER ? "miner_lens_2" : dim == Level.END ? "miner_lens_3" : dim == Level.OVERWORLD ? "miner_lens_1" : "miner_lens_4";

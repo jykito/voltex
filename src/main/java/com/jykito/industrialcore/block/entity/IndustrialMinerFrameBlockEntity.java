@@ -11,7 +11,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/** Блок каркаса помнит своё ядро (его ставит ядро при сборке) и отдаёт его энергию, жидкость и выход. */
+/** A frame block remembers its core (the core sets it when forming) and exposes the core's energy, fluid and output. */
 public class IndustrialMinerFrameBlockEntity extends BlockEntity {
 
     private @Nullable BlockPos corePos;

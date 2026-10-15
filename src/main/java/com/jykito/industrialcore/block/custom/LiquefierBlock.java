@@ -31,7 +31,7 @@ public class LiquefierBlock extends BaseEntityBlock {
 
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
-    public static final int VARIANTS = 7;                                  // число случайных лицевых анимаций
+    public static final int VARIANTS = 7;                                  // number of random face animations
     public static final IntegerProperty VARIANT = IntegerProperty.create("variant", 0, VARIANTS - 1);
 
     public LiquefierBlock(Properties props) {

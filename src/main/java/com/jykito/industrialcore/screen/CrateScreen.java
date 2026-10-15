@@ -29,12 +29,12 @@ public class CrateScreen extends AbstractContainerScreen<CrateMenu> {
     protected void init() {
         super.init();
 
-        // Сдвигаем окно так, чтобы инвентарь игрока у всех тиров оказался на одной высоте
-        // экрана: ящик растёт вверх, низ окна стоит на месте. Правку делаем ДО создания
-        // кнопок — они позиционируются от topPos.
+        // Shift the window so the player inventory ends up at the same screen height for every tier:
+        // the crate grows upwards, the bottom of the window stays put. The adjustment is made BEFORE
+        // the buttons are created, since they are positioned from topPos.
         this.topPos += CrateMenu.ANCHOR_INV_Y - layout.invY();
 
-        this.inventoryLabelY = 10000;   // подписи нарисованы на самом арте
+        this.inventoryLabelY = 10000;   // labels are drawn on the art itself
         this.titleLabelY     = 10000;
 
         addRenderableWidget(hitbox(layout.restockY(), "restock", 2));
@@ -43,8 +43,8 @@ public class CrateScreen extends AbstractContainerScreen<CrateMenu> {
     }
 
     /**
-     * Значки кнопок нарисованы прямо в текстуре, поэтому виджет здесь — прозрачная
-     * кликзона поверх них: своей рамки и глифа не рисует, только подсветку при наведении.
+     * The button icons are drawn right into the texture, so the widget here is a transparent
+     * click zone over them: it draws no frame or glyph of its own, only a hover highlight.
      */
     private Button hitbox(int y, String key, int id) {
         Button b = new Button(leftPos + CrateMenu.BTN_X, topPos + y, CrateMenu.BTN_SIZE, CrateMenu.BTN_SIZE,

@@ -14,10 +14,10 @@ import org.jetbrains.annotations.NotNull;
 
 import static com.jykito.industrialcore.block.entity.CultivatorBlockEntity.*;
 
-/** Меню взрастителя. Слоты меню идут в порядке слотов машины, поэтому номер слота меню = номер в машине. */
+/** Cultivator menu. Menu slots follow the machine slot order, so the menu slot index = the machine index. */
 public class CultivatorMenu extends MachineMenu {
 
-    /** T2, окно «Ряды»: линии друг под другом, у каждой вход, стрелка, выход; модуль справа, апгрейды столбиком. */
+    /** T2, the "Rows" window: lines one under another, each with an input, an arrow, an output; module on the right, upgrades in a column. */
     public static final int T2_IN_X = 102, T2_OUT_X = 144, T2_ROW_Y = 37, T2_ROW_STEP = 20;
     public static final int T2_MODULE_X = 167, T2_MODULE_Y = 57, T2_UPG_X = 190, T2_UPG_Y = 36, T2_UPG_STEP = 18;
 
@@ -87,7 +87,7 @@ public class CultivatorMenu extends MachineMenu {
 
     public int getScaledProgress() { return getScaledProgress(0); }
 
-    /** Стрелка линии: у первой ячейки 0 и 1 (как у T1), у остальных по паре после энергии. */
+    /** Line arrow: the first uses cells 0 and 1 (as T1), the others a pair after the energy. */
     public int getScaledProgress(int lane) {
         int i = lane == 0 ? 0 : 4 + 2 * lane;
         return scaleProgress(data.get(i), data.get(i + 1), 22);
@@ -111,7 +111,7 @@ public class CultivatorMenu extends MachineMenu {
             } else if (sourceStack.getItem() instanceof MachineUpgradeItem) {
                 if (!moveItemStackTo(sourceStack, SLOT_UPG_FIRST, SLOT_UPG_LAST + 1, false)) return ItemStack.EMPTY;
             } else {
-                // входы не подряд (0, 7, 9): по очереди, первая линия первой
+                // inputs are not contiguous (0, 7, 9): in turn, the first line first
                 boolean moved = false;
                 for (int lane = 0; lane < lanes && !sourceStack.isEmpty(); lane++)
                     moved |= moveItemStackTo(sourceStack, inSlot(lane), inSlot(lane) + 1, false);

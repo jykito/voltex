@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 public class RodFabricatorBlockEntity extends net.minecraft.world.level.block.entity.BlockEntity implements MenuProvider {
 
     private static final int MAX_ENERGY  = 100_000;
-    private static final int MAX_RECEIVE = MAX_ENERGY; // приём = буфер, без потолка на вход
+    private static final int MAX_RECEIVE = MAX_ENERGY; // intake = buffer, no input cap
 
     private int maxProgress    = 200;
     private int energyPerTick  = 500;

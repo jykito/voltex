@@ -7,8 +7,8 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
 /**
- * Сервер → клиенты рядом со стрелком: выстрел гаусса (откуда, куда, ступень, плазма, плазменный взрыв, кто стрелял).
- * Клиент рисует луч, спираль и вспышки (GaussBeams), а стрелку даёт отдачу камерой.
+ * Server -> clients near the shooter: a gauss shot (from, to, stage, plasma, plasma blast, who fired).
+ * The client draws the beam, the spiral and the flashes (GaussBeams) and gives the shooter camera recoil.
  */
 public class GaussShotPacket {
     private final Vec3 from, to;
@@ -33,7 +33,7 @@ public class GaussShotPacket {
 
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context ctx = supplier.get();
-        // рисование — клиентский класс, на сервере не грузится
+        // drawing is a client class, not loaded on the server
         ctx.enqueueWork(() -> net.minecraftforge.fml.DistExecutor.unsafeRunWhenOn(net.minecraftforge.api.distmarker.Dist.CLIENT,
                 () -> () -> com.jykito.industrialcore.client.weapon.GaussBeams.add(from, to, stage, plasma, blast, shooter)));
         return true;

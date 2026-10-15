@@ -35,28 +35,28 @@ public abstract class EnergyDrillItem extends DiggerItem {
 
     public int getCapacity() { return capacity; }
 
-    /** Бур бурит, а не бьёт: взмах руки отменён (и у себя, и для других игроков); копание идёт как обычно. */
+    /** The drill drills rather than strikes: the arm swing is cancelled (for you and for other players); digging works as usual. */
     @Override
     public boolean onEntitySwing(ItemStack stack, net.minecraft.world.entity.LivingEntity entity) {
         return true;
     }
 
     /**
-     * Заряд лежит в NBT и меняется при каждом сломанном блоке и при подзарядке от рюкзака, а рука считает любую смену
-     * NBT новым предметом и опускает его. Перевзмах только при смене предмета или слота.
+     * The charge lives in NBT and changes with every broken block and every top-up from the pack, and the hand treats any
+     * NBT change as a new item and lowers it. The re-swing happens only when the item or slot changes.
      */
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return slotChanged || !ItemStack.isSameItem(oldStack, newStack);
     }
 
-    /** По той же причине трата или подзарядка энергии не сбрасывает прогресс ломания блока. */
+    /** For the same reason spending or recharging energy does not reset the block breaking progress. */
     @Override
     public boolean shouldCauseBlockBreakReset(ItemStack oldStack, ItemStack newStack) {
         return !ItemStack.isSameItem(oldStack, newStack);
     }
 
-    /** В руке, на земле и в рамке — объёмный бур (DrillRenderer); в интерфейсе модель предмета даёт плоскую иконку. */
+    /** In hand, on the ground and in item frames a volumetric drill (DrillRenderer); in the inventory the item model gives a flat icon. */
     @Override
     public void initializeClient(java.util.function.Consumer<net.minecraftforge.client.extensions.common.IClientItemExtensions> consumer) {
         consumer.accept(new net.minecraftforge.client.extensions.common.IClientItemExtensions() {

@@ -47,8 +47,8 @@ public class MinerCoreScreen extends MachineScreen<MinerCoreMenu> {
         int filled = menu.getScaledEnergy(ENERGY_W);
         bars.draw(g, FillBar.ENERGY, x + ENERGY_X, y + ENERGY_Y, filled, BAR_H);
 
-        // Заполнение снизу вверх: берём нижние `progress` пикселей исходника
-        // и кладём их к нижней кромке области, поэтому смещение одно и то же по src и dst.
+        // Fill from bottom to top: take the bottom `progress` pixels of the source
+        // and put them at the bottom edge of the area, so the offset is the same for src and dst.
         int progress = menu.getScaledProgress(PROG_H);
         if (progress > 0) {
             int offset = PROG_H - progress;

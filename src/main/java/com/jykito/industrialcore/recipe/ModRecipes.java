@@ -156,7 +156,7 @@ public class ModRecipes {
     public static final RegistryObject<RecipeSerializer<AcceleratorRecipe>> ACCELERATOR_SERIALIZER =
             SERIALIZERS.register("accelerating", () -> AcceleratorRecipe.Serializer.INSTANCE);
 
-    /** Промышленный сборщик: много входов + жидкость → один результат. */
+    /** Industrial assembler: many inputs + fluid -> one result. */
     public static final RegistryObject<RecipeType<AssemblingRecipe>> ASSEMBLING_TYPE =
             RECIPE_TYPES.register("assembling", () -> new RecipeType<AssemblingRecipe>() {
                 @Override public String toString() { return "assembling"; }

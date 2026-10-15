@@ -60,13 +60,13 @@ public class PlasmaArmorItem extends ArmorItem {
         return true;
     }
 
-    /** Одна текстура на все детали силовой модели (узор Plasma, см. PowerSuitModel). */
+    /** One texture for all parts of the power suit model (Plasma pattern, see PowerSuitModel). */
     @Override
     public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
         return IndustrialCore.MODID + ":textures/models/armor/plasma_suit.png";
     }
 
-    /** Та же силовая модель, что у Nexite. Класс модели клиентский: грузится только отсюда, на клиенте. */
+    /** The same power suit model as Nexite. The model class is client only: it is loaded only from here, on the client. */
     @Override
     public void initializeClient(java.util.function.Consumer<net.minecraftforge.client.extensions.common.IClientItemExtensions> consumer) {
         consumer.accept(new net.minecraftforge.client.extensions.common.IClientItemExtensions() {
@@ -76,7 +76,7 @@ public class PlasmaArmorItem extends ArmorItem {
                 return com.jykito.industrialcore.client.armor.PowerSuitModel.forSlot(slot);
             }
 
-            /** 3D-иконка: предмет рисуется самой деталью брони. */
+            /** 3D icon: the item is drawn as the armor part itself. */
             @Override
             public net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer getCustomRenderer() {
                 return com.jykito.industrialcore.client.armor.ArmorIconRenderer.get();

@@ -124,10 +124,10 @@ public class ModFluids {
             MOLTEN_AMETHYST_FLUID_TYPE, SOURCE_MOLTEN_AMETHYST, FLOWING_MOLTEN_AMETHYST)
             .bucket(ForgeRegistries.ITEMS.getDelegateOrThrow(net.minecraft.world.item.Items.AIR));
 
-    // Сверхтекучий конденсат — вершина криоветки. Вязкость почти нулевая (в том и смысл
-    // сверхтекучести), плотность как у сжиженного газа, температура около 4 K.
-    // Тон почти белый с голубым: рядом с бирюзовым хладагентом читается как «настолько
-    // холодное, что потеряло цвет», и ни с одной из четырёх занятых жидкостей не путается.
+    // Superfluid condensate: the top of the cryo branch. Viscosity is almost zero (that is the point
+    // of superfluidity), density like a liquefied gas, temperature around 4 K.
+    // Almost white with a blue tone: next to the teal coolant it reads as "so
+    // cold it lost its colour", and it is not confused with any of the four taken fluids.
     public static final RegistryObject<FluidType> SUPERFLUID_CONDENSATE_FLUID_TYPE = FLUID_TYPES.register("superfluid_condensate_fluid",
             () -> new FluidType(FluidType.Properties.create().density(200).viscosity(100).temperature(4)) {
                 @Override
@@ -153,9 +153,9 @@ public class ModFluids {
             SUPERFLUID_CONDENSATE_FLUID_TYPE, SOURCE_SUPERFLUID_CONDENSATE, FLOWING_SUPERFLUID_CONDENSATE)
             .bucket(ForgeRegistries.ITEMS.getDelegateOrThrow(net.minecraft.world.item.Items.AIR));
 
-    // Расплавленный свинец — первая жидкость со своей текстурой, а не перекрашенной водой:
-    // непрозрачный серебристый металл с бликами и окалиной (генератор tools/gui_gen/build_molten_lead.ps1),
-    // поэтому тинт белый. Свинец плавится около 600 K, светиться ему не с чего.
+    // Molten lead: the first fluid with its own texture rather than recoloured water:
+    // opaque silvery metal with highlights and dross (generator tools/gui_gen/build_molten_lead.ps1),
+    // so the tint is white. Lead melts around 600 K, it has no reason to glow.
     public static final RegistryObject<FluidType> MOLTEN_LEAD_FLUID_TYPE = FLUID_TYPES.register("molten_lead_fluid",
             () -> new FluidType(FluidType.Properties.create().density(3000).viscosity(2500).temperature(600)) {
                 @Override
@@ -181,8 +181,8 @@ public class ModFluids {
             MOLTEN_LEAD_FLUID_TYPE, SOURCE_MOLTEN_LEAD, FLOWING_MOLTEN_LEAD)
             .bucket(ForgeRegistries.ITEMS.getDelegateOrThrow(net.minecraft.world.item.Items.AIR));
 
-    // Э7: механический сплав — расплав свинца со сталью; первая ступень лестницы, сборщик собирает на нём лейт-машины.
-    // Четыре жидкости Э7 — текстура расплавленного свинца, перекрашенная в свой тон (tools/gui_gen/fluids_e7/build.js), поэтому тинт белый.
+    // E7: mechanical alloy, molten lead with steel; the first step of the ladder, the assembler builds late machines with it.
+    // The four E7 fluids use the molten lead texture recoloured to their own tone (tools/gui_gen/fluids_e7/build.js), so the tint is white.
     public static final RegistryObject<FluidType> MECHANICAL_ALLOY_FLUID_TYPE = FLUID_TYPES.register("mechanical_alloy_fluid",
             () -> new FluidType(FluidType.Properties.create().density(3000).viscosity(4000).temperature(900).lightLevel(3)) {
                 @Override
@@ -208,7 +208,7 @@ public class ModFluids {
             MECHANICAL_ALLOY_FLUID_TYPE, SOURCE_MECHANICAL_ALLOY, FLOWING_MECHANICAL_ALLOY)
             .bucket(ForgeRegistries.ITEMS.getDelegateOrThrow(net.minecraft.world.item.Items.AIR));
 
-    // Э7: фотонный расплав — сплав с фотонной линзой и кристаллом, ступень 2
+    // E7: photonic melt, an alloy with a photonic lens and crystal, step 2
     public static final RegistryObject<FluidType> PHOTONIC_MELT_FLUID_TYPE = FLUID_TYPES.register("photonic_melt_fluid",
             () -> new FluidType(FluidType.Properties.create().density(2200).viscosity(2000).temperature(1100).lightLevel(8)) {
                 @Override
@@ -234,7 +234,7 @@ public class ModFluids {
             PHOTONIC_MELT_FLUID_TYPE, SOURCE_PHOTONIC_MELT, FLOWING_PHOTONIC_MELT)
             .bucket(ForgeRegistries.ITEMS.getDelegateOrThrow(net.minecraft.world.item.Items.AIR));
 
-    // Э7: криоплазма — ступень 3, сверхпроводник и криокристалл в расплаве
+    // E7: cryoplasma, step 3, superconductor and cryo crystal in a melt
     public static final RegistryObject<FluidType> CRYOPLASMA_FLUID_TYPE = FLUID_TYPES.register("cryoplasma_fluid",
             () -> new FluidType(FluidType.Properties.create().density(800).viscosity(300).temperature(20).lightLevel(6)) {
                 @Override
@@ -260,7 +260,7 @@ public class ModFluids {
             CRYOPLASMA_FLUID_TYPE, SOURCE_CRYOPLASMA, FLOWING_CRYOPLASMA)
             .bucket(ForgeRegistries.ITEMS.getDelegateOrThrow(net.minecraft.world.item.Items.AIR));
 
-    // Э7: Эссенция Вольтекса — вершина лестницы, идёт в Сердце Вольтекса через порт лейт-магнита
+    // E7: Voltex Essence, the top of the ladder, goes into the Heart of Voltex through the late magnet port
     public static final RegistryObject<FluidType> VOLTEX_ESSENCE_FLUID_TYPE = FLUID_TYPES.register("voltex_essence_fluid",
             () -> new FluidType(FluidType.Properties.create().density(1500).viscosity(1500).temperature(3000).lightLevel(12)) {
                 @Override

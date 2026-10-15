@@ -14,9 +14,9 @@ import org.lwjgl.glfw.GLFW;
 public class EnergyBankScreen extends MachineScreen<EnergyBankMenu> {
     private static final ResourceLocation TEXTURE     = new ResourceLocation(IndustrialCore.MODID, "textures/gui/energy_bank_gui.png");
 
-    private static final int BAR_X = 92, BAR_Y = 87, BAR_W = 75, BAR_H = 6;   // энергобар
-    private static final int INFO_X = 76, INFO_Y = 41;                        // инфо-поле (107×43)
-    private static final int RES_X = 169, RES_Y = 86, RES_W = 14, RES_H = 8;  // поле резерва
+    private static final int BAR_X = 92, BAR_Y = 87, BAR_W = 75, BAR_H = 6;   // energy bar
+    private static final int INFO_X = 76, INFO_Y = 41;                        // info field (107x43)
+    private static final int RES_X = 169, RES_Y = 86, RES_W = 14, RES_H = 8;  // reserve field
 
     private static final int C_ENERGY = 0xFF00FFCC, C_LABEL = 0xFF9AA0A6, C_IN = 0xFF6BE06B, C_OUT = 0xFFFF7A6B, C_VALUE = 0xFFE0E0E0;
 
@@ -30,15 +30,15 @@ public class EnergyBankScreen extends MachineScreen<EnergyBankMenu> {
         super.init();
         reserveField = new EditBox(this.font, leftPos + RES_X + 1, topPos + RES_Y, RES_W - 1, RES_H, Component.empty());
         reserveField.setMaxLength(3);
-        reserveField.setBordered(false);      // рамка — твоя нарисованная, EditBox рисует только текст
+        reserveField.setBordered(false);      // the frame is the drawn one, EditBox only draws the text
         reserveField.setTextColor(0xFFFFFF);
         reserveField.setFilter(s -> s.matches("\\d{0,3}"));
         reserveField.setValue(String.valueOf(menu.getReserve()));
         addRenderableWidget(reserveField);
     }
 
-    // Пока игрок не редактирует поле — держим его в синке с сервером.
-    // Иначе на реоткрытии GUI поле застревает на до-синковом 0 («резерв спадает»).
+    // While the player is not editing the field, keep it in sync with the server.
+    // Otherwise on reopening the GUI the field gets stuck at the pre-sync 0 ("the reserve drops").
     @Override
     public void containerTick() {
         super.containerTick();
@@ -58,7 +58,7 @@ public class EnergyBankScreen extends MachineScreen<EnergyBankMenu> {
     public boolean keyPressed(int key, int scan, int mods) {
         if (reserveField.isFocused()) {
             if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) { commitReserve(); reserveField.setFocused(false); return true; }
-            if (reserveField.keyPressed(key, scan, mods) || key != GLFW.GLFW_KEY_ESCAPE) return true; // едим клавиши (в т.ч. 'e', иначе GUI закроется)
+            if (reserveField.keyPressed(key, scan, mods) || key != GLFW.GLFW_KEY_ESCAPE) return true; // swallow keys (including 'e', otherwise the GUI closes)
         }
         return super.keyPressed(key, scan, mods);
     }
@@ -73,7 +73,7 @@ public class EnergyBankScreen extends MachineScreen<EnergyBankMenu> {
     public boolean mouseClicked(double mx, double my, int btn) {
         boolean was = reserveField.isFocused();
         boolean r = super.mouseClicked(mx, my, btn);
-        if (was && !reserveField.isFocused()) commitReserve(); // расфокус кликом — коммит
+        if (was && !reserveField.isFocused()) commitReserve(); // unfocus on click: commit
         return r;
     }
 
@@ -104,7 +104,7 @@ public class EnergyBankScreen extends MachineScreen<EnergyBankMenu> {
         drawScaled(g, tr("in")  + " +" + fmtFE(menu.getIoIn())  + "/t", bx, yy + 24, C_IN,  0.8f);
         drawScaled(g, tr("out") + " -" + fmtFE(menu.getIoOut()) + "/t", bx, yy + 32, C_OUT, 0.8f);
 
-        // "%" сразу после поля резерва
+        // "%" right after the reserve field
         drawScaled(g, "%", x + RES_X + RES_W, y + RES_Y + 1, C_LABEL, 0.75f);
     }
 

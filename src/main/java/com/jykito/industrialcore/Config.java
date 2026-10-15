@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class Config
 {
     // ---------------------------------------------------------------- COMMON
-    // Логика мира: одинакова на сервере и в одиночке, клиент на неё не влияет.
+    // World logic: the same on a server and in singleplayer, the client does not affect it.
 
     private static final ForgeConfigSpec.Builder COMMON_BUILDER = new ForgeConfigSpec.Builder();
 
@@ -42,8 +42,8 @@ public class Config
     static final ForgeConfigSpec COMMON_SPEC = COMMON_BUILDER.build();
 
     // ---------------------------------------------------------------- CLIENT
-    // Только рендер и звук. На выделенном сервере этот файл не создаётся,
-    // поля ниже остаются на дефолтах и никем не читаются.
+    // Rendering and sound only. On a dedicated server this file is not created,
+    // the fields below keep their defaults and nobody reads them.
 
     private static final ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
 
@@ -60,20 +60,20 @@ public class Config
 
     static final ForgeConfigSpec CLIENT_SPEC = CLIENT_BUILDER.build();
 
-    // ---------------------------------------------------------------- значения
+    // ---------------------------------------------------------------- values
 
     public static boolean minerDedupOres = true;
     public static List<String> minerOrePriority = List.of("industrial_core", "minecraft");
-    public static int antigravColumnLimit = 24;  // кап колонн на измерение (0 = без лимита)
-    public static boolean devTools = false;      // дев-инструменты в креатив-табе
+    public static int antigravColumnLimit = 24;  // column cap per dimension (0 = no limit)
+    public static boolean devTools = false;      // dev tools in the creative tab
 
     public static double soundVolume = 1.0;
-    public static boolean cullSolidFaces = true; // откат оптимизации: false → рендер ровно как был (NO_CULL)
+    public static boolean cullSolidFaces = true; // optimization rollback: false -> render exactly as before (NO_CULL)
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event)
     {
-        // ModConfigEvent на mod-шине приходит только для конфигов этого мода, так что типа достаточно.
+        // ModConfigEvent on the mod bus only arrives for this mod's configs, so the type is enough.
         if (event.getConfig().getType() == ModConfig.Type.COMMON) {
             minerDedupOres     = MINER_DEDUP_ORES.get();
             minerOrePriority   = MINER_ORE_PRIORITY.get().stream().map(String::valueOf).collect(Collectors.toList());

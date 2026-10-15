@@ -46,7 +46,7 @@ public class NexiteArmorEventHandler {
 
         drainEvenly(pieces, actualCost);
         player.getInventory().setChanged();
-        // контрудар энергоклинка: погашенный бронёй урон копится и уходит в следующий удар клинком
+        // energy blade counter-strike: damage absorbed by the armor accumulates and goes into the next blade hit
         com.jykito.industrialcore.item.custom.weapon.EnergyBladeItem.addCounter(player, actualAbsorb);
         if (actualAbsorb > 0 && player.getMainHandItem().getItem() instanceof com.jykito.industrialcore.item.custom.weapon.EnergyBladeItem)
             player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.industrial_core.energy_blade.counter_ready",

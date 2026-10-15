@@ -13,18 +13,18 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Корпус криокамеры как проводник ядра.
+ * Cryo chamber casing as a conductor for the core.
  * <p>
- * В ядро надо завести тепло, хладагент, отработку, продукт, энергию и предметы — на шести
- * гранях это не помещается, а одной только третьей ступени нужно пять линий труб под тепло.
- * Поэтому любой блок корпуса отдаёт наружу capability ядра: пол и потолок дают полсотни
- * граней, подключайся к любой.
+ * The core needs heat, coolant, spent coolant, product, energy and items; six
+ * faces are not enough, and the third stage alone needs five pipe lines for heat.
+ * So every casing block exposes the core's capability outside: the floor and ceiling give about fifty
+ * faces, connect to any of them.
  * <p>
- * Сущность намеренно <b>не тикает</b> и ничего не хранит — она только переадресует. Позицию
- * ядра пишет само ядро при проверке структуры: оно и так обходит каждую клетку, второй поиск
- * не нужен. Пока камера не собрана, {@code corePos} пуст и корпус не отдаёт ничего — так труба
- * или кабель не подключатся к недостроенной коробке, и по ним сразу видно, что структура
- * ещё не сошлась.
+ * The entity deliberately <b>does not tick</b> and stores nothing; it only forwards. The core
+ * writes its position itself while checking the structure: it visits every cell anyway, a second search
+ * is not needed. While the chamber is not formed, {@code corePos} is empty and the casing exposes nothing, so a pipe
+ * or cable will not connect to an unfinished box, and you can see right away that the structure
+ * has not come together yet.
  */
 public class CryoCasingBlockEntity extends BlockEntity {
 
@@ -35,7 +35,7 @@ public class CryoCasingBlockEntity extends BlockEntity {
         super(ModBlockEntities.CRYO_CASING_BE.get(), pos, state);
     }
 
-    /** Зовёт ядро при успешной проверке структуры. */
+    /** Called by the core after a successful structure check. */
     public void setCore(BlockPos pos) {
         if (pos.equals(corePos)) return;
         corePos = pos.immutable();
@@ -57,8 +57,8 @@ public class CryoCasingBlockEntity extends BlockEntity {
     }
 
     /**
-     * Отдаём ровно то, что отдаёт ядро. Возвращается его же {@code LazyOptional}, поэтому при
-     * сносе ядра подписчики узнают об этом сами, без второго механизма инвалидации.
+     * We expose exactly what the core exposes. Its own {@code LazyOptional} is returned, so when
+     * the core is removed the subscribers find out by themselves, without a second invalidation mechanism.
      */
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {

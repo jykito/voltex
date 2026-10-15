@@ -82,7 +82,7 @@ public class PhaseSplitterBlockEntity extends BlockEntity implements MenuProvide
     }
 
     protected final MachineEnergy energyStorage =
-            MachineEnergy.consumer(200_000, 200_000); // приём = буфер, без потолка на вход
+            MachineEnergy.consumer(200_000, 200_000); // intake = buffer, no input cap
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
     private LazyOptional<IEnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 

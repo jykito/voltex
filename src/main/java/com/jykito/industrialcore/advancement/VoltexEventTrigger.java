@@ -16,9 +16,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Одно своё условие достижений: «случилось событие» с именем ({@code "trigger": "industrial_core:event",
- * "conditions": {"event": "cryo_formed"}}). Всё, что не сводится к «получил предмет»: собрана структура, ступень,
- * резонанс, квенч, редкий вид, выстрел. Имена событий — константы ниже; дерево достижений — tools/advancements/tree.js.
+ * Our single advancement criterion: "an event happened", with a name ({@code "trigger": "industrial_core:event",
+ * "conditions": {"event": "cryo_formed"}}). Everything that is not "got an item": a structure formed, a stage,
+ * resonance, quench, a rare species, a shot. Event names are the constants below; the advancement tree is tools/advancements/tree.js.
  */
 public class VoltexEventTrigger extends SimpleCriterionTrigger<VoltexEventTrigger.Instance> {
 
@@ -41,7 +41,7 @@ public class VoltexEventTrigger extends SimpleCriterionTrigger<VoltexEventTrigge
         trigger(player, instance -> instance.event.equals(event));
     }
 
-    /** Всем игрокам не дальше radius блоков от точки — так засчитываются события машин. */
+    /** To every player within radius blocks of the point: this is how machine events are credited. */
     public static void award(Level level, Vec3 at, double radius, String event) {
         if (!(level instanceof ServerLevel server)) return;
         double r2 = radius * radius;

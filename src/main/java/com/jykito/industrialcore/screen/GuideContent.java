@@ -45,10 +45,10 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Модель контента гайда + загрузчик из JSON.
- * Файлы: assets/industrial_core/guide/&lt;lang&gt;/*.json — по одному на категорию.
- * Язык берётся из интерфейса; если для языка ничего нет — фолбэк на en_us.
- * Загрузка ленивая (на открытии экрана): правки подхватываются по F3+T без пересборки.
+ * Guide content model + loader from JSON.
+ * Files: assets/industrial_core/guide/&lt;lang&gt;/*.json, one per category.
+ * The language follows the interface; if there is nothing for the language, falls back to en_us.
+ * Loading is lazy (when the screen opens): edits are picked up with F3+T without a rebuild.
  */
 public final class GuideContent {
     private static final Logger LOG = LogUtils.getLogger();
@@ -56,7 +56,7 @@ public final class GuideContent {
 
     static final int TEXT = 0xFFE6EDF3, SUB = 0xFFAEB6BF, MUTE = 0xFF6A6A73, ACCENT = 0xFF00FFCC, SLOT = 0xFF0E0E12;
 
-    // ---------- модель ----------
+    // ---------- model ----------
     public static final class Category {
         public final String name; public final List<Entry> entries; public final ItemStack icon;
         Category(String n, List<Entry> e, ItemStack icon) { name = n; entries = e; this.icon = icon; }
@@ -64,9 +64,9 @@ public final class GuideContent {
     public static final class Entry {
         public final String id, name; public final List<Element> elements; public final ItemStack icon;
         Entry(String id, String n, List<Element> e, ItemStack icon) { this.id = id; name = n; elements = e; this.icon = icon; }
-        /** Совпадает ли с целью ссылки: по id, иначе по названию. */
+        /** Whether it matches the link target: by id, otherwise by title. */
         boolean is(String target) { return target.equals(id) || target.equalsIgnoreCase(name); }
-        /** Весь текст записи в нижнем регистре — для поиска. */
+        /** All the entry text in lower case, for search. */
         String searchText() {
             StringBuilder sb = new StringBuilder(name);
             for (Element el : elements) sb.append(' ').append(el.plainText());
@@ -75,22 +75,22 @@ public final class GuideContent {
     }
 
     /**
-     * Блок контента. render возвращает свою высоту; по ходу отрисовки блок запоминает,
-     * где лежат его иконки и ссылки, чтобы экран показал подсказку и обработал клик.
+     * A content block. render returns its height; while drawing, the block remembers
+     * where its icons and links are, so the screen can show a tooltip and handle a click.
      */
     public abstract static class Element {
         public abstract int render(GuiGraphics g, Font f, int x, int y, int w);
-        /** Предмет под курсором (для подсказки) или null. */
+        /** The item under the cursor (for the tooltip) or null. */
         public ItemStack hoverItem(int mx, int my) { return null; }
-        /** Цель ссылки под курсором или null. */
+        /** The link target under the cursor or null. */
         public String linkAt(int mx, int my) { return null; }
-        /** Первый предмет блока — автоиконка записи и главы. */
+        /** The block's first item: the auto icon of the entry and chapter. */
         public ItemStack firstItem() { return ItemStack.EMPTY; }
-        /** Текст блока для поиска. */
+        /** Block text for search. */
         public String plainText() { return ""; }
     }
 
-    /** Где отрисованы иконки блока: прямоугольник + предмет. */
+    /** Where the block's icons are drawn: rectangle + item. */
     static final class Hits {
         final List<int[]> rects = new ArrayList<>(); final List<ItemStack> items = new ArrayList<>();
         void clear() { rects.clear(); items.clear(); }
@@ -104,7 +104,7 @@ public final class GuideContent {
         }
     }
 
-    /** Разметка текста: **слово** — бирюзой, остальное — цветом абзаца. */
+    /** Text markup: **word** in teal, the rest in the paragraph colour. */
     static Component rich(String s, int baseColor) {
         MutableComponent out = Component.empty();
         String[] parts = s.split("\\*\\*", -1);
@@ -166,7 +166,7 @@ public final class GuideContent {
         }
     }
 
-    /** Карточка записи: крупная иконка, название, подзаголовок, цветные метки. */
+    /** Entry card: large icon, title, subtitle, coloured tags. */
     static final class Card extends Element {
         final ItemStack icon; final String title, subtitle; final List<String[]> tags; final Hits hits = new Hits();
         Card(ItemStack icon, String title, String subtitle, List<String[]> tags) { this.icon = icon; this.title = title; this.subtitle = subtitle; this.tags = tags; }
@@ -199,9 +199,9 @@ public final class GuideContent {
     }
 
     /**
-     * Характеристики: пары «что — как» в тёмной плашке; длинные значения переносятся. На широком контенте
-     * (от {@link #TWO_COLUMNS} px) и от 4 строк — в две колонки, каждая своей плашкой, но только если значению в колонке
-     * остаётся от {@link #MIN_VALUE} px: длинная подпись («Энергоэффективность») иначе выталкивала значение за колонку.
+     * Stats: "what - how much" pairs on a dark plate; long values wrap. On wide content
+     * (from {@link #TWO_COLUMNS} px) and from 4 lines, in two columns, each on its own plate, but only if the value in a column
+     * keeps at least {@link #MIN_VALUE} px: otherwise a long label ("Energy efficiency") pushed the value out of the column.
      */
     static final class Stats extends Element {
         static final int TWO_COLUMNS = 280, MIN_VALUE = 80;
@@ -241,7 +241,7 @@ public final class GuideContent {
         }
     }
 
-    /** Совет: подсвеченная плашка с полосой слева. */
+    /** Tip: a highlighted plate with a strip on the left. */
     static final class Tip extends Element {
         final String raw; Tip(String s) { raw = s; }
         public int render(GuiGraphics g, Font f, int x, int y, int w) {
@@ -257,7 +257,7 @@ public final class GuideContent {
         @Override public String plainText() { return plain(raw); }
     }
 
-    /** Список предметов с названиями и количеством, в две колонки. */
+    /** List of items with names and counts, in two columns. */
     static final class ItemList extends Element {
         final String label; final List<ItemStack> st; final Hits hits = new Hits();
         ItemList(String label, List<ItemStack> st) { this.label = label; this.st = st; }
@@ -288,7 +288,7 @@ public final class GuideContent {
         }
     }
 
-    /** Ссылки на другие записи: кликабельные плашки {текст, цель}. */
+    /** Links to other entries: clickable plates {text, target}. */
     static final class Links extends Element {
         final String label; final List<String[]> links; final List<int[]> rects = new ArrayList<>();
         Links(String label, List<String[]> links) { this.label = label; this.links = links; }
@@ -328,23 +328,23 @@ public final class GuideContent {
     }
 
     /**
-     * 3D-превью структуры: модели блоков, драг-вращение + авто-спин; кнопка листает слои (1,2,…,полная,1); материалы с тултипами.
-     * Если у схемы есть {@code model} (структура, у которой при сборке блоки прячутся и рисуется своя модель), на полном
-     * виде вместо блоков рисуется эта модель от блока ядра (GuideStructureModels); по слоям — как и раньше, блоки.
+     * 3D structure preview: block models, drag to rotate + auto spin; a button steps through layers (1,2,...,full,1); materials with tooltips.
+     * If the schema has {@code model} (a structure whose blocks hide when formed and its own model is drawn), the full
+     * view draws that model from the core block instead of the blocks (GuideStructureModels); by layer it shows blocks, as before.
      */
     static final class Multiblock extends Element {
         final List<BlockState> states; final List<BlockPos> poss;
         final @Nullable String model; final @Nullable BlockPos anchor;
         final int sx, sy, sz;
-        int boxH = 130;               // высота окна структуры; растёт с шириной контента (панель «планшет» шире прежней)
-        final List<ItemStack> mats;   // иконка + count = нужное число
-        final int[] matX, matYs;      // где лежат слоты материалов (для тултипа); строк может быть несколько
+        int boxH = 130;               // structure window height; grows with the content width (the "tablet" panel is wider than before)
+        final List<ItemStack> mats;   // icon + count = the required number
+        final int[] matX, matYs;      // where the material slots are (for the tooltip); there can be several rows
         float yaw = -45f, pitch = 30f;
-        int shownLayers;              // сколько слоёв показано (1..sy; sy = полная форма)
+        int shownLayers;              // how many layers are shown (1..sy; sy = the full shape)
         boolean dragging = false;
         int lastX, lastY, lastW, matY;
         int btnX, btnY, btnW, btnH;
-        boolean showModel = true;     // своя модель на полном виде; выключил — видны блоки последнего слоя
+        boolean showModel = true;     // its own model on the full view; when off, the blocks of the last layer are visible
         int mbtnX, mbtnY, mbtnW;
 
         Multiblock(List<BlockState> s, List<BlockPos> p, int sx, int sy, int sz, @Nullable String model) {
@@ -380,7 +380,7 @@ public final class GuideContent {
         public int render(GuiGraphics g, Font f, int x, int y, int w) {
             lastX = x; lastY = y; lastW = w;
             boxH = Math.max(130, Math.min(190, w * 3 / 5));
-            // без автокручения: структура стоит, крутится только перетаскиванием
+            // no auto spin: the structure stands still and turns only by dragging
             renderStructure(g, x, y, w);
 
             btnW = 82; btnH = 16; mbtnW = model != null ? 82 : 0;
@@ -390,7 +390,7 @@ public final class GuideContent {
                     ? Component.translatable("gui.industrial_core.guide.assemble").getString()
                     : Component.translatable("gui.industrial_core.guide.layer").getString() + " " + shownLayers + "/" + sy;
             g.drawString(f, label, btnX + (btnW - f.width(label)) / 2, btnY + 4, ACCENT, false);
-            if (model != null) {   // переключатель своей модели
+            if (model != null) {   // own model toggle
                 mbtnX = btnX + btnW + 4; mbtnY = btnY;
                 button(g, mbtnX, mbtnY, mbtnW, btnH);
                 String ml = Component.translatable(showModel ? "gui.industrial_core.guide.model_on" : "gui.industrial_core.guide.model_off").getString();
@@ -400,7 +400,7 @@ public final class GuideContent {
             int ly = btnY + btnH + 8;
             g.drawString(f, Component.translatable("gui.industrial_core.guide.materials").getString(), x, ly, MUTE, false);
             matY = ly + 11;
-            // материалы переносятся на новую строку, когда не влезают по ширине
+            // materials wrap to a new line when they do not fit the width
             int ix = x, iy = matY;
             for (int i = 0; i < mats.size(); i++) {
                 ItemStack st = mats.get(i);
@@ -436,13 +436,13 @@ public final class GuideContent {
 
             RenderSystem.enableDepthTest();
             RenderSystem.disableCull();
-            Lighting.setupForFlatItems();                         // плоский равномерный свет: видимые грани всегда освещены (нет «перескока» при вращении)
+            Lighting.setupForFlatItems();                         // flat even light: visible faces are always lit (no "jump" while rotating)
             MultiBufferSource.BufferSource buf = Minecraft.getInstance().renderBuffers().bufferSource();
             BlockRenderDispatcher br = Minecraft.getInstance().getBlockRenderer();
-            boolean formed = model != null && showModel && shownLayers >= sy;   // собранный вид: блоки спрятаны, рисуется модель
+            boolean formed = model != null && showModel && shownLayers >= sy;   // formed view: blocks hidden, the model is drawn
             for (int i = 0; i < states.size() && !formed; i++) {
                 BlockPos p = poss.get(i);
-                if (p.getY() >= shownLayers) continue;   // показываем слои 0..shownLayers-1
+                if (p.getY() >= shownLayers) continue;   // show layers 0..shownLayers-1
                 ps.pushPose();
                 ps.translate(p.getX(), p.getY(), p.getZ());
                 br.renderSingleBlock(states.get(i), ps, buf, 0xF000F0, OverlayTexture.NO_OVERLAY);
@@ -453,7 +453,7 @@ public final class GuideContent {
                 ps.translate(anchor.getX(), anchor.getY(), anchor.getZ());
                 GuideStructureModels.render(model, ps, buf);
                 ps.popPose();
-                Lighting.setupFor3DItems();   // у моделей свет по нормалям, плоский их обесцвечивает
+                Lighting.setupFor3DItems();   // models have normal-based light, flat light washes them out
             }
             buf.endBatch();
             RenderSystem.enableCull();
@@ -462,7 +462,7 @@ public final class GuideContent {
         }
     }
 
-    // ---------- загрузка ----------
+    // ---------- loading ----------
     public static List<Category> load() {
         String lang = Minecraft.getInstance().getLanguageManager().getSelected();
         List<Category> cats = loadLang(lang);
@@ -481,7 +481,7 @@ public final class GuideContent {
             try (InputStreamReader r = new InputStreamReader(found.get(rl).open(), StandardCharsets.UTF_8)) {
                 cats.add(parseCategory(GsonHelper.parse(r)));
             } catch (Exception e) {
-                LOG.warn("[Voltex guide] не разобрал {}: {}", rl, e.toString());
+                LOG.warn("[Voltex guide] could not parse {}: {}", rl, e.toString());
             }
         }
         return cats;
@@ -497,7 +497,7 @@ public final class GuideContent {
                 Element el = parseElement(ee.getAsJsonObject());
                 if (el != null) els.add(el);
             }
-            // иконка записи: явная или первый предмет из её блоков
+            // entry icon: explicit, or the first item of its blocks
             ItemStack icon = eo.has("icon") ? stackOf(GsonHelper.getAsString(eo, "icon")) : ItemStack.EMPTY;
             for (int i = 0; icon.isEmpty() && i < els.size(); i++) icon = els.get(i).firstItem();
             String entryName = GsonHelper.getAsString(eo, "name", "");
@@ -550,7 +550,7 @@ public final class GuideContent {
                 return new Image(tex, GsonHelper.getAsInt(o, "w", 0), GsonHelper.getAsInt(o, "h", 0));
             }
             case "multiblock": return parseMultiblock(GsonHelper.getAsJsonObject(o, "pattern"));
-            default: return null; // неизвестный тип → пропуск
+            default: return null; // unknown type -> skip
         }
     }
 
@@ -581,15 +581,15 @@ public final class GuideContent {
     }
 
     /**
-     * Досчитывает соединения внутри превью.
+     * Computes connections inside the preview.
      * <p>
-     * Схема даёт только «какой блок где», а вид соединяемых блоков — панелей, корпуса, труб —
-     * живёт в булевых свойствах сторон. С {@code defaultBlockState} они все выключены, поэтому
-     * панели выходили прямыми, смотрели в одну сторону и не гнулись на углах.
+     * The schema only says "which block is where", while the look of connected blocks (panels, casing, pipes)
+     * lives in boolean side properties. With {@code defaultBlockState} they are all off, so
+     * panels came out straight, all facing one way and not bending at corners.
      * <p>
-     * Правило простое: сторона включается, если по соседству стоит ТОТ ЖЕ блок. Для панелей и
-     * корпуса это ровно их собственное правило, а для превью большего и не нужно — мир вокруг
-     * схемы всё равно не показывается.
+     * The rule is simple: a side turns on if THE SAME block stands next to it. For panels and
+     * casing that is exactly their own rule, and the preview needs nothing more: the world around
+     * the schema is not shown anyway.
      */
     private static void connectNeighbours(List<BlockPos> poss, List<BlockState> states) {
         Map<BlockPos, Block> occupied = new HashMap<>();
@@ -607,7 +607,7 @@ public final class GuideContent {
         }
     }
 
-    /** Булево свойство стороны по её имени: «north», «up» и так далее. Нет такого — блок не соединяемый. */
+    /** Boolean side property by its name: "north", "up" and so on. If there is none, the block does not connect. */
     @Nullable
     private static BooleanProperty sideProperty(BlockState st, Direction d) {
         for (Property<?> pr : st.getProperties())

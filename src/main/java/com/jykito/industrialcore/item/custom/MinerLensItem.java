@@ -110,7 +110,7 @@ public class MinerLensItem extends Item {
                 l.add(new Candidate(Items.ANCIENT_DEBRIS, 1, "ancient_debris"));
                 l.add(new Candidate(Items.GLOWSTONE, 6, "glowstone"));
             }
-            // Руд в Крае нет, поэтому без своего списка шахтёр с этой линзой ничего не находил. Модовый путь к Краю.
+            // There are no ores in the End, so without its own list the miner found nothing with this lens. The mod's path to the End.
             case END -> {
                 l.add(new Candidate(Items.END_STONE, 12, "end_stone"));
                 l.add(new Candidate(Items.OBSIDIAN, 4, "obsidian"));

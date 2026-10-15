@@ -16,8 +16,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import java.util.UUID;
 
 /**
- * Бой энергоклинком: «Рез» добирает долю урона, который съела бы броня цели; к удару добавляется контрудар нексита;
- * с полным заряженным комплектом нексита у клинка в руке выше скорость атаки.
+ * Energy blade combat: "Cut" adds a share of the damage the target's armor would have eaten; Nexite counter-strike is added to the hit;
+ * with a full charged Nexite set and the blade in hand, attack speed is higher.
  */
 public class WeaponEventHandler {
 
@@ -40,7 +40,7 @@ public class WeaponEventHandler {
         float counter = EnergyBladeItem.takeCounter(player);
         amount += counter;
         event.setAmount(amount);
-        if (counter >= 0.1f) {   // контрудар сработал — его должно быть видно и слышно (юзер: «контрудар не воркает»)
+        if (counter >= 0.1f) {   // the counter-strike fired, it must be visible and audible (author: "the counter-strike does not work")
             LivingEntity target = event.getEntity();
             player.level().playSound(null, target.getX(), target.getY(), target.getZ(), net.minecraft.sounds.SoundEvents.PLAYER_ATTACK_CRIT,
                     net.minecraft.sounds.SoundSource.PLAYERS, 1.0f, 0.6f);

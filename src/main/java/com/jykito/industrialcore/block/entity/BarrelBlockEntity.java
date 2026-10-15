@@ -7,6 +7,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
@@ -58,6 +60,20 @@ public class BarrelBlockEntity extends BlockEntity {
     public void load(CompoundTag tag) {
         super.load(tag);
         if (tag.contains("fluid")) tank.readFromNBT(tag.getCompound("fluid"));
+    }
+
+    /**
+     * The barrel as an item with its fluid inside, the same shape the loot table writes (BlockEntityTag.fluid),
+     * so the wrench keeps the fluid just like a pickaxe does.
+     */
+    public ItemStack toItemWithFluid() {
+        ItemStack stack = new ItemStack(getBlockState().getBlock());
+        if (!tank.isEmpty()) {
+            CompoundTag tag = new CompoundTag();
+            tag.put("fluid", tank.writeToNBT(new CompoundTag()));
+            BlockItem.setBlockEntityData(stack, getType(), tag);
+        }
+        return stack;
     }
 
     @Override public CompoundTag getUpdateTag() { return saveWithoutMetadata(); }

@@ -43,12 +43,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Биореактор (Э3): биомасса + добавка + вода → органика без мобов (слизь, кость, порох, кожа, чернила).
- * Культура живёт только в тепле: тепло приходит по теплосети, как у доменки — уровень растёт от притока
- * и остывает без него; ниже порога рецепта реактор стоит. Устроен как промыватель: те же слоты выходов
- * и апгрейдов, плюс слот добавки.
+ * Bioreactor (E3): biomass + additive + water -> organics without mobs (slime, bone, gunpowder, leather, ink).
+ * The culture only lives in heat: heat comes over the heat network, as with the blast furnace; the level rises with inflow
+ * and cools without it; below the recipe threshold the reactor stops. Built like the ore washer: the same output
+ * and upgrade slots, plus an additive slot.
  * <p>
- * Слоты: 0 — биомасса, 1–3 — выходы, 4–7 — апгрейды, 8 — добавка.
+ * Slots: 0 biomass, 1-3 outputs, 4-7 upgrades, 8 additive.
  */
 public class BioreactorBlockEntity extends BlockEntity implements MenuProvider {
 
@@ -69,7 +69,7 @@ public class BioreactorBlockEntity extends BlockEntity implements MenuProvider {
     };
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
-    /** Снаружи: класть биомассу и добавку, забирать выходы. */
+    /** From outside: insert biomass and additive, extract outputs. */
     private final IItemHandlerModifiable automationHandler = new IItemHandlerModifiable() {
         @Override public void setStackInSlot(int slot, @NotNull ItemStack stack) { itemHandler.setStackInSlot(slot, stack); }
         @Override public int getSlots() { return itemHandler.getSlots(); }
@@ -110,7 +110,7 @@ public class BioreactorBlockEntity extends BlockEntity implements MenuProvider {
     };
     private LazyOptional<IFluidHandler> lazyFluidHandler = LazyOptional.empty();
 
-    // ── тепло: как у доменки, уровень от притока, без него остывает ──
+    // ── heat: as with the blast furnace, the level follows inflow and cools without it ──
     private int heat;
     private boolean receivingHeat;
     private final IHeatHandler heatHandler = new IHeatHandler() {
@@ -176,7 +176,7 @@ public class BioreactorBlockEntity extends BlockEntity implements MenuProvider {
         this.requiredHeat = recipe != null ? recipe.getRequiredHeat() : 0;
         int energy = upg.scaleEnergy(recipe != null ? recipe.getEnergyCostPerTick() : 60);
 
-        // культура в холоде не растёт: прогресс не сбрасывается, просто ждёт тепла
+        // the culture does not grow in the cold: progress is not reset, it just waits for heat
         if (recipe != null && heat >= recipe.getRequiredHeat()) {
             if (energyStorage.getEnergyStored() >= energy) {
                 energyStorage.consumeEnergy(energy);

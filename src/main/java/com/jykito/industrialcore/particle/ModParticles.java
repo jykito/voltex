@@ -13,9 +13,9 @@ public class ModParticles {
     public static final DeferredRegister<ParticleType<?>> PARTICLES =
             DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, IndustrialCore.MODID);
 
-    // энергомот: кружит вокруг оси катушки, спиралью стягивается в линию (центр орбиты передаётся
-    // через velocity-слоты sendParticles при speed=1)
-    // overrideLimiter=true → вспышка дезинтеграции пробивается даже при настройке партиклов «Минимум»
+    // energy mote: circles around the coil axis and spirals into a line (the orbit centre is passed
+    // through the velocity slots of sendParticles with speed=1)
+    // overrideLimiter=true -> the disintegration burst shows even with the "Minimal" particle setting
     public static final RegistryObject<SimpleParticleType> ENERGY_MOTE =
             PARTICLES.register("energy_mote", () -> new SimpleParticleType(true));
 

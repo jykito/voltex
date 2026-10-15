@@ -9,17 +9,17 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-/** Реструктор T2, окно «Общий катализатор»: у каждой линии свой заряд, жила загорается с катализатором. Арт — tools/gui_gen/t2_gui.js. */
+/** Restructor T2, the "Shared catalyst" window: each line has its own charge, the vein lights up with a catalyst. Art: tools/gui_gen/t2_gui.js. */
 public class RestructorT2Screen extends MachineScreen<RestructorMenu> {
 
     private static final ResourceLocation TEXTURE =
             new ResourceLocation(IndustrialCore.MODID, "textures/gui/restructor_t2_gui.png");
 
-    /** Заряд линии: (PROGRESS_X, PROGRESS_Y + шаг * линия), заливка снизу вверх; спрайт — его, из окна T1. */
+    /** Line charge: (PROGRESS_X, PROGRESS_Y + step * line), filled from bottom to top; the sprite is the author's, from the T1 window. */
     private static final int PROGRESS_X = 122, PROGRESS_Y = RestructorMenu.T2_ROW_Y, PROGRESS_W = 12, PROGRESS_H = 17;
     private static final int PROGRESS_SRC_U = 166, PROGRESS_SRC_V = 260;
 
-    /** Горящая жила от катализатора к входам. */
+    /** The lit vein from the catalyst to the inputs. */
     public static final int PIPES_X = 76, PIPES_Y = 43, PIPES_W = 22, PIPES_H = 50;
     private static final int PIPES_SRC_U = 10, PIPES_SRC_V = 240;
 

@@ -58,7 +58,7 @@ public class IndustrialCore {
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(ModMessages::register);
-        // своё условие достижений «событие» (data/industrial_core/advancements/voltex) — до загрузки датапаков мира
+        // our own advancement criterion "event" (data/industrial_core/advancements/voltex), before the world datapacks load
         event.enqueueWork(() -> net.minecraft.advancements.CriteriaTriggers.register(
                 com.jykito.industrialcore.advancement.VoltexEventTrigger.INSTANCE));
     }

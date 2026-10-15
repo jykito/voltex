@@ -74,7 +74,7 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
 
     public int progress = 0;
     public int maxProgress = 100;
-    // ванильный cookingtime не используется: время и расход у электропечи свои (их же берёт промышленная печь)
+    // the vanilla cookingtime is not used: the electric furnace has its own time and usage (the industrial furnace uses them too)
     public static final int BASE_MAX_PROGRESS = 100;
     public static final int BASE_ENERGY_PER_TICK = 20;
 
@@ -125,7 +125,7 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
 
         MachineUpgrades upg = MachineUpgrades.scan(entity.itemHandler, 2, 5);
 
-        // Затягиватель: тянем предметы из соседа во входной слот (0)
+        // Puller: pull items from a neighbour into the input slot (0)
         if (upg.itemPull() != null && MachineIO.pullItems(level, pos, upg.itemPull(), entity.itemHandler, 0)) entity.setChanged();
 
         entity.maxProgress = upg.scaleTime(BASE_MAX_PROGRESS);
@@ -147,7 +147,7 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
             setLit(entity, level, pos, state, false);
         }
 
-        // Выталкиватель: выталкиваем готовый предмет из выходного слота (1) в соседа
+        // Pusher: push the finished item from the output slot (1) into a neighbour
         if (upg.itemPush() != null && MachineIO.pushItems(level, pos, upg.itemPush(), entity.itemHandler, 1)) entity.setChanged();
     }
 

@@ -5,7 +5,7 @@ import com.jykito.industrialcore.block.entity.ItemFluidPortBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 
-/** Создаёт МЭ-порт по виду блока. Грузится только при установленном AE2 (см. {@link MePorts}). */
+/** Creates an ME port by block kind. Loaded only when AE2 is installed (see {@link MePorts}). */
 final class Ae2PortFactory {
 
     private Ae2PortFactory() {}

@@ -75,7 +75,7 @@ public final class ModCreativeTab {
                         output.accept(ModItems.CULTIVATOR_T2_ITEM.get());
                         output.accept(ModItems.ORE_WASHER_ITEM.get());
                         output.accept(ModItems.BIOREACTOR_ITEM.get());
-                        if (Config.devTools) output.accept(ModItems.RECIPE_EXPORTER_ITEM.get()); // дев-тул: пишет json в пак
+                        if (Config.devTools) output.accept(ModItems.RECIPE_EXPORTER_ITEM.get()); // dev tool: writes json into the pack
                         output.accept(ModItems.ROD_FABRICATOR_ITEM.get());
                         output.accept(ModItems.EXTRACTOR_ITEM.get());
                         output.accept(ModItems.PHASE_SPLITTER_ITEM.get());
@@ -169,7 +169,7 @@ public final class ModCreativeTab {
                         output.accept(ModItems.MULTIBLOCK_OUTPUT_PORT_ITEM.get());
                         output.accept(ModItems.MULTIBLOCK_ENERGY_PORT_ITEM.get());
                         output.accept(ModItems.MULTIBLOCK_HEAT_PORT_ITEM.get());
-                        if (com.jykito.industrialcore.compat.ae2.MePorts.AE2) {   // без AE2 МЭ-порты — просто порты, во вкладке их не показываем
+                        if (com.jykito.industrialcore.compat.ae2.MePorts.AE2) {   // without AE2 the ME ports are plain ports, so we do not show them in the tab
                             output.accept(ModItems.ME_INPUT_PORT_ITEM.get());
                             output.accept(ModItems.ME_OUTPUT_PORT_ITEM.get());
                             output.accept(ModItems.ME_PATTERN_PORT_ITEM.get());

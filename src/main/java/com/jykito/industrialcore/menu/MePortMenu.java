@@ -21,20 +21,20 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Окно МЭ-портов, раскладка «Пульт» (tools/gui_gen/me_port_gui2.js, К1).
+ * ME port window, the "Console" layout (tools/gui_gen/me_port_gui2.js, K1).
  * <ul>
- *   <li>МЭ-вход как интерфейс AE2: пары рядов «настройка над запасом». Клетка настройки — призрак: что держать и
- *   сколько; запас под ней — то, что порт уже взял из сети. Справа от каждой пары — настройка жидкости над её баком.</li>
- *   <li>Порт шаблонов как поставщик: ряды шаблонов, под ними буфер «отправлено в машину», справа кнопки
- *   (блокировка, видимость в терминале шаблонов, приоритет) и баки буфера.</li>
- *   <li>МЭ-выход: очередь в сеть и её бак.</li>
+ *   <li>ME input like an AE2 interface: pairs of rows "config above stock". A config cell is a ghost: what to keep and
+ *   how many; the stock below it is what the port has already taken from the network. To the right of each pair, the fluid config above its tank.</li>
+ *   <li>Pattern port like a provider: pattern rows, below them the "sent to the machine" buffer, on the right the buttons
+ *   (blocking, visibility in the pattern terminal, priority) and the buffer tanks.</li>
+ *   <li>ME output: the queue to the network and its tank.</li>
  * </ul>
- * Клетки настройки — невидимые слоты после инвентаря игрока: окно получает их с сервера, а клик по клетке
- * экран отправляет обычным кликом по такому слоту, разбор — в {@link #clicked}.
+ * Config cells are invisible slots after the player inventory: the window gets them from the server, and a click on a cell
+ * is sent by the screen as a normal click on such a slot, handled in {@link #clicked}.
  */
 public class MePortMenu extends MachineMenu {
 
-    // ── раскладка: координаты клеток на арте (предмет на 1 px правее и ниже) ──
+    // ── layout: cell coordinates on the art (the item is 1 px right and down) ──
     public static final int GRID_X = 47, SIDE_X = 227, STEP = 18;
     public static final int[] CFG_Y = {8, 47, 86}, STO_Y = {26, 65, 104}, GAP_Y = {44, 83, 122};
     public static final int[] PAT_Y = {8, 26, 44}, BUF_Y = {68, 86, 104};
@@ -43,9 +43,9 @@ public class MePortMenu extends MachineMenu {
 
     private static final int SLOTS = PortUpgradeItem.MAX_SLOTS;
 
-    /** Кнопки: блокировка, видимость в терминале; жидкость МЭ-входа: ЛКМ по клетке бака t — 10 + t, ПКМ — 13 + t. */
+    /** Buttons: blocking, terminal visibility; ME input fluid: LMB on tank cell t is 10 + t, RMB is 13 + t. */
     public static final int BTN_BLOCKING = 1, BTN_SHOW = 2, BTN_FLUID_LEFT = 10, BTN_FLUID_RIGHT = 13;
-    /** Предел приоритета: число едет в окно 16-битной ячейкой. */
+    /** Priority limit: the number travels to the window in a 16-bit cell. */
     public static final int PRIORITY_LIMIT = 9999;
 
     public final ItemFluidPortBlockEntity blockEntity;
@@ -53,7 +53,7 @@ public class MePortMenu extends MachineMenu {
     public final MePortBlock.MeKind kind;
     private final ContainerData data;
     @Nullable private final ItemStackHandler config, patterns;
-    /** Границы групп слотов: слоты порта [0, upgradeSlot), улучшение, инвентарь игрока, призраки настройки. */
+    /** Slot group bounds: port slots [0, upgradeSlot), upgrade, player inventory, config ghosts. */
     public final int upgradeSlot, playerStart, playerEnd, cfgStart;
 
     public MePortMenu(int id, Inventory inv, FriendlyByteBuf extra) {
@@ -78,7 +78,7 @@ public class MePortMenu extends MachineMenu {
             grid(be.getItems(), STO_Y, true);
         } else if (kind == MePortBlock.MeKind.PATTERN) {
             grid(patterns, PAT_Y, true);
-            // буфер «отправлено в машину»: забрать можно (если заказ застрял), положить нельзя
+            // "sent to the machine" buffer: can be taken out (if a job got stuck), cannot be put into
             for (int i = 0; i < SLOTS; i++) {
                 final int index = i;
                 addSlot(new SlotItemHandler(be.getItems(), i, GRID_X + 1 + (i % 9) * STEP, BUF_Y[i / 9] + 1) {
@@ -105,7 +105,7 @@ public class MePortMenu extends MachineMenu {
         addDataSlots(data);
     }
 
-    /** 27 слотов сеткой 9×3 по рядам {@code ys}; открыты те, что открыло улучшение. */
+    /** 27 slots in a 9x3 grid by rows {@code ys}; the ones the upgrade opened are open. */
     private void grid(ItemStackHandler handler, int[] ys, boolean open) {
         for (int i = 0; i < SLOTS; i++) {
             final int index = i;
@@ -115,7 +115,7 @@ public class MePortMenu extends MachineMenu {
         }
     }
 
-    // ── данные окна: тир, статус сети, блокировка, видимость в терминале, приоритет ──
+    // ── window data: tier, network status, blocking, terminal visibility, priority ──
 
     public static final int DATA_COUNT = 5;
 
@@ -139,7 +139,7 @@ public class MePortMenu extends MachineMenu {
 
     public int activeSlots()       { return PortUpgradeItem.slots(data.get(0)); }
     public int tankCapacity()      { return PortUpgradeItem.fluid(data.get(0)); }
-    /** Открыто баков: по одному на открытый ряд. */
+    /** Open tanks: one per open row. */
     public int openTanks()         { return Math.max(1, Math.min(me.maxTanks(), activeSlots() / 9)); }
     public boolean online()        { return data.get(1) == 2; }
     public boolean blocking()      { return data.get(2) == 1; }
@@ -153,12 +153,12 @@ public class MePortMenu extends MachineMenu {
         return n;
     }
 
-    // ── настройка МЭ-входа ──
+    // ── ME input config ──
 
     /**
-     * Клик по клетке настройки (невидимый слот {@code cfgStart + i}), как в интерфейсе AE2:
-     * ЛКМ предметом задаёт столько, сколько в руке, тем же предметом прибавляет; ЛКМ пустой рукой снимает;
-     * ПКМ предметом задаёт или прибавляет по одному, ПКМ пустой рукой убавляет по одному.
+     * Click on a config cell (invisible slot {@code cfgStart + i}), as in the AE2 interface:
+     * LMB with an item sets as many as are in hand, with the same item adds; LMB with an empty hand clears;
+     * RMB with an item sets or adds one, RMB with an empty hand removes one.
      */
     @Override
     public void clicked(int slotId, int button, @NotNull ClickType type, @NotNull Player player) {
@@ -181,7 +181,7 @@ public class MePortMenu extends MachineMenu {
         else config.setStackInSlot(i, hand.copyWithCount(Math.min(hand.getMaxStackSize(), add)));
     }
 
-    /** Колесо над клеткой настройки: 0..26 — предметы, 27..29 — жидкости. */
+    /** Scroll wheel over a config cell: 0..26 items, 27..29 fluids. */
     public void adjustAmount(int index, int delta) {
         if (config != null && index >= 0 && index < activeSlots()) {
             ItemStack cur = config.getStackInSlot(index);
@@ -193,7 +193,7 @@ public class MePortMenu extends MachineMenu {
         }
     }
 
-    /** Перетаскивание из JEI: предмет — полная стопка, жидкость — ведро. */
+    /** Drag from JEI: an item sets a full stack, a fluid sets a bucket. */
     public void setGhost(int index, ItemStack item, FluidStack fluid) {
         if (config != null && index >= 0 && index < activeSlots() && !item.isEmpty())
             config.setStackInSlot(index, item.copyWithCount(item.getMaxStackSize()));
@@ -218,7 +218,7 @@ public class MePortMenu extends MachineMenu {
         return false;
     }
 
-    /** Клик по настройке жидкости: ёмкостью задать или прибавить её объём (ПКМ — по 1000 mB), пустой рукой ЛКМ снять, ПКМ убавить на 1000. */
+    /** Click on the fluid config: a container sets or adds its volume (RMB by 1000 mB), LMB with an empty hand clears, RMB removes 1000. */
     private void clickFluid(int t, boolean right) {
         FluidStack hand = FluidUtil.getFluidContained(getCarried()).orElse(FluidStack.EMPTY), cur = me.meFluidConfig(t);
         int cap = tankCapacity();
@@ -244,7 +244,7 @@ public class MePortMenu extends MachineMenu {
         } else if (stack.getItem() instanceof PortUpgradeItem) {
             if (!moveItemStackTo(stack, upgradeSlot, upgradeSlot + 1, false)) return ItemStack.EMPTY;
         } else if (config != null) {
-            // МЭ-вход: Shift по предмету — призрак в первую свободную клетку (сколько в стопке), сам предмет остаётся у игрока
+            // ME input: Shift on an item puts a ghost into the first free cell (as many as in the stack), the item itself stays with the player
             for (int i = 0; i < activeSlots(); i++)
                 if (config.getStackInSlot(i).isEmpty()) { config.setStackInSlot(i, stack.copy()); break; }
             return ItemStack.EMPTY;

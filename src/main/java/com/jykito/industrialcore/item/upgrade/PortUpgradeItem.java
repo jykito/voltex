@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Улучшение портов мультиблока: одно и то же на все порты, растит их ёмкость.
- * Тир 0 = порт без улучшения, 1 = базовое, 2 = продвинутое. Все цифры портов живут здесь.
+ * Multiblock port upgrade: the same one for all ports, it raises their capacity.
+ * Tier 0 = port without an upgrade, 1 = basic, 2 = advanced. All port numbers live here.
  */
 public class PortUpgradeItem extends MachineUpgradeItem {
 

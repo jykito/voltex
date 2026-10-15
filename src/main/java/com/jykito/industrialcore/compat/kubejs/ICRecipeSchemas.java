@@ -21,8 +21,8 @@ public final class ICRecipeSchemas {
     private ICRecipeSchemas() {}
 
     /**
-     * Рецепт со списком входов, где у каждого входа своё количество прямо в объекте: {"item": ..., "count": 4}
-     * (так читают сборщик и электромагнит). Обычный RecipeJS пишет ингредиент без количества.
+     * A recipe with a list of inputs where each input has its own count right in the object: {"item": ..., "count": 4}
+     * (this is how the assembler and electromagnet read them). A regular RecipeJS writes an ingredient without a count.
      */
     public static class CountedInputsRecipeJS extends RecipeJS {
         @Override
@@ -30,7 +30,7 @@ public final class ICRecipeSchemas {
             JsonElement j = value.ingredient.toJson();
             JsonObject o;
             if (j.isJsonObject()) o = j.getAsJsonObject().deepCopy();
-            else {   // несколько вариантов ингредиента — массив; в объект с количеством он ложится составным ингредиентом Forge
+            else {   // several ingredient variants are an array; inside an object with a count it becomes a Forge compound ingredient
                 o = new JsonObject();
                 o.addProperty("type", "forge:compound");
                 o.add("children", j);
@@ -55,7 +55,7 @@ public final class ICRecipeSchemas {
     public static final RecipeSchema BIOREACTOR      = bioreactor();
     public static final RecipeSchema CRYO            = cryo();
 
-    /** Промышленный сборщик: много входов с количеством, необязательная жидкость на входе и выходе. */
+    /** Industrial assembler: many inputs with counts, optional fluid in and out. */
     private static RecipeSchema assembling() {
         RecipeKey<OutputItem>  result      = ItemComponents.OUTPUT.key("result");
         RecipeKey<InputItem[]> inputs      = ItemComponents.INPUT_ARRAY.key("inputs");
@@ -67,7 +67,7 @@ public final class ICRecipeSchemas {
                 .uniqueOutputId(result);
     }
 
-    /** Электромагнит: входы с количеством, тир магнита, окно нестабильности; lateOnly — только промышленный электромагнит. */
+    /** Electromagnet: inputs with counts, magnet tier, instability window; lateOnly means industrial electromagnet only. */
     private static RecipeSchema accelerating() {
         RecipeKey<OutputItem>  result    = ItemComponents.OUTPUT.key("result");
         RecipeKey<InputItem[]> inputs    = ItemComponents.INPUT_ARRAY.key("inputs");
@@ -84,7 +84,7 @@ public final class ICRecipeSchemas {
                 .uniqueOutputId(result);
     }
 
-    /** Биореактор: основной вход + необязательная добавка, вода и порог тепла. */
+    /** Bioreactor: main input + optional additive, water and a heat threshold. */
     private static RecipeSchema bioreactor() {
         RecipeKey<OutputItem> result        = ItemComponents.OUTPUT.key("result");
         RecipeKey<InputItem>  ingredient    = ItemComponents.INPUT.key("ingredient");
@@ -100,8 +100,8 @@ public final class ICRecipeSchemas {
     }
 
     /**
-     * Криокамера: результат-предмет необязателен (конденсат — только жидкость), поэтому конструкторы заданы явно:
-     * (ингредиент), (результат, ингредиент), (результат, ингредиент, стадия); жидкость — .fluidResult(id).fluidResultAmount(mB).
+     * Cryo chamber: the item result is optional (condensate is fluid only), so the constructors are explicit:
+     * (ingredient), (result, ingredient), (result, ingredient, stage); fluid is .fluidResult(id).fluidResultAmount(mB).
      */
     private static RecipeSchema cryo() {
         RecipeKey<OutputItem> result      = ItemComponents.OUTPUT.key("result").defaultOptional();
@@ -118,7 +118,7 @@ public final class ICRecipeSchemas {
                 .constructor(result, ingredient, stage);
     }
 
-    /** Пометка «только для лейт-машины» (её промышленный режим): малая машина такой рецепт не видит. */
+    /** "Late machine only" marker (its industrial mode): the small machine does not see such a recipe. */
     private static RecipeKey<Boolean> lateOnly() {
         return BooleanComponent.BOOLEAN.key("lateOnly").optional(false);
     }
@@ -135,7 +135,7 @@ public final class ICRecipeSchemas {
 
     public static final RecipeSchema MACHINE         = machine();
 
-    /** Затравка необязательна: рецепт может кристаллизовать из одной жидкости. */
+    /** The seed is optional: a recipe can crystallize from a fluid alone. */
     private static RecipeSchema crystallizer() {
         RecipeKey<OutputItem> result     = ItemComponents.OUTPUT.key("result");
         RecipeKey<String>     fluidInput  = StringComponent.ANY.key("fluidInput");

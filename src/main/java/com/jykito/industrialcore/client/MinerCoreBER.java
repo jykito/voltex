@@ -32,9 +32,9 @@ public class MinerCoreBER implements BlockEntityRenderer<MinerCoreBlockEntity> {
     public static final ResourceLocation DRILL_MODEL_RL =
             new ResourceLocation("industrial_core", "block/drill_3_ber");
     /**
-     * Слой свечения бура: та же геометрия, но текстура, где всё несветящееся стёрто в прозрачность.
-     * Рисуется вторым проходом на полной яркости, поэтому светятся только оставленные пиксели,
-     * а сам бур живёт на настоящем свете мира. Раскладка обязана совпадать с {@code drill_3}.
+     * Drill glow layer: the same geometry, but a texture where everything that does not glow is erased to transparent.
+     * It is drawn in a second pass at full brightness, so only the remaining pixels glow,
+     * and the drill itself takes real world light. The layout must match {@code drill_3}.
      */
     public static final ResourceLocation DRILL_GLOW_MODEL_RL =
             new ResourceLocation("industrial_core", "block/drill_3_glow_ber");
@@ -58,8 +58,8 @@ public class MinerCoreBER implements BlockEntityRenderer<MinerCoreBlockEntity> {
     }
 
     /**
-     * Собранный шахтёр от блока ядра: бур (на свете {@code light}, слой свечения на полной яркости) и шнек под углом
-     * {@code screwAngle}. Зовут BER и превью структуры в гайде (там блок-сущности нет).
+     * A formed miner from the core block: the drill (at light {@code light}, glow layer at full brightness) and the auger at angle
+     * {@code screwAngle}. Called by the BER and by the structure preview in the guide (where there is no block entity).
      */
     public static void renderFormed(PoseStack ps, MultiBufferSource buf, Direction facing, float screwAngle, int light, int overlay) {
         var mc = Minecraft.getInstance();
@@ -84,7 +84,7 @@ public class MinerCoreBER implements BlockEntityRenderer<MinerCoreBlockEntity> {
         ps.mulPose(Axis.YP.rotationDegrees(yDeg));
         ps.translate(0.5, -1.5, -0.5);
         ps.scale(2f, 2f, 2f);
-        // Корпус живёт на свете мира, поверх него тем же трансформом ложится слой свечения.
+        // The body takes world light, the glow layer goes on top with the same transform.
         renderQuads(drillModel, ps, buf.getBuffer(rt), light, overlay);
         if (hasGlow) renderQuads(glowModel, ps, buf.getBuffer(rt), LightTexture.FULL_BRIGHT, overlay);
         ps.popPose();
@@ -123,7 +123,7 @@ public class MinerCoreBER implements BlockEntityRenderer<MinerCoreBlockEntity> {
     }
 
     @Override
-    public boolean shouldRenderOffScreen(MinerCoreBlockEntity be) { return false; } // фрустум-куллинг (bbox p-2..p+3 покрывает бур)
+    public boolean shouldRenderOffScreen(MinerCoreBlockEntity be) { return false; } // frustum culling (bbox p-2..p+3 covers the drill)
 
     @Override
     public int getViewDistance() { return 96; }

@@ -17,7 +17,7 @@ public class ModSounds {
             () -> SoundEvent.createVariableRangeEvent(
                     new ResourceLocation(IndustrialCore.MODID, "plasma_burst")));
 
-    // Электромагнит-ускоритель: луп-гул работы, пролёт столба, разгон
+    // Electromagnet-accelerator: working hum loop, column pass, spin-up
     public static final RegistryObject<SoundEvent> MAGNET_HUM = SOUNDS.register("magnet_hum",
             () -> SoundEvent.createVariableRangeEvent(
                     new ResourceLocation(IndustrialCore.MODID, "magnet_hum")));
@@ -30,7 +30,7 @@ public class ModSounds {
             () -> SoundEvent.createVariableRangeEvent(
                     new ResourceLocation(IndustrialCore.MODID, "magnet_powerup")));
 
-    // Бур: петля, пока игрок копает буром (DrillSound; звук — tools/sounds/drill_sound.js)
+    // Drill: a loop while the player digs with a drill (DrillSound; the sound comes from tools/sounds/drill_sound.js)
     public static final RegistryObject<SoundEvent> DRILL_RUN = SOUNDS.register("drill_run",
             () -> SoundEvent.createVariableRangeEvent(
                     new ResourceLocation(IndustrialCore.MODID, "drill_run")));

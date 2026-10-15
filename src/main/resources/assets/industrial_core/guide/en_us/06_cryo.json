@@ -159,7 +159,7 @@
         },
         {
           "type": "text",
-          "text": "Up to three rods go into the core, and they speed the chamber up, from a quarter extra to twice as fast."
+          "text": "Up to three rods go into the core. Each one speeds the chamber up: rod I by a quarter, II by half, III doubles it. The bonuses add up, so three rod III make it four times as fast."
         },
         {
           "type": "text",
@@ -215,7 +215,7 @@
         },
         {
           "type": "text",
-          "text": "Do not pour it away, you will need it in later recipes. The first of them is the **cryogenic heat exchanger**."
+          "text": "Do not pour it away: a capsule of hot coolant goes into the **cryogenic heat exchanger** recipe."
         },
         {
           "type": "items",

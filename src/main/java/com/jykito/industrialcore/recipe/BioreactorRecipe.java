@@ -13,8 +13,8 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Рецепт биореактора (Э3): биомасса + добавка + вода → органика, которую обычно дают мобы.
- * Культура растёт только в тепле: тепло не тратится, но ниже {@code requiredHeat} реактор стоит.
+ * Bioreactor recipe (E3): biomass + additive + water -> organics usually dropped by mobs.
+ * The culture only grows in heat: heat is not spent, but below {@code requiredHeat} the reactor stands.
  */
 public class BioreactorRecipe implements Recipe<SimpleContainer> {
 
@@ -38,7 +38,7 @@ public class BioreactorRecipe implements Recipe<SimpleContainer> {
         this.requiredHeat = requiredHeat;
     }
 
-    /** Подходят ли биомасса и добавка (вода и тепло проверяет машина). */
+    /** Whether the biomass and additive fit (the machine checks water and heat). */
     public boolean matches(ItemStack in, ItemStack add) {
         return input.test(in) && in.getCount() >= inputCount
                 && (additive.isEmpty() ? add.isEmpty() || additiveCount == 0 : additive.test(add) && add.getCount() >= additiveCount);

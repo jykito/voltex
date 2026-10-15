@@ -15,13 +15,13 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Кристаллизация: жидкость плюс предмет-затравка дают предмет.
+ * Crystallization: a fluid plus a seed item give an item.
  * <p>
- * Это единственный в моде путь «жидкость → предмет»: сжижитель работает предмет→жидкость,
- * обогатитель предмет+жидкость→жидкость, промывщик предмет+жидкость→предметы. Обратного
- * не умел никто, поэтому тип заведён отдельно, а не через {@code machine_recipe}.
+ * This is the mod's only "fluid -> item" path: the liquefier does item -> fluid,
+ * the enricher item + fluid -> fluid, the ore washer item + fluid -> items. Nothing did the reverse,
+ * so the type is separate rather than going through {@code machine_recipe}.
  * <p>
- * Затравка необязательна: без неё машина кристаллизует из одной жидкости.
+ * The seed is optional: without it the machine crystallizes from the fluid alone.
  */
 public class CrystallizerRecipe implements Recipe<SimpleContainer> {
 
@@ -48,13 +48,13 @@ public class CrystallizerRecipe implements Recipe<SimpleContainer> {
         this.energyCostPerTick = energyCostPerTick;
     }
 
-    /** Подходит ли содержимое слота затравки. Рецепт без затравки принимает пустой слот. */
+    /** Whether the seed slot contents fit. A recipe without a seed accepts an empty slot. */
     public boolean seedMatches(ItemStack seed) {
         if (!hasSeed()) return true;
         return ingredient.test(seed) && seed.getCount() >= ingredientCount;
     }
 
-    /** Результат как есть, без копии — для проверок в тике. Менять его нельзя. */
+    /** The result as is, without a copy, for checks in the tick. Do not modify it. */
     public ItemStack        getResult()         { return result; }
     public boolean          hasSeed()           { return !ingredient.isEmpty(); }
     public Ingredient       getIngredient()     { return ingredient; }

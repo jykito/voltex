@@ -24,20 +24,20 @@ public class BaseWireBlockEntity extends BlockEntity {
     private final LazyOptional<IEnergyStorage> energyProxy;
 
     /**
-     * Снимок приёмников сети, живущий ОДИН тик.
+     * A snapshot of the network's receivers that lives for ONE tick.
      * <p>
-     * Раньше обход сети шёл на каждую вставку энергии, поэтому цена за тик была
-     * «число толкающих × размер сети» — на большой базе это квадратичный рост.
-     * Теперь первый же толчок за тик обходит сеть один раз и раскладывает этот
-     * снимок на ВСЕ пройденные кабели, а остальные генераторы находят свежую
-     * метку и берут готовое.
+     * Before, the network was walked on every energy insert, so the cost per tick was
+     * "number of pushers x network size", which grows quadratically on a large base.
+     * Now the first push in a tick walks the network once and hands this
+     * snapshot to ALL cables it passed, and the other generators find a fresh
+     * stamp and take the ready result.
      * <p>
-     * Снимок протухает сам со сменой тика, поэтому инвалидация не нужна вообще:
-     * ни на постановку кабеля, ни на слом машины, ни на выгрузку чанка. Это снимает
-     * весь класс багов «кэш устарел, энергия течёт в снесённую машину» — максимум
-     * один тик расхождения, и он самовосстанавливается.
+     * The snapshot expires by itself when the tick changes, so no invalidation is needed at all:
+     * not when a cable is placed, not when a machine is broken, not when a chunk unloads. This removes
+     * the whole class of "stale cache, energy flows into a removed machine" bugs: at most
+     * one tick of mismatch, and it heals itself.
      */
-    /** @param receivers держим именно LazyOptional: если машину снесли внутри тика, капабилити протухнет и мы это увидим. */
+    /** @param receivers we keep LazyOptional on purpose: if the machine is removed within the tick, the capability expires and we see it. */
     private record NetworkSnapshot(long tick, List<LazyOptional<IEnergyStorage>> receivers) {}
 
     private NetworkSnapshot snapshot;
@@ -91,7 +91,7 @@ public class BaseWireBlockEntity extends BlockEntity {
         public boolean canReceive() { return true; }
     }
 
-    /** Снимок за текущий тик: берём готовый или считаем один раз на всю сеть. */
+    /** Snapshot for the current tick: take the ready one or compute it once for the whole network. */
     private List<LazyOptional<IEnergyStorage>> receiversThisTick() {
         long now = level.getGameTime();
         if (snapshot != null && snapshot.tick() == now) return snapshot.receivers();
@@ -137,7 +137,7 @@ public class BaseWireBlockEntity extends BlockEntity {
 
         NetworkSnapshot snap = new NetworkSnapshot(now, receivers);
         this.snapshot = snap;
-        for (BaseWireBlockEntity w : wires) w.snapshot = snap;  // вся сеть разом — вот здесь и уходит множитель
+        for (BaseWireBlockEntity w : wires) w.snapshot = snap;  // the whole network at once: this is where the multiplier goes away
         return receivers;
     }
 
@@ -145,7 +145,7 @@ public class BaseWireBlockEntity extends BlockEntity {
 
         List<LazyOptional<IEnergyStorage>> cached = receiversThisTick();
 
-        // разворачиваем снимок: приёмник мог исчезнуть внутри тика — тогда капабилити уже протухла
+        // unpack the snapshot: a receiver may have vanished within the tick, then its capability has already expired
         List<IEnergyStorage> receivers = new ArrayList<>(cached.size());
         for (LazyOptional<IEnergyStorage> cap : cached) {
             IEnergyStorage storage = cap.resolve().orElse(null);

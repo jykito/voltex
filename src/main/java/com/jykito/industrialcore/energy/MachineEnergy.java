@@ -3,21 +3,21 @@ package com.jykito.industrialcore.energy;
 import net.minecraftforge.energy.EnergyStorage;
 
 /**
- * Энергобуфер машины. Снаружи (кабели, соседи) работает как обычный Forge {@link EnergyStorage}
- * с лимитами приёма и отдачи, а сама машина меняет заряд напрямую, в обход этих лимитов.
+ * Machine energy buffer. From outside (cables, neighbours) it works as a regular Forge {@link EnergyStorage}
+ * with intake and output limits, and the machine itself changes the charge directly, bypassing those limits.
  * <p>
- * Раньше у каждой машины был свой подкласс с теми же тремя методами под разными именами.
- * Направление задаётся лимитом: у потребителя отдача 0, у генератора приём 0, и Forge по
- * нулевому лимиту сам отвечает {@code canExtract()/canReceive() = false}.
+ * Before, every machine had its own subclass with the same three methods under different names.
+ * The direction is set by the limit: a consumer has output 0, a generator has intake 0, and Forge
+ * answers {@code canExtract()/canReceive() = false} by itself for a zero limit.
  */
 public class MachineEnergy extends EnergyStorage {
 
-    /** Потребитель: принимает до {@code maxReceive} за вызов, наружу не отдаёт. */
+    /** Consumer: accepts up to {@code maxReceive} per call, gives nothing outside. */
     public static MachineEnergy consumer(int capacity, int maxReceive) {
         return new MachineEnergy(capacity, maxReceive, 0);
     }
 
-    /** Генератор: снаружи не принимает, отдаёт до {@code maxExtract} за вызов. */
+    /** Generator: accepts nothing from outside, gives up to {@code maxExtract} per call. */
     public static MachineEnergy generator(int capacity, int maxExtract) {
         return new MachineEnergy(capacity, 0, maxExtract);
     }
@@ -26,17 +26,17 @@ public class MachineEnergy extends EnergyStorage {
         super(capacity, maxReceive, maxExtract);
     }
 
-    /** Расход на работу. Ниже нуля не уходит. */
+    /** Spend for work. Does not go below zero. */
     public void consumeEnergy(int amount) {
         energy = Math.max(0, energy - amount);
     }
 
-    /** Выработка. Излишек сверх ёмкости теряется. */
+    /** Generation. Surplus above capacity is lost. */
     public void addEnergy(int amount) {
         energy = (int) Math.min((long) capacity, (long) energy + amount);
     }
 
-    /** Загрузка из NBT. Значение прижимается к 0..ёмкость. */
+    /** Load from NBT. The value is clamped to 0..capacity. */
     public void setEnergy(int amount) {
         energy = Math.max(0, Math.min(capacity, amount));
     }

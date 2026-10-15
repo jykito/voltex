@@ -44,7 +44,7 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
     public static final int ENERGY_PER_TICK = 1000;
     public static final int FLUID_PER_ORE   = 1000;
     public static final int ENERGY_CAPACITY = 100_000;
-    // База под работу без модуля: 8 руд. Под параллели бак растёт сам, см. AdaptiveTank.
+    // Base for running without a module: 8 ores. With parallel the tank grows by itself, see AdaptiveTank.
     public static final int FLUID_CAPACITY  = 8_000;
 
     private final ItemStackHandler itemHandler = new ItemStackHandler(5) {
@@ -172,7 +172,7 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
 
         MachineUpgrades upg = MachineUpgrades.scan(itemHandler, 1, 4);
         if (AdaptiveTank.resize(fluidTank, FLUID_CAPACITY, upg.parallel()))
-            level.sendBlockUpdated(pos, state, state, 3); // шкала бака считается от ёмкости, клиенту нужна новая
+            level.sendBlockUpdated(pos, state, state, 3); // the tank gauge is computed from capacity, the client needs the new one
 
         int effectiveMax = upg.scaleTime(BASE_PROGRESS);
         this.maxProgress = effectiveMax;
@@ -189,7 +189,7 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
         boolean hasChanges = false;
         boolean working = false;
         if (canWork) {
-            // параллель, которую тянет энергия в этот тик (не больше модуля, не больше запаса)
+            // parallel the energy covers this tick (not more than the module, not more than the stock)
             int energyParallel = Math.max(1, Math.min(upg.parallel(), energyStorage.getEnergyStored() / ENERGY_PER_TICK));
             energyStorage.consumeEnergy(energyParallel * ENERGY_PER_TICK);
             progress++;
@@ -197,7 +197,7 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
             hasChanges = true;
 
             if (progress >= effectiveMax) {
-                // на завершении параллель ограничена ещё и запасом жижи; сколько реально влезло в вывод — столько и списываем
+                // at completion parallel is also limited by the fluid stock; we consume exactly what fit into the output
                 int p = Math.min(energyParallel, fluidTank.getFluidAmount() / FLUID_PER_ORE);
                 int produced = p >= 1 ? generateOre(level, (MinerLensItem) lensStack.getItem(), p) : 0;
                 if (produced > 0) {
@@ -264,7 +264,7 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
                 ore = outputHandler.insertItem(i, ore, false);
             }
             if (ore.isEmpty()) produced++;
-            else break;  // вывод забит — дальше не мельчим
+            else break;  // output is full, stop splitting further
         }
         return produced;
     }
@@ -278,7 +278,7 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     private void pushToAdjacentInventories(Level level, BlockPos center) {
-        // выход пуст → нечего толкать, не сканируем 26×6 соседей (поведение идентично)
+        // output is empty -> nothing to push, do not scan 26x6 neighbours (behaviour identical)
         boolean anyOut = false;
         for (int s = 0; s < outputHandler.getSlots(); s++)
             if (!outputHandler.getStackInSlot(s).isEmpty()) { anyOut = true; break; }

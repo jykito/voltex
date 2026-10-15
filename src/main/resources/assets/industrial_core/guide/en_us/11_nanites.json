@@ -237,7 +237,7 @@
         },
         {
           "type": "text",
-          "text": "The chance grows slowly, about 3.5% per generation, and stops at 30%."
+          "text": "The chance grows slowly, 2.5% per generation or 3.5% on heat, and stops at 30%."
         },
         {
           "type": "stats",

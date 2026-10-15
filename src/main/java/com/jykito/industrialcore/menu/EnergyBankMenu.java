@@ -21,7 +21,7 @@ public class EnergyBankMenu extends MachineMenu {
         super(ModMenuTypes.ENERGY_BANK_MENU.get(), id);
         this.blockEntity = (EnergyBankBlockEntity) entity;
         this.data = data;
-        // слотов машины нет — только инвентарь игрока (раскладка как у станции)
+        // no machine slots, only the player inventory (layout as on the station)
         addPlayerInventory(inv, 44, 133);
         addDataSlots(data);
     }
@@ -34,14 +34,14 @@ public class EnergyBankMenu extends MachineMenu {
 
     public int getScaledEnergy(int w) { int m = getMaxEnergy(); return m <= 0 ? 0 : (int) ((long) getEnergy() * w / m); }
 
-    /** Резерв % приходит с клиента как id клика-кнопки (0..100 влезает в байт) — кастом-пакет не нужен. */
+    /** The reserve % comes from the client as the button click id (0..100 fits into a byte), no custom packet needed. */
     @Override
     public boolean clickMenuButton(Player player, int id) {
         if (id >= 0 && id <= 100) { blockEntity.setReserve(id); return true; }
         return false;
     }
 
-    @Override public ItemStack quickMoveStack(Player player, int index) { return ItemStack.EMPTY; } // машины-слотов нет
+    @Override public ItemStack quickMoveStack(Player player, int index) { return ItemStack.EMPTY; } // no machine slots
 
     @Override
     public boolean stillValid(Player player) {

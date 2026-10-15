@@ -14,7 +14,7 @@ import net.minecraft.world.entity.player.Inventory;
 public class ElectromagnetScreen extends MachineScreen<ElectromagnetMenu> {
     private static final ResourceLocation TEXTURE = new ResourceLocation(IndustrialCore.MODID, "textures/gui/electromagnet_gui.png");
 
-    /** Энергия — его полоса с молнией слева, как у остальных машин (tools/gui_gen/mag_cryo/build.js, там те же координаты). */
+    /** Energy: the author's bar with a bolt on the left, like the other machines (tools/gui_gen/mag_cryo/build.js has the same coordinates). */
     private static final int BAR_X = 73, BAR_Y = 122, BAR_H = 6;
 
     private static final int TANK_W = 16, TANK_H = 64;
@@ -22,22 +22,22 @@ public class ElectromagnetScreen extends MachineScreen<ElectromagnetMenu> {
     private static final int TANK_B_X = 186;
     private static final int GLASS_U = 34, GLASS_V = 242;
 
-    // Инфо-поля: слева нестабильность, справа статус+пучки. CRIT = порог «вот-вот квенч».
+    // Info fields: instability on the left, status + beams on the right. CRIT = the "about to quench" threshold.
     private static final int CRIT = 80;
     private static final int INFO_L_X = 23, INFO_R_X = 204, INFO_Y = 27;
-    private static final float TXT_SCALE = 0.5f; // мельче основного шрифта — влезть в инфо-поля
+    private static final float TXT_SCALE = 0.5f; // smaller than the main font, to fit into the info fields
 
-    // Резонанс/мощность. Дорожки нарисованы в текстуре; код рисует спрайты-ползунки + иконку цели + аним-заливку.
-    private static final int RES_X = 73, RES_Y = 102, RES_W = 110, RES_H = 6;   // бар резонанса (окно-ползунок ловит иконку цели)
-    private static final int THR_X = 73, THR_Y = 112, THR_W = 110, THR_H = 6;   // бар мощности (аним-заливка + ползунок)
-    // Спрайты в основной текстуре (UV): ползунок резонанса 96,264 (5×6, окно 3×4); иконка цели 133,263 (3×6); ползунок мощности 74,264 (5×6).
+    // Resonance/power. The tracks are drawn in the texture; the code draws the slider sprites + the target icon + the animated fill.
+    private static final int RES_X = 73, RES_Y = 102, RES_W = 110, RES_H = 6;   // resonance bar (the window slider catches the target icon)
+    private static final int THR_X = 73, THR_Y = 112, THR_W = 110, THR_H = 6;   // power bar (animated fill + slider)
+    // Sprites in the main texture (UV): resonance slider 96,264 (5x6, window 3x4); target icon 133,263 (3x6); power slider 74,264 (5x6).
     private static final ResourceLocation THROTTLE_FILL = new ResourceLocation(IndustrialCore.MODID, "textures/gui/trottling_bar_anim.png");
-    private static final int THR_FILL_H = 6, THR_ANIM_H = 60, THR_FRAMES = 10;  // аним-заливка мощности 110×60 = 10 кадров по 6px
-    // Прогресс: аним-форма юзера (стрип 64×1152 = 18 кадров 64×64), кадр выбирается по прогрессу, центр на выходе (128,60)
+    private static final int THR_FILL_H = 6, THR_ANIM_H = 60, THR_FRAMES = 10;  // animated power fill 110x60 = 10 frames of 6px
+    // Progress: the author's animated shape (strip 64x1152 = 18 frames of 64x64), the frame is picked by progress, centred on the output (128,60)
     private static final ResourceLocation PROGRESS_ANIM = new ResourceLocation(IndustrialCore.MODID, "textures/gui/progress_bar_magnet_anim.png");
     private static final int PROG_FRAME = 64, PROG_FRAMES = 18, PROG_PX = 97, PROG_PY = 29;
     private int thrAnimFrame = 0;
-    private float throttleLocal = 0f;         // клиентское значение мощности (мгновенный отклик при перетаскивании)
+    private float throttleLocal = 0f;         // client power value (instant response while dragging)
     private boolean draggingThrottle = false;
 
     public ElectromagnetScreen(ElectromagnetMenu menu, Inventory inv, Component title) {
@@ -85,21 +85,21 @@ public class ElectromagnetScreen extends MachineScreen<ElectromagnetMenu> {
         RenderSystem.disableBlend();
 
         drawReadout(g);
-        if (!draggingThrottle) throttleLocal = menu.getThrottle() / 100f; // синк с сервера, пока не тащим ползунок
+        if (!draggingThrottle) throttleLocal = menu.getThrottle() / 100f; // sync from the server while the slider is not being dragged
         drawResonance(g);
         drawThrottle(g);
         drawProgress(g);
     }
 
-    /** Инфо-панели: слева нестабильность (крупно) + радиус поля; справа статус + множитель ×1/×2 крупно по центру. */
+    /** Info panels: instability (large) + field radius on the left; status + the x1/x2 multiplier large in the centre on the right. */
     private void drawReadout(GuiGraphics g) {
         int instab = menu.getInstability();
         boolean working = menu.isWorking();
         boolean doubling = menu.isDoubling();
-        int lcx = leftPos + 37, rcx = leftPos + 218, ty = topPos;   // центры лев./прав. панелей (сдвиг ±15 от кольца)
+        int lcx = leftPos + 37, rcx = leftPos + 218, ty = topPos;   // centres of the left/right panels (offset ±15 from the ring)
         int col = instab >= CRIT ? 0xFF5555 : instab >= 50 ? 0xFFD24A : 0x55FF7A;
 
-        // ── Левая панель: нестабильность (крупно) + радиус поля ──
+        // ── Left panel: instability (large) + field radius ──
         drawScaled(g, Component.translatable("gui.industrial_core.magnet.instab"), lcx, ty + 34, 0xA0A0A0, 0.72f);
         drawScaled(g, Component.literal(instab + "%"), lcx, ty + 45, col, 1.2f);
         int tier = menu.getCoilTier();
@@ -109,7 +109,7 @@ public class ElectromagnetScreen extends MachineScreen<ElectromagnetMenu> {
                 : "—";
         drawScaled(g, Component.translatable("gui.industrial_core.magnet.field", fr), lcx, ty + 68, col, 0.72f);
 
-        // ── Правая панель: статус + множитель ×1/×2 (крупно, в центре) ──
+        // ── Right panel: status + x1/x2 multiplier (large, centred) ──
         Component status = instab >= CRIT ? Component.translatable("gui.industrial_core.magnet.critical")
                 : working ? Component.translatable("gui.industrial_core.magnet.working")
                 : Component.translatable("gui.industrial_core.magnet.idle");
@@ -118,7 +118,7 @@ public class ElectromagnetScreen extends MachineScreen<ElectromagnetMenu> {
         drawScaled(g, Component.literal(doubling ? "×2" : "×1"), rcx, ty + 48, doubling ? 0x55FF7A : 0xA0A0A0, 1.7f);
     }
 
-    /** Текст с масштабом, центрированный по X вокруг (cx); cy — верх строки. */
+    /** Scaled text centred on X around (cx); cy is the top of the line. */
     private void drawScaled(GuiGraphics g, Component text, int cx, int cy, int color, float scale) {
         float w = font.width(text) * scale;
         g.pose().pushPose();
@@ -128,37 +128,37 @@ public class ElectromagnetScreen extends MachineScreen<ElectromagnetMenu> {
         g.pose().popPose();
     }
 
-    /** Бар резонанса: иконка дрейф-цели + окно-ползунок нестабильности (ловим цель в окно). Цель зеленеет по заряду. */
+    /** Resonance bar: drifting target icon + instability window slider (catch the target in the window). The target turns green with charge. */
     private void drawResonance(GuiGraphics g) {
         int x = leftPos + RES_X, y = topPos + RES_Y;
         int instab = menu.getInstability();
         int target = menu.getResonanceTarget();
         int charge = menu.getResonanceCharge();
-        boolean caught = target > 0 && Math.abs(instab - target) <= 3;                    // поймал цель в окно (±3%)
-        if (target > 0) {                                                                 // иконку цели рисуем ПОД ползунком (видна в окне 3×4)
-            int tx = Math.max(x, Math.min(x + Math.round(target / 100f * RES_W) - 1, x + RES_W - 3)); // кламп в границы бара
-            if (caught) { float k = charge / 100f; g.setColor(1f - 0.55f * k, 1f, 1f - 0.55f * k, 1f); } // белый → зелёный по заряду
+        boolean caught = target > 0 && Math.abs(instab - target) <= 3;                    // caught the target in the window (±3%)
+        if (target > 0) {                                                                 // the target icon is drawn UNDER the slider (visible in the 3x4 window)
+            int tx = Math.max(x, Math.min(x + Math.round(target / 100f * RES_W) - 1, x + RES_W - 3)); // clamp to the bar bounds
+            if (caught) { float k = charge / 100f; g.setColor(1f - 0.55f * k, 1f, 1f - 0.55f * k, 1f); } // white -> green by charge
             g.blit(TEXTURE, tx, y, 133, 263, 3, 6, 256, 315);
             g.setColor(1f, 1f, 1f, 1f);
         }
-        int hx = Math.max(x, Math.min(x + Math.round(instab / 100f * RES_W) - 2, x + RES_W - 5)); // окно-ползунок, клампим в бар
+        int hx = Math.max(x, Math.min(x + Math.round(instab / 100f * RES_W) - 2, x + RES_W - 5)); // window slider, clamped to the bar
         g.blit(TEXTURE, hx, y, 96, 264, 5, 6, 256, 315);
     }
 
-    /** Бар мощности: аним-заливка от левого края до ползунка + спрайт-ползунок (перетаскивается мышью → пакет на сервер). */
+    /** Power bar: animated fill from the left edge to the slider + a slider sprite (dragged with the mouse -> packet to the server). */
     private void drawThrottle(GuiGraphics g) {
         int x = leftPos + THR_X, y = topPos + THR_Y;
         int fillW = Math.round(throttleLocal * THR_W);
-        if (fillW > 0)                                                                    // аним-заливка (110×60, 10 кадров)
+        if (fillW > 0)                                                                    // animated fill (110x60, 10 frames)
             g.blit(THROTTLE_FILL, x, y, 0, thrAnimFrame * THR_FILL_H, fillW, THR_H, THR_W, THR_ANIM_H);
-        int hx = Math.max(x, Math.min(x + fillW - 2, x + THR_W - 5));                     // ползунок на конце заливки, клампим в бар
+        int hx = Math.max(x, Math.min(x + fillW - 2, x + THR_W - 5));                     // slider at the end of the fill, clamped to the bar
         g.blit(TEXTURE, hx, y, 74, 264, 5, 6, 256, 315);
     }
 
-    /** Прогресс крафта: кадр аним-формы (стрип юзера) по доле прогресса, по центру слота-выхода. */
+    /** Craft progress: a frame of the animated shape (the author's strip) by progress fraction, centred on the output slot. */
     private void drawProgress(GuiGraphics g) {
         int max = menu.getMaxProgress();
-        if (max <= 1) return;                                                             // только при активном крафте
+        if (max <= 1) return;                                                             // only while crafting
         float p = Math.max(0f, Math.min(1f, menu.getProgress() / (float) max));
         int frame = Math.min(PROG_FRAMES - 1, Math.round(p * (PROG_FRAMES - 1)));
         g.blit(PROGRESS_ANIM, leftPos + PROG_PX, topPos + PROG_PY, 0, frame * PROG_FRAME,

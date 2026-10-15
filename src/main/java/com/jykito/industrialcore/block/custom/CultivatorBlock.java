@@ -31,7 +31,7 @@ public class CultivatorBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
-    /** T2: три линии (см. CultivatorBlockEntity). */
+    /** T2: three lines (see CultivatorBlockEntity). */
     private final boolean t2;
 
     public CultivatorBlock(Properties props) {

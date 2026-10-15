@@ -15,7 +15,7 @@
         },
         {
           "type": "text",
-          "text": "It also grinds vanilla items: bones into bone meal, obsidian and amethyst into dust."
+          "text": "It also grinds vanilla items: bones into bone meal, amethyst into amethyst dust, quartz into silicon dust, wool into string, cobblestone into gravel."
         },
         {
           "type": "items",
@@ -55,7 +55,7 @@
         },
         {
           "type": "text",
-          "text": "Presses things together: dust and fiber into dense plates, small parts into blocks. Some parts can only be made in it."
+          "text": "Presses things together: fiber and mesh into dense plates, snowballs, clay, sand and ice into blocks, leaves and seeds into biomass. Some parts can only be made in it."
         },
         {
           "type": "items",
@@ -95,7 +95,7 @@
         },
         {
           "type": "text",
-          "text": "Pulls the useful part out of whatever you put in. For example, it makes rubber from resin and logs. It does not crush anything, it just extracts."
+          "text": "Pulls the useful part out of whatever you put in: rubber from resin, resin from resin leaves, leather from rotten flesh. It does not crush anything, it just extracts."
         },
         {
           "type": "items",
@@ -271,7 +271,7 @@
         },
         {
           "type": "text",
-          "text": "Makes cryo rods. The first one is built from an empty rod and cryolite, the next ones from the rod one tier lower and a cryo crystal. It also twists superconducting wire into strands."
+          "text": "Makes cryo rods. The first one is built from an empty rod and cryolite, the second from the first and cryo crystals, the third from the second and a capsule of superfluid condensate. It also twists superconducting wire into strands."
         },
         {
           "type": "text",
@@ -330,7 +330,7 @@
           "type": "stats",
           "rows": [
             {
-              "key": "Capsule",
+              "key": "Lava capsule",
               "value": "blaze rod"
             },
             {
@@ -386,7 +386,7 @@
         },
         {
           "type": "text",
-          "text": "They make resources out of power. The **stone generator** produces stone, gravel, sand and obsidian, and the **lava and water generators** fill their tank with fluid."
+          "text": "They make resources out of power. The **stone generator** produces cobblestone, gravel, sand and obsidian, and the **lava and water generators** fill their tank with fluid."
         },
         {
           "type": "items",

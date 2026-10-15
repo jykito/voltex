@@ -42,14 +42,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Камера эволюции: штамм нанитов отбирается под корм из второго слота ({@link NaniteFeed}): руда — добытчик,
- * пыль — переработчик, образец исследования — учёный. Класс закрепляется с первого поколения, штамм другого класса
- * камера не ведёт. Поколение — {@link #GENERATION_TICKS} тиков, съедает одну руду или пыль (образец не расходуется);
- * энергия идёт потиково. Тепло из теплосети ускоряет поколения до {@link #HEAT_SPEEDUP} раз
- * и делает шаги отбора крупнее, но снижает стабильность штамма ({@link NaniteEvolution}).
+ * Evolution chamber: the nanite strain is selected by the feed in the second slot ({@link NaniteFeed}): ore makes a miner,
+ * dust a processor, a research sample a scientist. The class is fixed from the first generation, a strain of another class
+ * is not evolved by the chamber. A generation is {@link #GENERATION_TICKS} ticks and eats one ore or dust (the sample is not consumed);
+ * energy is drawn per tick. Heat from the heat network speeds generations up to {@link #HEAT_SPEEDUP} times
+ * and makes selection steps larger, but lowers the strain stability ({@link NaniteEvolution}).
  * <p>
- * Для графика в окне камера помнит сродство к целевой руде за последние {@link #HISTORY} поколений.
- * Числа предварительные, баланс позже.
+ * For the graph in the window the chamber remembers the affinity to the target ore over the last {@link #HISTORY} generations.
+ * Numbers are preliminary, balance comes later.
  */
 public class EvolutionChamberBlockEntity extends BlockEntity implements MenuProvider {
 
@@ -62,7 +62,7 @@ public class EvolutionChamberBlockEntity extends BlockEntity implements MenuProv
     public static final int FIELD_RADIUS = 8;
     private static final int PROGRESS_SCALE = 100;
 
-    /** Новые значения только в конец: порядковый номер уходит клиенту. */
+    /** Add new values only at the end: the ordinal is sent to the client. */
     public enum Status { WORKING, NO_STRAIN, NO_FEED, NO_ENERGY, WRONG_KIND }
 
     private final ItemStackHandler items = new ItemStackHandler(2) {
@@ -73,7 +73,7 @@ public class EvolutionChamberBlockEntity extends BlockEntity implements MenuProv
         @Override public int getSlotLimit(int slot) { return slot == SLOT_STRAIN ? 1 : 64; }
     };
 
-    /** Снаружи только кладут: руду и штаммы. Забирать штамм — руками, иначе воронка утащит его посреди отбора. */
+    /** From outside things are only inserted: ore and strains. The strain is taken out by hand, otherwise a hopper would pull it mid-selection. */
     private final IItemHandler automation = new IItemHandler() {
         @Override public int getSlots() { return items.getSlots(); }
         @Override public @NotNull ItemStack getStackInSlot(int slot) { return items.getStackInSlot(slot); }
@@ -104,7 +104,7 @@ public class EvolutionChamberBlockEntity extends BlockEntity implements MenuProv
     private int progress;
     private Status status = Status.NO_STRAIN;
 
-    /** Сродство к целевой руде по поколениям (тысячные) и какая руда цель. Синхронизируется клиенту для графика. */
+    /** Affinity to the target ore per generation (thousandths) and which ore is the target. Synced to the client for the graph. */
     private final List<Integer> history = new ArrayList<>();
     private @Nullable String historyTarget;
     private @Nullable Item historyIcon;
@@ -119,7 +119,7 @@ public class EvolutionChamberBlockEntity extends BlockEntity implements MenuProv
 
     private float heatFraction() { return heat / (float) MAX_HEAT; }
 
-    // ───────── тик ─────────
+    // ───────── tick ─────────
 
     public void tick(Level level, BlockPos pos, BlockState state) {
         if (!heated && heat > 0) heat = Math.max(0, heat - HEAT_LOSS);
@@ -171,7 +171,7 @@ public class EvolutionChamberBlockEntity extends BlockEntity implements MenuProv
 
     private static int permille(float v) { return Math.round(v * 1000); }
 
-    /** Холод для криофила: вплотную к камере блок криоветки (криокорпус, криостекло, ядро криокамеры…). */
+    /** Cold for a cryophile: a cryo branch block right next to the chamber (cryo casing, cryo glass, cryo chamber core...). */
     private boolean cold(Level level) {
         for (Direction d : Direction.values()) {
             ResourceLocation id = ForgeRegistries.BLOCKS.getKey(level.getBlockState(worldPosition.relative(d)).getBlock());
@@ -180,14 +180,14 @@ public class EvolutionChamberBlockEntity extends BlockEntity implements MenuProv
         return false;
     }
 
-    /** Поле для резонатора: ядро магнита-ускорителя в {@link #FIELD_RADIUS} блоках. Раз в поколение, не каждый тик. */
+    /** Field for a resonator: a magnet-accelerator core within {@link #FIELD_RADIUS} blocks. Once per generation, not every tick. */
     private boolean field(Level level) {
         for (BlockPos p : BlockPos.betweenClosed(worldPosition.offset(-FIELD_RADIUS, -FIELD_RADIUS, -FIELD_RADIUS), worldPosition.offset(FIELD_RADIUS, FIELD_RADIUS, FIELD_RADIUS)))
             if (level.getBlockState(p).is(com.jykito.industrialcore.block.ModBlocks.ELECTROMAGNET_CORE.get())) return true;
         return false;
     }
 
-    // ───────── окно ─────────
+    // ───────── window ─────────
 
     private final ContainerData data = new ContainerData() {
         @Override public int get(int i) {
@@ -215,7 +215,7 @@ public class EvolutionChamberBlockEntity extends BlockEntity implements MenuProv
         return new EvolutionChamberMenu(id, inv, this, data);
     }
 
-    // ───────── возможности, синк, сохранение ─────────
+    // ───────── capabilities, sync, saving ─────────
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
@@ -270,7 +270,7 @@ public class EvolutionChamberBlockEntity extends BlockEntity implements MenuProv
         readHistory(tag);
     }
 
-    /** Клиенту — только график (энергия и прочее идут через окно). */
+    /** Only the graph goes to the client (energy and the rest go through the window). */
     @Override
     public CompoundTag getUpdateTag() {
         CompoundTag tag = new CompoundTag();

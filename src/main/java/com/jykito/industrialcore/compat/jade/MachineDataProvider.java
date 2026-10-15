@@ -19,11 +19,11 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 
 /**
- * Плашка Jade для блоков мода: энергия, тепло, содержимое бака, прогресс.
- * Всё снимается через капабилити и общий {@code baseData}, поэтому блок-сущности править не пришлось.
+ * Jade tooltip for the mod's blocks: energy, heat, tank contents, progress.
+ * Everything is read through capabilities and the shared {@code baseData}, so the block entities did not need changes.
  * <p>
- * ⚠️ Ссылок на этот класс из обычного кода мода быть не должно — его грузит сам Jade,
- * сканируя аннотацию {@link snownee.jade.api.WailaPlugin}. Без Jade класс не трогает никто.
+ * ⚠️ Regular mod code must not reference this class: Jade loads it itself
+ * by scanning for the {@link snownee.jade.api.WailaPlugin} annotation. Without Jade nobody touches the class.
  */
 public enum MachineDataProvider implements IServerDataProvider<BlockAccessor>, IBlockComponentProvider {
     INSTANCE;
@@ -35,7 +35,7 @@ public enum MachineDataProvider implements IServerDataProvider<BlockAccessor>, I
         return UID;
     }
 
-    // ------------------------------------------------------------- сервер
+    // ------------------------------------------------------------- server
 
     @Override
     public void appendServerData(CompoundTag data, BlockAccessor accessor) {
@@ -62,7 +62,7 @@ public enum MachineDataProvider implements IServerDataProvider<BlockAccessor>, I
                 if (stack.isEmpty()) continue;
                 ResourceLocation id = ForgeRegistries.FLUIDS.getKey(stack.getFluid());
                 if (id == null) continue;
-                // шлём id, а не готовое имя: локаль берётся на клиенте, а не серверная
+                // send the id, not a ready name: the locale is taken on the client, not the server's
                 data.putString("fluid", id.toString());
                 data.putInt("fluidAmount", stack.getAmount());
                 data.putInt("fluidCap", tanks.getTankCapacity(i));
@@ -79,7 +79,7 @@ public enum MachineDataProvider implements IServerDataProvider<BlockAccessor>, I
         }
     }
 
-    // ------------------------------------------------------------- клиент
+    // ------------------------------------------------------------- client
 
     @Override
     public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
@@ -112,15 +112,15 @@ public enum MachineDataProvider implements IServerDataProvider<BlockAccessor>, I
         }
     }
 
-    // ------------------------------------------------------------- утиль
+    // ------------------------------------------------------------- utils
 
-    /** Jade зовёт провайдер на любой блок под прицелом — чужие отсекаем сразу. */
+    /** Jade calls the provider for any block under the crosshair; other mods' blocks are cut off right away. */
     private static boolean isOurs(BlockAccessor accessor) {
         ResourceLocation id = ForgeRegistries.BLOCKS.getKey(accessor.getBlock());
         return id != null && IndustrialCore.MODID.equals(id.getNamespace());
     }
 
-    /** 1500000 -> «1.5M»: в плашку не влезают полные числа энергобанка. */
+    /** 1500000 -> "1.5M": full energy bank numbers do not fit into the tooltip. */
     private static String compact(int value) {
         if (value >= 1_000_000_000) return String.format("%.1fG", value / 1_000_000_000f);
         if (value >= 1_000_000)     return String.format("%.1fM", value / 1_000_000f);

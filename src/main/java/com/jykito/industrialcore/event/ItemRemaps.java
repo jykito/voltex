@@ -19,30 +19,30 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 /**
- * Пересылка старых registry-ID предметов на новые при переименовании. Без этого Форж
- * удаляет отсутствующие в реестре записи из существующих сейвов — предмет пропадает из
- * инвентарей/сундуков. Ремап конвертирует ссылку на месте, СОХРАНЯЯ NBT/заряд.
+ * Forwards old item registry IDs to new ones on rename. Without this Forge
+ * removes entries missing from the registry from existing saves, and the item disappears from
+ * inventories and chests. The remap converts the reference in place, KEEPING NBT/charge.
  *
- * ⚠ При КАЖДОМ переименовании предмета (смене registry-ID) добавлять строку в {@link #REMAP}.
- *   Записи держать НАВСЕГДА — старые сейвы всплывают долго, ремап дешёвый.
+ * ⚠ On EVERY item rename (registry ID change) add a line to {@link #REMAP}.
+ *   Keep the entries FOREVER: old saves keep turning up for a long time, and a remap is cheap.
  */
-// ВАЖНО: MissingMappingsEvent в Forge 1.20.1 — FORGE-шина (НЕ mod-bus, как было в старом Forge)
+// IMPORTANT: MissingMappingsEvent in Forge 1.20.1 is on the FORGE bus (NOT the mod bus, as in old Forge)
 @Mod.EventBusSubscriber(modid = IndustrialCore.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ItemRemaps {
 
-    /** старый путь ID  ->  новый предмет */
+    /** old ID path  ->  new item */
     private static final Map<String, RegistryObject<Item>> REMAP = Map.ofEntries(
-            Map.entry("energy_crystal",   ModItems.FLUX_CORE),   // 2026-07: crystal -> core ребренд
+            Map.entry("energy_crystal",   ModItems.FLUX_CORE),   // 2026-07: crystal -> core rebrand
             Map.entry("lapotron_crystal", ModItems.PLASMA_CORE),
 
-            // 2026-08: коннекторы снесены, апгрейды теперь ставятся в хаб
+            // 2026-08: connectors removed, upgrades now go into the hub
             Map.entry("connector_upgrade_t1", ModItems.HUB_UPGRADE_T1),
             Map.entry("connector_upgrade_t2", ModItems.HUB_UPGRADE_T2),
             Map.entry("connector_upgrade_t3", ModItems.HUB_UPGRADE_T3)
     );
 
-    // 2026-09: ядерка вырезана (2.1.0). Урановая руда уже лежит в сгенерированных мирах —
-    // превращаем её в породу, иначе жилы станут пустотами под землёй. Предмет руды туда же.
+    // 2026-09: the nuclear branch was cut (2.1.0). Uranium ore already sits in generated worlds,
+    // so we turn it into stone, otherwise the veins would become voids underground. The ore item goes the same way.
     private static final Map<String, Supplier<Block>> BLOCK_REMAP = Map.of(
             "uranium_ore",           () -> Blocks.STONE,
             "deepslate_uranium_ore", () -> Blocks.DEEPSLATE
@@ -53,13 +53,13 @@ public class ItemRemaps {
     );
 
     /**
-     * Удалено осознанно и без замены (2026-09, ядерка). Помечаем как ignore, чтобы Форж не
-     * показывал экран о пропавших записях — игрок предупреждён чейнджлогом 2.1.0.
+     * Removed on purpose with no replacement (2026-09, nuclear branch). Marked as ignore so Forge does not
+     * show the missing entries screen; the player was warned by the 2.1.0 changelog.
      */
     private static final Set<String> REMOVED = Set.of(
-            // блоки (и их предметы)
+            // blocks (and their items)
             "nuclear_reactor", "reactor_chamber", "raw_uranium_block",
-            // предметы
+            // items
             "raw_uranium", "uranium_dust", "uranium_ingot", "plutonium", "mox_fuel",
             "empty_reinforced_fuel_rod", "uranium_fuel_rod", "plutonium_fuel_rod", "mox_fuel_rod",
             "depleted_uranium_fuel_rod", "depleted_plutonium_fuel_rod", "depleted_mox_fuel_rod",
@@ -67,7 +67,7 @@ public class ItemRemaps {
             "reactor_scheme_u1", "reactor_scheme_u2", "reactor_scheme_u3",
             "reactor_scheme_p1", "reactor_scheme_p2", "reactor_scheme_p3", "reactor_scheme_p4",
             "reactor_scheme_m1", "reactor_scheme_m2", "reactor_scheme_m3", "reactor_scheme_m4",
-            // блок-сущности и меню реактора
+            // reactor block entities and menus
             "nuclear_reactor_be", "reactor_chamber_be", "nuclear_reactor_menu"
     );
 

@@ -17,9 +17,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
- * Собранный промышленный шахтёр целиком: модель от центра основания структуры, фасад к взгляду ядра.
- * Бур крутится, пока машина работает (угол копится, поэтому при остановке бур замирает, а не прыгает),
- * кольцо скважины пульсирует, антенна на мачте медленно водит из стороны в сторону.
+ * The whole formed industrial miner: the model from the centre of the structure base, front towards the core's facing.
+ * The drill spins while the machine works (the angle accumulates, so on stop the drill freezes instead of jumping),
+ * the well ring pulses, the antenna on the mast slowly sweeps from side to side.
  */
 public class IndustrialMinerBER implements BlockEntityRenderer<IndustrialMinerCoreBlockEntity> {
 
@@ -36,23 +36,23 @@ public class IndustrialMinerBER implements BlockEntityRenderer<IndustrialMinerCo
         if (be.clientLastTime >= 0 && on) be.clientDrillAngle += (time - be.clientLastTime) * 0.12f;
         be.clientLastTime = time;
 
-        int lt = LevelRenderer.getLightColor(level, be.getBlockPos().relative(f));   // само ядро внутри корпуса, свет — перед фасадом
-        // два прохода (юзер: «убери свечение ядра, светиться должны только зелёные части»): вся модель при обычном свете,
-        // затем светящиеся материалы ещё раз маской из одних зелёных пикселей. Маска идёт в буфер eyes, как глаза паука:
-        // полная яркость в entityCutout при шейдерах не светилась и проигрывала обычному слою (юзер 10-10: «щас он тёмный»).
-        // Буферы не перемешивать: взятый следом буфер другого типа закрывает предыдущий.
+        int lt = LevelRenderer.getLightColor(level, be.getBlockPos().relative(f));   // the core itself is inside the body, light is taken in front of the facade
+        // two passes (author: "remove the core glow, only the green parts should glow"): the whole model in normal light,
+        // then the glowing materials once more with a mask of only green pixels. The mask goes into the eyes buffer, like spider eyes:
+        // full brightness in entityCutout did not glow with shaders and lost to the normal layer (author 10-10: "it is dark now").
+        // Do not interleave buffers: taking a buffer of another type next closes the previous one.
         VertexConsumer vc = buf.getBuffer(RenderType.entityCutoutNoCull(IndustrialMinerModel.TEX));
         draw(be, ps, f, on, time, g -> IndustrialMinerModel.render(g, ps, vc, lt, overlay, false));
         VertexConsumer glow = buf.getBuffer(RenderType.eyes(IndustrialMinerModel.TEX_GLOW));
         draw(be, ps, f, on, time, g -> IndustrialMinerModel.renderGlow(g, ps, glow, overlay));
     }
 
-    /** Позы частей модели; {@code part} рисует группу в текущей позе. */
+    /** Poses of model parts; {@code part} draws a group in the current pose. */
     private static void draw(IndustrialMinerCoreBlockEntity be, PoseStack ps, Direction f, boolean on, float time, java.util.function.Consumer<String> part) {
         ps.pushPose();
         ps.translate(0.5, -IndustrialMinerStructure.CORE_LAYER, 0.5);
         ps.mulPose(Axis.YP.rotationDegrees(switch (f) { case EAST -> 90f; case NORTH -> 180f; case WEST -> 270f; default -> 0f; }));
-        ps.translate(0, 0, -2);   // ядро в первом ряду, центр основания на два блока вглубь
+        ps.translate(0, 0, -2);   // the core in the first row, the base centre two blocks deeper
 
         part.accept("static");
         ps.pushPose();

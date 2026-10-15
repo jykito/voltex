@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Окно камеры эволюции 256×240: табло (статус, поколение, сродство к целевой руде, стабильность), слоты штамма и руды,
- * график сродства по поколениям (новые справа, по 2 px на поколение), полосы хода поколения, энергии и тепла.
+ * Evolution chamber window 256x240: display (status, generation, affinity to the target ore, stability), strain and ore slots,
+ * affinity graph by generation (new on the right, 2 px per generation), generation progress, energy and heat bars.
  */
 public class EvolutionChamberScreen extends MachineScreen<EvolutionChamberMenu> {
 
@@ -64,9 +64,9 @@ public class EvolutionChamberScreen extends MachineScreen<EvolutionChamberMenu> 
         right(g, tr("generation", genome.generation()), x + RIGHT_X, y + LINE1_Y, C_VALUE);
         String stab = tr("stability", NaniteStrainItem.percent(genome.stability()));
         right(g, stab, x + RIGHT_X, y + LINE2_Y, C_LABEL);
-        int room = RIGHT_X - TEXT_X - Math.round(font.width(stab) * 0.9f) - 6;   // левый текст не заходит на стабильность
+        int room = RIGHT_X - TEXT_X - Math.round(font.width(stab) * 0.9f) - 6;   // the left text does not run into the stability
 
-        // сродство к цели корма в слоте, а без корма — к главной цели штамма; как читать число, решает класс
+        // affinity to the feed target in the slot, or without feed to the strain's main target; the class decides how to read the number
         ItemStack feed = menu.chamber.getItems().getStackInSlot(EvolutionChamberBlockEntity.SLOT_FEED);
         NaniteFeed food = NaniteFeed.of(feed);
         String target = food == null ? genome.dominant() : food.target();
@@ -79,7 +79,7 @@ public class EvolutionChamberScreen extends MachineScreen<EvolutionChamberMenu> 
         int gx = x + GRAPH_X, gy = y + GRAPH_Y, bottom = gy + GRAPH_H;
         ItemStack strain = menu.strain();
         float top = NaniteGenome.cap(strain.isEmpty() ? null : NaniteGenome.kindOf(strain)), cap = top * 1000;
-        for (int k = 1; k < 3; k++) {   // сетка на трети шкалы
+        for (int k = 1; k < 3; k++) {   // grid at thirds of the scale
             int ly = bottom - 1 - Math.round((GRAPH_H - 1) * k / 3f);
             for (int px = gx; px < gx + GRAPH_W; px += 4) g.fill(px, ly, px + 2, ly + 1, C_GRID);
         }
@@ -88,7 +88,7 @@ public class EvolutionChamberScreen extends MachineScreen<EvolutionChamberMenu> 
 
         List<Integer> h = menu.chamber.getHistory();
         if (h.isEmpty()) {
-            // переносится по ширине графика: английская подсказка в одну строку вылезала за окно (юзер 10-10)
+            // wraps to the graph width: the English hint in one line went outside the window (author 10-10)
             List<net.minecraft.util.FormattedCharSequence> lines = font.split(Component.literal(tr("graph_empty")), Math.round((GRAPH_W - 4) / 0.7f));
             for (int i = 0; i < lines.size(); i++) {
                 g.pose().pushPose(); g.pose().translate(gx + 2, bottom - 7 * (lines.size() - i), 0); g.pose().scale(0.7f, 0.7f, 1f);
@@ -130,7 +130,7 @@ public class EvolutionChamberScreen extends MachineScreen<EvolutionChamberMenu> 
         return mx >= leftPos + rx && mx < leftPos + rx + w && my >= topPos + ry && my < topPos + ry + h;
     }
 
-    /** Обрезать строку под ширину {@code px} при масштабе текста 0.9. */
+    /** Trim the line to width {@code px} at text scale 0.9. */
     private String clip(String s, int px) {
         int w = Math.round(px / 0.9f);
         return font.width(s) <= w ? s : font.plainSubstrByWidth(s, w - font.width("…")) + "…";

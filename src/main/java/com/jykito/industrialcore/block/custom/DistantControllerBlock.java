@@ -30,14 +30,14 @@ import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Дистанционный контроллер (станция): пульт для удалённого управления ядром магнита.
- * Привязка к ядру — Линкером; ПКМ открывает GUI ядра на безопасном расстоянии.
+ * Distant controller (station): a console for remote control of the magnet core.
+ * Linked to the core with the Linker; RMB opens the core GUI from a safe distance.
  */
 public class DistantControllerBlock extends BaseEntityBlock {
 
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
-    // низкая консоль: физика по основанию (6px), наклонный экран — декоративный
+    // low console: physics by the base (6px), the tilted screen is decorative
     private static final VoxelShape SHAPE = box(0, 0, 0, 16, 6, 16);
 
     public DistantControllerBlock(Properties props) {
@@ -62,7 +62,7 @@ public class DistantControllerBlock extends BaseEntityBlock {
         return new DistantControllerBlockEntity(pos, state);
     }
 
-    // ПКМ → открыть GUI привязанного ядра на расстоянии; не привязан — подсказка
+    // RMB -> open the linked core's GUI from a distance; not linked -> a hint
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide) {
@@ -74,8 +74,8 @@ public class DistantControllerBlock extends BaseEntityBlock {
                 } else {
                     BlockPos corePos = core.getBlockPos();
                     NetworkHooks.openScreen((ServerPlayer) player, ctrl, buf -> {
-                        buf.writeBlockPos(corePos);   // ядро (данные/BE)
-                        buf.writeBlockPos(pos);       // якорь = контроллер (валидация дистанции)
+                        buf.writeBlockPos(corePos);   // core (data/BE)
+                        buf.writeBlockPos(pos);       // anchor = controller (distance validation)
                     });
                 }
             }

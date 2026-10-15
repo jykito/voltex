@@ -15,17 +15,17 @@ import java.util.EnumMap;
 import java.util.Map;
 
 /**
- * Структурный блок криокамеры.
+ * Structural block of the cryo chamber.
  * <p>
- * Кладка должна читаться цельной плитой с рамкой ТОЛЬКО по внешнему периметру. Поэтому
- * рамка — не часть текстуры, а двенадцать брусков по рёбрам куба: ребро показывается,
- * если у обеих смежных с ним сторон нет соседа. Внутри кладки все рёбра гасятся сами.
+ * The masonry must read as one solid slab with a frame ONLY along the outer perimeter. So
+ * the frame is not part of the texture but twelve bars along the cube edges: an edge shows
+ * if neither of its two adjacent sides has a neighbour. Inside the masonry all edges hide by themselves.
  * <p>
- * Так вместо шестнадцати вариантов текстуры на грань нужны две текстуры на весь блок:
- * бесшовная заливка и материал рамки.
+ * This way, instead of sixteen texture variants per face, two textures cover the whole block:
+ * a seamless fill and the frame material.
  * <p>
- * Корпус ещё и <b>принимает тепло за ядро</b>: у ядра шесть граней, а глубокой ступени нужно
- * несколько линий труб. Подробности в {@link com.jykito.industrialcore.block.entity.CryoCasingBlockEntity}.
+ * The casing also <b>accepts heat on behalf of the core</b>: the core has six faces, and a deep stage needs
+ * several pipe lines. Details in {@link com.jykito.industrialcore.block.entity.CryoCasingBlockEntity}.
  */
 public class CryoCasingBlock extends Block implements net.minecraft.world.level.block.EntityBlock {
 
@@ -74,15 +74,15 @@ public class CryoCasingBlock extends Block implements net.minecraft.world.level.
     }
 
     /**
-     * Рамка гасится ТОЛЬКО другим корпусом. Стекло, ядро и всё остальное соседями не считаются:
-     * стык корпуса с ними должен быть обведён, кладка обводится только по своему контуру.
-     * ⚠ Ядро сюда добавить, когда появится — юзер решил заводить его отдельно.
+     * The frame is hidden ONLY by another casing. Glass, the core and everything else do not count as neighbours:
+     * the seam between the casing and them must be outlined; the masonry is outlined only along its own contour.
+     * ⚠ Add the core here when it exists; the author decided to add it separately.
      */
     private static boolean connects(BlockGetter level, BlockPos pos, Direction dir) {
         return level.getBlockState(pos.relative(dir)).getBlock() instanceof CryoCasingBlock;
     }
 
-    /** Сущность только переадресует тепло ядру и не тикает — тикера у блока намеренно нет. */
+    /** The entity only forwards heat to the core and does not tick; the block has no ticker on purpose. */
     @Nullable
     @Override
     public net.minecraft.world.level.block.entity.BlockEntity newBlockEntity(BlockPos pos, BlockState state) {

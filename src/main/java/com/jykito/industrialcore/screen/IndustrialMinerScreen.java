@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Окно промышленного шахтёра 256×262: табло статуса со слотом штамма нанитов справа, энергия, ход цикла, буровая жижа, до четырёх участков
- * (включить/выключить — квадратик слева, отвязать — крестик справа), ряд выхода и инвентарь.
+ * Industrial miner window 256x262: status display with the nanite strain slot on the right, energy, cycle progress, drill fluid, up to four sites
+ * (enable/disable is the square on the left, unlink is the cross on the right), the output row and the inventory.
  */
 public class IndustrialMinerScreen extends MachineScreen<IndustrialMinerMenu> {
 
@@ -80,13 +80,13 @@ public class IndustrialMinerScreen extends MachineScreen<IndustrialMinerMenu> {
             SiteView v = sites.get(i);
             int ry = y + ROW_Y + i * ROW;
             if (in(mx, my, SITES_X - 2, ROW_Y + i * ROW - 1, ROW_W, ROW)) g.fill(x + SITES_X - 2, ry - 1, x + SITES_X - 2 + ROW_W, ry + ROW - 1, 0x22FFFFFF);
-            // включатель
+            // toggle
             g.fill(x + TOGGLE_X, ry, x + TOGGLE_X + 8, ry + 8, 0xFF141414);
             g.fill(x + TOGGLE_X + 1, ry + 1, x + TOGGLE_X + 7, ry + 7, v.enabled() ? C_GREEN : C_DIM);
-            // где
+            // where
             int col = !v.enabled() ? C_LABEL : v.hasData() ? C_VALUE : C_BAD;
             text(g, dimName(v.dim()) + "  " + v.pos().getX() + " " + v.pos().getY() + " " + v.pos().getZ(), x + TOGGLE_X + 12, ry, col);
-            // три главные руды
+            // top three ores
             if (v.hasData() && v.total() > 0) {
                 for (int k = 0; k < v.top().size(); k++) {
                     int ox = x + ORES_X + k * ORE_STEP;
@@ -96,7 +96,7 @@ public class IndustrialMinerScreen extends MachineScreen<IndustrialMinerMenu> {
                     small(g, v.topPercent().get(k) + "%", ox + 9, ry + 1, C_LABEL);
                 }
             } else text(g, tr(v.hasData() ? "site_empty" : "site_no_data"), x + ORES_X, ry, C_BAD);
-            // отвязать
+            // unlink
             text(g, "×", x + UNLINK_X, ry, in(mx, my, UNLINK_X - 1, ROW_Y + i * ROW - 1, 8, 10) ? 0xFFFFFFFF : C_LABEL);
         }
     }

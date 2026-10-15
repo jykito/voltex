@@ -16,15 +16,15 @@ import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Собранный вид структур со своей моделью для превью в гайде: в мире их блоки при сборке прячутся и вместо них
- * рисует BER ядра. Здесь та же модель рисуется от блока ядра схемы (фасад на север, как строки схемы), без
- * блок-сущности; движение идёт от часов, а не от мира.
+ * Formed view of structures with their own model, for the guide preview: in the world their blocks hide when formed and the
+ * core BER draws instead of them. Here the same model is drawn from the schema's core block (front to the north, like the schema rows), without
+ * a block entity; motion comes from the clock, not the world.
  */
 final class GuideStructureModels {
 
     private GuideStructureModels() {}
 
-    /** Блок ядра, от которого рисуется модель; null — модель неизвестна. */
+    /** The core block the model is drawn from; null means the model is unknown. */
     static @Nullable String coreOf(String model) {
         return switch (model) {
             case "industrial_miner" -> "industrial_core:industrial_miner_core";
@@ -34,19 +34,19 @@ final class GuideStructureModels {
         };
     }
 
-    /** Поза уже стоит в блоке ядра. */
+    /** The pose is already set in the core block. */
     static void render(String model, PoseStack ps, MultiBufferSource buf) {
-        float t = (System.currentTimeMillis() % 3_600_000L) / 50f;   // в тиках
+        float t = (System.currentTimeMillis() % 3_600_000L) / 50f;   // in ticks
         int light = LightTexture.FULL_BRIGHT, ov = OverlayTexture.NO_OVERLAY;
         switch (model) {
             case "industrial_miner" -> industrialMiner(ps, buf, t, light, ov);
             case "miner" -> MinerCoreBER.renderFormed(ps, buf, Direction.NORTH, (t * 0.5f) % 360f, light, ov);
-            case "magnet" -> ElectromagnetCoreBER.renderModels(ps, buf, 0f, (t * 2f) % 360f, 1, ov);   // с медной катушкой
+            case "magnet" -> ElectromagnetCoreBER.renderModels(ps, buf, 0f, (t * 2f) % 360f, 1, ov);   // with a copper coil
             default -> { }
         }
     }
 
-    /** Как IndustrialMinerBER при фасаде на север. */
+    /** Like IndustrialMinerBER with the front facing north. */
     private static void industrialMiner(PoseStack ps, MultiBufferSource buf, float t, int light, int ov) {
         VertexConsumer vc = buf.getBuffer(RenderType.entityCutoutNoCull(IndustrialMinerModel.TEX));
         ps.pushPose();

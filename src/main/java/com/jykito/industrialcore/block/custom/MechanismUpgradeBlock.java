@@ -11,24 +11,24 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * Блок улучшения лейт-мультиблока: встаёт на место любого блока механизма.
- * Своей логики нет, ядро считает такие блоки при проверке структуры.
+ * Late multiblock upgrade block: takes the place of any mechanism block.
+ * It has no logic of its own; the core counts these blocks when checking the structure.
  */
 public class MechanismUpgradeBlock extends Block {
 
     public enum Kind { PARALLEL, SPEED, EFFICIENCY }
 
-    /** Скорость: столько процентов времени цикла снимает один блок и столько процентов FE/т добавляет. */
+    /** Speed: how many percent of the cycle time one block removes and how many percent of FE/t it adds. */
     public static final int SPEED_TIME_PERCENT = 15, SPEED_ENERGY_PERCENT = 15;
-    /** Энергоэффективность: столько процентов FE/т снимает один блок; складывается со скоростью суммой. */
+    /** Energy efficiency: how many percent of FE/t one block removes; adds up with speed as a sum. */
     public static final int EFFICIENCY_ENERGY_PERCENT = 10;
-    /** Ниже этих долей от исходного цикл не ускоряется и расход не падает, сколько блоков ни ставь. */
+    /** Below these fractions of the base value the cycle stops getting faster and usage stops dropping, however many blocks you place. */
     public static final int MIN_TIME_PERCENT = 1, MIN_ENERGY_PERCENT = 25;
 
     private final Kind kind;
     private final int value;
 
-    /** @param value для параллели — сколько операций добавляет блок; для остальных видов не используется */
+    /** @param value for parallel, how many operations the block adds; unused for the other kinds */
     public MechanismUpgradeBlock(Properties props, Kind kind, int value) {
         super(props);
         this.kind = kind;

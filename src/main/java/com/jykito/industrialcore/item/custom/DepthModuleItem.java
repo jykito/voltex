@@ -11,13 +11,13 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Модуль глубины: разрешение криокамере уходить на ступень {@link #getTier()}.
+ * Depth module: lets the cryo chamber go down to stage {@link #getTier()}.
  * <p>
- * Гейт стоит именно на камере, а не на источнике тепла, потому что тепло масштабируется —
- * четыре термостанции взяли бы любую ступень количеством. Модуль это предмет, и числом
- * котельных его не обойти.
+ * The gate is on the chamber, not on the heat source, because heat scales:
+ * four thermal stations would reach any stage by numbers. The module is an item, and adding more
+ * boilers does not get around it.
  * <p>
- * Не расходуется и не изнашивается: это установленное оборудование, а не топливо.
+ * Not consumed and does not wear out: it is installed equipment, not fuel.
  */
 public class DepthModuleItem extends Item {
 
@@ -28,7 +28,7 @@ public class DepthModuleItem extends Item {
         this.tier = tier;
     }
 
-    /** Максимальная ступень, на которую модуль пускает камеру. */
+    /** The highest stage the module lets the chamber reach. */
     public int getTier() { return tier; }
 
     @Override

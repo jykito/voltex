@@ -32,11 +32,11 @@ import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Порт лейт-мультиблока: через него идёт весь обмен структуры с миром. Сам ничего не делает
- * и не тикает, это хранилище, из которого ядро берёт и в которое кладёт.
+ * Late multiblock port: all exchange between the structure and the world goes through it. It does nothing by itself
+ * and does not tick; it is storage the core takes from and puts into.
  * <p>
- * Рядом с продвинутой обшивкой или стеклом порт сам переходит на тёмную текстуру ({@link #DARK}),
- * на обычной обшивке остаётся светлым. Влияет только на вид: ядро ищет порты по блоку, не по состоянию.
+ * Next to advanced casing or glass the port switches to the dark texture by itself ({@link #DARK}),
+ * on regular casing it stays light. This only affects the look: the core finds ports by block, not by state.
  */
 public class MultiblockPortBlock extends BaseEntityBlock {
 
@@ -59,7 +59,7 @@ public class MultiblockPortBlock extends BaseEntityBlock {
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> b) { b.add(DARK); }
 
-    /** Тёмный вид, если хоть один сосед — продвинутая обшивка или продвинутое стекло. */
+    /** Dark look if at least one neighbour is advanced casing or advanced glass. */
     private static boolean nearAdvanced(BlockGetter level, BlockPos pos) {
         for (Direction d : Direction.values()) {
             BlockState n = level.getBlockState(pos.relative(d));
@@ -78,7 +78,7 @@ public class MultiblockPortBlock extends BaseEntityBlock {
         return state.setValue(DARK, nearAdvanced(level, pos));
     }
 
-    /** Палочка ставит порт через setBlock без контекста размещения: вид досчитываем здесь. */
+    /** The wand places the port via setBlock without a placement context, so the look is computed here. */
     @Override
     public void onPlace(BlockState state, Level level, BlockPos pos, BlockState old, boolean moving) {
         super.onPlace(state, level, pos, old, moving);
@@ -96,7 +96,7 @@ public class MultiblockPortBlock extends BaseEntityBlock {
         };
     }
 
-    /** Тикают вход и выход ради автообмена с соседями, тепловой — ради остывания; разъёму тик не нужен. */
+    /** Input and output tick for auto-exchange with neighbours, the heat port ticks to cool down; the connector needs no tick. */
     @Nullable @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (level.isClientSide || kind == Kind.ENERGY) return null;
@@ -106,8 +106,8 @@ public class MultiblockPortBlock extends BaseEntityBlock {
 
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (kind == Kind.HEAT) return InteractionResult.PASS;   // окна нет: тепло видно в ядре
-        // ведро и прочие ёмкости: налить во вход, набрать из выхода, сторона внешняя
+        if (kind == Kind.HEAT) return InteractionResult.PASS;   // no window: heat is shown in the core
+        // bucket and other containers: fill the input, drain the output, outer side
         if (kind != Kind.ENERGY && FluidUtil.interactWithFluidHandler(player, hand, level, pos, hit.getDirection()))
             return InteractionResult.sidedSuccess(level.isClientSide());
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof MenuProvider be)

@@ -39,7 +39,7 @@ public class BaseWireBlock extends Block implements SimpleWaterloggedBlock, Enti
 
     public static final Map<Direction, BooleanProperty> PROPERTY_BY_DIRECTION = PipeBlock.PROPERTY_BY_DIRECTION;
 
-    // короб 4×4 до грани; на развилке, углу и конце — узел 6×6 (модель base_wire_center, шинопровод T1)
+    // 4x4 duct up to the face; at a fork, corner or end a 6x6 node (model base_wire_center, T1 busway)
     private static final ConnectedShapes SHAPES = new ConnectedShapes(6, 10, 6, 10, 6, 5, 11);
 
     public BaseWireBlock(WireTier tier, Properties properties) {
@@ -58,7 +58,7 @@ public class BaseWireBlock extends Block implements SimpleWaterloggedBlock, Enti
         return new BaseWireBlockEntity(pos, state);
     }
 
-    /** WATERLOGGED на форму не влияет и в маску не входит. */
+    /** WATERLOGGED does not affect the shape and is not part of the mask. */
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPES.get(state, PROPERTY_BY_DIRECTION);

@@ -215,13 +215,13 @@ public class ModBlockEntities {
                     BlockEntityType.Builder.of(EnergyBankBlockEntity::new,
                             ModBlocks.ENERGY_BANK.get()).build(null));
 
-    /** Один тип на входной и выходной порт: направление сущность берёт из блока. */
+    /** One type for input and output ports: the entity takes its direction from the block. */
     public static final RegistryObject<BlockEntityType<ItemFluidPortBlockEntity>> ITEM_FLUID_PORT_BE =
             BLOCK_ENTITIES.register("item_fluid_port_be", () ->
                     BlockEntityType.Builder.of(ItemFluidPortBlockEntity::new,
                             ModBlocks.MULTIBLOCK_INPUT_PORT.get(), ModBlocks.MULTIBLOCK_OUTPUT_PORT.get()).build(null));
 
-    /** Один тип на все ядра лейт-мультиблоков: форму и рецепты сущность берёт из блока. */
+    /** One type for all late multiblock cores: the entity takes shape and recipes from the block. */
     public static final RegistryObject<BlockEntityType<LateMachineCoreBlockEntity>> LATE_MACHINE_CORE_BE =
             BLOCK_ENTITIES.register("late_machine_core_be", () ->
                     BlockEntityType.Builder.of(LateMachineCoreBlockEntity::new,
@@ -234,7 +234,7 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("heat_port_be", () ->
                     BlockEntityType.Builder.of(HeatPortBlockEntity::new, ModBlocks.MULTIBLOCK_HEAT_PORT.get()).build(null));
 
-    /** МЭ-порты: класс сущности выбирает {@link com.jykito.industrialcore.compat.ae2.MePorts} — с AE2 МЭ-порт, без — обычный. */
+    /** ME ports: the entity class is chosen by {@link com.jykito.industrialcore.compat.ae2.MePorts}, an ME port with AE2, a regular one without. */
     public static final RegistryObject<BlockEntityType<ItemFluidPortBlockEntity>> ME_PORT_BE =
             BLOCK_ENTITIES.register("me_port_be", () ->
                     BlockEntityType.Builder.of(com.jykito.industrialcore.compat.ae2.MePorts::create,

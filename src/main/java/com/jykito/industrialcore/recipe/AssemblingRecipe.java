@@ -19,9 +19,9 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Рецепт промышленного сборщика: несколько ингредиентов с количеством, необязательная жидкость,
- * результат: предмет и/или жидкость. Сырьё ядро берёт из входных портов структуры, жидкость — из портов
- * в режиме жидкости; жидкий результат уходит в выходные порты с баком.
+ * Industrial assembler recipe: several ingredients with counts, optional fluid,
+ * result: item and/or fluid. The core takes the input from the structure's input ports, fluid from ports
+ * in fluid mode; a fluid result goes into output ports with a tank.
  * JSON: { inputs:[{item|tag,count},...], fluid:{fluid,amount}?, result:{item,count}?, fluidResult:{fluid,amount}?,
  *         processingTime, energyCostPerTick }
  */
@@ -50,7 +50,7 @@ public class AssemblingRecipe implements Recipe<SimpleContainer> {
     public int getProcessingTime()   { return processingTime; }
     public int getEnergyPerTick()    { return energyPerTick; }
 
-    /** Сборщик сам считает запасы по портам; ванильный поиск по контейнеру ему не нужен. */
+    /** The assembler counts the stock across ports itself; it does not need the vanilla container lookup. */
     @Override public boolean matches(SimpleContainer c, Level level) { return false; }
     @Override public ItemStack assemble(SimpleContainer c, RegistryAccess a) { return result.copy(); }
     @Override public boolean canCraftInDimensions(int w, int h) { return true; }

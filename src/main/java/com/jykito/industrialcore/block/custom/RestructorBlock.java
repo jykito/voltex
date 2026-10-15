@@ -29,7 +29,7 @@ public class RestructorBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
-    /** T2: три линии, вход вдвое дешевле (см. RestructorBlockEntity). */
+    /** T2: three lines, input costs half (see RestructorBlockEntity). */
     private final boolean t2;
 
     public RestructorBlock(Properties properties) {

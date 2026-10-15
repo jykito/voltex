@@ -24,7 +24,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
-/** Буровой маяк: тренога со щупом. Целиком рисуется DrillBeaconBER (кристалл крутится, при скане по земле идут волны). */
+/** Drill beacon: a tripod with a probe. Drawn entirely by DrillBeaconBER (the crystal spins, waves run over the ground while scanning). */
 public class DrillBeaconBlock extends BaseEntityBlock {
 
     private static final VoxelShape SHAPE = Block.box(1.5, 0, 1.5, 14.5, 24, 14.5);
@@ -63,7 +63,7 @@ public class DrillBeaconBlock extends BaseEntityBlock {
         return InteractionResult.sidedSuccess(level.isClientSide());
     }
 
-    /** Сломали — линза выпадает, участок уходит из реестра (шахтёр перестаёт его копать). */
+    /** When broken the lens drops and the area leaves the registry (the miner stops mining it). */
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock() && level.getBlockEntity(pos) instanceof DrillBeaconBlockEntity be) {

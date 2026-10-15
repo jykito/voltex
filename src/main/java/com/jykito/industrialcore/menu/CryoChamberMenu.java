@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class CryoChamberMenu extends MachineMenu {
 
-    /** Слоты камеры: вход, выход, три криостержня, модуль глубины. */
+    /** Chamber slots: input, output, three cryo rods, depth module. */
     private static final int MACHINE_SLOTS = 6;
     private static final int INV_END = MACHINE_SLOTS + 36;
 
@@ -37,9 +37,9 @@ public class CryoChamberMenu extends MachineMenu {
         });
         for (int r = 0; r < 3; r++)
             this.addSlot(new SlotItemHandler(h, 2 + r, 97 + r * 23, 75));
-        this.addSlot(new SlotItemHandler(h, 5, 120, 55));   // модуль глубины
+        this.addSlot(new SlotItemHandler(h, 5, 120, 55));   // depth module
 
-        // координаты инвентаря те же, что у магнита: окно такой же высоты
+        // inventory coordinates are the same as the magnet's: the window has the same height
         addPlayerInventory(inv, 44, 143);
 
         addDataSlots(data);
@@ -50,10 +50,10 @@ public class CryoChamberMenu extends MachineMenu {
     public int getDepth()        { return data.get(6); }
     public int getHeatInflow()   { return data.get(7); }
     public boolean isFormed()    { return data.get(8) != 0; }
-    /** До какой ступени пускает вставленный модуль. */
+    /** Up to which stage the inserted module allows. */
     public int getAllowedStage() { return data.get(9); }
 
-    /** Ступень по глубине — то, что решает, какие рецепты вообще доступны. */
+    /** Stage by depth: what decides which recipes are available at all. */
     public int getStage() {
         int d = getDepth();
         if (d >= CryoCoreBlockEntity.depthForStage(3)) return 3;
@@ -86,7 +86,7 @@ public class CryoChamberMenu extends MachineMenu {
         if (index < MACHINE_SLOTS) {
             if (!moveItemStackTo(sourceStack, MACHINE_SLOTS, INV_END, true)) return ItemStack.EMPTY;
         } else {
-            // Стержни едут в свои слоты, всё остальное во вход.
+            // Rods go into their own slots, everything else into the input.
             if (!moveItemStackTo(sourceStack, 2, MACHINE_SLOTS, false)
                     && !moveItemStackTo(sourceStack, 0, 1, false))
                 return ItemStack.EMPTY;

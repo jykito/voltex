@@ -18,8 +18,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 /**
- * Новый атлас с сервера против прежней копии: на каждый новый вид, новую отметку и редкий вид — всплывашка
- * ({@link NaniteAtlasToast}). Первая синхронизация после входа в мир просто загружает атлас.
+ * New atlas from the server against the previous copy: a toast for every new species, new mark and rare species
+ * ({@link NaniteAtlasToast}). The first sync after joining the world just loads the atlas.
  */
 @Mod.EventBusSubscriber(modid = IndustrialCore.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class NaniteAtlasToasts {

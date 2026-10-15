@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.SlotItemHandler;
 
-/** Окно камеры эволюции: штамм, руда, инвентарь; график читается из клиентской копии камеры. */
+/** Evolution chamber window: strain, ore, inventory; the graph is read from the client copy of the chamber. */
 public class EvolutionChamberMenu extends MachineMenu {
 
     public static final int STRAIN_X = 23, STRAIN_Y = 47, FEED_X = 23, FEED_Y = 75, INV_X = 44, INV_Y = 155;

@@ -12,8 +12,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
- * Луп-гул электромагнита: громкость и питч тянутся за уровнем разгона BE (spin01).
- * Сам себя останавливает при разборке/удалении структуры.
+ * Looping electromagnet hum: volume and pitch follow the BE spin-up level (spin01).
+ * Stops itself when the structure is unformed or removed.
  */
 @OnlyIn(Dist.CLIENT)
 public class MagnetHumSound extends AbstractTickableSoundInstance {
@@ -40,7 +40,7 @@ public class MagnetHumSound extends AbstractTickableSoundInstance {
             return;
         }
         float s = be.getSpinLevel();
-        this.volume = (0.40f + 0.60f * s) * (float) Config.soundVolume; // громче на разгоне × конфиг
-        this.pitch  = 0.75f + 0.50f * s;                                // выше на разгоне
+        this.volume = (0.40f + 0.60f * s) * (float) Config.soundVolume; // louder while spinning up × config
+        this.pitch  = 0.75f + 0.50f * s;                                // higher while spinning up
     }
 }

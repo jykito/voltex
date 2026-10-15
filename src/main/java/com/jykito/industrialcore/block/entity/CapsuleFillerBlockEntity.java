@@ -39,7 +39,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvider {
 
-    // База под работу без модуля: 8 капсул. Под параллели бак растёт сам, см. AdaptiveTank.
+    // Base for running without a module: 8 capsules. With parallel the tank grows by itself, see AdaptiveTank.
     private static final int TANK_CAP = 8000;
     private static final int FLUID_PER_CAPSULE = 1000;
     private static final int BASE_TIME = 40;
@@ -79,7 +79,7 @@ public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvide
     };
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
-    private final MachineEnergy energyStorage = MachineEnergy.consumer(50_000, 50_000); // приём = буфер, без потолка на вход
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(50_000, 50_000); // intake = buffer, no input cap
     private LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.empty();
 
     public final FluidTank inputTank = new FluidTank(TANK_CAP) {
@@ -133,7 +133,7 @@ public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvide
 
         MachineUpgrades upg = MachineUpgrades.scan(itemHandler, 2, 5);
         if (AdaptiveTank.resize(inputTank, TANK_CAP, upg.parallel()))
-            level.sendBlockUpdated(pos, state, state, 3); // шкала бака считается от ёмкости, клиенту нужна новая
+            level.sendBlockUpdated(pos, state, state, 3); // the tank gauge is computed from capacity, the client needs the new one
 
         maxProgress = upg.scaleTime(BASE_TIME);
         int fePerTick = upg.scaleEnergy(BASE_FE_PER_TICK);

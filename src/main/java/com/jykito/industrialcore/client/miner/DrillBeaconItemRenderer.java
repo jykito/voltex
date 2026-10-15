@@ -11,9 +11,9 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * Буровой маяк как предмет: та же модель, что у {@link DrillBeaconBER}, только неподвижная (кристалл не крутится,
- * чтобы инвентарь не мельтешил). Маяк с кристаллом ~1.85 блока в высоту — центр по высоте сдвинут в центр предмета,
- * размер в слоте, руке и на земле задаёт display в models/item/drill_beacon.json.
+ * Drill beacon as an item: the same model as {@link DrillBeaconBER}, only still (the crystal does not spin,
+ * so the inventory does not flicker). The beacon with its crystal is ~1.85 blocks tall; the vertical centre is moved to the item centre,
+ * the size in the slot, in hand and on the ground is set by display in models/item/drill_beacon.json.
  */
 public final class DrillBeaconItemRenderer extends BlockEntityWithoutLevelRenderer {
 

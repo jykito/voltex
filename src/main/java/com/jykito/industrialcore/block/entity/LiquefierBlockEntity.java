@@ -72,7 +72,7 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
 
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
-    private final MachineEnergy energyStorage = MachineEnergy.consumer(50000, 50000); // приём = буфер, без потолка на вход
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(50000, 50000); // intake = buffer, no input cap
     private LazyOptional<EnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
     private static final int TANK_BASE = 8000;
@@ -88,7 +88,7 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
     private LazyOptional<IFluidHandler> lazyFluidHandler = LazyOptional.empty();
 
     private int heat = 0;
-    private int litGrace = 0; // анти-мигание LIT (грейс через MachineLit)
+    private int litGrace = 0; // anti-flicker for LIT (grace via MachineLit)
     private static final int MAX_HEAT = 10000;
     private boolean isReceivingHeat = false;
 
@@ -155,7 +155,7 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
         MachineUpgrades upg = MachineUpgrades.scan(itemHandler, 2, 5);
 
         if (AdaptiveTank.resize(outputTank, TANK_BASE, upg.parallel()))
-            level.sendBlockUpdated(pos, state, state, 3); // шкала бака считается от ёмкости, клиенту нужна новая
+            level.sendBlockUpdated(pos, state, state, 3); // the tank gauge is computed from capacity, the client needs the new one
 
         LiquefierRecipe recipe = findRecipe(level);
         this.maxProgress = recipe != null ? upg.scaleTime(recipe.getProcessingTime()) : 200;
@@ -187,7 +187,7 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
         boolean wantLit = litGrace > 0;
         if (wasLit != wantLit) {
             BlockState ns = state.setValue(LiquefierBlock.LIT, wantLit);
-            if (wantLit) // новая сессия работы (с грейсом) — новая случайная лицевая анимация
+            if (wantLit) // new work session (with grace): a new random face animation
                 ns = ns.setValue(LiquefierBlock.VARIANT, level.random.nextInt(LiquefierBlock.VARIANTS));
             level.setBlock(pos, ns, 3);
         }

@@ -8,7 +8,7 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-/** Клиент → сервер: игрок двигает троттл раскрутки магнита (0..1). */
+/** Client -> server: the player moves the magnet spin-up throttle (0..1). */
 public class MagnetThrottlePacket {
     private final BlockPos pos;
     private final float throttle;
@@ -31,7 +31,7 @@ public class MagnetThrottlePacket {
         ctx.enqueueWork(() -> {
             ServerPlayer player = ctx.getSender();
             if (player == null) return;
-            // безопасность: игрок должен держать открытым ЭТО же меню магнита
+            // safety: the player must have THIS same magnet menu open
             if (!(player.containerMenu instanceof ElectromagnetMenu menu)) return;
             if (menu.blockEntity == null || !menu.blockEntity.getBlockPos().equals(pos)) return;
             menu.blockEntity.setThrottle(throttle);

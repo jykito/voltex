@@ -1,6 +1,6 @@
 package com.jykito.industrialcore.heat;
 
-/** Простой буфер тепла для труб/машин. */
+/** A simple heat buffer for pipes/machines. */
 public class HeatBuffer implements IHeatHandler {
 
     private int heat;
@@ -19,6 +19,6 @@ public class HeatBuffer implements IHeatHandler {
     }
 
     public void setHeat(int h) { heat = Math.max(0, Math.min(max, h)); }
-    public void setMax(int m) { this.max = Math.max(0, m); if (heat > max) heat = max; }  // динамический кап (по высоте башни)
+    public void setMax(int m) { this.max = Math.max(0, m); if (heat > max) heat = max; }  // dynamic cap (by tower height)
     public void extract(int amount) { heat = Math.max(0, heat - amount); }
 }

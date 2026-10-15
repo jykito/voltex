@@ -29,12 +29,12 @@ import java.util.List;
 public class LogisticsLinkerItem extends Item {
 
     private static final String KEY_SOURCE = "source";
-    /** Измерение и род источника: связка «буровой маяк → промышленный шахтёр» работает между измерениями. */
+    /** Dimension and kind of the source: the "drill beacon -> industrial miner" link works across dimensions. */
     private static final String KEY_SOURCE_DIM = "source_dim", KEY_SOURCE_KIND = "source_kind";
 
     public LogisticsLinkerItem(Properties props) { super(props); }
 
-    // onItemUseFirst — вызывается ДО block.use(), иначе GUI-блоки (ядро/нода/хаб) открывали бы окно раньше бинда
+    // onItemUseFirst is called BEFORE block.use(), otherwise GUI blocks (core/node/hub) would open their window before the bind
     @Override
     public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext ctx) {
         Level level = ctx.getLevel();
@@ -62,7 +62,7 @@ public class LogisticsLinkerItem extends Item {
         }
 
         BlockEntity be = level.getBlockEntity(pos);
-        if (be instanceof IndustrialMinerFrameBlockEntity frame && frame.core() != null) { be = frame.core(); pos = be.getBlockPos(); }   // каркас = его ядро
+        if (be instanceof IndustrialMinerFrameBlockEntity frame && frame.core() != null) { be = frame.core(); pos = be.getBlockPos(); }   // frame = its core
         if (!isLinkable(be)) return InteractionResult.PASS;
 
         if (!tag.contains(KEY_SOURCE)) {
@@ -106,7 +106,7 @@ public class LogisticsLinkerItem extends Item {
                 return InteractionResult.FAIL;
             }
 
-            // Контроллер ↔ ядро: привязка пульта (одностороннее хранение позиции ядра в контроллере)
+            // Controller <-> core: linking the console (the core position is stored one way, in the controller)
             DistantControllerBlockEntity ctrl =
                     srcBe instanceof DistantControllerBlockEntity cs ? cs
                   : be    instanceof DistantControllerBlockEntity ct ? ct : null;
@@ -138,9 +138,9 @@ public class LogisticsLinkerItem extends Item {
     }
 
     /**
-     * Буровой маяк ↔ промышленный шахтёр. В одном измерении — в любом порядке; маяк в другом измерении выбирают
-     * первым, потом кликают по шахтёру (его позицию нельзя проверить в чужом измерении). Дальность не ограничена.
-     * Возвращает true, если клик относился к этой связке и уже обработан.
+     * Drill beacon <-> industrial miner. In the same dimension in any order; a beacon in another dimension is selected
+     * first, then you click the miner (its position cannot be checked in another dimension). Range is unlimited.
+     * Returns true if the click belonged to this link and has been handled.
      */
     private static boolean linkSite(Level level, Player player, CompoundTag tag, BlockEntity be, BlockPos srcPos, ResourceKey<Level> srcDim) {
         String kind = tag.getString(KEY_SOURCE_KIND);
@@ -182,7 +182,7 @@ public class LogisticsLinkerItem extends Item {
                 || be instanceof HubBlockEntity;
     }
 
-    // Линкер соединяет всё: логистику (нода/хаб) + пульт ↔ ядро магнита
+    // The Linker connects everything: logistics (node/hub) + console <-> magnet core
     private static boolean isLinkable(BlockEntity be) {
         return isLogistics(be)
                 || be instanceof DistantControllerBlockEntity

@@ -6,14 +6,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 
 /**
- * Цвет по материалу руды или теме исследования: им красится панцирь штамма и корпус карты данных.
- * Незнакомый материал получает свой стабильный оттенок.
+ * Colour by ore material or research topic: it tints the strain shell and the data card body.
+ * An unknown material gets its own stable hue.
  */
 public final class NaniteColors {
 
     private NaniteColors() {}
 
-    /** Пустой штамм — серебро (краска не меняет серый рисунок). */
+    /** An empty strain is silver (the tint does not change the grey drawing). */
     public static final int NONE = 0xFFFFFFFF;
 
     private static final Map<String, Integer> KNOWN = Map.ofEntries(
@@ -24,13 +24,13 @@ public final class NaniteColors {
             Map.entry("diamond", 0x7FF0EC), Map.entry("emerald", 0x55E38E), Map.entry("lapis", 0x5579E6),
             Map.entry("redstone", 0xFF5545), Map.entry("coal", 0x6A6A6A), Map.entry("quartz", 0xF2EEE8),
             Map.entry("netherite", 0x9A7464), Map.entry("cobalt", 0x5A86F2), Map.entry("certus_quartz", 0xBADAFA),
-            // темы исследований учёного
+            // scientist research topics
             Map.entry("crystallography", 0xB46BFF), Map.entry("cryophysics", 0x4FD8FF), Map.entry("matter", 0xFF4FC3), Map.entry("stellar", 0xFFCF33));
 
-    /** Пустая карта данных. */
+    /** Blank data card. */
     public static final int BLANK = 0xFFB8C0C6;
 
-    /** Карта данных: цвет темы, у пустой — серый. */
+    /** Data card: topic colour, a blank one is grey. */
     public static int theme(@Nullable String theme) { return theme == null ? BLANK : of(theme); }
 
     public static int of(@Nullable String material) {

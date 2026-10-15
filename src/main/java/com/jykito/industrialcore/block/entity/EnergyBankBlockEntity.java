@@ -24,17 +24,17 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Энергобанк: FE-хранилище. Принимает по всем сторонам, толкает излишек в соседей (держит РЕЗЕРВ %).
- * Заряд трекается на клиент двумя путями: blockstate LEVEL (шкала на боку) + ContainerData (GUI).
+ * Energy bank: FE storage. Accepts on all sides, pushes surplus to neighbours (keeps a RESERVE %).
+ * The charge reaches the client two ways: blockstate LEVEL (gauge on the side) + ContainerData (GUI).
  */
 public class EnergyBankBlockEntity extends BlockEntity implements MenuProvider {
 
     public static final int CAPACITY = 10_000_000;
     private static final int IO_RATE  = 100_000;
-    private static final int HYST     = CAPACITY / 100; // гистерезис уровня-шкалы (1%) — не дёргать на границе
+    private static final int HYST     = CAPACITY / 100; // gauge level hysteresis (1%), so it does not flicker at a boundary
 
     private static class BankEnergy extends MachineEnergy {
-        int inTick, outTick;                       // накопление потока за тик (для монитора)
+        int inTick, outTick;                       // flow accumulated per tick (for the monitor)
         BankEnergy() { super(CAPACITY, IO_RATE, IO_RATE); }
         @Override public int receiveEnergy(int max, boolean sim) { int r = super.receiveEnergy(max, sim); if (!sim) inTick += r; return r; }
         @Override public int extractEnergy(int max, boolean sim) { int e = super.extractEnergy(max, sim); if (!sim) outTick += e; return e; }
@@ -42,8 +42,8 @@ public class EnergyBankBlockEntity extends BlockEntity implements MenuProvider {
     private final BankEnergy energy = new BankEnergy();
     private LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.empty();
 
-    private int reservePercent = 0;      // держать % про запас (не отдавать ниже)
-    private int ioIn = 0, ioOut = 0;     // FE/тик за прошлый тик (GUI-монитор)
+    private int reservePercent = 0;      // keep this % in reserve (do not give below it)
+    private int ioIn = 0, ioOut = 0;     // FE/tick of the previous tick (GUI monitor)
     protected final ContainerData data;
 
     public EnergyBankBlockEntity(BlockPos pos, BlockState state) {
@@ -87,15 +87,15 @@ public class EnergyBankBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, EnergyBankBlockEntity be) {
-        // снапшот потока за прошлый тик (GUI-монитор) — НЕТТО.
-        // Тупой провод в дед-энд тянет из банка и на след. тик толкает те же FE обратно:
-        // брутто-счётчик рисовал бы фантомный выход 100k. Нетто: втекло==вытекло → 0.
+        // flow snapshot of the previous tick (GUI monitor), NET.
+        // A dumb wire into a dead end pulls from the bank and pushes the same FE back on the next tick:
+        // a gross counter would show a phantom 100k output. Net: flowed in == flowed out -> 0.
         int flowIn = be.energy.inTick, flowOut = be.energy.outTick;
         be.energy.inTick = 0; be.energy.outTick = 0;
         int net = flowIn - flowOut;
         be.ioIn = Math.max(0, net); be.ioOut = Math.max(0, -net);
 
-        // выход: держим РЕЗЕРВ, излишек толкаем в соседей-приёмников
+        // output: keep the RESERVE, push the surplus into receiving neighbours
         int reserveAmt = be.reservePercent * (CAPACITY / 100);
         if (be.energy.getEnergyStored() - reserveAmt > 0) {
             for (Direction d : Direction.values()) {
@@ -113,7 +113,7 @@ public class EnergyBankBlockEntity extends BlockEntity implements MenuProvider {
             }
         }
 
-        // визуальный уровень 0..10 (гистерезис + троттл: ремеш ТОЛЬКО на смене уровня)
+        // visual level 0..10 (hysteresis + throttle: remesh ONLY when the level changes)
         int charge = be.energy.getEnergyStored();
         int lvl = state.getValue(EnergyBankBlock.LEVEL), nl = lvl;
         while (nl < 10 && charge >= (nl + 1) * (CAPACITY / 10)) nl++;

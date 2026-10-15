@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class MachineRecipe implements Recipe<SimpleContainer> {
     private final ResourceLocation id;
-    /** Рецепт только для лейт-машины (её промышленный режим); малая машина его не видит. */
+    /** Recipe for the late machine only (its industrial mode); the small machine does not see it. */
     private boolean lateOnly;
     private final Ingredient input;
     private final int inputCount;
@@ -40,7 +40,7 @@ public class MachineRecipe implements Recipe<SimpleContainer> {
 
     public boolean isLateOnly() { return lateOnly; }
 
-    /** Для типовых сериализаторов (crushing, rolling, ... — через них идёт KubeJS): пометка «только лейт». */
+    /** For the typed serializers (crushing, rolling, ...; KubeJS goes through them): the "late only" marker. */
     MachineRecipe lateOnly(boolean v) { this.lateOnly = v; return this; }
 
     @Override

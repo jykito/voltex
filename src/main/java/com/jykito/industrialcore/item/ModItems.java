@@ -26,7 +26,7 @@
         public static final RegistryObject<Item> MANUAL = ITEMS.register("manual",
                 () -> new com.jykito.industrialcore.item.custom.ManualItem(new Item.Properties().stacksTo(1)));
 
-        // --- Компоненты ускорителя/магнита (2026-07-10) ---
+        // --- Accelerator/magnet components (2026-07-10) ---
         public static final RegistryObject<Item> COIL_WINDING = ITEMS.register("coil_winding", () -> new Item(new Item.Properties()));
         public static final RegistryObject<Item> SIGNAL_RECEIVER = ITEMS.register("signal_receiver", () -> new Item(new Item.Properties()));
         public static final RegistryObject<Item> FLUID_VALVE = ITEMS.register("fluid_valve", () -> new Item(new Item.Properties()));
@@ -160,7 +160,7 @@
                 () -> new Item(new Item.Properties()));
         public static final RegistryObject<Item> SUPERCONDUCTOR_COIL = ITEMS.register("superconductor_coil",
                 () -> new Item(new Item.Properties()));
-        // Катушки электромагнита-ускорителя (тиры): вставляются в контроллер, задают уровень
+        // Electromagnet-accelerator coils (tiers): inserted into the controller, they set the level
         public static final RegistryObject<Item> MAGNET_COPPER_COIL = ITEMS.register("magnet_copper_coil",
                 () -> new com.jykito.industrialcore.item.custom.MagnetCoilItem(1, 1.0f, 0.06f, "tooltip.industrial_core.res_energy", new Item.Properties()));
         public static final RegistryObject<Item> MAGNET_SUPERCONDUCTOR_COIL = ITEMS.register("magnet_superconductor_coil",
@@ -296,19 +296,19 @@
         public static final RegistryObject<Item> RESTRUCTOR_T2_ITEM = ITEMS.register("restructor_t2",
                 () -> new BlockItem(ModBlocks.RESTRUCTOR_T2.get(), new Item.Properties()));
 
-        // ── Криоветка ──
-        // Криолит — основание ветки, кристаллизуется из хладагента.
-        // Криостержни — теплообменники криокамеры: задают СКОРОСТЬ обработки (глубину задаёт
-        // тепловой поток, объём партии — размер камеры) и изнашиваются тем быстрее, чем глубже.
-        // Разрешение на глубину. Ставится в ядро камеры, не тратится. Старший перекрывает младший,
-        // поэтому слот один: что вставил, до той ступени и пустят.
+        // ── Cryo branch ──
+        // Cryolite: the base of the branch, crystallizes from coolant.
+        // Cryo rods are the heat exchangers of the cryo chamber: they set the processing SPEED (depth is set by
+        // the heat flow, batch size by the chamber size) and wear out faster the deeper it goes.
+        // Permission for depth. Goes into the chamber core, not consumed. A higher one overrides a lower one,
+        // so there is one slot: whatever you insert, that is the stage it lets you reach.
         public static final RegistryObject<Item> DEPTH_MODULE_2 = ITEMS.register("depth_module_2",
                 () -> new com.jykito.industrialcore.item.custom.DepthModuleItem(2, new Item.Properties()));
 
         public static final RegistryObject<Item> DEPTH_MODULE_3 = ITEMS.register("depth_module_3",
                 () -> new com.jykito.industrialcore.item.custom.DepthModuleItem(3, new Item.Properties()));
 
-        /** Продукт второй ступени криокамеры: из него растут стержни T2. */
+        /** Product of the second cryo chamber stage: T2 rods grow from it. */
         public static final RegistryObject<Item> CRYO_CRYSTAL = ITEMS.register("cryo_crystal",
                 () -> new Item(new Item.Properties()));
 
@@ -327,9 +327,9 @@
         public static final RegistryObject<Item> REFRIGERATION_CHAMBER_ITEM = ITEMS.register("refrigeration_chamber",
                 () -> new BlockItem(ModBlocks.REFRIGERATION_CHAMBER.get(), new Item.Properties()));
 
-        // Криостержни изнашиваются в камере, поэтому у них прочность: полоска в слоте показывает
-        // остаток без всякого лишнего UI. Тир даёт и скорость, и живучесть — чинить нельзя,
-        // это расходник, а не инструмент.
+        // Cryo rods wear out in the chamber, so they have durability: the bar in the slot shows
+        // what is left without any extra UI. The tier gives both speed and lifetime; they cannot be repaired,
+        // they are a consumable, not a tool.
         public static final RegistryObject<Item> CRYO_ROD = ITEMS.register("cryo_rod",
                 () -> new Item(new Item.Properties().durability(1024).setNoRepair()));
 
@@ -354,7 +354,7 @@
 
         public static final RegistryObject<Item> ELECTRIC_MOTOR = ITEMS.register("electric_motor",
                 () -> new Item(new Item.Properties()));
-        // уровни мотора (юзер 2026-10-06): текстуры его, анимация — продвинутый нагревается, расширенный бьёт разрядом; крафта пока нет
+        // motor tiers (author, 2026-10-06): the author's textures, animation: the advanced one heats up, the extended one sparks; no recipe yet
         public static final RegistryObject<Item> ELECTRIC_MOTOR_ADVANCED = ITEMS.register("electric_motor_advanced",
                 () -> new Item(new Item.Properties()));
         public static final RegistryObject<Item> ELECTRIC_MOTOR_EXTENDED = ITEMS.register("electric_motor_extended",
@@ -542,7 +542,7 @@
         public static final RegistryObject<Item> INDUSTRIAL_DRILL = ITEMS.register("industrial_drill",
                 () -> new com.jykito.industrialcore.item.custom.IndustrialDrillItem(new Item.Properties().stacksTo(1)));
 
-        // оружие: энергоклинок (связка с нексит-бронёй) и гаусс-винтовка (связка с плазменной)
+        // weapons: the energy blade (pairs with Nexite armor) and the gauss rifle (pairs with Plasma armor)
         public static final RegistryObject<Item> ENERGY_BLADE = ITEMS.register("energy_blade",
                 () -> new com.jykito.industrialcore.item.custom.weapon.EnergyBladeItem(new Item.Properties().stacksTo(1)));
 
@@ -579,28 +579,28 @@
         public static final RegistryObject<Item> RUBBER = ITEMS.register("rubber",
                 () -> new Item(new Item.Properties()));
 
-        // Э1 (2026-10-08): соленоид — базовая электрическая деталь (генератор, дробитель, электропечь, мотор),
-        // припой — сплав олова и свинца (мотор, дальше логическая плата)
+        // E1 (2026-10-08): the solenoid is the basic electrical part (generator, crusher, electric furnace, motor),
+        // solder is a tin and lead alloy (motor, later the logic board)
         public static final RegistryObject<Item> COPPER_SOLENOID = ITEMS.register("copper_solenoid",
                 () -> new Item(new Item.Properties()));
 
         public static final RegistryObject<Item> SOLDER = ITEMS.register("solder",
                 () -> new Item(new Item.Properties()));
 
-        // Э2 (2026-10-08): стекловолокно — основа текстолита (формовщик вытягивает из стекла),
-        // транзистор — первая электроника (логическая плата, апгрейд хаба T2)
+        // E2 (2026-10-08): glass fiber is the base of textolite (the former draws it from glass),
+        // the transistor is the first electronics (logic board, hub upgrade T2)
         public static final RegistryObject<Item> GLASS_FIBER = ITEMS.register("glass_fiber",
                 () -> new Item(new Item.Properties()));
 
-        // Э3: сырьё биореактора, компрессор прессует из зелени
+        // E3: bioreactor input, the compressor presses it from greenery
         public static final RegistryObject<Item> BIOMASS = ITEMS.register("biomass",
                 () -> new Item(new Item.Properties()));
 
         public static final RegistryObject<Item> TRANSISTOR = ITEMS.register("transistor",
                 () -> new Item(new Item.Properties()));
 
-        // Э5 (2026-10-08): лестница сверхпроводников к ключу эпохи — проволока (криокамера, ступень 1) → жгут (фабрикатор
-        // стержней) → соленоид (на кроните и криокристаллах, ID superconducting_winding) → сверхпроводящая катушка
+        // E5 (2026-10-08): the superconductor ladder to the era key: wire (cryo chamber, stage 1) -> strand (rod
+        // fabricator) -> solenoid (on kronite and cryo crystals, ID superconducting_winding) -> superconducting coil
         public static final RegistryObject<Item> SUPERCONDUCTING_WIRE = ITEMS.register("superconducting_wire",
                 () -> new com.jykito.industrialcore.item.custom.TooltipItem(new Item.Properties(), "tooltip.industrial_core.crafting_ingredient"));
         public static final RegistryObject<Item> SUPERCONDUCTING_STRAND = ITEMS.register("superconducting_strand",
@@ -608,12 +608,12 @@
         public static final RegistryObject<Item> SUPERCONDUCTING_WINDING = ITEMS.register("superconducting_winding",
                 () -> new Item(new Item.Properties()));
 
-        // Э6 (2026-10-08): ампула конденсата — магнит переводит криокристаллы в сверхтекучую фазу, сжижитель вскрывает в 1000 мБ
+        // E6 (2026-10-08): condensate ampoule: the magnet turns cryo crystals into the superfluid phase, the liquefier opens it into 1000 mB
         public static final RegistryObject<Item> CONDENSATE_AMPOULE = ITEMS.register("condensate_ampoule",
                 () -> new Item(new Item.Properties()));
 
-        // Э7 (2026-10-08): лестница лейт-железа (броневой лист, сервопривод, блок управления), кластеры из массового сырья,
-        // вольтекс-сплав и резонансная матрица — компоненты Сердца Вольтекса
+        // E7 (2026-10-08): the late hardware ladder (armor sheet, servo drive, control unit), clusters from bulk materials,
+        // Voltex alloy and the resonance matrix: components of the Heart of Voltex
         public static final RegistryObject<Item> ARMOR_SHEET = ITEMS.register("armor_sheet",
                 () -> new Item(new Item.Properties()));
         public static final RegistryObject<Item> SERVO_DRIVE = ITEMS.register("servo_drive",
@@ -632,7 +632,7 @@
                 () -> new Item(new Item.Properties()));
         public static final RegistryObject<Item> RESONANCE_MATRIX = ITEMS.register("resonance_matrix",
                 () -> new Item(new Item.Properties()));
-        /** Финал мода: трофей, силы и ресурса не даёт. */
+        /** The mod's finale: a trophy, gives no power and no resources. */
         public static final RegistryObject<Item> HEART_OF_VOLTEX = ITEMS.register("heart_of_voltex",
                 () -> new com.jykito.industrialcore.item.custom.TooltipItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.EPIC), "tooltip.industrial_core.heart_of_voltex") {
                     @Override public boolean isFoil(net.minecraft.world.item.ItemStack stack) { return true; }
@@ -760,18 +760,18 @@
                 () -> new com.jykito.industrialcore.item.custom.MinerLensItem(
                         com.jykito.industrialcore.item.custom.MinerLensItem.LensType.ALL, new Item.Properties()));
 
-        // --- Наниты (2026-10-07): штамм выводится в камере эволюции, ставится в промышленный шахтёр ---
+        // --- Nanites (2026-10-07): a strain is bred in the evolution chamber and goes into the industrial miner ---
         public static final RegistryObject<Item> NANITE_STRAIN = ITEMS.register("nanite_strain",
                 () -> new com.jykito.industrialcore.item.custom.NaniteStrainItem(new Item.Properties().stacksTo(1)));
 
-        // Карты данных учёного: пустая и по одной на тему (темы — NaniteLab.THRESHOLDS). Явно, а не циклом:
-        // так их видят проверки полноты (tools/checks) и поиск по коду.
+        // Scientist data cards: a blank one and one per topic (topics are NaniteLab.THRESHOLDS). Explicitly, not in a loop:
+        // that way completeness checks (tools/checks) and code search can see them.
         public static final RegistryObject<Item> DATA_CARD_BLANK = dataCard("data_card_blank", null);
         public static final RegistryObject<Item> DATA_CARD_CRYSTALLOGRAPHY = dataCard("data_card_crystallography", "crystallography");
         public static final RegistryObject<Item> DATA_CARD_CRYOPHYSICS = dataCard("data_card_cryophysics", "cryophysics");
         public static final RegistryObject<Item> DATA_CARD_MATTER = dataCard("data_card_matter", "matter");
         public static final RegistryObject<Item> DATA_CARD_STELLAR = dataCard("data_card_stellar", "stellar");
-        /** Записанные карты по порядку тем: источник для вкладки и окраски. */
+        /** Written cards in topic order: the source for the tab and colouring. */
         public static final java.util.List<RegistryObject<Item>> DATA_CARDS = java.util.List.of(
                 DATA_CARD_CRYSTALLOGRAPHY, DATA_CARD_CRYOPHYSICS, DATA_CARD_MATTER, DATA_CARD_STELLAR);
 

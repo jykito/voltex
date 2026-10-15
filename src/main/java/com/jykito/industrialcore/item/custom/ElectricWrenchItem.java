@@ -116,7 +116,7 @@ public class ElectricWrenchItem extends Item {
         BlockPos pos = context.getClickedPos();
         BlockState state = level.getBlockState(pos);
 
-        // обычный ПКМ ключом по теплотрубе — переключить сторону вкл/выкл
+        // plain RMB with the wrench on a heat pipe: toggle a side on/off
         if (!player.isShiftKeyDown()) {
             if (state.getBlock() instanceof com.jykito.industrialcore.block.custom.HeatPipeBlock) {
                 if (!level.isClientSide()
@@ -135,7 +135,7 @@ public class ElectricWrenchItem extends Item {
             return InteractionResult.PASS;
         }
 
-        // shift → снять блок
+        // shift -> remove the block
         Block block = state.getBlock();
         ResourceLocation id = ForgeRegistries.BLOCKS.getKey(block);
         if (id == null || !IndustrialCore.MODID.equals(id.getNamespace())) return InteractionResult.PASS;
@@ -155,8 +155,10 @@ public class ElectricWrenchItem extends Item {
         if (!level.isClientSide()) {
             drainEnergy(wrench, COST);
 
-            net.minecraft.world.Containers.dropItemStack(
-                    level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(block));
+            // a barrel keeps its fluid, as with a pickaxe; machine inventories drop on their own in onRemove
+            ItemStack drop = be instanceof com.jykito.industrialcore.block.entity.BarrelBlockEntity barrel
+                    ? barrel.toItemWithFluid() : new ItemStack(block);
+            net.minecraft.world.Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), drop);
 
             level.removeBlock(pos, false);
 
@@ -166,7 +168,7 @@ public class ElectricWrenchItem extends Item {
         return InteractionResult.sidedSuccess(level.isClientSide());
     }
 
-    /** Направление по точке клика: та сторона, куда клик смещён от центра сильнее всего. */
+    /** Direction from the click point: the side the click is shifted furthest towards from the centre. */
     private static Direction pickSide(net.minecraft.world.phys.Vec3 loc, BlockPos pos) {
         double dx = loc.x - pos.getX() - 0.5;
         double dy = loc.y - pos.getY() - 0.5;

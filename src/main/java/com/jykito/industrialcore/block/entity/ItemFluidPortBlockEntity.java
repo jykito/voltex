@@ -37,28 +37,28 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * Входной или выходной порт мультиблока: предметы, жидкость или то и другое; режим меняется кнопкой
- * только у пустого порта. Число открытых слотов и объём бака задаёт улучшение.
+ * Multiblock input or output port: items, fluid or both; the mode is switched with a button
+ * only on an empty port. The number of open slots and the tank volume come from the upgrade.
  * <p>
- * Наружу (трубы, хабы, воронки) порт виден только в своём режиме и только в свою сторону:
- * во вход можно класть, из выхода забирать. Ядро мультиблока работает с содержимым напрямую
- * через {@link #getItems()}, {@link #insertOutput} и {@link #getTank()}.
+ * From outside (pipes, hubs, hoppers) the port is visible only in its own mode and only in its own direction:
+ * you can insert into an input and extract from an output. The multiblock core works with the contents directly
+ * through {@link #getItems()}, {@link #insertOutput} and {@link #getTank()}.
  */
 public class ItemFluidPortBlockEntity extends BlockEntity implements MenuProvider {
 
     private final boolean output;
     /**
-     * Предметы, жидкость или то и другое сразу. Вход в смешанном режиме нужен поставщику шаблонов AE2
-     * (кладёт шаблон целиком), выход — машинам с результатом «предмет + жидкость» в один порт.
+     * Items, fluid or both at once. A mixed input is needed by the AE2 pattern provider
+     * (it puts the whole pattern in), a mixed output by machines whose result is "item + fluid" into one port.
      */
     public static final int MODE_ITEMS = 0, MODE_FLUIDS = 1, MODE_BOTH = 2;
     private int mode = MODE_ITEMS;
     private int tier;
-    /** Автообмен с соседями: выход выталкивает, вход затягивает. Включён по умолчанию. */
+    /** Auto-exchange with neighbours: the output pushes, the input pulls. On by default. */
     private boolean auto = true;
     private int autoTimer;
     private static final int AUTO_INTERVAL = 10, PULLS_PER_SIDE = 8;
-    /** Ядро кладёт в выходной порт; игроку и трубам туда класть нельзя. */
+    /** The core puts into the output port; the player and pipes cannot put into it. */
     private boolean internalInsert;
 
     private final ItemStackHandler items = new ItemStackHandler(PortUpgradeItem.MAX_SLOTS) {
@@ -71,7 +71,7 @@ public class ItemFluidPortBlockEntity extends BlockEntity implements MenuProvide
     private final ItemStackHandler upgrade = new ItemStackHandler(1) {
         @Override public int getSlotLimit(int slot) { return 1; }
         @Override public boolean isItemValid(int slot, @NotNull ItemStack stack) { return stack.getItem() instanceof PortUpgradeItem; }
-        /** Снять улучшение можно, только если то, что после этого закроется, пусто. */
+        /** The upgrade can be removed only if whatever closes afterwards is empty. */
         @Override public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
             return fitsTier(0) ? super.extractItem(slot, amount, simulate) : ItemStack.EMPTY;
         }
@@ -83,7 +83,7 @@ public class ItemFluidPortBlockEntity extends BlockEntity implements MenuProvide
         @Override protected void onContentsChanged() { setChanged(); sync(); }
     };
 
-    /** Доступ снаружи: только в сторону порта. */
+    /** Outside access: only in the port's direction. */
     private final IItemHandler itemAccess = new IItemHandler() {
         @Override public int getSlots() { return items.getSlots(); }
         @Override public @NotNull ItemStack getStackInSlot(int slot) { return items.getStackInSlot(slot); }
@@ -126,34 +126,34 @@ public class ItemFluidPortBlockEntity extends BlockEntity implements MenuProvide
         @Override public int getCount() { return DATA_COUNT; }
     };
 
-    /** Ячеек данных окна: режим, тир, бак (2), автообмен. */
+    /** Window data cells: mode, tier, tank (2), auto-exchange. */
     public static final int DATA_COUNT = 5;
 
-    /** Ядро структуры, в которую входит порт; ставит само ядро при проверке структуры, не сохраняется. */
+    /** Core of the structure the port belongs to; set by the core itself during the structure check, not saved. */
     @Nullable private BlockPos corePos;
 
     public ItemFluidPortBlockEntity(BlockPos pos, BlockState state) {
         this(ModBlockEntities.ITEM_FLUID_PORT_BE.get(), pos, state);
     }
 
-    /** Для МЭ-портов: свой тип блок-сущности, направление так же из блока. */
+    /** For ME ports: their own block entity type, direction also from the block. */
     public ItemFluidPortBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
         this.output = state.getBlock() instanceof MultiblockPortBlock b && b.kind() == MultiblockPortBlock.Kind.OUTPUT;
     }
 
-    // ── точки расширения для наследников (МЭ-порты в compat/ae2); у обычного порта всё пусто ──
+    // ── extension points for subclasses (ME ports in compat/ae2); a regular port leaves them empty ──
 
-    /** Тик наследника до автообмена. */
+    /** Subclass tick before auto-exchange. */
     protected void extraTick(Level level) {}
-    /** Начальные режим и автообмен для наследников (МЭ-порты — предметы + жидкость, без автообмена). */
+    /** Initial mode and auto-exchange for subclasses (ME ports: items + fluid, no auto-exchange). */
     protected void initDefaults(int mode, boolean auto) { this.mode = mode; this.auto = auto; }
-    /** Улучшение сменилось или загрузилось: наследник подгоняет свои баки. */
+    /** The upgrade changed or loaded: the subclass fits its tanks. */
     protected void tierChanged(int tier) {}
-    /** Влезает ли содержимое наследника (доп. баки, шаблоны) в порт тира {@code t}. */
+    /** Whether the subclass contents (extra tanks, patterns) fit into a port of tier {@code t}. */
     protected boolean extraFits(int t) { return true; }
 
-    // ── для ядра мультиблока ──
+    // ── for the multiblock core ──
 
     public boolean isOutput()    { return output; }
     public int mode()              { return mode; }
@@ -161,25 +161,25 @@ public class ItemFluidPortBlockEntity extends BlockEntity implements MenuProvide
     public boolean acceptsFluids() { return mode != MODE_ITEMS; }
     public int activeSlots()     { return PortUpgradeItem.slots(tier); }
     public int tier()            { return tier; }
-    /** Сырые слоты порта: ядро читает и забирает отсюда без ограничений направления. */
+    /** Raw port slots: the core reads and takes from here without direction limits. */
     public ItemStackHandler getItems() { return items; }
     public FluidTank getTank()         { return tank; }
-    /** Все открытые баки порта, первый — {@link #getTank()}. У обычного порта он один, у МЭ-входа и порта шаблонов до трёх. */
+    /** All open tanks of the port, the first is {@link #getTank()}. A regular port has one, an ME input and a pattern port up to three. */
     public List<FluidTank> tanks()     { return List.of(tank); }
     public ItemStackHandler getUpgrade() { return upgrade; }
 
-    /** Ядро отмечает свои порты при проверке структуры: порт шаблонов подписывается в терминале AE2 именем машины. */
+    /** The core marks its ports during the structure check: the pattern port is labelled in the AE2 terminal with the machine name. */
     public void linkCore(BlockPos core) { corePos = core; }
     @Nullable public BlockPos corePos() { return corePos; }
 
-    /** Положить результат в выходной порт. Возвращает то, что не влезло. */
+    /** Put a result into the output port. Returns what did not fit. */
     public ItemStack insertOutput(ItemStack stack, boolean simulate) {
         internalInsert = true;
         try { return ItemHandlerHelper.insertItemStacked(items, stack, simulate); }
         finally { internalInsert = false; }
     }
 
-    // ── режим и улучшение ──
+    // ── mode and upgrade ──
 
     public boolean isEmpty() {
         if (!tank.isEmpty()) return false;
@@ -187,10 +187,10 @@ public class ItemFluidPortBlockEntity extends BlockEntity implements MenuProvide
         return true;
     }
 
-    /** Предметы ↔ жидкость. Непустой порт не переключается, иначе содержимое застрянет. */
+    /** Items <-> fluid. A non-empty port does not switch, otherwise the contents would get stuck. */
     public boolean toggleMode() {
         if (!isEmpty()) return false;
-        // предметы → жидкость → предметы + жидкость
+        // items -> fluid -> items + fluid
         mode = (mode + 1) % 3;
         refreshCaps();
         if (level != null) level.updateNeighborsAt(worldPosition, getBlockState().getBlock());
@@ -210,7 +210,7 @@ public class ItemFluidPortBlockEntity extends BlockEntity implements MenuProvide
         int[] slots = new int[be.activeSlots()];
         for (int i = 0; i < slots.length; i++) slots[i] = i;
         for (Direction side : Direction.values()) {
-            // соседние порты пропускаем: иначе выход той же структуры гонял бы предметы по кругу
+            // skip neighbouring ports: otherwise the output of the same structure would cycle items around
             if (level.getBlockState(pos.relative(side)).getBlock() instanceof MultiblockPortBlock) continue;
             if (be.acceptsFluids()) {
                 if (be.output) MachineIO.pushFluid(level, pos, side, be.tank);
@@ -223,7 +223,7 @@ public class ItemFluidPortBlockEntity extends BlockEntity implements MenuProvide
         }
     }
 
-    /** Влезает ли содержимое в порт тира {@code t}. */
+    /** Whether the contents fit into a port of tier {@code t}. */
     private boolean fitsTier(int t) {
         if (tank.getFluidAmount() > PortUpgradeItem.fluid(t)) return false;
         for (int i = PortUpgradeItem.slots(t); i < items.getSlots(); i++)
@@ -243,12 +243,12 @@ public class ItemFluidPortBlockEntity extends BlockEntity implements MenuProvide
         Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), upgrade.getStackInSlot(0));
     }
 
-    // ── капабилити: порт виден только в своём режиме ──
+    // ── capabilities: the port is visible only in its own mode ──
 
     @Override public void onLoad() { super.onLoad(); refreshCaps(); }
     @Override public void invalidateCaps() { super.invalidateCaps(); lazyItems.invalidate(); lazyFluids.invalidate(); }
 
-    /** Пересоздать капабилити, чтобы трубы, закешировавшие старый режим, его отпустили. */
+    /** Recreate the capabilities so that pipes that cached the old mode let go of it. */
     private void refreshCaps() {
         lazyItems.invalidate();
         lazyFluids.invalidate();
@@ -272,7 +272,7 @@ public class ItemFluidPortBlockEntity extends BlockEntity implements MenuProvide
         return new ItemFluidPortMenu(id, inv, this, data);
     }
 
-    // ── сохранение и синк бака на клиент (GUI рисует жидкость с клиентской копии) ──
+    // ── saving and tank sync to the client (the GUI draws the fluid from the client copy) ──
 
     @Override
     protected void saveAdditional(CompoundTag tag) {
@@ -281,7 +281,7 @@ public class ItemFluidPortBlockEntity extends BlockEntity implements MenuProvide
         writeShared(tag);
     }
 
-    /** Общее для сейва и синка: режим, улучшение, бак. Предметы клиенту блоком не шлём, их везёт меню. */
+    /** Shared by save and sync: mode, upgrade, tank. Items are not sent to the client by the block, the menu carries them. */
     private void writeShared(CompoundTag tag) {
         tag.putInt("mode", mode);
         tag.putBoolean("auto", auto);

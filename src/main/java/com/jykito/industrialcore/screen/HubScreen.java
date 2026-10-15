@@ -30,9 +30,9 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Окно хаба: слева все шесть сторон списком (пустые серые), справа настройка выбранной — режим, фильтр 3×3
- * ввода или вывода, тумблеры, слот улучшения. Текстуры hub_item_gui / hub_fluid_gui из tools/gui_gen/build_hub_guis.ps1,
- * в них только неподвижное; строки, кнопки и тумблеры рисуются здесь.
+ * Hub window: all six sides as a list on the left (empty ones grey), the selected one's config on the right: mode, 3x3 filter
+ * for input or output, toggles, upgrade slot. Textures hub_item_gui / hub_fluid_gui from tools/gui_gen/build_hub_guis.ps1
+ * contain only the static parts; lines, buttons and toggles are drawn here.
  */
 public class HubScreen extends AbstractContainerScreen<HubMenu> {
 
@@ -40,10 +40,10 @@ public class HubScreen extends AbstractContainerScreen<HubMenu> {
     private static final ResourceLocation TEX_FLUID = new ResourceLocation(IndustrialCore.MODID, "textures/gui/hub_fluid_gui.png");
     private static final int TEX_W = 256, TEX_H = 315;
 
-    // список сторон
+    // list of sides
     private static final Direction[] ORDER = {Direction.UP, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.DOWN};
     private static final int LIST_X = 15, LIST_Y = 29, ROW_W = 92, ROW_H = 19, ROW_STEP = 20;
-    // панель выбранной стороны
+    // selected side panel
     private static final int PX = 114, NAME_W = 85;
     private static final int MODE_Y = 53, MODE_W = 40, MODE_H = 13, MODE_STEP = 42;
     private static final int TAB_Y = 70, TAB_W = 36, TAB_H = 13;
@@ -69,7 +69,7 @@ public class HubScreen extends AbstractContainerScreen<HubMenu> {
         super.init();
         this.titleLabelY = 10000;
         this.inventoryLabelY = 10000;
-        if (menu.selectedFace < 0 && menu.be != null)   // сразу открыта первая сторона с соседом
+        if (menu.selectedFace < 0 && menu.be != null)   // the first side with a neighbour opens right away
             for (Direction d : ORDER) if (connected(d)) { select(d.get3DDataValue()); break; }
     }
 
@@ -85,7 +85,7 @@ public class HubScreen extends AbstractContainerScreen<HubMenu> {
     private void select(int face) {
         menu.selectedFace = face;
         HubFaceMode fm = menu.be.getMode(Direction.from3DDataValue(face));
-        menu.filterDir = fm.hasInput() || !fm.hasOutput() ? 0 : 1;   // только вывод — сразу фильтр вывода
+        menu.filterDir = fm.hasInput() || !fm.hasOutput() ? 0 : 1;   // output only: the output filter right away
         click(200 + face);
     }
 
@@ -156,7 +156,7 @@ public class HubScreen extends AbstractContainerScreen<HubMenu> {
         }
     }
 
-    /** Полоска режима у левого края строки: «оба» — сверху ввод, снизу вывод. */
+    /** Mode strip at the left edge of the line: for "both" the input on top, the output below. */
     private void modeStrip(GuiGraphics g, int x, int y, int h, HubFaceMode m) {
         if (m == HubFaceMode.BOTH) {
             g.fill(x, y, x + 2, y + h / 2, COL_IN);
@@ -175,13 +175,13 @@ public class HubScreen extends AbstractContainerScreen<HubMenu> {
         if (font.width(name) > NAME_W) name = font.plainSubstrByWidth(name, NAME_W - font.width("...")) + "...";
         g.drawString(font, name, x + 20, y + 40, 0xFFE8E8E8, false);
 
-        // режим: плейн — один, Shift — добавить второе направление (оба)
+        // mode: plain sets one, Shift adds the second direction (both)
         HubFaceMode m = be.getMode(d);
         button(g, x, y + MODE_Y, MODE_W, MODE_H, m.hasInput() ? COL_IN : COL_IDLE, tr("mode.input"), m.hasInput());
         button(g, x + MODE_STEP, y + MODE_Y, MODE_W, MODE_H, m.hasOutput() ? COL_OUT : COL_IDLE, tr("mode.output"), m.hasOutput());
         button(g, x + 2 * MODE_STEP, y + MODE_Y, MODE_W, MODE_H, m == HubFaceMode.OFF ? COL_OFF : COL_IDLE, tr("mode.off"), m == HubFaceMode.OFF);
 
-        // какой фильтр показан: ввода или вывода
+        // which filter is shown: input or output
         boolean out = menu.filterDir == 1;
         Component fl = tr("filter");
         g.drawString(font, fl, x, y + TAB_Y + 3, 0xFF9A9A9A, false);
@@ -202,7 +202,7 @@ public class HubScreen extends AbstractContainerScreen<HubMenu> {
                 ItemStack f = fh.getStackInSlot(idx);
                 if (f.isEmpty()) continue;
                 g.renderItem(f, cellX(i), cellY(i));
-                if (!out && be.filterCaps[idx] > 0)   // лимиты — только у ввода
+                if (!out && be.filterCaps[idx] > 0)   // limits only on input
                     g.renderItemDecorations(font, f, cellX(i), cellY(i), String.valueOf(be.filterCaps[idx]));
             }
         }
@@ -220,7 +220,7 @@ public class HubScreen extends AbstractContainerScreen<HubMenu> {
     private int cellX(int i) { return leftPos + FGRID_X + (i % 3) * FCELL; }
     private int cellY(int i) { return topPos + FGRID_Y + (i / 3) * FCELL; }
 
-    /** Кнопка: контур 1 px и заливка, без нарисованного света; подпись белая с тенью у активной. */
+    /** Button: 1 px outline and fill, no drawn lighting; the label is white with a shadow on the active one. */
     private void button(GuiGraphics g, int x, int y, int w, int h, int fill, Component label, boolean active) {
         g.fill(x, y, x + w, y + h, COL_EDGE);
         g.fill(x + 1, y + 1, x + w - 1, y + h - 1, fill);
@@ -250,7 +250,7 @@ public class HubScreen extends AbstractContainerScreen<HubMenu> {
         if (be == null) return super.mouseClicked(mxD, myD, btn);
         int mx = (int) mxD, my = (int) myD;
 
-        // список: ЛКМ — выбрать сторону, ПКМ — режим по кругу
+        // list: LMB selects a side, RMB cycles the mode
         for (int i = 0; i < ORDER.length; i++) {
             Direction d = ORDER[i];
             if (!hit(mx, my, leftPos + LIST_X, topPos + LIST_Y + i * ROW_STEP, ROW_W, ROW_H)) continue;
@@ -262,7 +262,7 @@ public class HubScreen extends AbstractContainerScreen<HubMenu> {
         int f = menu.selectedFace;
         if (f < 0) return super.mouseClicked(mxD, myD, btn);
 
-        // фильтр жидкостного хаба: ЛКМ — жидкость из ведра, ПКМ — очистить
+        // fluid hub filter: LMB takes the fluid from a bucket, RMB clears
         int fcell = filterCellAt(mx, my);
         if (be.fluid && fcell >= 0) {
             boolean out = menu.filterDir == 1;
@@ -280,7 +280,7 @@ public class HubScreen extends AbstractContainerScreen<HubMenu> {
         if (btn == 0) {
             boolean shift = Screen.hasShiftDown();
             int x = leftPos + PX, y = topPos;
-            // режим: плейн = один, shift = переключить это направление (-> оба)
+            // mode: plain = one, shift = toggle this direction (-> both)
             if (hit(mx, my, x, y + MODE_Y, MODE_W, MODE_H)) {
                 if (shift) click(400 + f * 2); else click(100 + f * 3 + 1);
                 menu.filterDir = 0; return true;
@@ -306,7 +306,7 @@ public class HubScreen extends AbstractContainerScreen<HubMenu> {
     @Override
     public boolean mouseScrolled(double mxD, double myD, double delta) {
         HubBlockEntity be = menu.be;
-        if (be != null && !be.fluid && menu.selectedFace >= 0 && menu.filterDir == 0) { // лимиты — только у предметного ввода
+        if (be != null && !be.fluid && menu.selectedFace >= 0 && menu.filterDir == 0) { // limits only on item input
             int fi = filterCellAt((int) mxD, (int) myD);
             if (fi >= 0) {
                 int idx = menu.selectedFace * HubBlockEntity.FILTER_SLOTS + fi;

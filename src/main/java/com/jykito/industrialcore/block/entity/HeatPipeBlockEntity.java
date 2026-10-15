@@ -22,28 +22,28 @@ import org.jetbrains.annotations.Nullable;
 public class HeatPipeBlockEntity extends BlockEntity {
 
     public static final int MAX_HEAT = 4000;
-    private static final int THROUGHPUT = 128;    // макс переток за тик на одного соседа (T1)
-    private static final int THROUGHPUT_T2 = 512; // T2 — выше пропуск, без потерь
-    private static final int HOT_ON = 300, HOT_OFF = 50; // гистерезис blockstate-свечения (редкий toggle → мало ремеша)
+    private static final int THROUGHPUT = 128;    // max flow per tick per neighbour (T1)
+    private static final int THROUGHPUT_T2 = 512; // T2: higher throughput, no losses
+    private static final int HOT_ON = 300, HOT_OFF = 50; // hysteresis of the blockstate glow (rare toggle -> little remeshing)
 
     private final HeatBuffer buffer = new HeatBuffer(MAX_HEAT);
     private LazyOptional<IHeatHandler> lazyHeat = LazyOptional.empty();
 
-    /** Вручную отключённые стороны (ключом): не растят рукав, не проводят и не принимают тепло. */
+    /** Sides disabled by hand (with the wrench): they grow no arm, do not conduct and do not accept heat. */
     private final boolean[] disabled = new boolean[6];
 
-    /** Блокнот под позицию соседа: перезаписывается, а не создаётся заново на каждую сторону. */
+    /** Scratch pad for the neighbour position: overwritten instead of created anew for each side. */
     private final BlockPos.MutableBlockPos scratch = new BlockPos.MutableBlockPos();
 
-    // Блок T2 после регистрации не меняется — достаём из RegistryObject один раз,
-    // иначе .get() дёргался бы на каждую трубу каждый тик. Соседа-трубу узнаём
-    // по классу (оба тира — HeatPipeBlock), поэтому второй ссылки не нужно.
+    // The T2 block does not change after registration, so we take it from RegistryObject once,
+    // otherwise .get() would be called for every pipe every tick. A neighbouring pipe is recognised
+    // by class (both tiers are HeatPipeBlock), so no second reference is needed.
     private static net.minecraft.world.level.block.Block PIPE_T2;
     private static void ensurePipeBlocks() {
         if (PIPE_T2 == null) PIPE_T2 = com.jykito.industrialcore.block.ModBlocks.HEAT_PIPE_T2.get();
     }
 
-    // клиентское сглаживание яркости свечения (данные синкаются ступеньками — тут догоняем плавно)
+    // client smoothing of glow brightness (data syncs in steps, here we catch up smoothly)
     private float clientHeatPrev = 0f;
     private float clientHeatCurr = 0f;
     private boolean clientInit = false;
@@ -63,30 +63,30 @@ public class HeatPipeBlockEntity extends BlockEntity {
     }
 
     /**
-     * Тик, на котором сеть уже посчитана. Обработка идёт СЕТЬЮ, а не по соседям, поэтому первая
-     * же труба считает всю сеть, а остальные в этот тик пропускают ход.
+     * Tick at which the network has already been computed. Processing goes by NETWORK, not by neighbours, so the first
+     * pipe computes the whole network and the others skip their turn this tick.
      */
     private long networkTick = -1;
 
     /**
-     * Теплосеть считается целиком, одним котлом.
+     * The heat network is computed as a whole, as one pool.
      * <p>
-     * Раньше труба знала только шесть соседей и растекалась по градиенту, как теплопроводность.
-     * Из-за симметрии приходилось передавать соседу лишь ПОЛОВИНУ разницы, иначе трубы гоняли бы
-     * тепло друг в друга. Побочный эффект был неприятный: чтобы держать поток F, между трубами
-     * нужен был перепад 2F, перепады складывались по трассе и упирались в размер буфера. Линия
-     * из пяти труб физически не могла протащить больше 500 в тик, сколько бы веток ты ни развёл.
+     * Before, a pipe only knew its six neighbours and spread along the gradient, like heat conduction.
+     * Because of the symmetry only HALF of the difference could be passed to a neighbour, otherwise the pipes would
+     * bounce heat back and forth. The side effect was nasty: to carry a flow F, the pipes
+     * needed a 2F drop, the drops added up along the route and ran into the buffer size. A line
+     * of five pipes physically could not carry more than 500 per tick, however many branches you laid.
      * <p>
-     * Теперь переливов между трубами нет вовсе. Всё тепло сети — общий котёл, и он раздаётся
-     * потребителям по {@code THROUGHPUT} на каждое соединение. Длина трассы перестала значить
-     * что-либо, «512 на соединение» стало буквальной правдой, а осцилляции неоткуда взяться.
+     * Now there is no flow between pipes at all. All the heat of the network is a shared pool, and it is handed out
+     * to consumers at {@code THROUGHPUT} per connection. Route length no longer matters
+     * at all, "512 per connection" became literally true, and oscillations have nowhere to come from.
      * <p>
-     * По стоимости это дешевле прежнего: раньше каждая труба каждый тик лезла к шести соседям
-     * за капабилити, теперь сеть обходится один раз.
+     * It is also cheaper: before, every pipe went to six neighbours every tick
+     * for capabilities; now the network is walked once.
      */
     public static void serverTick(Level level, BlockPos pos, BlockState state, HeatPipeBlockEntity pipe) {
         long now = level.getGameTime();
-        if (pipe.networkTick == now) return;   // сеть уже посчитана другой трубой в этот тик
+        if (pipe.networkTick == now) return;   // the network was already computed by another pipe this tick
 
         ensurePipeBlocks();
 
@@ -96,19 +96,19 @@ public class HeatPipeBlockEntity extends BlockEntity {
 
         collectNetwork(level, pipe, now, members, sinks, sinkRates);
 
-        // 1. утечка: она у каждой трубы своя, T2 не течёт
+        // 1. leak: each pipe has its own, T2 does not leak
         int pool = 0;
         for (HeatPipeBlockEntity m : members) {
             int h = m.buffer.getHeat();
             if (h > 0 && !m.getBlockState().is(PIPE_T2)) {
-                int leak = h / 800;                    // ~0.125%/тик у T1
+                int leak = h / 800;                    // ~0.125%/tick on T1
                 if (leak > 0) { m.buffer.extract(leak); h -= leak; }
             }
             pool += h;
         }
 
-        // 2. раздача потребителям: сперва поровну, потом остаток по кругу — чтобы одна машина
-        //    в начале списка не выгребала весь котёл, пока остальные стоят
+        // 2. hand out to consumers: first evenly, then the remainder round-robin, so that one machine
+        //    at the start of the list does not drain the whole pool while the others stand
         int before = pool;
         if (pool > 0 && !sinks.isEmpty()) {
             int n = sinks.size();
@@ -128,13 +128,13 @@ public class HeatPipeBlockEntity extends BlockEntity {
         }
         boolean flowing = before - pool > 0;
 
-        // Сводка за тик — её читает тепловой щуп. Считаем здесь, потому что сеть уже обойдена
-        // и все числа под рукой; отдельный обход ради диагностики был бы чистой тратой.
+        // Per-tick summary, read by the heat probe. Computed here because the network has already been walked
+        // and all numbers are at hand; a separate walk just for diagnostics would be pure waste.
         int capacity = 0;
         for (int r : sinkRates) capacity += r;
         Survey survey = new Survey(members.size(), before, sinks.size(), before - pool, capacity);
 
-        // 3. остаток раскладываем по трубам поровну — сеть должна выглядеть однородной
+        // 3. spread the remainder evenly over the pipes: the network should look uniform
         int n = members.size();
         int each = pool / n, rem = pool % n;
         for (int i = 0; i < n; i++) {
@@ -147,13 +147,13 @@ public class HeatPipeBlockEntity extends BlockEntity {
     }
 
     /**
-     * Что сеть сделала за последний тик. Живёт только в памяти: диагностика, не состояние мира.
+     * What the network did in the last tick. Lives only in memory: diagnostics, not world state.
      *
-     * @param pipes     труб в сети
-     * @param pool      тепла было в котле до раздачи
-     * @param sinks     сколько соединений с потребителями
-     * @param delivered сколько реально раздали
-     * @param capacity  сколько МОГЛИ бы раздать (сумма пропусков по соединениям)
+     * @param pipes     pipes in the network
+     * @param pool      heat in the pool before handing out
+     * @param sinks     number of connections to consumers
+     * @param delivered how much was actually handed out
+     * @param capacity  how much COULD have been handed out (sum of throughput per connection)
      */
     public record Survey(int pipes, int pool, int sinks, int delivered, int capacity) {}
 
@@ -161,7 +161,7 @@ public class HeatPipeBlockEntity extends BlockEntity {
 
     public Survey getSurvey() { return survey; }
 
-    /** Обход связной сети вширь: заодно собирает потребителей на её границе. */
+    /** Breadth-first walk of the connected network: it also collects the consumers on its border. */
     private static void collectNetwork(Level level, HeatPipeBlockEntity start, long now,
                                        java.util.List<HeatPipeBlockEntity> members,
                                        java.util.List<IHeatHandler> sinks,
@@ -177,21 +177,21 @@ public class HeatPipeBlockEntity extends BlockEntity {
             int tp = cs.is(PIPE_T2) ? THROUGHPUT_T2 : THROUGHPUT;
 
             for (Direction d : Direction.values()) {
-                // Сторона без соединения ничего не проводит, а знает об этом блокстейт — значит
-                // в чанк за соседом идти незачем. Прямая труба соединена двумя сторонами из шести.
+                // A side without a connection conducts nothing, and the blockstate knows it, so
+                // there is no reason to go into the chunk behind the neighbour. A straight pipe is connected on two sides out of six.
                 if (!cs.getValue(HeatPipeBlock.PROPERTY_BY_DIRECTION.get(d))) continue;
                 if (cur.disabled[d.get3DDataValue()]) continue;
 
                 cur.scratch.setWithOffset(cur.worldPosition, d);
-                // Обход идёт вширь и может уйти далеко, поэтому за границу загруженного не лезем:
-                // иначе длинная трасса тянула бы за собой чанки.
+                // The walk is breadth-first and can go far, so we do not cross the loaded border:
+                // otherwise a long route would drag chunks along with it.
                 if (!level.isLoaded(cur.scratch)) continue;
                 BlockEntity nbe = level.getBlockEntity(cur.scratch);
                 if (nbe == null) continue;
 
                 if (nbe instanceof HeatPipeBlockEntity nb) {
-                    if (nb.networkTick == now) continue;                       // уже в сети
-                    if (nb.disabled[d.getOpposite().get3DDataValue()]) continue; // сосед закрыл свою сторону
+                    if (nb.networkTick == now) continue;                       // already in the network
+                    if (nb.disabled[d.getOpposite().get3DDataValue()]) continue; // the neighbour closed its side
                     nb.networkTick = now;
                     members.add(nb);
                     queue.add(nb);
@@ -201,23 +201,23 @@ public class HeatPipeBlockEntity extends BlockEntity {
                 IHeatHandler sink = nbe.getCapability(HeatCapability.HEAT, d.getOpposite()).resolve().orElse(null);
                 if (sink == null) continue;
                 sinks.add(sink);
-                sinkRates.add(tp);   // пропуск задаёт труба, которая касается потребителя
+                sinkRates.add(tp);   // throughput is set by the pipe touching the consumer
             }
         }
     }
 
-    /** Тиков свечения после последней передачи — чтобы линия не мигала между тиками. */
+    /** Glow ticks after the last transfer, so the line does not flicker between ticks. */
     private int glowGrace = 0;
 
     /**
-     * Свечение по ПОТОКУ, а не по остатку.
+     * Glow by FLOW, not by what is left.
      * <p>
-     * Раньше труба светилась от накопленного тепла, но с сетевой раздачей потребитель выгребает
-     * котёл до нуля — работающая на полную линия оставалась тёмной, а светилась только та, у
-     * которой тепло девать некуда. Теперь горит то, по чему тепло идёт.
+     * Before, a pipe glowed from stored heat, but with network distribution the consumer drains
+     * the pool to zero: a line running at full rate stayed dark, and only the one
+     * with nowhere to put its heat glowed. Now what heat flows through is lit.
      * <p>
-     * Грейс в двадцать тиков нужен, чтобы редкие пустые тики не дёргали блокстейт: каждое
-     * переключение это ремеш чанка.
+     * The twenty-tick grace is there so rare empty ticks do not toggle the blockstate: every
+     * toggle is a chunk remesh.
      */
     private void updateGlow(Level level, int heat, boolean flowing) {
         if (flowing) glowGrace = 20; else if (glowGrace > 0) glowGrace--;
@@ -225,24 +225,24 @@ public class HeatPipeBlockEntity extends BlockEntity {
         BlockState st = getBlockState();
         boolean hot = st.getValue(HeatPipeBlock.HOT);
         boolean want = glowGrace > 0 || heat >= HOT_ON;
-        if (!want && hot && heat > HOT_OFF) return;   // остывает — держим до нижнего порога
+        if (!want && hot && heat > HOT_OFF) return;   // cooling down: hold until the lower threshold
         if (want != hot) level.setBlock(worldPosition, st.setValue(HeatPipeBlock.HOT, want), 2);
     }
 
-    /** Клиент: плавно тянем показываемый нагрев к синхронизированному значению (убирает «ступеньки»). */
+    /** Client: smoothly pull the displayed heat towards the synced value (removes the "steps"). */
     public static void clientTick(Level level, BlockPos pos, BlockState state, HeatPipeBlockEntity pipe) {
         float target = pipe.buffer.getHeat();
-        if (!pipe.clientInit) { // на прогрузке чанка сразу показываем текущий нагрев, без ре-налива
+        if (!pipe.clientInit) { // when the chunk loads, show the current heat right away, without refilling
             pipe.clientInit = true;
             pipe.clientHeatPrev = pipe.clientHeatCurr = target;
             return;
         }
         pipe.clientHeatPrev = pipe.clientHeatCurr;
-        pipe.clientHeatCurr += (target - pipe.clientHeatCurr) * 0.12f; // экспоненциальный догон (~1с до полного)
+        pipe.clientHeatCurr += (target - pipe.clientHeatCurr) * 0.12f; // exponential catch-up (~1s to full)
         if (Math.abs(target - pipe.clientHeatCurr) < 0.5f) pipe.clientHeatCurr = target;
     }
 
-    /** Сглаженный нагрев для рендера свечения (с интерполяцией между тиками). */
+    /** Smoothed heat for rendering the glow (interpolated between ticks). */
     public float getRenderHeat(float partialTick) {
         return Mth.lerp(partialTick, clientHeatPrev, clientHeatCurr);
     }
@@ -251,7 +251,7 @@ public class HeatPipeBlockEntity extends BlockEntity {
 
     public boolean isDisabled(Direction d) { return disabled[d.get3DDataValue()]; }
 
-    /** Ключом: переключить сторону вкл/выкл. Возвращает новое состояние (true = отключено). */
+    /** With the wrench: toggle a side on/off. Returns the new state (true = disabled). */
     public boolean toggleDisabled(Direction d) {
         int i = d.get3DDataValue();
         disabled[i] = !disabled[i];

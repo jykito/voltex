@@ -12,12 +12,12 @@ import net.minecraft.world.entity.player.Inventory;
 public class ThermostationScreen extends MachineScreen<ThermostationMenu> {
     private static final ResourceLocation TEXTURE     = new ResourceLocation(IndustrialCore.MODID, "textures/gui/thermostation_gui.png");
 
-    // бары (dest в GUI)
+    // bars (dest in the GUI)
     private static final int ENERGY_X = 103, ENERGY_Y = 38, ENERGY_W = 50, ENERGY_H = 6;
     private static final int HEAT_X   = 103, HEAT_Y   = 47, HEAT_W   = 50, HEAT_H   = 6;
-    // "работает" лит-оверлей (source в текстуре)
+    // "working" lit overlay (source in the texture)
     private static final int WORK_X = 106, WORK_Y = 57, WORK_W = 43, WORK_H = 26, WORK_U = 141, WORK_V = 253;
-    // инфо-поля
+    // info fields
     private static final int GEN_X = 102, GEN_Y = 85, GEN_W = 50, GEN_H = 21;
     private static final int INFO_X = 50, INFO_Y = 40;
 
@@ -53,11 +53,11 @@ public class ThermostationScreen extends MachineScreen<ThermostationMenu> {
     }
 
     private void drawInfo(GuiGraphics g, int x, int y) {
-        // малое поле — генерация тепла/тик
+        // small field: heat generation per tick
         String gen = menu.getGenRate() + "/t";
         drawCentered(g, gen, x + GEN_X + GEN_W / 2f, y + GEN_Y + (GEN_H - 8) / 2f, C_HEAT, 1.0f);
 
-        // большое поле — подробности
+        // large field: details
         int max = menu.getMaxHeat();
         int pct = max > 0 ? menu.getHeat() * 100 / max : 0;
         int bx = x + INFO_X + 3, yy = y + INFO_Y + 3;

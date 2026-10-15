@@ -26,9 +26,9 @@ import java.util.List;
 import java.util.function.Predicate;
 
 /**
- * Общее у энергооружия: заряд в NBT ({@code energy}, как у буров), полоска и строка заряда, приём энергии от
- * зарядников и энергорюкзака, общий заряд со своим костюмом (у клинка нексит, у гаусса плазма): пока ствол в руке
- * и заряжен меньше чем наполовину, он раз в секунду подкачивает до {@link #TOP_UP} FE из деталей костюма.
+ * Shared by energy weapons: charge in NBT ({@code energy}, like the drills), the charge bar and line, accepting energy from
+ * chargers and the energy pack, charge shared with its suit (Nexite for the blade, Plasma for the gauss): while the weapon is in hand
+ * and charged below half, once a second it tops up to {@link #TOP_UP} FE from the suit pieces.
  */
 public abstract class EnergyWeaponItem extends Item {
 
@@ -48,7 +48,7 @@ public abstract class EnergyWeaponItem extends Item {
 
     public void setEnergy(ItemStack stack, int amount) { stack.getOrCreateTag().putInt("energy", Mth.clamp(amount, 0, capacity)); }
 
-    /** Снять {@code cost}, если хватает; иначе ничего не тратится. */
+    /** Take {@code cost} if there is enough; otherwise nothing is spent. */
     public boolean drain(ItemStack stack, int cost) {
         int have = getEnergy(stack);
         if (have < cost) return false;
@@ -56,9 +56,9 @@ public abstract class EnergyWeaponItem extends Item {
         return true;
     }
 
-    // ───────── костюм ─────────
+    // ───────── suit ─────────
 
-    /** Детали костюма этого ствола, надетые на игрока. */
+    /** Suit pieces of this weapon worn by the player. */
     protected abstract List<ItemStack> suit(Player player);
     protected abstract int suitEnergy(ItemStack piece);
     protected abstract void setSuitEnergy(ItemStack piece, int amount);
@@ -83,9 +83,9 @@ public abstract class EnergyWeaponItem extends Item {
         if (got > 0) { setEnergy(stack, have + got); player.getInventory().setChanged(); }
     }
 
-    // ───────── вид и подсказка ─────────
+    // ───────── look and tooltip ─────────
 
-    /** Заряд меняет NBT, а рука считает это новым предметом и опускает его; перевзмах только при смене предмета. */
+    /** Charge changes the NBT, and the hand treats that as a new item and lowers it; the re-swing happens only when the item changes. */
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return slotChanged || !ItemStack.isSameItem(oldStack, newStack);

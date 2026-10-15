@@ -1,5 +1,5 @@
 {
-  "__comment": "Полная капсула: рамка + заливка-окно (layer1, красится в цвет флюида через ItemColor, tintindex=1) + блик.",
+  "__comment": "Filled capsule: frame + fill window (layer1, tinted in the fluid colour through ItemColor, tintindex=1) + highlight.",
   "parent": "item/generated",
   "textures": {
     "layer0": "industrial_core:item/capsule_frame",

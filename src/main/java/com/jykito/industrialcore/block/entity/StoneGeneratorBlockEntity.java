@@ -37,7 +37,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class StoneGeneratorBlockEntity extends BlockEntity implements MenuProvider {
 
-    // База под работу без модуля. Под параллели баки растут сами, см. AdaptiveTank.
+    // Base for running without a module. With parallel the tanks grow by themselves, see AdaptiveTank.
     private static final int TANK_CAP = 8000;
     private static final int FE_PER_TICK = 200;
 
@@ -60,7 +60,7 @@ public class StoneGeneratorBlockEntity extends BlockEntity implements MenuProvid
     };
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
-    private final MachineEnergy energyStorage = MachineEnergy.consumer(100_000, 100_000); // приём = буфер, без потолка на вход
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(100_000, 100_000); // intake = buffer, no input cap
     private LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.empty();
 
     public final FluidTank waterTank = new FluidTank(TANK_CAP, fs -> fs.getFluid() == Fluids.WATER) {
@@ -149,7 +149,7 @@ public class StoneGeneratorBlockEntity extends BlockEntity implements MenuProvid
         StoneGeneratorMode m = StoneGeneratorMode.byId(mode);
 
         MachineUpgrades upg = MachineUpgrades.scan(itemHandler, 1, 4);
-        // Оба бака растут: партия ×64 берёт в 64 раза больше и воды, и лавы.
+        // Both tanks grow: a x64 batch takes 64 times more water and lava.
         boolean resized = AdaptiveTank.resize(waterTank, TANK_CAP, upg.parallel());
         resized        |= AdaptiveTank.resize(lavaTank,  TANK_CAP, upg.parallel());
         if (resized) level.sendBlockUpdated(pos, state, state, 3);

@@ -50,15 +50,15 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 /**
- * Промышленный шахтёр: добывает по составу привязанных буровых участков (до {@link #MAX_SITES} маяков).
+ * Industrial miner: mines by the composition of the linked drill sites (up to {@link #MAX_SITES} beacons).
  * <p>
- * Цикл {@link #CYCLE} тиков, за цикл до {@link #PARALLEL} руд; на каждую руду {@link #ENERGY_PER_ORE} FE (идут потиково,
- * сколько руд тянет энергия в этот тик) и {@link #FLUID_PER_ORE} мБ буровой жижи. Параллель делится между включёнными
- * участками поровну, внутри участка руда выбирается по её доле в слое. Мир не трогается — жилы не истощаются.
+ * Cycle of {@link #CYCLE} ticks, up to {@link #PARALLEL} ores per cycle; each ore costs {@link #ENERGY_PER_ORE} FE (drawn per tick,
+ * as many ores as the energy covers this tick) and {@link #FLUID_PER_ORE} mB of drill fluid. Parallel is split evenly between enabled
+ * sites, within a site the ore is chosen by its share of the layer. The world is not touched, veins do not deplete.
  * <p>
- * Штамм нанитов в слоте ядра: руда материала, к которому у штамма сродство, выходит с прибавкой (0.84 — ещё 0.84 руды
- * сверху в среднем), жижа тратится по множителю штамма. Нестабильный штамм изнашивается: после цикла с шансом
- * {@code (1 - стабильность) × }{@link #NANITE_WEAR_CHANCE} все его сродства теряют долю.
+ * Nanite strain in the core slot: ore of a material the strain has affinity for comes out with a bonus (0.84 means 0.84 extra ore
+ * on average), fluid is spent by the strain's multiplier. An unstable strain wears out: after a cycle, with chance
+ * {@code (1 - stability) × }{@link #NANITE_WEAR_CHANCE} all its affinities lose a share.
  */
 public class IndustrialMinerCoreBlockEntity extends BlockEntity implements MenuProvider {
 
@@ -71,13 +71,13 @@ public class IndustrialMinerCoreBlockEntity extends BlockEntity implements MenuP
     private static final int ENERGY_PER_ORE_TICK = ENERGY_PER_ORE / CYCLE;
     public static final float NANITE_WEAR_CHANCE = 0.05f, NANITE_WEAR = 0.97f;
 
-    /** Что мешает работать — для строки статуса в окне. */
+    /** What prevents work, for the status line in the window. */
     public enum Status { WORKING, NOT_FORMED, NO_SITES, NO_DATA, NO_ENERGY, NO_FLUID, OUTPUT_FULL }
 
-    /** Привязанный участок: где маяк и включён ли он. */
+    /** A linked site: where the beacon is and whether it is enabled. */
     public record Link(ResourceKey<Level> dim, BlockPos pos, boolean enabled) {}
 
-    /** Сводка участка для окна (считается на сервере, уходит клиенту в теге обновления). */
+    /** Site summary for the window (computed on the server, sent to the client in the update tag). */
     public record SiteView(ResourceKey<Level> dim, BlockPos pos, boolean enabled, boolean hasData, long total, int avgY,
                            List<Item> top, List<Integer> topPercent) {}
 
@@ -90,11 +90,11 @@ public class IndustrialMinerCoreBlockEntity extends BlockEntity implements MenuP
 
     private final ItemStackHandler output = new ItemStackHandler(OUTPUT_SLOTS) {
         @Override protected void onContentsChanged(int slot) { setChanged(); }
-        // сейвы с 9 слотами выхода: размер из NBT не опускает ниже OUTPUT_SLOTS, стопки остаются на своих местах
+        // saves with 9 output slots: the size from NBT does not drop below OUTPUT_SLOTS, stacks stay in place
         @Override public void setSize(int size) { super.setSize(Math.max(size, OUTPUT_SLOTS)); }
     };
 
-    /** Снаружи из выхода только забирают. */
+    /** From outside, the output is extract only. */
     private final IItemHandler outputExternal = new IItemHandler() {
         @Override public int getSlots() { return output.getSlots(); }
         @Override public @NotNull ItemStack getStackInSlot(int slot) { return output.getStackInSlot(slot); }
@@ -104,7 +104,7 @@ public class IndustrialMinerCoreBlockEntity extends BlockEntity implements MenuP
         @Override public boolean isItemValid(int slot, @NotNull ItemStack stack) { return false; }
     };
 
-    /** Штамм нанитов-добытчиков; только из окна, автоматизация его не видит. */
+    /** Miner nanite strain; only through the window, automation does not see it. */
     private final ItemStackHandler nanites = new ItemStackHandler(1) {
         @Override protected void onContentsChanged(int slot) { genome = null; setChanged(); }
         @Override public boolean isItemValid(int slot, @NotNull ItemStack stack) {
@@ -112,7 +112,7 @@ public class IndustrialMinerCoreBlockEntity extends BlockEntity implements MenuP
         }
         @Override public int getSlotLimit(int slot) { return 1; }
     };
-    /** Геном штамма из слота, читается при первом обращении после смены слота. */
+    /** Strain genome from the slot, read on first access after the slot changes. */
     private @Nullable NaniteGenome genome;
 
     private final LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.of(() -> energy);
@@ -125,14 +125,14 @@ public class IndustrialMinerCoreBlockEntity extends BlockEntity implements MenuP
     private Status status = Status.NOT_FORMED;
     private int checkCd, validCd, refreshCd, pushCd;
 
-    /** Пулы включённых участков с данными: накопленные веса для выбора руды. Обновляются раз в 2 с. */
+    /** Pools of enabled sites with data: accumulated weights for picking an ore. Refreshed every 2 s. */
     private record Pool(Item[] items, String[] materials, long[] cumulative, int avgY) {}
     private final List<Pool> pools = new ArrayList<>();
-    /** Соседи структуры снаружи: (позиция, сторона соседа) — для выхода предметов и тепла. */
+    /** Structure neighbours outside: (position, neighbour side), for item and heat output. */
     private final List<BlockPos> outside = new ArrayList<>();
     private final List<Direction> outsideSide = new ArrayList<>();
 
-    /** Клиент: сводки участков из тега обновления и угол бура для BER. */
+    /** Client: site summaries from the update tag and the drill angle for the BER. */
     private List<SiteView> clientSites = List.of();
     public float clientDrillAngle, clientLastTime = -1;
 
@@ -149,14 +149,14 @@ public class IndustrialMinerCoreBlockEntity extends BlockEntity implements MenuP
         return genome;
     }
 
-    /** Буровой жижи на руду с учётом штамма. */
+    /** Drill fluid per ore, taking the strain into account. */
     private int fluidPerOre() {
         return Math.max(1, Math.round(FLUID_PER_ORE * genome().fluid()));
     }
     public List<SiteView> getClientSites() { return clientSites; }
     private Direction facing() { return getBlockState().getValue(IndustrialMinerCoreBlock.FACING); }
 
-    // ───────── сборка ─────────
+    // ───────── forming ─────────
 
     private void form(Level level) {
         formed = true;
@@ -172,7 +172,7 @@ public class IndustrialMinerCoreBlockEntity extends BlockEntity implements MenuP
         setChanged();
     }
 
-    /** Разобрать: каркас снова видим, ядро — обычный блок. Зовут проверка ядра, слом каркаса и слом ядра. */
+    /** Unform: the frame is visible again, the core is a plain block. Called by the core check, frame breaking and core breaking. */
     public void unform() {
         if (!formed || level == null) return;
         formed = false;
@@ -202,7 +202,7 @@ public class IndustrialMinerCoreBlockEntity extends BlockEntity implements MenuP
             }
     }
 
-    // ───────── тик ─────────
+    // ───────── tick ─────────
 
     public void tick(Level level, BlockPos pos, BlockState state) {
         if (!formed) {
@@ -249,8 +249,8 @@ public class IndustrialMinerCoreBlockEntity extends BlockEntity implements MenuP
     }
 
     /**
-     * n руд поровну по участкам, внутри участка — по доле руды в слое. Возвращает, сколько руд добыто
-     * (по ним тратится жижа); прибавка от штамма нанитов идёт сверху и жижи не просит.
+     * n ores split evenly across sites, within a site by the ore's share of the layer. Returns how many ores were mined
+     * (fluid is spent for them); the nanite strain bonus comes on top and needs no fluid.
      */
     private int mine(Level level, int n) {
         int made = 0, k = pools.size();
@@ -265,18 +265,18 @@ public class IndustrialMinerCoreBlockEntity extends BlockEntity implements MenuP
                 if (idx < 0) idx = -idx - 1;
                 idx = Math.min(idx, pool.items().length - 1);
                 float bonus = g.effect(pool.materials()[idx]);
-                if (g.has(NaniteTrait.RESONATOR) && level.random.nextFloat() < NaniteTrait.RESONATOR_CHANCE) bonus *= 2;   // резонанс: прибавка дважды
+                if (g.has(NaniteTrait.RESONATOR) && level.random.nextFloat() < NaniteTrait.RESONATOR_CHANCE) bonus *= 2;   // resonance: double bonus
                 int count = 1 + (int) bonus + (level.random.nextFloat() < bonus - (int) bonus ? 1 : 0);
                 ItemStack ore = new ItemStack(pool.items()[idx], count);
                 for (int s = 0; s < output.getSlots() && !ore.isEmpty(); s++) ore = output.insertItem(s, ore, false);
-                if (!ore.isEmpty()) return made;   // выход забит — дальше не мельчим
+                if (!ore.isEmpty()) return made;   // output is full, stop splitting further
                 made++;
             }
         }
         return made;
     }
 
-    /** Износ штамма за цикл: чем ниже стабильность, тем чаще сродства теряют долю. */
+    /** Strain wear per cycle: the lower the stability, the more often affinities lose a share. */
     private void wearNanites(Level level) {
         ItemStack stack = nanites.getStackInSlot(0);
         if (stack.isEmpty()) return;
@@ -317,9 +317,9 @@ public class IndustrialMinerCoreBlockEntity extends BlockEntity implements MenuP
         }
     }
 
-    // ───────── участки ─────────
+    // ───────── sites ─────────
 
-    /** Пулы и сводки по реестру участков; если сводка для окна изменилась — отправить клиенту. */
+    /** Pools and summaries from the site registry; if the window summary changed, send it to the client. */
     private void refresh() {
         if (!(level instanceof net.minecraft.server.level.ServerLevel sl)) return;
         DrillSites reg = DrillSites.get(sl.getServer());
@@ -369,7 +369,7 @@ public class IndustrialMinerCoreBlockEntity extends BlockEntity implements MenuP
         return LinkResult.ADDED;
     }
 
-    /** Кнопки окна: 0..3 — включить/выключить участок, 4..7 — отвязать. */
+    /** Window buttons: 0..3 enable/disable a site, 4..7 unlink. */
     public void onButton(int id) {
         int i = id % MAX_SITES;
         if (i >= links.size()) return;
@@ -379,7 +379,7 @@ public class IndustrialMinerCoreBlockEntity extends BlockEntity implements MenuP
         setChanged();
     }
 
-    // ───────── окно ─────────
+    // ───────── window ─────────
 
     private final ContainerData data = new ContainerData() {
         @Override public int get(int i) {
@@ -412,7 +412,7 @@ public class IndustrialMinerCoreBlockEntity extends BlockEntity implements MenuP
         return new IndustrialMinerMenu(id, inv, this, data);
     }
 
-    // ───────── возможности, синк, сохранение ─────────
+    // ───────── capabilities, sync, saving ─────────
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
@@ -487,7 +487,7 @@ public class IndustrialMinerCoreBlockEntity extends BlockEntity implements MenuP
         if (formed && level != null && !level.isClientSide()) collectOutside();
     }
 
-    /** Клиенту — только сводки участков (энергия и прочее идут через окно). */
+    /** Only site summaries go to the client (energy and the rest go through the window). */
     @Override
     public CompoundTag getUpdateTag() {
         CompoundTag tag = new CompoundTag();
@@ -538,7 +538,7 @@ public class IndustrialMinerCoreBlockEntity extends BlockEntity implements MenuP
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    /** По умолчанию пакет зовёт load() и обнулил бы клиентские поля — тут приходят только сводки. */
+    /** By default the packet calls load() and would reset the client fields; only summaries arrive here. */
     @Override
     public void onDataPacket(net.minecraft.network.Connection net, ClientboundBlockEntityDataPacket pkt) {
         if (pkt.getTag() != null) handleUpdateTag(pkt.getTag());

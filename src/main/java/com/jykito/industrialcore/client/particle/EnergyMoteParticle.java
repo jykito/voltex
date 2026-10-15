@@ -13,9 +13,9 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
- * Энергомот дезинтеграции: кружит вокруг ВЕРТИКАЛЬНОЙ оси катушки (cx,cz), спиралью
- * стягивается на неё (в линию), медленно, цвет бирюза→фиолет, затухает. Свечение (full bright).
- * Центр орбиты приходит в конструктор через dx,dy,dz (передан velocity-слотами sendParticles, speed=1).
+ * Disintegration energy mote: circles around the VERTICAL coil axis (cx,cz), spirals
+ * onto it (into a line), slowly, colour teal -> violet, fades out. Glows (full bright).
+ * The orbit centre arrives in the constructor through dx,dy,dz (passed in the velocity slots of sendParticles, speed=1).
  */
 @OnlyIn(Dist.CLIENT)
 public class EnergyMoteParticle extends TextureSheetParticle {
@@ -33,7 +33,7 @@ public class EnergyMoteParticle extends TextureSheetParticle {
         double ddx = x - cx, ddz = z - cz;
         this.radius = Math.sqrt(ddx * ddx + ddz * ddz);
         this.angle = Math.atan2(ddz, ddx);
-        this.angularSpeed = 0.09 + this.random.nextDouble() * 0.04; // медленно
+        this.angularSpeed = 0.09 + this.random.nextDouble() * 0.04; // slowly
         this.lifetime = 60 + this.random.nextInt(45);
         this.quadSize = 0.10f + this.random.nextFloat() * 0.09f;
         this.hasPhysics = false;
@@ -49,16 +49,16 @@ public class EnergyMoteParticle extends TextureSheetParticle {
         this.xo = this.x; this.yo = this.y; this.zo = this.z;
         if (this.age++ >= this.lifetime) { this.remove(); return; }
 
-        this.angle += this.angularSpeed; // орбита вокруг оси
-        this.radius *= 0.965;            // спираль внутрь → в линию
-        this.y += (this.cy - this.y) * 0.03; // лёгкое стягивание к центру по высоте
+        this.angle += this.angularSpeed; // orbit around the axis
+        this.radius *= 0.965;            // spiral inwards -> into a line
+        this.y += (this.cy - this.y) * 0.03; // slight pull towards the centre in height
         this.x = this.cx + this.radius * Math.cos(this.angle);
         this.z = this.cz + this.radius * Math.sin(this.angle);
         this.setBoundingBox(new AABB(this.x - 0.05, this.y - 0.05, this.z - 0.05,
                                      this.x + 0.05, this.y + 0.05, this.z + 0.05));
 
         float t = (float) this.age / (float) this.lifetime;
-        this.setColor(Mth.lerp(t, 0f, 0.75f), Mth.lerp(t, 1f, 0.25f), Mth.lerp(t, 0.8f, 1f)); // бирюза→фиолет
+        this.setColor(Mth.lerp(t, 0f, 0.75f), Mth.lerp(t, 1f, 0.25f), Mth.lerp(t, 0.8f, 1f)); // teal -> violet
         this.alpha = (1f - t) * 0.95f;
         this.setSpriteFromAge(this.sprites);
     }
@@ -67,7 +67,7 @@ public class EnergyMoteParticle extends TextureSheetParticle {
     public ParticleRenderType getRenderType() { return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT; }
 
     @Override
-    public int getLightColor(float partialTick) { return 0xF000F0; } // full bright — свечение
+    public int getLightColor(float partialTick) { return 0xF000F0; } // full bright: glow
 
     @OnlyIn(Dist.CLIENT)
     public static class Provider implements ParticleProvider<SimpleParticleType> {
@@ -77,7 +77,7 @@ public class EnergyMoteParticle extends TextureSheetParticle {
         @Override
         public Particle createParticle(SimpleParticleType type, ClientLevel level,
                                        double x, double y, double z, double dx, double dy, double dz) {
-            // dx,dy,dz несут ЦЕНТР орбиты (velocity-слоты sendParticles, speed=1)
+            // dx,dy,dz carry the orbit CENTRE (velocity slots of sendParticles, speed=1)
             return new EnergyMoteParticle(level, x, y, z, dx, dy, dz, sprites);
         }
     }

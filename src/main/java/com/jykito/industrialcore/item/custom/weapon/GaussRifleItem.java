@@ -32,13 +32,13 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Гаусс-винтовка (юзер 2026-10-07: «давай гаусс-винтовку»; урон утроен; связка с плазменной бронёй).
+ * Gauss rifle (author, 2026-10-07: "let's do a gauss rifle"; damage tripled; pairs with Plasma armor).
  * <ul>
- * <li>ПКМ зажать — заряд ступенями по {@link #STAGE_TICKS} тиков, отпустить — выстрел лучом без падения на {@link #RANGE}
- *     блоков: урон {@link #DAMAGE}, пробивает {@link #PIERCE} целей, отбрасывает; стоит {@link #COST} FE. Если заряда
- *     не хватает на набранную ступень, стреляет ступенью ниже. После выстрела перезарядка {@link #COOLDOWN} тиков.</li>
- * <li>Плазма: общий заряд с костюмом; полный комплект — заряд вдвое быстрее; если у брони готов плазменный взрыв,
- *     выстрел третьей ступени тратит его: взрыв в точке попадания (блоки не ломает) и поджог целей на линии.</li>
+ * <li>Hold RMB: charges in stages of {@link #STAGE_TICKS} ticks, release: a beam shot without drop over {@link #RANGE}
+ *     blocks: damage {@link #DAMAGE}, pierces {@link #PIERCE} targets, knocks back; costs {@link #COST} FE. If the charge
+ *     is not enough for the reached stage, it fires one stage lower. After a shot, a {@link #COOLDOWN} tick cooldown.</li>
+ * <li>Plasma: charge shared with the suit; a full set charges twice as fast; if the armor has a plasma blast ready,
+ *     a third-stage shot spends it: an explosion at the hit point (does not break blocks) and sets targets on the line on fire.</li>
  * </ul>
  */
 public class GaussRifleItem extends EnergyWeaponItem {
@@ -52,7 +52,7 @@ public class GaussRifleItem extends EnergyWeaponItem {
 
     public GaussRifleItem(Properties properties) { super(CAPACITY, properties); }
 
-    /** В руке, на земле и в рамке — объёмная «Вилка» (GaussRenderer); в интерфейсе модель предмета даёт плоскую иконку. */
+    /** In hand, on the ground and in item frames a volumetric "Fork" (GaussRenderer); in the inventory the item model gives a flat icon. */
     @Override
     public void initializeClient(java.util.function.Consumer<net.minecraftforge.client.extensions.common.IClientItemExtensions> consumer) {
         consumer.accept(new net.minecraftforge.client.extensions.common.IClientItemExtensions() {
@@ -62,9 +62,9 @@ public class GaussRifleItem extends EnergyWeaponItem {
             }
 
             /**
-             * От 3-го лица винтовку держат двумя руками вперёд, как заряженный арбалет (юзер 2026-10-10: «вверх заряжается,
-             * надо чтобы вперёд смотрела»). Хват в модели (thirdperson [0,-90,135]) рассчитан на поднятую руку: так ствол идёт
-             * по руке вперёд и при зарядке (поза лука от UseAnim.BOW), и в покое. С опущенной рукой ствол смотрел бы в землю.
+             * In third person the rifle is held forward with both hands, like a loaded crossbow (author, 2026-10-10: "it charges pointing up,
+             * it should point forward"). The grip in the model (thirdperson [0,-90,135]) is made for a raised arm: that way the barrel goes
+             * forward along the arm both while charging (bow pose from UseAnim.BOW) and at rest. With a lowered arm the barrel would point at the ground.
              */
             @Override
             public net.minecraft.client.model.HumanoidModel.ArmPose getArmPose(net.minecraft.world.entity.LivingEntity entity,
@@ -74,7 +74,7 @@ public class GaussRifleItem extends EnergyWeaponItem {
         });
     }
 
-    // ───────── костюм: плазма ─────────
+    // ───────── suit: Plasma ─────────
 
     @Override protected List<ItemStack> suit(Player player) { return pieces(player, s -> s.getItem() instanceof PlasmaArmorItem); }
     @Override protected int suitEnergy(ItemStack piece) { return PlasmaArmorItem.getEnergy(piece); }
@@ -82,10 +82,10 @@ public class GaussRifleItem extends EnergyWeaponItem {
 
     public static boolean fullPlasma(Player player) { return pieces(player, s -> s.getItem() instanceof PlasmaArmorItem).size() == 4; }
 
-    /** Ступень по времени зажатия: 0 — ещё не набрана. С полным комплектом плазмы вдвое быстрее. */
+    /** Stage by hold time: 0 means not reached yet. With a full Plasma set it is twice as fast. */
     public static int stage(int ticks, boolean fast) { return Math.min(3, ticks / (fast ? STAGE_TICKS / 2 : STAGE_TICKS)); }
 
-    // ───────── выстрел ─────────
+    // ───────── shot ─────────
 
     @Override public int getUseDuration(ItemStack stack) { return 72_000; }
     @Override public UseAnim getUseAnimation(ItemStack stack) { return UseAnim.BOW; }
@@ -101,7 +101,7 @@ public class GaussRifleItem extends EnergyWeaponItem {
         return InteractionResultHolder.consume(stack);
     }
 
-    /** Гул заряда: на каждой набранной ступени звук выше. */
+    /** Charge hum: each reached stage sounds higher. */
     @Override
     public void onUseTick(Level level, LivingEntity entity, ItemStack stack, int remaining) {
         if (level.isClientSide() || !(entity instanceof Player player)) return;
@@ -128,7 +128,7 @@ public class GaussRifleItem extends EnergyWeaponItem {
         Vec3 start = player.getEyePosition(), dir = player.getLookAngle(), far = start.add(dir.scale(RANGE));
         HitResult block = level.clip(new ClipContext(start, far, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
         Vec3 stop = block.getType() == HitResult.Type.MISS ? far : block.getLocation();
-        // цели на линии по порядку
+        // targets on the line, in order
         record Hit(LivingEntity e, Vec3 at, double d) {}
         List<Hit> hits = new ArrayList<>();
         for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, new AABB(start, stop).inflate(1.0),
@@ -147,10 +147,10 @@ public class GaussRifleItem extends EnergyWeaponItem {
             e.knockback(PUSH[st], -dir.x, -dir.z);
             if (blast) e.setSecondsOnFire(5);
         }
-        // луч кончается на последней пробитой цели, если пробивать больше некого
+        // the beam ends at the last pierced target if there is nobody left to pierce
         Vec3 end = n > 0 && n == PIERCE[st] ? hits.get(n - 1).at() : stop;
-        // выстрел рисуют клиенты (луч, спираль, вспышки — GaussBeams; юзер: «нормальный выстрел, а не всратые партиклы»):
-        // начало — у дула, правее и ниже глаз, где у винтовки в руке ствол
+        // clients draw the shot (beam, spiral, flashes in GaussBeams; author: "a proper shot instead of crappy particles"):
+        // it starts at the muzzle, to the right and below the eyes, where the barrel of the rifle in hand is
         Vec3 right = Math.abs(dir.y) < 0.99 ? dir.cross(new Vec3(0, 1, 0)).normalize() : new Vec3(1, 0, 0), up = right.cross(dir);
         Vec3 muzzle = start.add(dir.scale(0.8)).add(right.scale(0.28)).add(up.scale(-0.22));
         ModMessages.sendToTrackingAndSelf(new GaussShotPacket(muzzle, end, st, plasmaTrace, blast, player.getId()), player);
@@ -159,7 +159,7 @@ public class GaussRifleItem extends EnergyWeaponItem {
         level.playSound(null, player.getX(), player.getY(), player.getZ(), snd, SoundSource.PLAYERS, st == 3 ? 1.2f : 0.9f, st == 1 ? 1.5f : 1.0f);
     }
 
-    /** Плазменный выстрел: взрыв в точке попадания, по живым вокруг, со спадом к краю; блоки и сам стрелок не страдают. */
+    /** Plasma shot: an explosion at the hit point, hitting living things around with falloff to the edge; blocks and the shooter are not harmed. */
     private static void blast(Player player, ServerLevel level, Vec3 at) {
         for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, new AABB(at, at).inflate(BLAST_RADIUS),
                 e -> e != player && e.isAlive() && !(e instanceof TamableAnimal pet && pet.isOwnedBy(player)))) {

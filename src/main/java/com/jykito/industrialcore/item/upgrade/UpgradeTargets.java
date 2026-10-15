@@ -13,18 +13,18 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * Где какой общий апгрейд РАБОТАЕТ: единый источник для тултипа под Shift и для слотов
- * апгрейдов машин. Машина в списке только если она этот апгрейд реально читает, поэтому
- * бесполезное (выталкиватель жидкости в печь) в слот не положить.
+ * Where each shared upgrade WORKS: a single source for the Shift tooltip and for the machines'
+ * upgrade slots. A machine is on the list only if it actually reads this upgrade, so
+ * useless combinations (a fluid pusher in a furnace) cannot be put into the slot.
  * <p>
- * ⚠ Научил машину новому апгрейду или отнял — поправь список здесь: по нему же работают
- * слоты апгрейдов ({@link #works}), без правки машина новый апгрейд даже не примет.
+ * ⚠ If you teach a machine a new upgrade or take one away, fix the list here: the upgrade
+ * slots ({@link #works}) use it too, and without the fix the machine will not even accept the new upgrade.
  */
 public final class UpgradeTargets {
 
     private UpgradeTargets() {}
 
-    /** Простые машины с общим набором: скорость, параллель, предметы туда-обратно. */
+    /** Simple machines with the common set: speed, parallel, items in and out. */
     private static final List<RegistryObject<Block>> BASIC = List.of(
             ModBlocks.CRUSHER, ModBlocks.COMPRESSOR, ModBlocks.EXTRACTOR, ModBlocks.METAL_FORMER,
             ModBlocks.ELECTRIC_FURNACE, ModBlocks.ORE_WASHER, ModBlocks.ROD_FABRICATOR, ModBlocks.PHASE_SPLITTER);
@@ -56,13 +56,13 @@ public final class UpgradeTargets {
             ModBlocks.CRYSTALLIZER, ModBlocks.STONE_GENERATOR, ModBlocks.BIOREACTOR);
 
     /**
-     * Работает ли общий апгрейд в этой машине. Слоты апгрейдов машин проверяют через этот
-     * метод, поэтому слот принимает ровно то, что указано в тултипе, и ничего бесполезного.
-     * Частные апгрейды (доменки, взрастителя) сюда не относятся и дают false.
+     * Whether a shared upgrade works in this machine. Machine upgrade slots check through this
+     * method, so a slot accepts exactly what the tooltip says and nothing useless.
+     * Private upgrades (blast furnace, cultivator) do not belong here and return false.
      */
     public static boolean works(Block machine, ItemStack stack) {
         Item item = stack.getItem();
-        // штамм-переработчик: только промывщик (юзер 2026-10-07); мультиблочный промывщик держит его в ядре
+        // processor strain: ore washer only (author, 2026-10-07); the multiblock ore washer keeps it in the core
         if (item instanceof com.jykito.industrialcore.item.custom.NaniteStrainItem)
             return machine == ModBlocks.ORE_WASHER.get()
                     && com.jykito.industrialcore.nanite.NaniteGenome.kindOf(stack) == com.jykito.industrialcore.nanite.NaniteGenome.Kind.PROCESSOR;
@@ -86,10 +86,10 @@ public final class UpgradeTargets {
     }
 
     /**
-     * Без Shift одна строка-подсказка, с Shift список машин. Имена берутся из названий
-     * блоков, так что переводить отдельно ничего не надо.
+     * Without Shift a single hint line, with Shift the list of machines. Names come from the block
+     * names, so nothing needs separate translation.
      * <p>
-     * Screen здесь безопасен: appendHoverText вызывается только на клиенте.
+     * Screen is safe here: appendHoverText is only called on the client.
      */
     @SafeVarargs
     public static void append(List<Component> tooltip, RegistryObject<Block>... targets) {

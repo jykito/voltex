@@ -22,7 +22,7 @@ public class DirectionalUpgradeItem extends MachineUpgradeItem {
 
     private final Mode mode;
 
-    // Серверный детект даблклика по игроку. Метку времени в NBT НЕ пишем — иначе предметы перестанут стакаться.
+    // Server-side double click detection per player. We do NOT write a timestamp into NBT, otherwise the items would stop stacking.
     private static final Map<UUID, Long> LAST_CLICK = new HashMap<>();
 
     public DirectionalUpgradeItem(Mode mode, Properties props) {
@@ -75,7 +75,7 @@ public class DirectionalUpgradeItem extends MachineUpgradeItem {
         long now = level.getGameTime();
         UUID id = player != null ? player.getUUID() : null;
         Long last = id != null ? LAST_CLICK.get(id) : null;
-        boolean doubleClick = last != null && (now - last) <= 7; // два ПКМ подряд (~0.35с) → сброс конфига
+        boolean doubleClick = last != null && (now - last) <= 7; // two RMB in a row (~0.35s) -> reset the config
 
         if (doubleClick) {
             if (stack.hasTag()) stack.getTag().remove("direction");

@@ -15,14 +15,14 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Рецепт криокамеры.
+ * Cryo chamber recipe.
  * <p>
- * Отличие от всех прочих типов — поле {@code requiredStage}: рецепт не запустится, пока камера
- * не набрала нужную ГЛУБИНУ. Глубина копится минутами устойчивой подачи тепла, поэтому ступень
- * это не «сложность крафта», а состояние установки, за которое игрок платит временем.
+ * Unlike all other types it has the {@code requiredStage} field: the recipe will not start until the chamber
+ * has reached the required DEPTH. Depth accumulates over minutes of steady heat supply, so a stage
+ * is not "crafting difficulty" but a state of the installation the player pays for with time.
  * <p>
- * Выход может быть предметом, жидкостью или тем и другим: первая ступень даёт предметы,
- * третья — сверхтекучий конденсат.
+ * The output can be an item, a fluid or both: the first stage gives items,
+ * the third gives superfluid condensate.
  */
 public class CryoRecipe implements Recipe<SimpleContainer> {
 
@@ -57,7 +57,7 @@ public class CryoRecipe implements Recipe<SimpleContainer> {
     public Ingredient getIngredient()      { return ingredient; }
     public int  getIngredientCount()       { return ingredientCount; }
     public int  getRequiredStage()         { return requiredStage; }
-    /** Результат как есть, без копии — для проверок в тике. Менять его нельзя. */
+    /** The result as is, without a copy, for checks in the tick. Do not modify it. */
     public ItemStack getResult()           { return result; }
     public boolean hasItemResult()         { return !result.isEmpty(); }
     public boolean hasFluidResult()        { return fluidResultAmount > 0 && fluidResultId != null; }

@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 import java.util.Locale;
 
-/** Экран ядра лейт-мультиблока: окно 256×228 — табло статуса, энергия, прогресс, строки параметров, текущий продукт. */
+/** Late multiblock core screen: a 256x228 window with a status display, energy, progress, parameter lines, the current product. */
 public class LateMachineCoreScreen extends MachineScreen<LateMachineCoreMenu> {
 
     private static final ResourceLocation TEXTURE =
@@ -24,7 +24,7 @@ public class LateMachineCoreScreen extends MachineScreen<LateMachineCoreMenu> {
     private static final int STATUS_X = 20, STATUS_Y = 16, STATUS_W = 220;
     private static final int ENERGY_X = 23, ENERGY_Y = 47, BAR_W = 218, BAR_H = 6;
     private static final int PROG_X = 23, PROG_Y = 59;
-    /** Шевроны прогресса бегут заметно быстрее, чем мерцает энергия: свой счётчик кадров. */
+    /** Progress chevrons run noticeably faster than the energy flickers: their own frame counter. */
     private static final int CHEVRON_FRAME_TICKS = 6;
     private static final int INFO_X = 18, INFO_Y = 74, LINE = 11;
     private static final int PRODUCT_X = 222, PRODUCT_Y = 105;
@@ -49,7 +49,7 @@ public class LateMachineCoreScreen extends MachineScreen<LateMachineCoreMenu> {
         chevrons.advance();
         chevrons.draw(g, FillBar.PROGRESS, x + PROG_X, y + PROG_Y, p, BAR_H);
 
-        if (menu.nanite) {   // ячейка штамма в табло, как у промышленного шахтёра (общая текстура ядер её не содержит)
+        if (menu.nanite) {   // strain cell in the display, as on the industrial miner (the shared core texture does not include it)
             int cx = x + LateMachineCoreMenu.NANITE_X - 1, cy = y + LateMachineCoreMenu.NANITE_Y - 1;
             g.fill(cx, cy, cx + 18, cy + 18, 0xFF1B1B1B);
             g.fill(cx + 1, cy + 1, cx + 18, cy + 18, 0xFF6E6E6E);
@@ -68,7 +68,9 @@ public class LateMachineCoreScreen extends MachineScreen<LateMachineCoreMenu> {
     private void drawStatus(GuiGraphics g, int x, int y) {
         if (menu.isFormed()) {
             drawText(g, tr("formed"), x + STATUS_X, y + STATUS_Y, C_OK);
-            drawText(g, menu.ops() > 0 ? tr("working", menu.ops()) : tr("idle"), x + STATUS_X, y + STATUS_Y + 10, C_VALUE);
+            String state = menu.ops() > 0 ? tr("working", menu.ops())
+                    : menu.usesHeat() && menu.heatNeeded() > menu.heat() ? tr("low_heat") : tr("idle");
+            drawText(g, state, x + STATUS_X, y + STATUS_Y + 10, C_VALUE);
             return;
         }
         drawText(g, tr("not_formed"), x + STATUS_X, y + STATUS_Y, C_BAD);
@@ -93,7 +95,7 @@ public class LateMachineCoreScreen extends MachineScreen<LateMachineCoreMenu> {
                 ? tr("ports_heat", menu.inputs(), menu.outputs(), menu.energyPorts(), menu.heatPorts())
                 : tr("ports", menu.inputs(), menu.outputs(), menu.energyPorts()), x + INFO_X, y + INFO_Y + 2 * LINE, C_LABEL);
         if (menu.modeCount() > 1) {
-            // строка режима — она же кнопка: клик переключает режим по кругу
+            // the mode line is also a button: a click cycles the mode
             String txt = tr("mode", tr("mode." + menu.modeKey())) + "  ⇄";
             modeW = (int) Math.ceil(font.width(txt) * 0.9f);
             boolean hover = in(lastMx, lastMy, INFO_X - 2, MODE_Y - 2, modeW + 4, 11);
@@ -101,7 +103,7 @@ public class LateMachineCoreScreen extends MachineScreen<LateMachineCoreMenu> {
             drawText(g, txt, x + INFO_X, y + MODE_Y, hover ? 0xFFFFFFFF : C_MODE);
         }
         if (menu.usesHeat()) {
-            // строка тепла под режимом (или на его месте): красная, пока до порога партии не догрето
+            // heat line under the mode (or in its place): red until the batch threshold is reached
             int need = menu.heatNeeded(), hy = menu.modeCount() > 1 ? MODE_Y + LINE : MODE_Y;
             String txt = need > 0 ? tr("heat_need", num(menu.heat()), num(need)) : tr("heat", num(menu.heat()));
             drawText(g, txt, x + INFO_X, y + hy, menu.heat() >= need ? C_HEAT : C_BAD);
@@ -140,7 +142,7 @@ public class LateMachineCoreScreen extends MachineScreen<LateMachineCoreMenu> {
             g.renderComponentTooltip(font, List.of(Component.literal(tr("nanite_slot")), Component.literal(tr("nanite_slot_hint"))), mx, my);
             return;
         }
-        // полный текст причины и подсказка по наведению на табло
+        // the full reason text and a hint on hovering over the display
         if (!menu.isFormed() && in(mx, my, STATUS_X - 4, STATUS_Y - 4, STATUS_W, 26)) {
             List<FormattedCharSequence> lines = font.split(Component.literal(tr("hint")), 220);
             g.renderTooltip(font, lines, mx, my);

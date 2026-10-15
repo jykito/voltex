@@ -14,9 +14,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Тепловой порт лейт-мультиблока: принимает тепло от теплотруб и держит его, как малый сжижитель.
- * Пока тепло подводится, уровень стоит; без притока остывает на 1 за тик.
- * Ядро только сравнивает уровень с порогом рецепта, тепло не тратит.
+ * Late multiblock heat port: takes heat from heat pipes and holds it, like the small liquefier.
+ * While heat is supplied the level holds; without inflow it cools by 1 per tick.
+ * The core only compares the level with the recipe threshold, it does not spend heat.
  */
 public class HeatPortBlockEntity extends BlockEntity {
 
@@ -31,7 +31,7 @@ public class HeatPortBlockEntity extends BlockEntity {
         @Override public int receiveHeat(int amount, boolean simulate) {
             int accepted = Math.min(Math.max(0, amount), MAX_HEAT - heat);
             if (!simulate && amount > 0) {
-                receiving = true;   // полный порт под трубой тоже не остывает
+                receiving = true;   // a full port under a pipe does not cool either
                 if (accepted > 0) { heat += accepted; setChanged(); }
             }
             return accepted;

@@ -27,8 +27,8 @@ import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Кристаллизатор: жидкость на вход, предмет на выход. Такого рецепта в моде не было,
- * поэтому машина работает своим типом {@code crystallizing}, а не через {@code machine_recipe}.
+ * Crystallizer: liquid in, item out. The mod had no such recipe before,
+ * so the machine runs its own {@code crystallizing} type rather than going through {@code machine_recipe}.
  */
 public class CrystallizerBlock extends BaseEntityBlock {
 
@@ -81,7 +81,7 @@ public class CrystallizerBlock extends BaseEntityBlock {
         builder.add(FACING, LIT);
     }
 
-    /** Содержимое падает отдельно: лут-таблица отдаёт только сам блок. */
+    /** Contents drop separately: the loot table only drops the block itself. */
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos,
                          BlockState newState, boolean moving) {

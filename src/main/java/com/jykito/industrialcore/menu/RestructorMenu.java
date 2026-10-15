@@ -15,10 +15,10 @@ import org.jetbrains.annotations.NotNull;
 
 import static com.jykito.industrialcore.block.entity.RestructorBlockEntity.*;
 
-/** Меню реструктора. Слоты меню идут в порядке слотов машины, поэтому номер слота меню = номер в машине. */
+/** Restructor menu. Menu slots follow the machine slot order, so the menu slot index = the machine index. */
 public class RestructorMenu extends MachineMenu {
 
-    /** T2, окно «Общий катализатор»: три линии вход, заряд, выход; катализатор слева, жила к каждому входу. */
+    /** T2, the "Shared catalyst" window: three lines of input, charge, output; catalyst on the left, a vein to each input. */
     public static final int T2_IN_X = 99, T2_OUT_X = 141, T2_ROW_Y = 37, T2_ROW_STEP = 23, T2_CAT_X = 59, T2_CAT_Y = 60;
 
     public final RestructorBlockEntity blockEntity;
@@ -108,7 +108,7 @@ public class RestructorMenu extends MachineMenu {
     public int getEnergyAccumulated() { return getEnergyAccumulated(0); }
     public int getMaxRecipeCost()     { return getMaxRecipeCost(0); }
 
-    /** По 4 ячейки на линию: заряд и стоимость, каждое двумя половинами. */
+    /** 4 cells per line: charge and cost, each in two halves. */
     public int getEnergyAccumulated(int lane) { return unpack(data.get(4 * lane), data.get(4 * lane + 1)); }
     public int getMaxRecipeCost(int lane)     { return unpack(data.get(4 * lane + 2), data.get(4 * lane + 3)); }
 
@@ -148,7 +148,7 @@ public class RestructorMenu extends MachineMenu {
         return itemstack;
     }
 
-    /** Во входы линий по очереди (у T1 через весь блок слотов машины, как было: лишнее отсеют сами слоты). */
+    /** Into the line inputs in turn (on T1 across the whole machine slot block, as before: the slots filter out what does not fit). */
     private boolean toInputs(ItemStack stack) {
         if (lanes == 1) return this.moveItemStackTo(stack, 0, blockEntity.getItemHandler().getSlots(), false);
         boolean moved = false;

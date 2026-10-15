@@ -27,17 +27,17 @@ import java.util.Locale;
 import static com.jykito.industrialcore.menu.MePortMenu.*;
 
 /**
- * Окно МЭ-портов, раскладка «Пульт»: ряды сверху, табло снизу, справа колонка, продолжающая ряды
- * (жидкости пар у входа, кнопки и баки буфера у порта шаблонов). Текстуры — tools/gui_gen/me_port_gui2.js (К1).
+ * ME port window, the "Console" layout: rows on top, a display at the bottom, on the right a column continuing the rows
+ * (pair fluids on the input, buttons and buffer tanks on the pattern port). Textures: tools/gui_gen/me_port_gui2.js (K1).
  */
 public class MePortScreen extends MachineScreen<MePortMenu> {
 
     private static final int TW = 256, TH = 320;
-    // спрайты под окном
+    // sprites under the window
     private static final int SPR_Y = 260, LOCK_U = 0, BTN_U = 18, BTN_HOVER_U = 36, PATTERN_U = 54, FLUID_CELL_U = 72;
     private static final int ICON_BLOCK_ON = 90, ICON_BLOCK_OFF = 106, ICON_SHOW = 122, ICON_HIDE = 138, ICON_PRIO = 154;
     private static final int LCD_X = 47, LCD_W = 162, CELL = 18;
-    /** Кнопки порта шаблонов в колонке напротив рядов шаблонов: блокировка, терминал, приоритет. */
+    /** Pattern port buttons in the column next to the pattern rows: blocking, terminal, priority. */
     private static final int BTN_BLOCK = 0, BTN_TERMINAL = 1, BTN_PRIORITY = 2;
 
     private static final int C_ON = 0xFF6FD08C, C_LOW = 0xFFE0B050, C_OFF = 0xFFE06C6C, C_IDLE = 0xFF2A2A2A;
@@ -45,7 +45,7 @@ public class MePortScreen extends MachineScreen<MePortMenu> {
     private final ResourceLocation texture;
     private final boolean tall;
     private final int lcdY, ledY;
-    /** Цвета табло и числа призраков: от цвета рамки порта к белому. */
+    /** Display and ghost count colours: from the port frame colour towards white. */
     private final int cInfo, cInfo2, cGhost;
 
     public MePortScreen(MePortMenu menu, Inventory inv, Component title) {
@@ -61,7 +61,7 @@ public class MePortScreen extends MachineScreen<MePortMenu> {
         this.cGhost = pattern ? 0xFFFFFAF0 : 0xFFEEF6FF;
     }
 
-    // ── геометрия клеток (координаты окна) ──
+    // ── cell geometry (window coordinates) ──
 
     private static int colX(int i) { return GRID_X + (i % 9) * CELL; }
     private static int[] fluidCell(int t) { return new int[]{SIDE_X, CFG_Y[t]}; }
@@ -74,7 +74,7 @@ public class MePortScreen extends MachineScreen<MePortMenu> {
     }
     private static int[] btnPos(int b) { return new int[]{SIDE_X, PAT_Y[b]}; }
 
-    // ── фон ──
+    // ── background ──
 
     @Override
     protected void renderBg(GuiGraphics g, float pt, int mx, int my) {
@@ -137,7 +137,7 @@ public class MePortScreen extends MachineScreen<MePortMenu> {
     private void lock(GuiGraphics g, int x, int y) { g.blit(texture, x, y, LOCK_U, SPR_Y, CELL, CELL, TW, TH); }
     private static void led(GuiGraphics g, int x, int y, int color) { g.fill(x, y, x + 4, y + 1, color); }
 
-    /** Призрак настройки: бледная иконка и число цвета рамки. */
+    /** Config ghost: a pale icon and a number in the frame colour. */
     private void ghostItem(GuiGraphics g, ItemStack want, int x, int y) {
         g.renderItem(want, x, y);
         g.fill(x, y, x + 16, y + 16, 250, 0x88262626);
@@ -150,7 +150,7 @@ public class MePortScreen extends MachineScreen<MePortMenu> {
         corner(g, shortMb(want.getAmount()), x, y);
     }
 
-    /** Число в правом нижнем углу клетки, как у стопки. */
+    /** Number in the bottom right corner of the cell, like a stack. */
     private void corner(GuiGraphics g, String txt, int x, int y) {
         g.pose().pushPose();
         g.pose().translate(0, 0, 300);
@@ -158,13 +158,13 @@ public class MePortScreen extends MachineScreen<MePortMenu> {
         g.pose().popPose();
     }
 
-    /** Бак: жидкость снизу вверх и блик стекла по левому краю. */
+    /** Tank: fluid from bottom to top and a glass highlight along the left edge. */
     private static void drawTank(GuiGraphics g, FluidTank tank, int x, int y, int w, int h) {
         if (tank != null) FluidGauge.draw(g, tank.getFluid(), tank.getCapacity(), x + 1, y + 1, w - 2, h - 2);
         g.fill(x + 1, y + 1, x + 2, y + h - 1, 0x1FFFFFFF);
     }
 
-    // ── табло: две строки мелким шрифтом ──
+    // ── display: two lines in small font ──
 
     private void drawLcd(GuiGraphics g, int x, int y) {
         int l1 = y + lcdY + 2, l2 = y + lcdY + 10, left = x + LCD_X + 3, right = x + LCD_X + LCD_W - 3;
@@ -219,7 +219,7 @@ public class MePortScreen extends MachineScreen<MePortMenu> {
         g.pose().popPose();
     }
 
-    // ── подсказки ──
+    // ── tooltips ──
 
     @Override
     protected void renderTooltips(GuiGraphics g, int mx, int my) {
@@ -277,7 +277,7 @@ public class MePortScreen extends MachineScreen<MePortMenu> {
         g.renderComponentTooltip(font, lines, mx, my);
     }
 
-    // ── мышь ──
+    // ── mouse ──
 
     @Override
     public boolean mouseClicked(double mx, double my, int btn) {
@@ -305,7 +305,7 @@ public class MePortScreen extends MachineScreen<MePortMenu> {
         return super.mouseClicked(mx, my, btn);
     }
 
-    /** Колесо: количество в клетке настройки (±1, с Shift ±16; у жидкости ±1000 mB, с Shift ±10 000), приоритет (±1, с Shift ±10). */
+    /** Wheel: amount in a config cell (±1, with Shift ±16; for fluid ±1000 mB, with Shift ±10 000), priority (±1, with Shift ±10). */
     @Override
     public boolean mouseScrolled(double mx, double my, double delta) {
         int dir = delta > 0 ? 1 : -1;
@@ -340,9 +340,9 @@ public class MePortScreen extends MachineScreen<MePortMenu> {
         if (minecraft != null) minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1f));
     }
 
-    // ── цели перетаскивания из JEI (клетки настройки МЭ-входа) ──
+    // ── JEI drag targets (ME input config cells) ──
 
-    /** Цель JEI: номер для {@link MePortPacket#ghost} (0..26 предметы, 27..29 жидкости) и место на экране. */
+    /** JEI target: index for {@link MePortPacket#ghost} (0..26 items, 27..29 fluids) and its place on screen. */
     public record GhostTarget(int index, Rect2i area) {}
 
     public List<GhostTarget> ghostTargets(boolean fluid) {
@@ -355,7 +355,7 @@ public class MePortScreen extends MachineScreen<MePortMenu> {
         return out;
     }
 
-    // ── мелочи ──
+    // ── small things ──
 
     private boolean in(double mx, double my, int rx, int ry, int w, int h) {
         return mx >= leftPos + rx && mx < leftPos + rx + w && my >= topPos + ry && my < topPos + ry + h;
@@ -365,7 +365,7 @@ public class MePortScreen extends MachineScreen<MePortMenu> {
         return String.format(Locale.ROOT, "%,d", v).replace(',', ' ');
     }
 
-    /** Объём для угла клетки: 800, 8к, 1.5к. */
+    /** Volume for the cell corner: 800, 8k, 1.5k. */
     private static String shortMb(int mb) {
         if (mb < 1000) return String.valueOf(mb);
         String k = mb % 1000 == 0 ? String.valueOf(mb / 1000) : String.format(Locale.ROOT, "%.1f", mb / 1000f);

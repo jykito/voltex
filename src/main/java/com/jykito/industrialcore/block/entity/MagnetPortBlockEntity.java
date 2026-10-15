@@ -17,13 +17,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Порт-BE на скелет-блоках магнита. Сам ничего не хранит и НЕ тикает.
- * При сборке ядро «усыновляет» порт (bindCore); если блок на входной поверхности (нижняя платформа) —
- * порт отдаёт соседям капы ЯДРА: предметы (вход 0-7 / выход 8), жидкости (только налив), энергию (только приём).
- * Так провода/трубы/хабы коннектятся к платформе, а физически лезут в ядро за 3 блока.
+ * Port BE on the magnet skeleton blocks. Stores nothing itself and does NOT tick.
+ * When forming, the core "adopts" the port (bindCore); if the block is on the input surface (bottom platform),
+ * the port exposes the CORE's caps to neighbours: items (input 0-7 / output 8), fluids (fill only), energy (receive only).
+ * This way wires, pipes and hubs connect to the platform, while physically reaching into the core 3 blocks away.
  *
- * Капы реализованы через живые прокси (каждый вызов резолвит текущее ядро по позиции) —
- * поэтому смена/поломка/перестановка ядра не оставляет висячих хендлеров и не теряет предметы.
+ * The caps are live proxies (each call resolves the current core by position),
+ * so changing, breaking or moving the core leaves no dangling handlers and loses no items.
  */
 public class MagnetPortBlockEntity extends BlockEntity {
 
@@ -38,13 +38,13 @@ public class MagnetPortBlockEntity extends BlockEntity {
         super(ModBlockEntities.MAGNET_PORT_BE.get(), pos, state);
     }
 
-    /** Текущее ядро (живой резол по позиции; null если порт неактивен, ядро выгружено/сломано). */
+    /** Current core (live lookup by position; null if the port is inactive or the core is unloaded/broken). */
     private @Nullable ElectromagnetCoreBlockEntity core() {
         if (!input || corePos == null || level == null) return null;
         return level.getBlockEntity(corePos) instanceof ElectromagnetCoreBlockEntity c && !c.isRemoved() ? c : null;
     }
 
-    // Прокси-хендлеры: стабильная идентичность, но каждый вызов бьёт в живое ядро (или no-op, если его нет).
+    // Proxy handlers: stable identity, but every call goes to the live core (or does nothing if there is none).
     private final IItemHandler itemProxy = new IItemHandler() {
         @Override public int getSlots() { var c = core(); return c != null ? c.getExternalItemHandler().getSlots() : 0; }
         @Override public @NotNull ItemStack getStackInSlot(int s) { var c = core(); return c != null ? c.getExternalItemHandler().getStackInSlot(s) : ItemStack.EMPTY; }
@@ -71,25 +71,25 @@ public class MagnetPortBlockEntity extends BlockEntity {
         @Override public boolean canReceive() { var c = core(); return c != null && c.getExternalEnergyHandler().canReceive(); }
     };
 
-    /** Ядро при сборке привязывает порт и говорит, входная ли это поверхность (нижняя платформа). */
+    /** When forming, the core binds the port and says whether it is the input surface (bottom platform). */
     public void bindCore(BlockPos core, boolean isInput) {
-        if (core.equals(corePos) && isInput == input) return; // без изменений — не дёргаем капы
+        if (core.equals(corePos) && isInput == input) return; // no change, do not touch the caps
         boolean wasActive = input;
         corePos = core.immutable();
         input = isInput;
         refreshCaps();
         setChanged();
-        // порт ожил (сборка/пересборка) → пнуть соседей, чтобы трубы/провода/хабы перескан капу и переконнектились
+        // the port came alive (form/reform) -> poke neighbours so pipes/wires/hubs rescan caps and reconnect
         if (input && !wasActive) notifyNeighbors();
     }
 
-    /** Тот же сигнал, что и при установке блока: заставляет соседние трубы/провода/хабы перепросканировать капы. */
+    /** The same signal as on block placement: makes neighbouring pipes/wires/hubs rescan caps. */
     private void notifyNeighbors() {
         if (level != null && !level.isClientSide())
             level.updateNeighborsAt(worldPosition, getBlockState().getBlock());
     }
 
-    /** Разборка мультиблока — порт глохнет, соседи отваливаются. */
+    /** Multiblock unformed: the port goes dead, neighbours disconnect. */
     public void unbind() {
         if (corePos == null && !input) return;
         corePos = null;
@@ -99,11 +99,11 @@ public class MagnetPortBlockEntity extends BlockEntity {
     }
 
     private void refreshCaps() {
-        if (input) { // активен — держим капы «живыми»
+        if (input) { // active: keep the caps "alive"
             if (!itemCap.isPresent())   itemCap   = LazyOptional.of(() -> itemProxy);
             if (!fluidCap.isPresent())  fluidCap  = LazyOptional.of(() -> fluidProxy);
             if (!energyCap.isPresent()) energyCap = LazyOptional.of(() -> energyProxy);
-        } else {     // неактивен — рвём, чтобы трубы отсоединились
+        } else {     // inactive: drop them so pipes disconnect
             dropCaps();
         }
     }
@@ -133,7 +133,7 @@ public class MagnetPortBlockEntity extends BlockEntity {
     @Override
     protected void saveAdditional(@NotNull CompoundTag tag) {
         super.saveAdditional(tag);
-        if (input && corePos != null) { // сохраняем только осмысленное состояние (входной порт)
+        if (input && corePos != null) { // save only meaningful state (input port)
             tag.putLong("core", corePos.asLong());
             tag.putBoolean("in", true);
         }

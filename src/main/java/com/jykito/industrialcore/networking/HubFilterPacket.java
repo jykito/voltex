@@ -44,7 +44,7 @@ public class HubFilterPacket {
             ItemStackHandler h = be.filter(output);
             if (stack.isEmpty()) {
                 h.setStackInSlot(idx, ItemStack.EMPTY);
-                if (!output) be.filterCaps[idx] = 0; // лимиты только у ввода
+                if (!output) be.filterCaps[idx] = 0; // limits only on input
             } else {
                 ItemStack ghost = stack.copy(); ghost.setCount(1);
                 h.setStackInSlot(idx, ghost);

@@ -3,7 +3,7 @@ package com.jykito.industrialcore.client;
 import com.jykito.industrialcore.screen.GuideScreen;
 import net.minecraft.client.Minecraft;
 
-/** Клиентская точка открытия гайд-экрана (вызывается из ManualItem через DistExecutor). */
+/** Client entry point for opening the guide screen (called from ManualItem through DistExecutor). */
 public final class GuideClient {
     private GuideClient() {}
 

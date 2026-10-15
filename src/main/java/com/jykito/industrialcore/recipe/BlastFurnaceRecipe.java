@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 public class BlastFurnaceRecipe implements Recipe<SimpleContainer> {
 
     private final ResourceLocation id;
-    /** Рецепт только для лейт-машины (её промышленный режим); малая машина его не видит. */
+    /** Recipe for the late machine only (its industrial mode); the small machine does not see it. */
     private boolean lateOnly;
     private final Ingredient ingredient;
     private final int ingredientCount;

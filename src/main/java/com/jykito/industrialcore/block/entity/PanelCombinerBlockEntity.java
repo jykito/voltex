@@ -31,8 +31,8 @@ import org.jetbrains.annotations.Nullable;
 public class PanelCombinerBlockEntity extends BlockEntity implements MenuProvider {
 
     public static final int PANEL_SLOTS = 18;
-    // Потолок int: энергия Forge целочисленная, больше за раз не принять и не отдать.
-    // Раньше буфер был 1 млрд, и всё, что панели давали сверх него за тик, сгорало.
+    // int cap: Forge energy is an integer, no more can be accepted or given at once.
+    // Before, the buffer was 1 billion, and everything the panels made above it per tick was burned.
     public static final int BUFFER_SIZE = Integer.MAX_VALUE;
     public static final int MAX_OUTPUT  = Integer.MAX_VALUE;
 
@@ -63,7 +63,7 @@ public class PanelCombinerBlockEntity extends BlockEntity implements MenuProvide
     private LazyOptional<IItemHandler>   lazyItems  = LazyOptional.empty();
     private LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.empty();
 
-    private long currentGeneration = 0;   // сумма панелей может быть больше int (T10: до ~57 млрд/тик)
+    private long currentGeneration = 0;   // the sum of panels can exceed int (T10: up to ~57 billion/tick)
     private int  currentOutput     = 0;
 
     protected final ContainerData data = new ContainerData() {
@@ -73,7 +73,7 @@ public class PanelCombinerBlockEntity extends BlockEntity implements MenuProvide
                 case 1 -> (buffer.getEnergyStored()    >> 16) & 0xFFFF;
                 case 2 ->  buffer.getMaxEnergyStored() & 0xFFFF;
                 case 3 -> (buffer.getMaxEnergyStored() >> 16) & 0xFFFF;
-                case 4 -> (int) ( currentGeneration         & 0xFFFF);   // генерация — long, 4 ячейки
+                case 4 -> (int) ( currentGeneration         & 0xFFFF);   // generation is a long, 4 cells
                 case 5 -> (int) ((currentGeneration >> 16) & 0xFFFF);
                 case 6 -> (int) ((currentGeneration >> 32) & 0xFFFF);
                 case 7 -> (int) ((currentGeneration >> 48) & 0xFFFF);
@@ -98,7 +98,7 @@ public class PanelCombinerBlockEntity extends BlockEntity implements MenuProvide
 
         boolean canSee = level.canSeeSky(pos.above());
         boolean isDay  = level.isDay();
-        long total = 0;   // в int переполнялось после ~2,1 млрд и уходило в минус → генерация 0
+        long total = 0;   // an int overflowed after ~2.1 billion and went negative -> generation 0
 
         if (canSee) {
             for (int i = 0; i < PANEL_SLOTS; i++) {
@@ -114,7 +114,7 @@ public class PanelCombinerBlockEntity extends BlockEntity implements MenuProvide
 
         currentGeneration = total;
         if (total > 0) {
-            buffer.addEnergy((int) Math.min(total, Integer.MAX_VALUE)); // излишек сверх буфера теряется
+            buffer.addEnergy((int) Math.min(total, Integer.MAX_VALUE)); // surplus above the buffer is lost
             changed = true;
         }
 

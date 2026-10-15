@@ -69,8 +69,8 @@ public abstract class BaseMachineBlockEntity extends BlockEntity implements Menu
         @Override public boolean isItemValid(int slot, @NotNull ItemStack stack) { return itemHandler.isItemValid(slot, stack); }
     };
 
-    // приём = буфер: потолок на вход ничего не ограничивал (расход рецепта на порядок ниже),
-    // только тормозил доливку после простоя. Как у электропечи.
+    // intake = buffer: the input cap limited nothing (recipe usage is an order of magnitude lower),
+    // it only slowed refilling after idling. Same as the electric furnace.
     protected final MachineEnergy energyStorage = MachineEnergy.consumer(64000, 64000);
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
     private LazyOptional<IEnergyStorage> lazyEnergyHandler = LazyOptional.empty();
@@ -144,9 +144,9 @@ public abstract class BaseMachineBlockEntity extends BlockEntity implements Menu
             if (canInsertItemIntoOutputSlot(result)
                     && canInsertAmountIntoOutputSlot(result.getCount() * actualParallel)) {
 
-                // Время из рецепта как есть, множат только апгрейды. Прежние 0.7 (глобальный
-                // «-30% времени») перенесены прямо в json рецептов crushing/compressing/extracting/
-                // rolling/extruding, иначе JEI показывал время из файла, а машина работала быстрее.
+                // Time comes from the recipe as is, only upgrades multiply it. The old 0.7 (a global
+                // "-30% time") was moved straight into the json of the crushing/compressing/extracting/
+                // rolling/extruding recipes, otherwise JEI showed the time from the file while the machine ran faster.
                 this.maxProgress       = upg.scaleTime(r.getProcessingTime());
                 this.energyCostPerTick = upg.scaleEnergy(r.getEnergyCost());
 

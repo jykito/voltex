@@ -32,9 +32,9 @@ import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Камера эволюции нанитов: штамм и руда внутри, энергия и (по желанию) тепло снаружи.
- * Блок не цельный (основание, стеклянная колба в стойках, крышка — модель из tools/texture_viewer/evolution_chamber_def.js, E2),
- * поэтому своя форма и noOcclusion в свойствах.
+ * Nanite evolution chamber: strain and ore inside, energy and (optionally) heat from outside.
+ * The block is not a full cube (base, glass flask in posts, lid; model from tools/texture_viewer/evolution_chamber_def.js, E2),
+ * hence its own shape and noOcclusion in the properties.
  */
 public class EvolutionChamberBlock extends BaseEntityBlock {
 
@@ -88,7 +88,7 @@ public class EvolutionChamberBlock extends BaseEntityBlock {
         builder.add(FACING, LIT);
     }
 
-    /** Содержимое падает отдельно: лут-таблица отдаёт только сам блок. */
+    /** Contents drop separately: the loot table only drops the block itself. */
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moving) {
         if (state.getBlock() != newState.getBlock() && level.getBlockEntity(pos) instanceof EvolutionChamberBlockEntity be) {

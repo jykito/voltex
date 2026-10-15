@@ -25,7 +25,7 @@ import net.minecraft.world.level.material.Fluids;
 import java.util.Arrays;
 import java.util.List;
 
-/** Биореактор в JEI: раскладка промывателя (бак, вход, выход) плюс добавка над входом и порог тепла. */
+/** Bioreactor in JEI: the ore washer layout (tank, input, output) plus the additive above the input and the heat threshold. */
 public class BioreactorJeiCategory implements IRecipeCategory<BioreactorRecipe> {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(IndustrialCore.MODID, "textures/gui/jei/jei_bioreactor.png");

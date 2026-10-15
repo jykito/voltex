@@ -36,14 +36,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 /**
- * Буровой маяк: один раз сканирует 3×3 чанка под собой (от своей высоты до низа мира), запоминает руды послойно
- * (по секциям 16 блоков) и публикует состав выбранного слоя в реестр участков {@link DrillSites}.
+ * Drill beacon: scans the 3x3 chunks below it once (from its own height to the bottom of the world), remembers ores per layer
+ * (by 16-block sections) and publishes the composition of the selected layer to the site registry {@link DrillSites}.
  * <p>
- * Рудой считается блок из тега {@code forge:ores} — руды любых модов подхватываются сами. Скан идёт ~10 с
- * ({@link #SCAN_TICKS}), счётчиком палитры секции, без обхода каждого блока; незагруженный чанк он ждёт, а не грузит.
+ * A block counts as ore if it is in the {@code forge:ores} tag, so ores from any mod are picked up automatically. The scan takes ~10 s
+ * ({@link #SCAN_TICKS}), using the section palette counter without visiting every block; it waits for an unloaded chunk instead of loading it.
  * <p>
- * Линза открывает измерение: без линзы или с линзой Верхнего мира — только Верхний мир, Незер и Край — своими
- * линзами, универсальная — любое измерение, включая измерения других модов.
+ * The lens opens a dimension: no lens or the Overworld lens means only the Overworld, the Nether and the End have their own
+ * lenses, the universal one opens any dimension, including dimensions from other mods.
  */
 public class DrillBeaconBlockEntity extends BlockEntity implements MenuProvider {
 
@@ -60,10 +60,10 @@ public class DrillBeaconBlockEntity extends BlockEntity implements MenuProvider 
     private boolean lensDirty = true, scanned;
     private State state = State.NO_LENS;
     private int sections, top, step, total, bandLo, bandHi, syncCd;
-    /** Блоков руды по секциям (индекс от низа мира). */
+    /** Ore blocks per section (index from the bottom of the world). */
     private final Map<Item, int[]> counts = new LinkedHashMap<>();
 
-    /** Клиент: состав слоя для окна и состояние для BER. */
+    /** Client: layer composition for the window and state for the BER. */
     private List<Item> clientItems = List.of();
     private List<Long> clientCounts = List.of();
     private long clientTotal;
@@ -78,7 +78,7 @@ public class DrillBeaconBlockEntity extends BlockEntity implements MenuProvider 
     public List<Long> getClientCounts() { return clientCounts; }
     public long getClientTotal() { return clientTotal; }
 
-    /** Пускает ли линза (или её отсутствие) в это измерение. */
+    /** Whether the lens (or no lens) allows this dimension. */
     public static boolean lensAllows(ItemStack stack, ResourceKey<Level> dim) {
         MinerLensItem.LensType t = stack.getItem() instanceof MinerLensItem l ? l.getLensType() : null;
         if (t == MinerLensItem.LensType.ALL) return true;
@@ -142,7 +142,7 @@ public class DrillBeaconBlockEntity extends BlockEntity implements MenuProvider 
         }
     }
 
-    /** Состав выбранного слоя -> реестр участков и сводка для окна. */
+    /** Composition of the selected layer -> site registry and a summary for the window. */
     private void publish() {
         if (!(level instanceof ServerLevel sl) || !scanned) return;
         Map<Item, Long> w = new LinkedHashMap<>();
@@ -169,7 +169,7 @@ public class DrillBeaconBlockEntity extends BlockEntity implements MenuProvider 
         if (level instanceof ServerLevel sl) DrillSites.get(sl.getServer()).remove(level.dimension(), worldPosition);
     }
 
-    /** Кнопки окна: 0/1 — нижняя граница слоя вниз/вверх, 2/3 — верхняя, 4 — пересканировать. */
+    /** Window buttons: 0/1 lower layer bound down/up, 2/3 the upper bound, 4 rescan. */
     public void onButton(int id) {
         if (level == null) return;
         if (id == 4) { if (state != State.NO_LENS) startScan(level); return; }
@@ -185,7 +185,7 @@ public class DrillBeaconBlockEntity extends BlockEntity implements MenuProvider 
         if (state == State.READY) publish();
     }
 
-    // ───────── окно ─────────
+    // ───────── window ─────────
 
     private final ContainerData data = new ContainerData() {
         @Override public int get(int i) {
@@ -212,7 +212,7 @@ public class DrillBeaconBlockEntity extends BlockEntity implements MenuProvider 
         return new DrillBeaconMenu(id, inv, this, data);
     }
 
-    // ───────── синк и сохранение ─────────
+    // ───────── sync and saving ─────────
 
     private void sync() {
         setChanged();
@@ -258,7 +258,7 @@ public class DrillBeaconBlockEntity extends BlockEntity implements MenuProvider 
             Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(c.getString("i")));
             if (item != null && item != Items.AIR) counts.put(item, c.getIntArray("n"));
         }
-        lensDirty = true;   // после загрузки тик сам решит: опубликовать, сканировать или ждать линзу
+        lensDirty = true;   // after loading, the tick decides by itself: publish, scan or wait for a lens
     }
 
     @Override

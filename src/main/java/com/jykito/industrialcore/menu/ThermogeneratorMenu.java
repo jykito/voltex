@@ -38,9 +38,9 @@ public class ThermogeneratorMenu extends MachineMenu {
         return heat > 0 ? heat * barWidth / getMaxHeat() : 0;
     }
 
-    // Маска обязательна: ContainerData едет по сети как short, поэтому младшая половина
-    // больше 32767 приезжает отрицательной и без & 0xFFFF заливает единицами старшие биты.
-    // Сейчас буфер 20000 и до этого не доходит, но на любом росте ёмкости экран бы поехал.
+    // The mask is required: ContainerData travels over the network as a short, so a low half
+    // above 32767 arrives negative and without & 0xFFFF fills the high bits with ones.
+    // The buffer is 20000 now and does not get there, but any capacity growth would break the screen.
     public int getEnergy()         { return unpack(data.get(1), data.get(2)); }
     public int getMaxEnergy()      { return unpack(data.get(3), data.get(4)); }
     public int getGenerationRate() { return this.data.get(5); }

@@ -99,7 +99,7 @@ public final class ClientSetup {
         com.jykito.industrialcore.client.armor.PowerSuitModel.registerLayers(event);
     }
 
-    /** Слои пересобраны после перезагрузки ресурсов: модели брони берутся заново. */
+    /** Layers are rebuilt after a resource reload: armor models are taken anew. */
     @SubscribeEvent
     public static void onAddLayers(EntityRenderersEvent.AddLayers event) {
         com.jykito.industrialcore.client.armor.PowerSuitModel.clearCache();
@@ -114,7 +114,7 @@ public final class ClientSetup {
                 LogisticsBeamRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.ITEM_HUB_BE.get(),
                 LogisticsBeamRenderer::new);
-        // Теплотруба: свечение теперь статик-эмиссив по blockstate hot (в чанк-меше), BER-рендерер убран
+        // Heat pipe: the glow is now static emissive by the blockstate hot (in the chunk mesh), the BER renderer was removed
         event.registerBlockEntityRenderer(ModBlockEntities.ELECTROMAGNET_CORE_BE.get(),
                 ElectromagnetCoreBER::new);
         event.registerBlockEntityRenderer(ModBlockEntities.DISTANT_CONTROLLER_BE.get(),
@@ -127,7 +127,7 @@ public final class ClientSetup {
                 com.jykito.industrialcore.client.miner.DrillBeaconBER::new);
     }
 
-    /** Модель промышленного шахтёра читается из ресурсов один раз — после перезагрузки ресурсов перечитать. */
+    /** The industrial miner model is read from resources once; reread it after a resource reload. */
     @SubscribeEvent
     public static void onRegisterReloadListeners(net.minecraftforge.client.event.RegisterClientReloadListenersEvent event) {
         event.registerReloadListener((net.minecraft.server.packs.resources.ResourceManagerReloadListener) rm ->
@@ -153,7 +153,7 @@ public final class ClientSetup {
         event.register(AntigravColumnBER.PILON_CURRENT_MODEL);
     }
 
-    /** Структурное стекло: узел рамки во внутреннем углу Г-образной постройки (см. {@link GlassCtmModel}). */
+    /** Structural glass: frame node in the inner corner of an L-shaped build (see {@link GlassCtmModel}). */
     @SubscribeEvent
     public static void onModifyBakingResult(ModelEvent.ModifyBakingResult event) {
         for (net.minecraft.world.level.block.Block block : new net.minecraft.world.level.block.Block[]{
@@ -174,13 +174,13 @@ public final class ClientSetup {
             return FluidUtil.getFluidContained(stack).map(ClientSetup::capsuleFluidColor).orElse(0xFFFFFFFF);
         }, ModItems.UNIVERSAL_CAPSULE.get());
 
-        // штамм нанитов: окрашенные части (слой 1) в цвет главной руды штамма
+        // nanite strain: tinted parts (layer 1) in the colour of the strain's main ore
         event.register((stack, tintIndex) -> tintIndex != 1 ? 0xFFFFFFFF
-                : stack.hasTag() && stack.getTag().contains(com.jykito.industrialcore.nanite.NaniteAtlas.COLOR_TAG) ? stack.getTag().getInt(com.jykito.industrialcore.nanite.NaniteAtlas.COLOR_TAG)   // иконки атласа: силуэт, цвет черты
+                : stack.hasTag() && stack.getTag().contains(com.jykito.industrialcore.nanite.NaniteAtlas.COLOR_TAG) ? stack.getTag().getInt(com.jykito.industrialcore.nanite.NaniteAtlas.COLOR_TAG)   // atlas icons: silhouette, trait colour
                 : com.jykito.industrialcore.nanite.NaniteColors.of(
                 com.jykito.industrialcore.nanite.NaniteGenome.read(stack).dominant()), ModItems.NANITE_STRAIN.get());
 
-        // карты данных: корпус (слой 1) в цвет темы, пустая — серая
+        // data cards: the body (layer 1) in the topic colour, a blank one is grey
         event.register((stack, tintIndex) -> tintIndex == 1 && stack.getItem() instanceof com.jykito.industrialcore.item.custom.DataCardItem d
                 ? com.jykito.industrialcore.nanite.NaniteColors.theme(d.theme()) : 0xFFFFFFFF,
                 java.util.stream.Stream.concat(java.util.stream.Stream.of(ModItems.DATA_CARD_BLANK), ModItems.DATA_CARDS.stream())

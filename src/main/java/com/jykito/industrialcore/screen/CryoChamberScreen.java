@@ -27,22 +27,22 @@ public class CryoChamberScreen extends MachineScreen<CryoChamberMenu> {
     private static final int PROG_X = 112, PROG_Y = 37, PROG_W = 32, PROG_H = 12;
     private static final int PROG_SRC_U = 102, PROG_SRC_V = 260;
 
-    /** Стержень в слоте: поверх серых уголков слота ложатся бирюзовые (спрайт 20×20, клетка в нём с 1, 1). */
+    /** A rod in the slot: teal corners go over the grey slot corners (sprite 20x20, the cell in it starts at 1, 1). */
     private static final int FRAME_W = 20, FRAME_H = 20, FRAME_Y = 73;
     private static final int[] FRAME_X = {95, 118, 141};
     private static final int FRAME_SRC_U = 155, FRAME_SRC_V = 268;
 
     /**
-     * Внизу окна две полосы: глубина, под ней энергия с молнией слева, как у остальных машин
-     * (tools/gui_gen/mag_cryo/build.js, там те же координаты).
+     * Two bars at the bottom of the window: depth, and below it energy with a bolt on the left, like the other machines
+     * (tools/gui_gen/mag_cryo/build.js has the same coordinates).
      */
     private static final int BAR_X = 72, BAR_W = 110, BAR_H = 6;
     private static final int DEPTH_Y = 106, ENERGY_Y = 120;
 
     /**
-     * Шкала глубины кусочная: каждая ступень занимает свой отрезок, а не долю от абсолютного
-     * максимума. Линейная растяжка на 2500 давила первые две ступени в край, хотя игрок
-     * почти всё время сидит именно там. Границы отрезков совпадают с рисками на текстуре.
+     * The depth gauge is piecewise: each stage takes its own segment rather than a share of the absolute
+     * maximum. A linear stretch to 2500 squeezed the first two stages into the edge, although the player
+     * spends almost all the time exactly there. Segment borders match the ticks on the texture.
      */
     private static final int[] SEG_PX    = {0, 33, 67, BAR_W};
     private static final int[] SEG_DEPTH = {0, 200, 800, CryoCoreBlockEntity.MAX_DEPTH};
@@ -50,7 +50,7 @@ public class CryoChamberScreen extends MachineScreen<CryoChamberMenu> {
     private static final int DEPTH_COLOR  = 0xFF40BEC7;
     private static final int INFLOW_COLOR = 0xFFFFC24A;
 
-    /** Панель с числами: глубина, ступень, приток. */
+    /** Panel with numbers: depth, stage, inflow. */
     private static final int INFO_X = 192, INFO_Y = 41;
 
     public CryoChamberScreen(CryoChamberMenu menu, Inventory inv, Component title) {
@@ -79,7 +79,7 @@ public class CryoChamberScreen extends MachineScreen<CryoChamberMenu> {
         tank(g, x + HOT_X,     y + TANK_Y, menu.blockEntity.hotTank);
         tank(g, x + PRODUCT_X, y + TANK_Y, menu.blockEntity.productTank);
 
-        // рамка загорается, когда в слоте стоит стержень
+        // the frame lights up when a rod is in the slot
         var h = menu.blockEntity.getItemHandler();
         for (int r = 0; r < FRAME_X.length; r++)
             if (!h.getStackInSlot(2 + r).isEmpty())
@@ -92,8 +92,8 @@ public class CryoChamberScreen extends MachineScreen<CryoChamberMenu> {
         if (depthPx > 0)
             g.fill(x + BAR_X, y + DEPTH_Y, x + BAR_X + depthPx, y + DEPTH_Y + BAR_H, DEPTH_COLOR);
 
-        // Метка притока: глубина всегда идёт к нему и садится ровно на него. Риска правее
-        // заливки — ещё погружаемся, левее — теряем глубину прямо сейчас.
+        // Inflow marker: depth always moves towards it and settles exactly on it. The tick to the right of
+        // the fill means still going deeper, to the left means losing depth right now.
         int inflowPx = barPx(menu.getHeatInflow());
         if (inflowPx > 0)
             g.fill(x + BAR_X + Math.min(inflowPx, BAR_W - 1), y + DEPTH_Y - 1,
@@ -106,7 +106,7 @@ public class CryoChamberScreen extends MachineScreen<CryoChamberMenu> {
         infoPanel(g, x + INFO_X, y + INFO_Y);
     }
 
-    /** Глубина в пиксели по кусочной шкале: внутри отрезка ступени растяжка линейная. */
+    /** Depth to pixels on the piecewise scale: within a stage segment the stretch is linear. */
     private static int barPx(int depth) {
         if (depth <= 0) return 0;
         for (int i = 1; i < SEG_DEPTH.length; i++) {
@@ -129,7 +129,7 @@ public class CryoChamberScreen extends MachineScreen<CryoChamberMenu> {
         g.drawString(font, menu.getHeatInflow() + "/t", x, y + 46, INFLOW_COLOR, false);
     }
 
-    /** Панель узкая (36 px), поэтому подписи идут вполовину размера — числа остаются читаемыми. */
+    /** The panel is narrow (36 px), so the labels are half size; the numbers stay readable. */
     private void small(GuiGraphics g, Component text, int x, int y, int color) {
         g.pose().pushPose();
         g.pose().translate(x, y, 0);
@@ -146,8 +146,8 @@ public class CryoChamberScreen extends MachineScreen<CryoChamberMenu> {
     }
 
     /**
-     * Роль бака идёт первой строкой. Три одинаковых стекляшки подряд без подписи читаются как три
-     * входа, и первое, что делает игрок, — пытается залить во второй, хотя это выход.
+     * The tank role goes first. Three identical glass tanks in a row without labels read as three
+     * inputs, and the first thing the player does is try to fill the second one, although it is an output.
      */
     private void tankTooltip(GuiGraphics g, int mx, int my, int tankX, FluidTank t, String roleKey) {
         int x = leftPos + tankX, y = topPos + TANK_Y;
@@ -162,7 +162,7 @@ public class CryoChamberScreen extends MachineScreen<CryoChamberMenu> {
         g.renderTooltip(font, List.of(role.getVisualOrderText(), body.getVisualOrderText()), mx, my);
     }
 
-    /** Глубина — главный показатель камеры, поэтому в подсказке и ступень, и приток тепла. */
+    /** Depth is the chamber's main indicator, so the tooltip shows both the stage and the heat inflow. */
     private void depthTooltip(GuiGraphics g, int mx, int my) {
         int x = leftPos + BAR_X, y = topPos + DEPTH_Y;
         if (mx < x || mx >= x + BAR_W || my < y || my >= y + BAR_H) return;
@@ -174,7 +174,7 @@ public class CryoChamberScreen extends MachineScreen<CryoChamberMenu> {
         Component flow = Component.translatable("gui.industrial_core.cryo.inflow", menu.getHeatInflow())
                 .withStyle(ChatFormatting.GOLD);
 
-        // Упёрлись в модуль — говорим прямо, иначе игрок будет лить тепло в стену и не поймёт.
+        // Hit the module cap: say it directly, otherwise the player will keep pouring heat into a wall and not understand why.
         java.util.List<net.minecraft.util.FormattedCharSequence> lines = new java.util.ArrayList<>(
                 List.of(head.getVisualOrderText(), stageLine.getVisualOrderText(), flow.getVisualOrderText()));
         int allowed = menu.getAllowedStage();

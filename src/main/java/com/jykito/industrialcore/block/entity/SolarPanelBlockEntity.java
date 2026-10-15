@@ -38,7 +38,7 @@ public class SolarPanelBlockEntity extends BlockEntity implements MenuProvider {
                 case 1 -> (buffer.getEnergyStored()    >> 16) & 0xFFFF;
                 case 2 ->  buffer.getMaxEnergyStored() & 0xFFFF;
                 case 3 -> (buffer.getMaxEnergyStored() >> 16) & 0xFFFF;
-                // ячейка ContainerData 16-битная, а T5+ даёт больше 32767 → двумя половинами
+                // a ContainerData cell is 16-bit, and T5+ gives more than 32767 -> two halves
                 case 4 ->  currentGeneration           & 0xFFFF;
                 case 5 -> (currentGeneration           >> 16) & 0xFFFF;
                 case 6 ->  currentGeneration > 0 ? 1 : 0;

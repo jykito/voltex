@@ -33,10 +33,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Нанолаборатория: учёный-нанит изучает образец темы и записывает пустые карты данных. За тему он берётся только
- * с изученностью от её порога, выше порога изученность ускоряет запись ({@link NaniteLab}); образец не расходуется,
- * тратятся пустая карта и энергия. Учёный изнашивается, как добытчик: после каждой карты с шансом {@code (1 − стабильность) × }{@link #WEAR_CHANCE}.
- * Числа предварительные, баланс позже.
+ * Nanite lab: a scientist nanite studies a topic sample and writes blank data cards. It only takes on a topic
+ * once its knowledge reaches the topic threshold; above the threshold knowledge speeds up writing ({@link NaniteLab}); the sample is not consumed,
+ * a blank card and energy are spent. The scientist wears out like a miner: after each card with chance {@code (1 − stability) × }{@link #WEAR_CHANCE}.
+ * Numbers are preliminary, balance comes later.
  */
 public class NaniteLabBlockEntity extends BlockEntity implements MenuProvider {
 
@@ -44,7 +44,7 @@ public class NaniteLabBlockEntity extends BlockEntity implements MenuProvider {
     public static final int ENERGY_PER_TICK = 2_000;
     public static final float WEAR_CHANCE = 0.05f, WEAR = 0.97f;
 
-    /** Новые значения только в конец: порядковый номер уходит клиенту. */
+    /** Add new values only at the end: the ordinal is sent to the client. */
     public enum Status { WORKING, NO_STRAIN, NO_SAMPLE, LOW_KNOWLEDGE, NO_BLANK, OUTPUT_FULL, NO_ENERGY }
 
     private final ItemStackHandler items = new ItemStackHandler(4) {
@@ -60,7 +60,7 @@ public class NaniteLabBlockEntity extends BlockEntity implements MenuProvider {
         @Override public int getSlotLimit(int slot) { return slot == SLOT_STRAIN ? 1 : 64; }
     };
 
-    /** Снаружи кладут образец и пустые карты, забирают только записанные. */
+    /** From outside a sample and blank cards are inserted, only written cards are extracted. */
     private final IItemHandler automation = new IItemHandler() {
         @Override public int getSlots() { return items.getSlots(); }
         @Override public @NotNull ItemStack getStackInSlot(int slot) { return items.getStackInSlot(slot); }
@@ -79,7 +79,7 @@ public class NaniteLabBlockEntity extends BlockEntity implements MenuProvider {
     private final LazyOptional<IItemHandler> lazyItems = LazyOptional.of(() -> automation);
 
     private int progress, maxProgress = NaniteLab.SLOW_TICKS;
-    /** Порог темы образца в тысячных — для табло. */
+    /** Sample topic threshold in thousandths, for the display. */
     private int threshold;
     private Status status = Status.NO_STRAIN;
 
@@ -105,25 +105,25 @@ public class NaniteLabBlockEntity extends BlockEntity implements MenuProvider {
                 : energy.getEnergyStored() < ENERGY_PER_TICK ? Status.NO_ENERGY : Status.WORKING;
         boolean working = status == Status.WORKING;
         if (working) {
-            maxProgress = NaniteLab.ticks(genome.effect(theme));   // допуск — по чистой изученности, скорость — с чертами
+            maxProgress = NaniteLab.ticks(genome.effect(theme));   // admission by pure knowledge, speed with traits
             energy.consumeEnergy(ENERGY_PER_TICK);
             if (++progress >= maxProgress) {
                 progress = 0;
                 items.extractItem(SLOT_BLANK, 1, false);
-                ItemStack done = items.getStackInSlot(SLOT_OUTPUT);   // выход закрыт для вставки снаружи, кладём сами
+                ItemStack done = items.getStackInSlot(SLOT_OUTPUT);   // the output is closed for insertion from outside, we put into it ourselves
                 int made = genome.has(NaniteTrait.RESONATOR) && level.random.nextFloat() < NaniteTrait.RESONATOR_CHANCE
-                        && (done.isEmpty() || done.getCount() + 2 <= done.getMaxStackSize()) ? 2 : 1;   // резонанс: две карты за одну
+                        && (done.isEmpty() || done.getCount() + 2 <= done.getMaxStackSize()) ? 2 : 1;   // resonance: two cards for one
                 items.setStackInSlot(SLOT_OUTPUT, done.isEmpty() ? new ItemStack(out, made) : done.copyWithCount(done.getCount() + made));
                 wear(level, strain);
             }
         } else if (status != Status.NO_ENERGY) {
-            progress = 0;   // сменили образец, штамм или забили выход — запись карты начинается заново
+            progress = 0;   // sample or strain changed, or the output filled up: writing the card starts over
         }
         MachineLit.tick(this, level, pos, state, NaniteLabBlock.LIT, working);
         setChanged();
     }
 
-    /** Выход принимает карту: слот пуст или там такая же и есть место. Пустая карта тратится только при записи. */
+    /** The output accepts the card: the slot is empty or holds the same card with room. A blank card is only spent when written. */
     private boolean fits(Item out) {
         ItemStack s = items.getStackInSlot(SLOT_OUTPUT);
         return s.isEmpty() || (s.is(out) && s.getCount() < s.getMaxStackSize());
@@ -138,7 +138,7 @@ public class NaniteLabBlockEntity extends BlockEntity implements MenuProvider {
         items.setStackInSlot(SLOT_STRAIN, worn);
     }
 
-    // ───────── окно ─────────
+    // ───────── window ─────────
 
     private final ContainerData data = new ContainerData() {
         @Override public int get(int i) {

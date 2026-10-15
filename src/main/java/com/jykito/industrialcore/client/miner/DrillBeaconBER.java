@@ -16,8 +16,8 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 /**
- * Буровой маяк: тренога и мачта, сверху кристалл (крутится и чуть покачивается; без подходящей линзы гаснет),
- * пока идёт скан — от маяка по земле расходятся три квадратные волны.
+ * Drill beacon: tripod and mast with a crystal on top (spins and sways a little; goes dark without a suitable lens),
+ * while scanning, three square waves spread from the beacon over the ground.
  */
 public class DrillBeaconBER implements BlockEntityRenderer<DrillBeaconBlockEntity> {
 

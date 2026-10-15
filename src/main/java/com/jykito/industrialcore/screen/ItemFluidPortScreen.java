@@ -24,21 +24,21 @@ public class ItemFluidPortScreen extends MachineScreen<ItemFluidPortMenu> {
     private static final ResourceLocation OUTPUT_TEX =
             new ResourceLocation(IndustrialCore.MODID, "textures/gui/multiblock_output_port_gui.png");
 
-    // ячейки сетки на арте на 1 px левее и выше предмета
+    // grid cells on the art are 1 px left and up from the item
     private static final int CELL_X = ItemFluidPortMenu.GRID_X - 1, CELL_Y = ItemFluidPortMenu.GRID_Y - 1, CELL = 18;
-    // бак поверх сетки в режиме жидкости; рамка 1 px
+    // the tank over the grid in fluid mode; 1 px frame
     private static final int TANK_X = CELL_X, TANK_Y = CELL_Y, TANK_W = 162, TANK_H = 54;
     private static final int TANK_SRC_U = 0, TANK_SRC_V = 232;
     private static final int LOCK_SRC_U = 164, LOCK_SRC_V = 232;
-    /** Стекло широкого бака в стиле сжижителя: отдельный спрайт 160x52 поверх жидкости. */
+    /** Wide tank glass in the liquefier style: a separate 160x52 sprite over the fluid. */
     private static final ResourceLocation TANK_GLASS =
             new ResourceLocation(IndustrialCore.MODID, "textures/gui/multiblock_port_tank_glass.png");
-    // кнопка режима
+    // mode button
     private static final int BTN_X = 47, BTN_Y = 93, BTN = 18;
     private static final int BTN_SRC_U = 184, BTN_HOVER_U = 204, BTN_SRC_V = 232;
-    // кнопка автообмена рядом с кнопкой режима
+    // auto-exchange button next to the mode button
     private static final int AUTO_X = 67, AUTO_Y = 93;
-    // подписи между кнопками и слотом улучшения
+    // labels between the buttons and the upgrade slot
     private static final int INFO_X = 89, INFO_Y = 95;
 
     private static final int C_LABEL = 0xFF9AA0A6, C_VALUE = 0xFFE0E0E0;
@@ -62,7 +62,7 @@ public class ItemFluidPortScreen extends MachineScreen<ItemFluidPortMenu> {
         boolean hover = inButton(mx, my);
         g.blit(texture, x + BTN_X, y + BTN_Y, hover ? BTN_HOVER_U : BTN_SRC_U, BTN_SRC_V, BTN, BTN, TEX_W, TEX_H);
         g.renderItem(new ItemStack(menu.isFluidMode() ? Items.BUCKET : Items.CHEST), x + BTN_X + 1, y + BTN_Y + 1);
-        if (menu.isBothMode()) {   // смешанный режим: поверх сундука маленькое ведро в углу
+        if (menu.isBothMode()) {   // mixed mode: a small bucket in the corner over the chest
             g.pose().pushPose(); g.pose().translate(x + BTN_X + 8, y + BTN_Y + 8, 100); g.pose().scale(0.55f, 0.55f, 1f);
             g.renderItem(new ItemStack(Items.WATER_BUCKET), 0, 0);
             g.pose().popPose();
@@ -71,7 +71,7 @@ public class ItemFluidPortScreen extends MachineScreen<ItemFluidPortMenu> {
         boolean autoHover = inAuto(mx, my);
         g.blit(texture, x + AUTO_X, y + AUTO_Y, autoHover ? BTN_HOVER_U : BTN_SRC_U, BTN_SRC_V, BTN, BTN, TEX_W, TEX_H);
         g.renderItem(new ItemStack(Items.HOPPER), x + AUTO_X + 1, y + AUTO_Y + 1);
-        // выключено: воронка гаснет под полупрозрачной заливкой кнопки
+        // off: the hopper fades under the button's translucent fill
         if (!menu.isAuto()) g.fill(x + AUTO_X + 1, y + AUTO_Y + 1, x + AUTO_X + BTN - 1, y + AUTO_Y + BTN - 1, 200, 0xB0202020);
 
         drawInfo(g, x, y);
@@ -113,7 +113,7 @@ public class ItemFluidPortScreen extends MachineScreen<ItemFluidPortMenu> {
         if (menu.isFluidMode())
             FluidGauge.tooltip(g, font, mx, my, leftPos + TANK_X, topPos + TANK_Y, TANK_W, TANK_H,
                     menu.blockEntity.getTank().getFluid(), menu.getFluidCapacity());
-        if (menu.isBothMode())   // строка с объёмом: по наведению название жидкости
+        if (menu.isBothMode())   // volume line: the fluid name on hover
             FluidGauge.tooltip(g, font, mx, my, leftPos + INFO_X, topPos + INFO_Y + 8, 98, 10,
                     menu.blockEntity.getTank().getFluid(), menu.getFluidCapacity());
 

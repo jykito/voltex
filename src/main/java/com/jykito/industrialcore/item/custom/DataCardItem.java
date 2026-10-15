@@ -11,9 +11,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * Карта данных учёного-нанита: исследование одной темы. Пустая ({@code theme == null}) — заготовка, которую
- * нанолаборатория записывает. Отдельный предмет на тему, чтобы рецепты, JEI и автокрафт обходились без NBT.
- * Корпус красится в цвет темы слоем 1 через ItemColor.
+ * Scientist nanite data card: research of one topic. A blank one ({@code theme == null}) is a template that
+ * the nanite lab writes. A separate item per topic so recipes, JEI and autocrafting work without NBT.
+ * The body is tinted in the topic colour on layer 1 through ItemColor.
  */
 public class DataCardItem extends Item {
 

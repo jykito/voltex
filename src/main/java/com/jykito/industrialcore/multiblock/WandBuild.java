@@ -12,10 +12,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Одна сборка мультиблока структурной палочкой. В творческом режиме блоки бесплатны,
- * в выживании каждый списывается из инвентаря игрока. Чужие блоки в выживании не ломаются:
- * занятая клетка только засчитывается, чтобы сказать игроку.
- * Уже правильные клетки вызывающий код пропускает сам — критерий у каждого мультиблока свой.
+ * One multiblock build with the structure wand. In creative the blocks are free,
+ * in survival each one is taken from the player inventory. In survival other blocks are not broken:
+ * an occupied cell is only counted, to tell the player.
+ * The calling code skips already correct cells itself; each multiblock has its own criterion.
  */
 public final class WandBuild {
 
@@ -29,14 +29,14 @@ public final class WandBuild {
         this.free = player.getAbilities().instabuild;
     }
 
-    /** Творческий режим: блоки не нужны. */
+    /** Creative mode: no blocks needed. */
     public boolean free() { return free; }
 
     public int placed()                  { return placed; }
     public int blocked()                 { return blocked; }
     public Map<Block, Integer> missing() { return missing; }
 
-    /** Ставит блок в пустую клетку; в выживании сначала берёт его из инвентаря. */
+    /** Places a block into an empty cell; in survival takes it from the inventory first. */
     public void place(Level level, BlockPos p, BlockState state) {
         if (!level.getBlockState(p).canBeReplaced()) { blocked++; return; }
         if (!free && !takeOne(state.getBlock())) { missing.merge(state.getBlock(), 1, Integer::sum); return; }
@@ -44,13 +44,13 @@ public final class WandBuild {
         placed++;
     }
 
-    /** Ставит блок поверх чего угодно. Только для творческого режима, где ломать чужое разрешено. */
+    /** Places a block over anything. Only for creative mode, where breaking other blocks is allowed. */
     public void overwrite(Level level, BlockPos p, BlockState state) {
         level.setBlock(p, state, 3);
         placed++;
     }
 
-    /** Клетка занята тем, что палочка в этом режиме убрать не может. */
+    /** The cell is occupied by something the wand cannot remove in this mode. */
     public void markBlocked() { blocked++; }
 
     private boolean takeOne(Block block) {

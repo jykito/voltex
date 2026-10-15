@@ -30,13 +30,13 @@ public class ThermogeneratorBlock extends BaseEntityBlock {
     }
 
     /**
-     * Лицо само разворачивается к соседу, который умеет принимать тепло, — тепло уходит только
-     * вперёд, и подгадывать сторону при установке больше не нужно. Цель ищется по капабилити,
-     * а не по конкретному блоку: под правило одинаково подходят термостанция, теплотруба и
-     * машины вроде сжижителя, и новые потребители подхватятся сами.
+     * The face turns by itself to a neighbour that can accept heat: heat only goes
+     * forward, and you no longer need to aim the side when placing. The target is found by capability,
+     * not by a specific block: the thermal station, heat pipe and machines like the liquefier
+     * all fit the rule, and new consumers are picked up automatically.
      * <p>
-     * Взгляд игрока имеет приоритет: если потребитель есть и там, куда смотришь, и сбоку,
-     * выиграет твой выбор. Если потребителей рядом нет, работает прежнее правило по взгляду.
+     * The player's view has priority: if there is a consumer both where you look and to the side,
+     * your choice wins. With no consumers nearby the old rule by view applies.
      */
     @Nullable
     @Override
@@ -51,7 +51,7 @@ public class ThermogeneratorBlock extends BaseEntityBlock {
         return this.defaultBlockState().setValue(FACING, target != null ? target : look);
     }
 
-    /** Есть ли за этой стороной то, что примет тепло. */
+    /** Whether something behind this side accepts heat. */
     private static boolean acceptsHeat(BlockPlaceContext context, Direction side) {
         BlockEntity be = context.getLevel().getBlockEntity(context.getClickedPos().relative(side));
         return be != null

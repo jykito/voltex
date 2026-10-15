@@ -30,8 +30,8 @@ import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Ядро промышленного шахтёра: середина фасада на втором ярусе структуры (см. IndustrialMinerStructure).
- * Собранное ядро не рисуется блоком — модель всей машины рисует IndustrialMinerBER.
+ * Industrial miner core: the middle of the front on the second layer of the structure (see IndustrialMinerStructure).
+ * A formed core is not drawn as a block; IndustrialMinerBER draws the model of the whole machine.
  */
 public class IndustrialMinerCoreBlock extends BaseEntityBlock {
 
@@ -72,7 +72,7 @@ public class IndustrialMinerCoreBlock extends BaseEntityBlock {
                 (lvl, pos, st, be) -> be.tick(lvl, pos, st));
     }
 
-    /** Собрано — окно; нет — какая клетка мешает, чтобы не искать её глазами по всей постройке. */
+    /** Formed: the window; not formed: which cell is in the way, so you do not hunt for it across the build. */
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (level.isClientSide()) return InteractionResult.SUCCESS;

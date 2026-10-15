@@ -29,7 +29,7 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
-/** Биореактор (Э3): органика без мобов из биомассы, в тепле от теплосети. Ведро воды ПКМ доливает бак, как у промывателя. */
+/** Bioreactor (E3): organics without mobs, from biomass, heated by the heat network. A water bucket on RMB tops up the tank, like the ore washer. */
 public class BioreactorBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;

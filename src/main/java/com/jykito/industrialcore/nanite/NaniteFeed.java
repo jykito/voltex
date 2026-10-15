@@ -7,14 +7,14 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Чем кормят штамм в камере эволюции и что из этого выходит: класс штамма и цель отбора.
+ * What the strain is fed in the evolution chamber and what comes of it: the strain class and the selection target.
  * <ul>
- * <li>руда или сырьё ({@code forge:ores/*}, {@code forge:raw_materials/*}) — добытчик, цель — материал, руда съедается;</li>
- * <li>пыль ({@code forge:dusts/*}) — переработчик, цель — материал, пыль съедается;</li>
- * <li>образец из тега {@code industrial_core:nanite_research/<тема>} — учёный, цель — тема, образец не расходуется
- *     (его изучают, а не едят; экзоматерия на каждое поколение была бы абсурдом).</li>
+ * <li>ore or raw material ({@code forge:ores/*}, {@code forge:raw_materials/*}) makes a miner, the target is the material, the ore is eaten;</li>
+ * <li>dust ({@code forge:dusts/*}) makes a processor, the target is the material, the dust is eaten;</li>
+ * <li>a sample from the {@code industrial_core:nanite_research/<topic>} tag makes a scientist, the target is the topic, the sample is not consumed
+ *     (it is studied, not eaten; spending exotic matter every generation would be absurd).</li>
  * </ul>
- * Темы и их образцы живут в тегах данных, чтобы при проходе по рецептам менять их без кода.
+ * Topics and their samples live in data tags, so they can change during recipe passes without code.
  */
 public record NaniteFeed(NaniteGenome.Kind kind, String target, boolean consumed) {
 
@@ -32,7 +32,7 @@ public record NaniteFeed(NaniteGenome.Kind kind, String target, boolean consumed
         return null;
     }
 
-    /** Тема исследования образца или null. */
+    /** Research topic of the sample, or null. */
     public static @Nullable String theme(Item item) {
         return item.builtInRegistryHolder().tags()
                 .map(TagKey::location)

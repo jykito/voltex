@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Нативный гайд-экран Voltex, вид «планшет» (юзер 2026-10-07 выбрал вариант B из tools/guide-review/guide_mockup.html):
- * рамка устройства, сверху главы вкладками-иконками и название главы, слева поиск и записи текущей главы
- * (при поиске — подходящие записи всех глав), справа контент из типизированных блоков ({@link GuideContent}),
- * внизу «назад / дальше» по всему гайду подряд и «запись N из M».
+ * Native Voltex guide screen, "tablet" look (the author picked variant B from tools/guide-review/guide_mockup.html on 2026-10-07):
+ * a device frame, chapters as icon tabs at the top with the chapter title, search and the current chapter's entries on the left
+ * (when searching, the matching entries of all chapters), content from typed blocks on the right ({@link GuideContent}),
+ * "back / next" through the whole guide in order and "entry N of M" at the bottom.
  * <p>
- * Окно подстраивается под экран: не больше {@link #MAX_W}×{@link #MAX_H}, не меньше прежних 315×256. Всё рисуется кодом
- * в тонах прежней панели. Язык следует за интерфейсом.
+ * The window fits the screen: not larger than {@link #MAX_W}x{@link #MAX_H}, not smaller than the old 315x256. Everything is drawn in code
+ * in the old panel's colours. The language follows the interface.
  */
 public class GuideScreen extends Screen {
 
@@ -29,7 +29,7 @@ public class GuideScreen extends Screen {
             C_BODY = 0xFF23272B, C_FOOT = 0xFF1D2125, C_FIELD = 0xFF0E1013;
 
     private int leftPos, topPos, guiW, guiH;
-    /** Внутренняя область (без рамки) и её части. */
+    /** Inner area (without the frame) and its parts. */
     private int ix, iy, iw, ih, listX, listY, listH, ctX, ctY, ctW, ctH;
     private final List<GuideContent.Category> cats;
     private int catI = 0, entI = 0;
@@ -39,12 +39,12 @@ public class GuideScreen extends Screen {
     private final List<int[]> tabHits = new ArrayList<>();    // {x, y, w, h, ci}
     private EditBox search;
     private String query = "";
-    private int[] prevHit, nextHit;                            // {x, y, w, h} кнопок внизу
+    private int[] prevHit, nextHit;                            // {x, y, w, h} of the buttons at the bottom
 
     public GuideScreen() {
         super(Component.translatable("gui.industrial_core.guide.title"));
         this.cats = new ArrayList<>(GuideContent.load());
-        this.cats.add(NaniteAtlasPages.build());   // атлас видов нанитов — последней вкладкой
+        this.cats.add(NaniteAtlasPages.build());   // nanite species atlas as the last tab
     }
 
     @Override protected void init() {
@@ -85,22 +85,22 @@ public class GuideScreen extends Screen {
         return mx >= x && mx < x + w && my >= y && my < y + h;
     }
 
-    // ── рамка устройства ──
+    // ── device frame ──
 
     private void renderBezel(GuiGraphics g) {
         int x0 = leftPos, y0 = topPos, x1 = leftPos + guiW, y1 = topPos + guiH;
         g.fill(x0, y0, x1, y1, C_BEZEL);
         g.fill(x0 + 1, y0 + 1, x1 - 1, y1 - 1, C_BEZEL_IN);
-        for (int[] s : new int[][]{{x0 + 3, y0 + 3}, {x1 - 6, y0 + 3}, {x0 + 3, y1 - 6}, {x1 - 6, y1 - 6}}) {   // винты
+        for (int[] s : new int[][]{{x0 + 3, y0 + 3}, {x1 - 6, y0 + 3}, {x0 + 3, y1 - 6}, {x1 - 6, y1 - 6}}) {   // screws
             g.fill(s[0], s[1], s[0] + 3, s[1] + 3, EDGE);
             g.fill(s[0] + 1, s[1] + 1, s[0] + 2, s[1] + 2, 0xFF111417);
         }
         int cx = (x0 + x1) / 2;
-        g.fill(cx - 12, y0 + 2, cx + 12, y0 + 4, ACCENT);   // огонёк питания
+        g.fill(cx - 12, y0 + 2, cx + 12, y0 + 4, ACCENT);   // power light
         g.fill(ix, iy, ix + iw, iy + ih, C_BODY);
     }
 
-    // ── вкладки глав ──
+    // ── chapter tabs ──
 
     private void renderTabs(GuiGraphics g, int mx, int my) {
         tabHits.clear();
@@ -115,7 +115,7 @@ public class GuideScreen extends Screen {
             tabHits.add(new int[]{x - 1, iy + 2, TAB_W + 2, TAB_H - 2, ci});
             x += TAB_W + 2;
         }
-        // название главы справа, если влезает после вкладок
+        // chapter title on the right, if it fits after the tabs
         String name = query.isEmpty() && !cats.isEmpty() ? cats.get(catI).name : Component.translatable("gui.industrial_core.guide.search").getString();
         int right = ix + iw - 8, room = right - x - 6;
         if (room > 30) {
@@ -133,7 +133,7 @@ public class GuideScreen extends Screen {
         g.drawString(font, "⌕", x + 3, y + 2, DIM, false);
     }
 
-    // ── записи главы (или результаты поиска) ──
+    // ── chapter entries (or search results) ──
 
     private void renderList(GuiGraphics g, int mx, int my) {
         listHits.clear();
@@ -185,7 +185,7 @@ public class GuideScreen extends Screen {
         g.fill(x, thumbY, x + 2, thumbY + thumbH, 0x6000FFCC);
     }
 
-    // ── контент ──
+    // ── content ──
 
     private void renderContent(GuiGraphics g, int mx, int my) {
         int x = ctX + 9, top = ctY + 8, w = ctW - 20;
@@ -198,7 +198,7 @@ public class GuideScreen extends Screen {
         scrollbar(g, ctX + ctW - 3, ctY, ctH, scroll, contentH + 12);
     }
 
-    /** «‹ предыдущая / следующая ›» по всему гайду подряд, через границы глав; посередине «запись N из M». */
+    /** "‹ previous / next ›" through the whole guide in order, across chapter borders; "entry N of M" in the middle. */
     private void renderFooter(GuiGraphics g, int mx, int my) {
         int x = ctX, y = ctY + ctH, w = ctW;
         g.fill(x, y, x + w, y + FOOT_H, C_FOOT);
@@ -224,7 +224,7 @@ public class GuideScreen extends Screen {
         }
     }
 
-    /** Соседняя запись в общем порядке: {глава, запись} или null на краю. */
+    /** The neighbouring entry in the overall order: {chapter, entry} or null at the edge. */
     private int[] neighbour(int dir) {
         if (cats.isEmpty() || current() == null) return null;
         int ci = catI, ei = entI + dir;
@@ -264,7 +264,7 @@ public class GuideScreen extends Screen {
         catI = ci; entI = ei; scroll = 0;
     }
 
-    /** Переход по ссылке: id записи или её название, в любой главе. */
+    /** Following a link: entry id or its title, in any chapter. */
     private boolean follow(String target) {
         for (int ci = 0; ci < cats.size(); ci++) {
             List<GuideContent.Entry> es = cats.get(ci).entries;
@@ -273,7 +273,7 @@ public class GuideScreen extends Screen {
         return false;
     }
 
-    // ── ввод ──
+    // ── input ──
 
     @Override
     public boolean mouseClicked(double mxd, double myd, int btn) {
@@ -288,7 +288,7 @@ public class GuideScreen extends Screen {
         if (prevHit != null && in(mx, my, prevHit[0], prevHit[1], prevHit[2], prevHit[3])) { int[] p = neighbour(-1); if (p != null) open(p[0], p[1]); return true; }
         if (nextHit != null && in(mx, my, nextHit[0], nextHit[1], nextHit[2], nextHit[3])) { int[] n = neighbour(1); if (n != null) open(n[0], n[1]); return true; }
         for (int[] t : tabHits)
-            if (in(mx, my, t[0], t[1], t[2], t[3])) {   // вкладка главы: сбросить поиск, открыть первую запись
+            if (in(mx, my, t[0], t[1], t[2], t[3])) {   // chapter tab: reset the search, open the first entry
                 if (!query.isEmpty()) { search.setValue(""); query = ""; }
                 if (catI != t[4]) open(t[4], 0);
                 return true;

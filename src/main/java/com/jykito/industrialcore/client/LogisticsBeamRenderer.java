@@ -29,13 +29,13 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-/** Показывает связи логистики простыми прямыми линиями (когда в руке Линкер). */
+/** Shows logistics links as simple straight lines (when the Linker is in hand). */
 @OnlyIn(Dist.CLIENT)
 public class LogisticsBeamRenderer<T extends BlockEntity> implements BlockEntityRenderer<T> {
 
     public static final float[] COL_PREVIEW = {1.0f, 0.85f, 0.2f};
 
-    // палитра для окраски линий, чтобы одинаковые блоки не путались
+    // palette for colouring the lines, so identical blocks are not confused
     private static final float[][] PALETTE = {
         {0.0f, 0.9f, 1.0f},
         {1.0f, 0.85f, 0.0f},
@@ -98,7 +98,7 @@ public class LogisticsBeamRenderer<T extends BlockEntity> implements BlockEntity
             Matrix3f norm = ps.last().normal();
 
             for (BlockPos target : snap.links) {
-                // каждую пару рисуем один раз
+                // each pair is drawn once
                 if (inPending.contains(target.asLong()) && snap.origin.asLong() >= target.asLong()) continue;
                 if (!level.isLoaded(target) || level.getBlockEntity(target) == null) continue;
 
@@ -117,7 +117,7 @@ public class LogisticsBeamRenderer<T extends BlockEntity> implements BlockEntity
         PENDING.clear();
     }
 
-    /** Превью-линия от выбранного источника к блоку под прицелом. */
+    /** Preview line from the selected source to the block under the crosshair. */
     public static void renderPreviewLine(PoseStack ps, MultiBufferSource.BufferSource buf,
                                          Vec3 cam, BlockPos from, BlockPos to, float[] col) {
         VertexConsumer vc = buf.getBuffer(RenderType.lines());

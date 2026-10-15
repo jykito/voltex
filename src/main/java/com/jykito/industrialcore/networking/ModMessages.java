@@ -102,7 +102,7 @@ public class ModMessages {
         INSTANCE.send(net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> player), message);
     }
 
-    /** Всем, кто видит сущность, и ей самой (если это игрок). */
+    /** To everyone who sees the entity, and to the entity itself (if it is a player). */
     public static <MSG> void sendToTrackingAndSelf(MSG message, net.minecraft.world.entity.Entity entity) {
         INSTANCE.send(net.minecraftforge.network.PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), message);
     }

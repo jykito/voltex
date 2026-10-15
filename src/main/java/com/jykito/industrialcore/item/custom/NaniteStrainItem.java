@@ -16,9 +16,9 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Штамм нанитов. Выводится в камере эволюции; класс закрепляется кормом первого поколения:
- * добытчик ставится в промышленный шахтёр, переработчик — в промывщик (малый и мультиблок), учёный — в нанолабораторию.
- * Геном — в NBT ({@link NaniteGenome}).
+ * Nanite strain. Bred in the evolution chamber; the class is fixed by the feed of the first generation:
+ * a miner goes into the industrial miner, a processor into the ore washer (small and multiblock), a scientist into the nanite lab.
+ * The genome is in NBT ({@link NaniteGenome}).
  */
 public class NaniteStrainItem extends Item {
 
@@ -28,7 +28,7 @@ public class NaniteStrainItem extends Item {
         super(props);
     }
 
-    /** Подпись цели: у учёного — тема, у остальных — предмет, на котором выводили (или корм в слоте), иначе ключ материала. */
+    /** Target label: for a scientist the topic, for the others the item it was bred on (or the feed in the slot), otherwise the material key. */
     public static Component targetName(NaniteGenome g, String target, @Nullable ItemStack feed) {
         if (g.is(NaniteGenome.Kind.SCIENTIST)) return Component.translatable("nanite_theme.industrial_core." + target);
         if (feed != null && !feed.isEmpty()) return feed.getHoverName();
@@ -36,7 +36,7 @@ public class NaniteStrainItem extends Item {
         return icon != null ? icon.getDescription() : Component.literal(target);
     }
 
-    /** Что даёт сродство к цели, словами класса: прибавка руды, шанс второго выхода, изученность темы (и её порог). */
+    /** What affinity to the target gives, in the class's terms: ore bonus, second output chance, topic knowledge (and its threshold). */
     public static Component effect(NaniteGenome g, String target) {
         float b = g.bonus(target);
         if (g.is(NaniteGenome.Kind.PROCESSOR))
@@ -46,7 +46,7 @@ public class NaniteStrainItem extends Item {
         return Component.translatable("tooltip.industrial_core.nanite_strain.effect.miner", percent(b));
     }
 
-    /** То же коротко, для строки табло рядом со стабильностью. */
+    /** The same, short, for the display line next to stability. */
     public static Component effectShort(NaniteGenome g, String target) {
         float b = g.bonus(target);
         if (g.is(NaniteGenome.Kind.PROCESSOR))
@@ -68,7 +68,7 @@ public class NaniteStrainItem extends Item {
         return Component.translatable("item.industrial_core.nanite_strain.named." + g.kind().key(), targetName(g, main, null));
     }
 
-    /** Штамм в инвентаре игрока открывает его вид (и черты) в атласе; раз в 2 с, не каждый тик. */
+    /** A strain in the player's inventory unlocks its species (and traits) in the atlas; every 2 s, not every tick. */
     @Override
     public void inventoryTick(ItemStack stack, Level level, net.minecraft.world.entity.Entity entity, int slot, boolean selected) {
         if (!level.isClientSide() && entity instanceof net.minecraft.server.level.ServerPlayer player && level.getGameTime() % 40 == slot % 40)
@@ -93,7 +93,7 @@ public class NaniteStrainItem extends Item {
             tip.add(Component.translatable("tooltip.industrial_core.nanite_strain.fluid",
                     String.format(Locale.ROOT, "%.2f", g.fluid())).withStyle(ChatFormatting.GRAY));
         tip.add(Component.translatable("tooltip.industrial_core.nanite_strain.stability", percent(g.stability())).withStyle(ChatFormatting.GRAY));
-        for (com.jykito.industrialcore.nanite.NaniteTrait t : g.traits())   // редкие черты
+        for (com.jykito.industrialcore.nanite.NaniteTrait t : g.traits())   // rare traits
             tip.add(Component.translatable("tooltip.industrial_core.nanite_strain.trait",
                     Component.translatable("nanite_trait.industrial_core." + t.key())).withStyle(ChatFormatting.LIGHT_PURPLE));
         tip.add(Component.translatable("tooltip.industrial_core.nanite_strain.hint." + g.kind().key()).withStyle(ChatFormatting.DARK_GRAY));

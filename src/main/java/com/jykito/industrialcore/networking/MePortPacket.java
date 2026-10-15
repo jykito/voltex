@@ -10,9 +10,9 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
 /**
- * Окно МЭ-порта → сервер: то, что не влезает в клик по слоту или кнопку окна.
- * AMOUNT — колесо над клеткой настройки (index: 0..26 предметы, 27..29 жидкости, value — шаг);
- * GHOST — перетаскивание из JEI в клетку настройки; PRIORITY — приоритет порта шаблонов.
+ * ME port window -> server: whatever does not fit into a slot click or a window button.
+ * AMOUNT is the scroll wheel over a config cell (index: 0..26 items, 27..29 fluids, value is the step);
+ * GHOST is a drag from JEI into a config cell; PRIORITY is the pattern port priority.
  */
 public class MePortPacket {
     public static final int AMOUNT = 0, GHOST = 1, PRIORITY = 2;

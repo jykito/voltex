@@ -39,16 +39,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Кристаллизатор: жидкость на вход, предмет на выход.
+ * Crystallizer: liquid in, item out.
  * <p>
- * Капсульных слотов нет намеренно — бак наполняется напрямую. Чтобы для этого не приходилось
- * ставить апгрейд в чужую машину, кристаллизатор умеет тянуть жидкость сам: направленный
- * апгрейд {@code FLUID_PULL} в его собственных слотах качает из соседа, и вся настройка
- * остаётся в одном GUI.
+ * There are no capsule slots on purpose: the tank fills directly. So that this does not require
+ * putting an upgrade into another machine, the crystallizer can pull fluid by itself: a directional
+ * {@code FLUID_PULL} upgrade in its own slots pumps from a neighbour, and all the setup
+ * stays in one GUI.
  */
 public class CrystallizerBlockEntity extends BlockEntity implements MenuProvider {
 
-    /** 0 — затравка, 1 — выход, 2..5 — апгрейды. */
+    /** 0 seed, 1 output, 2..5 upgrades. */
     private static final int SLOT_SEED = 0, SLOT_OUTPUT = 1, SLOT_UPGRADE_FIRST = 2, SLOT_UPGRADE_LAST = 5;
     private static final int TANK_BASE = 8000;
     private static final int ENERGY_CAPACITY = 50000;
@@ -67,7 +67,7 @@ public class CrystallizerBlockEntity extends BlockEntity implements MenuProvider
     };
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
-    /** Наружу: класть можно только затравку, забирать только готовое. */
+    /** From outside: only the seed can be inserted, only the result extracted. */
     private final IItemHandlerModifiable automationHandler = new IItemHandlerModifiable() {
         @Override public void setStackInSlot(int slot, @NotNull ItemStack stack) { itemHandler.setStackInSlot(slot, stack); }
         @Override public int getSlots() { return itemHandler.getSlots(); }
@@ -132,11 +132,11 @@ public class CrystallizerBlockEntity extends BlockEntity implements MenuProvider
         if (level.isClientSide()) return;
 
         MachineUpgrades upg = MachineUpgrades.scan(itemHandler, SLOT_UPGRADE_FIRST, SLOT_UPGRADE_LAST);
-        // Выталкивателя жидкости нет намеренно: бак только приёмный, выливать из машины нечего.
+        // There is no fluid pusher on purpose: the tank only receives, there is nothing to drain from the machine.
 
         if (AdaptiveTank.resize(inputTank, TANK_BASE, upg.parallel())) {
             setChanged();
-            level.sendBlockUpdated(pos, state, state, 3); // шкала бака считается от ёмкости, клиенту нужна новая
+            level.sendBlockUpdated(pos, state, state, 3); // the tank gauge is computed from capacity, the client needs the new one
         }
 
         if (upg.fluidPull() != null) MachineIO.pullFluid(level, pos, upg.fluidPull(), inputTank);
@@ -187,7 +187,7 @@ public class CrystallizerBlockEntity extends BlockEntity implements MenuProvider
         });
     }
 
-    /** Влезет ли столько выхода в слот. */
+    /** Whether this much output fits into the slot. */
     private boolean fitsOutput(ItemStack result, int parallel) {
         ItemStack out = itemHandler.getStackInSlot(SLOT_OUTPUT);
         int adding = result.getCount() * parallel;
@@ -196,7 +196,7 @@ public class CrystallizerBlockEntity extends BlockEntity implements MenuProvider
         return out.getCount() + adding <= out.getMaxStackSize();
     }
 
-    /** Сколько раз рецепт можно провернуть разом: по жидкости, по затравке и по месту в выходе. */
+    /** How many times the recipe can run at once: by fluid, by seed and by room in the output. */
     private int maxRuns(CrystallizerRecipe recipe) {
         int runs = inputTank.getFluidAmount() / Math.max(1, recipe.getFluidInputAmount());
         if (recipe.hasSeed())

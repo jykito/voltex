@@ -98,9 +98,9 @@ public class IndustrialCoreJeiPlugin implements IModPlugin {
             RecipeType.create(IndustrialCore.MODID, "magnet_jei", AcceleratorRecipe.class);
 
     /**
-     * Окна лейт-машин (Л1, LateJeiCategory) — только то, чего нет в окнах малых машин: рецепты промышленного режима
-     * (lateOnly; малые машины их не выполняют, поэтому из их окон они убраны) и сборка (малого сборщика нет).
-     * Обычные рецепты лейт-машины остаются в окнах малых машин, ядро там — катализатор.
+     * Late machine windows (L1, LateJeiCategory) show only what the small machine windows lack: industrial mode recipes
+     * (lateOnly; small machines do not run them, so they were removed from their windows) and assembly (there is no small assembler).
+     * Regular late machine recipes stay in the small machine windows, with the core as a catalyst there.
      */
     private record Late(RecipeType<LateJeiCategory.Entry> type, java.util.function.Supplier<net.minecraft.world.level.block.Block> core, String mode) {}
     private static Late late(String id, java.util.function.Supplier<net.minecraft.world.level.block.Block> core, String mode) {
@@ -114,7 +114,7 @@ public class IndustrialCoreJeiPlugin implements IModPlugin {
             late("fluid_enricher", ModBlocks.MULTIBLOCK_FLUID_ENRICHER, "industrial"),
             late("magnet", ModBlocks.MULTIBLOCK_MAGNET, "industrial"),
             late("crafter", ModBlocks.MULTIBLOCK_CRAFTER, "single"));
-    /** Рецепты окна: из режима ядра; подпись режима — если у ядра их несколько. Считаются в registerCategories (по ним раскладка). */
+    /** Window recipes: from the core mode; the mode label if the core has several. Computed in registerCategories (the layout depends on them). */
     private final java.util.Map<Late, List<LateJeiCategory.Entry>> lateEntries = new java.util.HashMap<>();
 
     private static List<LateJeiCategory.Entry> lateEntries(Late l) {
@@ -127,11 +127,11 @@ public class IndustrialCoreJeiPlugin implements IModPlugin {
                 .toList();
     }
 
-    /** Нанолаборатория (Н3 «Лестница тем»): по рецепту на тему — откуда берутся карты данных. */
+    /** Nanite lab (N3 "Topic ladder"): one recipe per topic, showing where data cards come from. */
     public static final RecipeType<NaniteLabJeiCategory.Theme> NANITE_LAB =
             RecipeType.create(IndustrialCore.MODID, "nanite_lab", NaniteLabJeiCategory.Theme.class);
 
-    /** Рецепты «только для лейт» малые машины не выполняют (matches → false): в их окнах их нет. */
+    /** Small machines do not run "late only" recipes (matches -> false), so they are not in their windows. */
     private static <T> List<T> regular(List<T> recipes, java.util.function.Predicate<T> lateOnly) {
         return recipes.stream().filter(r -> !lateOnly.test(r)).toList();
     }
@@ -392,7 +392,7 @@ public class IndustrialCoreJeiPlugin implements IModPlugin {
         recipeArea(registration, com.jykito.industrialcore.screen.MetalFormerScreen.class,     129,60,11,14, ROLLING, EXTRUDING);
         recipeArea(registration, com.jykito.industrialcore.screen.ExtractorScreen.class,       112,60,23,13, EXTRACTING);
         recipeArea(registration, com.jykito.industrialcore.screen.RestructorScreen.class,      103,77,50,5, RESTRUCTOR);
-        // T2: жила от катализатора (на зарядах свои подсказки)
+        // T2: a vein from the catalyst (the charges have their own tooltips)
         recipeArea(registration, com.jykito.industrialcore.screen.RestructorT2Screen.class,    78,43,19,50, RESTRUCTOR);
         recipeArea(registration, com.jykito.industrialcore.screen.BlastFurnaceScreen.class,    110,49,28,20, BLAST_FURNACE);
         recipeArea(registration, com.jykito.industrialcore.screen.RodFabricatorScreen.class,   108,51,29,25, ROD_FABRICATOR);
@@ -416,7 +416,7 @@ public class IndustrialCoreJeiPlugin implements IModPlugin {
         recipeArea(registration, com.jykito.industrialcore.screen.MinerCoreScreen.class,       111,53,30,6,  MINER_LENS);
         recipeArea(registration, com.jykito.industrialcore.screen.MinerCoreScreen.class,       111,75,30,12, MINER_LENS);
 
-        // выход в (120,52); клик-зоны — в зазорах вокруг него (крест), чтобы хинт JEI не налезал на тултип слота
+        // output at (120,52); click zones in the gaps around it (a cross), so the JEI hint does not overlap the slot tooltip
         recipeArea(registration, com.jykito.industrialcore.screen.ElectromagnetScreen.class,   120,39,16,12, MAGNET);
         recipeArea(registration, com.jykito.industrialcore.screen.ElectromagnetScreen.class,   120,69,16,12, MAGNET);
         recipeArea(registration, com.jykito.industrialcore.screen.ElectromagnetScreen.class,   101,53,18,14, MAGNET);
@@ -428,7 +428,7 @@ public class IndustrialCoreJeiPlugin implements IModPlugin {
         reg.addRecipeClickArea(cls, x, y, w, h, types);
     }
 
-    /** Клетки настройки МЭ-входа: предмет из JEI задаёт полную стопку, жидкость — ведро. */
+    /** ME input config cells: an item from JEI sets a full stack, a fluid sets a bucket. */
     private static class MePortGhostHandler implements IGhostIngredientHandler<MePortScreen> {
         @Override
         public <I> List<Target<I>> getTargetsTyped(MePortScreen gui, ITypedIngredient<I> ingredient, boolean doStart) {

@@ -28,10 +28,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Locale;
 
 /**
- * Антиграв-колонна. Вертикальный мультиблок из 3 клеток (LOWER/MIDDLE/UPPER): прицел, обводка и
- * коллизия по всей высоте пилона (высота ×2.33 запечена в OBJ, мир y≈0.26..2.30). BE, реестр
- * COLUMNS и heat-cap (снизу) только на нижней части; средняя/верхняя — тупые невидимые блоки,
- * которые ломаются вместе с базой. Сам пилон рисует BER на BE нижней части.
+ * Antigrav column. A vertical multiblock of 3 cells (LOWER/MIDDLE/UPPER): crosshair, outline and
+ * collision over the whole pylon height (height x2.33 baked into the OBJ, world y≈0.26..2.30). BE, the
+ * COLUMNS registry and the heat cap (from below) live only on the lower part; the middle and upper parts are dumb invisible blocks
+ * that break together with the base. The pylon itself is drawn by the BER on the lower part's BE.
  */
 public class AntigravColumnBlock extends BaseEntityBlock {
 
@@ -44,10 +44,10 @@ public class AntigravColumnBlock extends BaseEntityBlock {
     private static final int HEIGHT = 3;
 
     private static final VoxelShape SHAPE_LOWER = Shapes.or(
-            Block.box(3, 0, 3, 13, 2, 13),      // подставка
-            Block.box(5, 2, 5, 11, 16, 11));    // пилон в клетке 0
-    private static final VoxelShape SHAPE_MIDDLE = Block.box(5, 0, 5, 11, 16, 11); // полный столб
-    private static final VoxelShape SHAPE_UPPER  = Block.box(5, 0, 5, 11, 7, 11);  // верхушка (~y 2.0..2.4 с бобингом)
+            Block.box(3, 0, 3, 13, 2, 13),      // base
+            Block.box(5, 2, 5, 11, 16, 11));    // pylon in cell 0
+    private static final VoxelShape SHAPE_MIDDLE = Block.box(5, 0, 5, 11, 16, 11); // full column
+    private static final VoxelShape SHAPE_UPPER  = Block.box(5, 0, 5, 11, 7, 11);  // top (~y 2.0..2.4 with bobbing)
 
     public AntigravColumnBlock(Properties props) {
         super(props);
@@ -75,11 +75,11 @@ public class AntigravColumnBlock extends BaseEntityBlock {
 
     @Override
     public RenderShape getRenderShape(BlockState state) {
-        // подставка рисуется блок-моделью на нижней части; пилон — BER; средняя/верхняя ничего не рисуют
+        // the base is drawn by the block model on the lower part; the pylon by the BER; the middle and upper parts draw nothing
         return state.getValue(PART) == Part.LOWER ? RenderShape.MODEL : RenderShape.INVISIBLE;
     }
 
-    // ── BE и тикер ТОЛЬКО на нижней части ──
+    // ── BE and ticker ONLY on the lower part ──
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
@@ -96,7 +96,7 @@ public class AntigravColumnBlock extends BaseEntityBlock {
                         : (lvl, pos, st, be) -> AntigravColumnBlockEntity.serverTick(lvl, pos, st, be));
     }
 
-    // ── установка: нужны 2 свободные клетки сверху; кап колонн на измерение ──
+    // ── placement: needs 2 free cells above; column cap per dimension ──
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
@@ -107,7 +107,7 @@ public class AntigravColumnBlock extends BaseEntityBlock {
                 || !level.getBlockState(pos.above(2)).canBeReplaced(ctx)) return null;
 
         int limit = Config.antigravColumnLimit;
-        if (limit > 0 && !level.isClientSide()) { // FPS-защита от кластеров
+        if (limit > 0 && !level.isClientSide()) { // FPS guard against clusters
             long count = AntigravColumnBlockEntity.COLUMNS.stream().filter(c -> c.getLevel() == level).count();
             if (count >= limit) {
                 if (ctx.getPlayer() != null)
@@ -128,7 +128,7 @@ public class AntigravColumnBlock extends BaseEntityBlock {
         }
     }
 
-    // ── ломка вместе: снос любой части сносит остальные без дропа; предмет даёт только сломанная часть ──
+    // ── break together: removing any part removes the others without drops; only the broken part drops the item ──
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moved) {
         if (!moved && !state.is(newState.getBlock())) {

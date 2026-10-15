@@ -75,10 +75,10 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
 
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
-    private final MachineEnergy energyStorage = MachineEnergy.consumer(64000, 64000); // приём = буфер, без потолка на вход
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(64000, 64000); // intake = buffer, no input cap
     private LazyOptional<EnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
-    // База под работу без модуля: 8 промывок. Под параллели бак растёт сам, см. AdaptiveTank.
+    // Base for running without a module: 8 washes. With parallel the tank grows by itself, see AdaptiveTank.
     private static final int TANK_BASE = 8000;
 
     public final FluidTank waterTank = new FluidTank(TANK_BASE, fs -> fs.getFluid() == Fluids.WATER) {
@@ -138,7 +138,7 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
         MachineUpgrades upg = MachineUpgrades.scan(itemHandler, 4, 7);
 
         if (AdaptiveTank.resize(waterTank, TANK_BASE, upg.parallel()))
-            level.sendBlockUpdated(pos, state, state, 3); // шкала бака считается от ёмкости, клиенту нужна новая
+            level.sendBlockUpdated(pos, state, state, 3); // the tank gauge is computed from capacity, the client needs the new one
 
         if (upg.fluidPull() != null && waterTank.getSpace() > 0) {
             MachineIO.neighbor(level, pos, upg.fluidPull(), ForgeCapabilities.FLUID_HANDLER).ifPresent(nh -> {
@@ -181,7 +181,7 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
             ItemStack in = itemHandler.getStackInSlot(0);
             if (in.isEmpty()) return null;
             for (OreWashingRecipe r : level.getRecipeManager().getAllRecipesFor(ModRecipes.ORE_WASHING_TYPE.get())) {
-                if (r.isLateOnly()) continue;   // только для промышленного промывателя
+                if (r.isLateOnly()) continue;   // industrial ore washer only
                 if (!r.getInput().test(in) || in.getCount() < r.getInputCount()) continue;
                 if (waterTank.getFluidAmount() < r.getWaterAmount()) continue;
                 if (!outputsFit(r)) continue;
@@ -224,7 +224,7 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
 
             if (recipe.getResultChance() >= 1.0f || level.random.nextFloat() < recipe.getResultChance()) {
                 insertOutput(recipe.getResult());
-                // переработчик: второй основной продукт, если ему есть место (лишнее не теряем, просто не выдаём)
+                // processor: a second main product if there is room for it (the extra is not lost, just not given out)
                 if (NaniteProcessing.extra(level, strain, input, 1) > 0 && fits(recipe.getResult())) insertOutput(recipe.getResult());
             }
             if (recipe.hasByproduct() && level.random.nextFloat() < recipe.getByproductChance()) {
@@ -236,7 +236,7 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
         if (done > 0) setChanged();
     }
 
-    /** Слот апгрейда со штаммом-переработчиком или −1. */
+    /** Upgrade slot with a processor strain, or −1. */
     private int naniteSlot() {
         for (int s = 4; s <= 7; s++) if (itemHandler.getStackInSlot(s).getItem() instanceof NaniteStrainItem) return s;
         return -1;

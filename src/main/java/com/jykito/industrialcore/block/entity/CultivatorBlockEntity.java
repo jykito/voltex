@@ -50,25 +50,25 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 
 /**
- * Взраститель. T1 — одна линия «вход → выход», T2 — три независимые линии на общих воде, энергии,
- * модуле и апгрейдах (модули параллели действуют на каждую линию).
+ * Cultivator. T1 is one line "input -> output", T2 is three independent lines sharing water, energy,
+ * module and upgrades (parallel modules apply to each line).
  */
 public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
 
     public static final TagKey<Item> GROWABLE_PLANTS =
             ItemTags.create(new ResourceLocation("industrial_core", "growable_plants"));
 
-    // База под работу без модуля: 8 циклов на линию. Под параллели бак растёт сам, см. AdaptiveTank.
+    // Base for running without a module: 8 cycles per line. With parallel the tank grows by itself, see AdaptiveTank.
     private static final int TANK_CAP = 8000;
     private static final int WATER_PER_RECIPE = 1000;
     private static final int ENERGY_CAP = 50_000;
 
     public static final int T2_LANES = 3;
 
-    /** Модуль взрастителя и апгрейды — слоты T1. */
+    /** Cultivator module and upgrades: the T1 slots. */
     public static final int SLOT_MODULE = 2, SLOT_UPG_FIRST = 3, SLOT_UPG_LAST = 6;
 
-    /** Вход линии: первая на слотах T1 (0 → 1), остальные после апгрейдов (7 → 8, 9 → 10). Сейвы T1 не сдвигаются. */
+    /** Line input: the first uses the T1 slots (0 -> 1), the others come after the upgrades (7 -> 8, 9 -> 10). T1 saves do not shift. */
     public static int inSlot(int lane)  { return lane == 0 ? 0 : SLOT_UPG_LAST - 1 + 2 * lane; }
     public static int outSlot(int lane) { return lane == 0 ? 1 : inSlot(lane) + 1; }
     private static boolean isInput(int slot)  { return slot == 0 || slot > SLOT_UPG_LAST && (slot - SLOT_UPG_LAST) % 2 == 1; }
@@ -108,7 +108,7 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
     };
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
-    private final MachineEnergy energyStorage; // приём = буфер, без потолка на вход
+    private final MachineEnergy energyStorage; // intake = buffer, no input cap
     private LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.empty();
 
     public final FluidTank waterTank;
@@ -132,7 +132,7 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
         this(ModBlockEntities.CULTIVATOR_BE.get(), pos, state, 1);
     }
 
-    /** T2: три линии; бак и буфер втрое больше, чтобы на линию приходилось как у T1. */
+    /** T2: three lines; the tank and buffer are three times larger, so each line gets as much as T1. */
     public static CultivatorBlockEntity t2(BlockPos pos, BlockState state) {
         return new CultivatorBlockEntity(ModBlockEntities.CULTIVATOR_T2_BE.get(), pos, state, T2_LANES);
     }
@@ -156,7 +156,7 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
                     level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
             }
         };
-        this.itemHandler = new ItemStackHandler(Math.max(SLOT_UPG_LAST + 1, outSlot(lanes - 1) + 1)) {   // у T1 все 7 слотов
+        this.itemHandler = new ItemStackHandler(Math.max(SLOT_UPG_LAST + 1, outSlot(lanes - 1) + 1)) {   // T1 has all 7 slots
             @Override protected void onContentsChanged(int slot) {
                 for (CachedRecipe<GrowingRecipe> c : recipeCache) c.markDirty();
                 setChanged();
@@ -168,7 +168,7 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
                 return false;
             }
         };
-        // 0, 1 — прогресс первой линии, 2..5 — энергия (как у T1), дальше по паре «прогресс, максимум» на линию
+        // 0, 1: progress of the first line, 2..5: energy (as on T1), then a "progress, max" pair per line
         this.data = new ContainerData() {
             @Override public int get(int index) {
                 return switch (index) {
@@ -199,7 +199,7 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
         MachineUpgrades upg = MachineUpgrades.scan(itemHandler, SLOT_UPG_FIRST, SLOT_UPG_LAST);
 
         if (AdaptiveTank.resize(waterTank, tankBase, upg.parallel()))
-            level.sendBlockUpdated(pos, state, state, 3); // шкала бака считается от ёмкости, клиенту нужна новая
+            level.sendBlockUpdated(pos, state, state, 3); // the tank gauge is computed from capacity, the client needs the new one
 
         boolean working = false;
         ItemStack cultUp = itemHandler.getStackInSlot(SLOT_MODULE);
@@ -220,7 +220,7 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
             level.sendBlockUpdated(pos, state, state, 3);
     }
 
-    /** Один тик линии; вода и энергия общие, поэтому линии берут их по очереди. */
+    /** One tick of a line; water and energy are shared, so the lines take them in turn. */
     private boolean tickLane(Level level, int lane, GrowingRecipe.Category category, MachineUpgrades upg) {
         int in = inSlot(lane), out = outSlot(lane);
         ItemStack input = itemHandler.getStackInSlot(in);
@@ -319,7 +319,7 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
         lazyFluid.invalidate();
     }
 
-    /** Ключ прогресса линии: у первой как у T1. */
+    /** Progress key of a line: the first one matches T1. */
     private static String progressKey(int lane) { return lane == 0 ? "progress" : "progress" + lane; }
 
     @Override protected void saveAdditional(CompoundTag tag) {
@@ -333,7 +333,7 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
 
     @Override public void load(CompoundTag tag) {
         super.load(tag);
-        // сейв меньшего размера (с jar 10-08, где у T1 было 2 слота) поднимается до полного, иначе размер прочитается из NBT
+        // a smaller save (from the 10-08 jar, where T1 had 2 slots) is raised to the full size, otherwise the size is read from NBT
         CompoundTag inv = tag.getCompound("inventory");
         if (inv.getInt("Size") < itemHandler.getSlots()) inv.putInt("Size", itemHandler.getSlots());
         itemHandler.deserializeNBT(inv);

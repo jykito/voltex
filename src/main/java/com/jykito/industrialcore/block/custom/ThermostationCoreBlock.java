@@ -27,20 +27,20 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import org.jetbrains.annotations.Nullable;
 
-/** Ядро термостанции: низ башни, держит буфер/логику. Коннект-текстура вверх (UP); on/off — ACTIVE (анимка/халт). */
+/** Thermal station core: bottom of the tower, holds the buffer and logic. Connected texture upwards (UP); on/off is ACTIVE (animation / halt). */
 public class ThermostationCoreBlock extends BaseEntityBlock {
 
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
-    public static final BooleanProperty UP     = BooleanProperty.create("up");     // сверху блок башни (расширитель)
-    public static final BooleanProperty DOWN   = BooleanProperty.create("down");   // общий проп для расширителя (у ядра НЕ регится)
-    public static final BooleanProperty ACTIVE = BooleanProperty.create("active"); // работает (анимка) / халт-простой (статик)
+    public static final BooleanProperty UP     = BooleanProperty.create("up");     // a tower block above (expander)
+    public static final BooleanProperty DOWN   = BooleanProperty.create("down");   // shared property for the expander (NOT registered on the core)
+    public static final BooleanProperty ACTIVE = BooleanProperty.create("active"); // working (animation) / halted idle (static)
 
     public ThermostationCoreBlock(Properties p) {
         super(p);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(UP, false).setValue(ACTIVE, false));
     }
 
-    /** Блок принадлежит башне термостанции (ядро или расширитель). */
+    /** The block belongs to a thermal station tower (core or expander). */
     public static boolean isTower(BlockState s) {
         return s.is(ModBlocks.THERMOSTATION_CORE.get()) || s.is(ModBlocks.THERMOSTATION_EXPANDER.get());
     }
@@ -51,7 +51,7 @@ public class ThermostationCoreBlock extends BaseEntityBlock {
         BlockPos pos = ctx.getClickedPos();
         return defaultBlockState()
                 .setValue(FACING, ctx.getHorizontalDirection().getOpposite())
-                .setValue(UP, isTower(l.getBlockState(pos.above())));   // коннект только по вертикали (столбы)
+                .setValue(UP, isTower(l.getBlockState(pos.above())));   // connects vertically only (columns)
     }
 
     @Override
@@ -65,7 +65,7 @@ public class ThermostationCoreBlock extends BaseEntityBlock {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof ThermostationBlockEntity be)
-            NetworkHooks.openScreen((ServerPlayer) player, be, pos);          // GUI открывается только у ядра
+            NetworkHooks.openScreen((ServerPlayer) player, be, pos);          // only the core opens the GUI
         return InteractionResult.sidedSuccess(level.isClientSide());
     }
 

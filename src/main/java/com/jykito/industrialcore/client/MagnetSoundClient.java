@@ -11,8 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Клиент-хелпер звука электромагнита: держит один луп-гул на позицию ядра, пересоздаёт если СаундМенеджер
- * его выгрузил (ушли из радиуса и вернулись). Вызывается только из клиентского тика BE.
+ * Client helper for the electromagnet sound: keeps one looping hum per core position, recreates it if the SoundManager
+ * unloaded it (you left the radius and came back). Called only from the BE client tick.
  */
 @OnlyIn(Dist.CLIENT)
 public class MagnetSoundClient {

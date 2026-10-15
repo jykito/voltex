@@ -34,11 +34,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Общее у МЭ-портов: узел сети AE2 (нужен канал), жизненный цикл узла, статус для окна и
- * обмен с хранилищем сети с оплатой энергией сети. Сам обмен — в {@link #meWork}, раз в {@link #INTERVAL} тиков.
+ * Shared by the ME ports: an AE2 grid node (needs a channel), the node life cycle, status for the window and
+ * exchange with network storage paid with network energy. The exchange itself is in {@link #meWork}, once every {@link #INTERVAL} ticks.
  * <p>
- * Режим всегда «предметы + жидкость», автообмена с соседями нет: порт работает с сетью. Баков до {@link #maxTanks()}:
- * открыто столько, сколько открыто рядов слотов (9 слотов — один бак, 18 — два, 27 — три), объём каждого — по улучшению.
+ * The mode is always "items + fluid", no auto-exchange with neighbours: the port works with the network. Tanks up to {@link #maxTanks()}:
+ * as many are open as there are open slot rows (9 slots one tank, 18 two, 27 three), each one's volume from the upgrade.
  */
 abstract class MePortBlockEntity extends ItemFluidPortBlockEntity implements IInWorldGridNodeHost, IActionHost, MePortAccess {
 
@@ -47,11 +47,11 @@ abstract class MePortBlockEntity extends ItemFluidPortBlockEntity implements IIn
     protected final IManagedGridNode node;
     private final IActionSource source = IActionSource.ofMachine(this);
     private int timer;
-    /** Статус на клиенте приходит с блоком: узла там нет. */
+    /** On the client the status arrives with the block: there is no node there. */
     private boolean clientOnline;
-    /** Второй и третий баки; первый — бак базового порта. */
+    /** The second and third tanks; the first is the base port's tank. */
     private final FluidTank[] extra;
-    /** Списки открытых баков по их числу, чтобы ядро не собирало список на каждом тике. */
+    /** Lists of open tanks by their count, so the core does not build a list every tick. */
     private final List<List<FluidTank>> views = new ArrayList<>();
 
     protected MePortBlockEntity(BlockPos pos, BlockState state) {
@@ -76,7 +76,7 @@ abstract class MePortBlockEntity extends ItemFluidPortBlockEntity implements IIn
 
     protected abstract void meWork(IGrid grid);
 
-    /** Открыто баков: по одному на открытый ряд слотов. */
+    /** Open tanks: one per open slot row. */
     public int openTanks() { return Math.max(1, Math.min(maxTanks(), activeSlots() / 9)); }
 
     @Override public List<FluidTank> tanks() { return views.get(openTanks()); }
@@ -86,7 +86,7 @@ abstract class MePortBlockEntity extends ItemFluidPortBlockEntity implements IIn
         for (FluidTank t : extra) t.setCapacity(PortUpgradeItem.fluid(tier));
     }
 
-    /** Снять или сменить улучшение можно, только если закрываемые баки пусты, а остальные влезают в новый объём. */
+    /** The upgrade can be removed or changed only if the tanks being closed are empty and the others fit the new volume. */
     @Override
     protected boolean extraFits(int t) {
         int open = Math.max(1, Math.min(maxTanks(), PortUpgradeItem.slots(t) / 9));
@@ -103,7 +103,7 @@ abstract class MePortBlockEntity extends ItemFluidPortBlockEntity implements IIn
         return super.isEmpty();
     }
 
-    /** Режим у МЭ-порта постоянный. */
+    /** An ME port's mode is fixed. */
     @Override public boolean toggleMode() { return false; }
 
     @Override
@@ -114,19 +114,19 @@ abstract class MePortBlockEntity extends ItemFluidPortBlockEntity implements IIn
         if (grid != null && node.isActive()) meWork(grid);
     }
 
-    /** Забрать из сети, платя энергией сети; вернёт, сколько реально забрано. */
+    /** Take from the network, paying with network energy; returns how much was actually taken. */
     protected long extract(IGrid grid, AEKey key, long amount) {
         if (amount <= 0) return 0;
         return StorageHelper.poweredExtraction(grid.getEnergyService(), grid.getStorageService().getInventory(), key, amount, source, Actionable.MODULATE);
     }
 
-    /** Положить в сеть, платя энергией сети; вернёт, сколько принято. */
+    /** Put into the network, paying with network energy; returns how much was accepted. */
     protected long insert(IGrid grid, AEKey key, long amount) {
         if (amount <= 0) return 0;
         return StorageHelper.poweredInsert(grid.getEnergyService(), grid.getStorageService().getInventory(), key, amount, source, Actionable.MODULATE);
     }
 
-    // ── окно ──
+    // ── window ──
 
     @Nullable @Override
     public AbstractContainerMenu createMenu(int id, Inventory inv, Player player) {
@@ -139,7 +139,7 @@ abstract class MePortBlockEntity extends ItemFluidPortBlockEntity implements IIn
         return online ? 2 : 1;
     }
 
-    // ── узел ──
+    // ── node ──
 
     @Override public IGridNode getGridNode(Direction dir) { return node.getNode(); }
     @Override public IGridNode getActionableNode() { return node.getNode(); }
@@ -153,7 +153,7 @@ abstract class MePortBlockEntity extends ItemFluidPortBlockEntity implements IIn
     @Override public void setRemoved() { super.setRemoved(); node.destroy(); }
     @Override public void onChunkUnloaded() { super.onChunkUnloaded(); node.destroy(); }
 
-    // ── сохранение и синк: доп. баки и статус ──
+    // ── saving and sync: extra tanks and status ──
 
     @Override
     protected void saveAdditional(CompoundTag tag) {
@@ -167,7 +167,7 @@ abstract class MePortBlockEntity extends ItemFluidPortBlockEntity implements IIn
         super.load(tag);
         node.loadFromNBT(tag);
         clientOnline = tag.getBoolean("meOnline");
-        initDefaults(MODE_BOTH, false);   // режим постоянный, даже если в сейве другой
+        initDefaults(MODE_BOTH, false);   // the mode is fixed, even if the save says otherwise
         ListTag list = tag.getList("meTanks", Tag.TAG_COMPOUND);
         for (int i = 0; i < extra.length; i++)
             extra[i].readFromNBT(i < list.size() ? list.getCompound(i) : new CompoundTag());

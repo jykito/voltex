@@ -21,7 +21,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
-/** Энергобанк: стационарное FE-хранилище. LEVEL 0..10 = визуальная шкала заряда (blockstate → 11 текстур). */
+/** Energy bank: stationary FE storage. LEVEL 0..10 = visual charge scale (blockstate -> 11 textures). */
 public class EnergyBankBlock extends BaseEntityBlock {
 
     public static final IntegerProperty LEVEL = IntegerProperty.create("level", 0, 10);

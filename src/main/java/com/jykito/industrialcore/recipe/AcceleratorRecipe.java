@@ -16,15 +16,15 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Рецепт ускорителя: 1–8 РАЗНЫХ ингредиентов (общие слоты 0-7) → выход. 2 входа = «столкновение», 8 = «сборка».
- * minInstab — экзо-гейт (крафт идёт только при нестабильности ≥ порога). [bandLo,bandHi] — полоса нестабильности,
- * удержание в которой на завершении даёт ×2 (контролируемо колоннами). minTier — минимальная катушка.
+ * Accelerator recipe: 1-8 DIFFERENT ingredients (shared slots 0-7) -> output. 2 inputs = "collision", 8 = "assembly".
+ * minInstab is the exo gate (crafting runs only with instability ≥ the threshold). [bandLo,bandHi] is the instability band;
+ * holding it at completion gives x2 (controlled with columns). minTier is the minimum coil.
  * JSON: { inputs:[{item|tag,count},...], result:{item,count}, minTier, processingTime, energyCostPerTick, minInstab, bandLo, bandHi }
  */
 public class AcceleratorRecipe implements Recipe<SimpleContainer> {
 
     private final ResourceLocation id;
-    /** Рецепт только для лейт-машины (её промышленный режим); малая машина его не видит. */
+    /** Recipe for the late machine only (its industrial mode); the small machine does not see it. */
     private boolean lateOnly;
     private final Ingredient[] inputs;
     private final int[] counts;
@@ -50,13 +50,13 @@ public class AcceleratorRecipe implements Recipe<SimpleContainer> {
     public int getProcessingTime()   { return processingTime; }
     public int getEnergyPerTick()    { return energyPerTick; }
     public float getMinInstab()      { return minInstab; }
-    /** В оптимальной полосе нестабильности → удвоение выхода. */
+    /** In the optimal instability band -> output doubled. */
     public boolean inBand(float instab) { return bandHi > bandLo && instab >= bandLo && instab <= bandHi; }
-    /** Полоса [bandLo,bandHi] теперь = диапазон, в котором дрейфует резонансная цель (см. ElectromagnetCoreBlockEntity). */
+    /** The [bandLo,bandHi] band is now the range the resonance target drifts in (see ElectromagnetCoreBlockEntity). */
     public float getBandLo() { return bandLo; }
     public float getBandHi() { return bandHi; }
 
-    /** Все ингредиенты есть в слотах 0-7 (жадное сопоставление: каждому — свой слот с нужным count). */
+    /** All ingredients are in slots 0-7 (greedy matching: each gets its own slot with the required count). */
     public boolean matches(ItemStack[] slots) {
         if (lateOnly) return false;
         boolean[] used = new boolean[slots.length];
@@ -72,7 +72,7 @@ public class AcceleratorRecipe implements Recipe<SimpleContainer> {
     }
 
     public boolean isLateOnly() { return lateOnly; }
-    /** Жидкость на входе (порт лейт-магнита); у старого магнита жидкого входа нет — такие рецепты только lateOnly. */
+    /** Fluid input (late magnet port); the old magnet has no fluid input, so such recipes are lateOnly only. */
     private FluidStack fluid = FluidStack.EMPTY;
     public FluidStack getFluid() { return fluid; }
 

@@ -21,8 +21,8 @@ import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Каркас промышленного шахтёра. В собранной структуре невидим (её рисует модель ядра), отдаёт энергию, жидкость
- * и предметы ядру и открывает его окно — трубы и кабели можно подводить к любому блоку каркаса.
+ * Industrial miner frame. Invisible in a formed structure (the core model draws it), passes energy, fluid
+ * and items to the core and opens its window; pipes and cables can attach to any frame block.
  */
 public class IndustrialMinerFrameBlock extends BaseEntityBlock {
 
@@ -59,7 +59,7 @@ public class IndustrialMinerFrameBlock extends BaseEntityBlock {
         return InteractionResult.sidedSuccess(level.isClientSide());
     }
 
-    /** Сломали блок собранного каркаса — структура разбирается сразу, не дожидаясь проверки ядра. */
+    /** A block of a formed frame was broken: the structure unforms at once, without waiting for the core check. */
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock() && state.getValue(FORMED)

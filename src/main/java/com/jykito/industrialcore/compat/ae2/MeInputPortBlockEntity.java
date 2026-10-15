@@ -19,9 +19,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 /**
- * МЭ-вход: как интерфейс AE2. В каждой клетке настройки — что держать и сколько (число в стопке призрака);
- * порт дозапрашивает из сети до этого количества, лишнее и чужое возвращает в сеть.
- * Жидкости так же: у каждого открытого бака своя настройка «какая и сколько mB».
+ * ME input: like an AE2 interface. Each config cell says what to keep and how many (the count in the ghost stack);
+ * the port requests from the network up to that amount and returns the excess and anything foreign to the network.
+ * Fluids the same way: each open tank has its own "which fluid and how many mB" setting.
  */
 class MeInputPortBlockEntity extends MePortBlockEntity {
 
@@ -60,7 +60,7 @@ class MeInputPortBlockEntity extends MePortBlockEntity {
             }
             if (want.isEmpty()) continue;
             int keep = Math.min(want.getCount(), Math.min(want.getMaxStackSize(), items.getSlotLimit(i)));
-            if (cur.getCount() > keep) {   // настройку уменьшили — лишнее в сеть
+            if (cur.getCount() > keep) {   // the setting was lowered: the excess goes to the network
                 long back = insert(grid, AEItemKey.of(cur), cur.getCount() - keep);
                 if (back > 0) items.setStackInSlot(i, cur.copyWithCount(cur.getCount() - (int) back));
             } else {
@@ -68,7 +68,7 @@ class MeInputPortBlockEntity extends MePortBlockEntity {
                 if (got > 0) items.setStackInSlot(i, want.copyWithCount(cur.getCount() + (int) got));
             }
         }
-        // слоты и баки, закрытые снятием улучшения, порт не трогает: снять улучшение можно только с пустыми
+        // the port does not touch slots and tanks closed by removing the upgrade: the upgrade can only be removed when they are empty
         List<FluidTank> tanks = tanks();
         for (int t = 0; t < tanks.size(); t++) {
             FluidTank tank = tanks.get(t);
@@ -90,7 +90,7 @@ class MeInputPortBlockEntity extends MePortBlockEntity {
         }
     }
 
-    // ── сохранение; настройка жидкостей идёт и в синк блока: окно рисует её на клиенте ──
+    // ── saving; the fluid config also goes into the block sync: the window draws it on the client ──
 
     @Override
     protected void saveAdditional(CompoundTag tag) {

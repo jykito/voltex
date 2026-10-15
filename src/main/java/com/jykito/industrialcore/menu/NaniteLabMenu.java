@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
-/** Окно нанолаборатории: учёный, образец, пустая карта, записанная карта, инвентарь. */
+/** Nanite lab window: scientist, sample, blank card, written card, inventory. */
 public class NaniteLabMenu extends MachineMenu {
 
     public static final int STRAIN_X = 23, STRAIN_Y = 47, SAMPLE_X = 23, SAMPLE_Y = 75,
@@ -45,7 +45,7 @@ public class NaniteLabMenu extends MachineMenu {
     public int energyCap() { return unpack(data.get(2), data.get(3)); }
     public int progress()  { return data.get(4); }
     public int maxProgress() { return data.get(5); }
-    /** Порог изученности темы образца, 0..1. */
+    /** Knowledge threshold of the sample topic, 0..1. */
     public float threshold() { return data.get(7) / 1000f; }
     public NaniteLabBlockEntity.Status status() {
         var v = NaniteLabBlockEntity.Status.values();

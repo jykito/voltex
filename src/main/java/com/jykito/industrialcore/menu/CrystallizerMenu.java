@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class CrystallizerMenu extends MachineMenu {
 
-    /** Слоты машины: затравка, выход, четыре апгрейда. */
+    /** Machine slots: seed, output, four upgrades. */
     private static final int MACHINE_SLOTS = 6;
     private static final int INV_END = MACHINE_SLOTS + 36;
 

@@ -26,19 +26,19 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Структурное стекло: узел рамки во внутреннем углу. Блокстейт знает только 6 соседей по сторонам, поэтому у углового
- * блока Г-образной постройки рамка снималась с обеих соединённых сторон и угол между ними оставался пустым.
- * Обёртка смотрит соседа по диагонали в плоскости каждой грани и, если обе стороны угла соединены, а по диагонали
- * не стекло, подменяет текстуру грани на вариант «..._connections_nub_&lt;углы&gt;» (генератор
- * tools/gui_gen/glass_fix/build_glass_fix.ps1). Сплошная стенка остаётся цельной. Меняются только UV, не геометрия.
+ * Structural glass: frame node in an inner corner. The blockstate only knows the 6 side neighbours, so on the corner
+ * block of an L-shaped build the frame was removed from both connected sides and the corner between them stayed empty.
+ * The wrapper looks at the diagonal neighbour in the plane of each face and, if both sides of the corner are connected and the diagonal
+ * is not glass, swaps the face texture to the "..._connections_nub_&lt;corners&gt;" variant (generator
+ * tools/gui_gen/glass_fix/build_glass_fix.ps1). A solid wall stays whole. Only the UVs change, not the geometry.
  */
 public final class GlassCtmModel extends BakedModelWrapper<BakedModel> {
 
-    /** По 4 бита на грань (индекс Direction.get3DDataValue()): есть ли стекло по диагонали в углах ru, rd, lu, ld. */
+    /** 4 bits per face (index Direction.get3DDataValue()): whether there is glass diagonally in the corners ru, rd, lu, ld. */
     private static final ModelProperty<Integer> DIAG = new ModelProperty<>();
     private static final String[] CORNERS = {"ru", "rd", "lu", "ld"};
 
-    /** Стороны текстуры грани в мире: {право, лево, верх, низ} — как в 64 моделях стекла. */
+    /** Sides of the face texture in the world: {right, left, up, down}, as in the 64 glass models. */
     private static final Direction[][] SIDES = new Direction[6][];
     static {
         SIDES[Direction.DOWN.get3DDataValue()]  = new Direction[]{Direction.EAST, Direction.WEST, Direction.SOUTH, Direction.NORTH};
@@ -49,7 +49,7 @@ public final class GlassCtmModel extends BakedModelWrapper<BakedModel> {
         SIDES[Direction.EAST.get3DDataValue()]  = new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.UP, Direction.DOWN};
     }
 
-    /** Найденные варианты текстур (чанки строятся в нескольких потоках). Обёртка пересоздаётся при перезагрузке ресурсов. */
+    /** Texture variants found so far (chunks are built on several threads). The wrapper is recreated on resource reload. */
     private final Map<String, TextureAtlasSprite> sprites = new ConcurrentHashMap<>();
 
     public GlassCtmModel(BakedModel original) {
@@ -109,11 +109,11 @@ public final class GlassCtmModel extends BakedModelWrapper<BakedModel> {
         return remap(q, to);
     }
 
-    /** Та же грань с текстурой другого спрайта: UV переводятся из старого участка атласа в новый. */
+    /** The same face with another sprite's texture: UVs are mapped from the old atlas area to the new one. */
     private static BakedQuad remap(BakedQuad q, TextureAtlasSprite to) {
         TextureAtlasSprite from = q.getSprite();
         int[] v = q.getVertices().clone();
-        int stride = v.length / 4;   // DefaultVertexFormat.BLOCK: x y z цвет u v свет нормаль
+        int stride = v.length / 4;   // DefaultVertexFormat.BLOCK: x y z colour u v light normal
         for (int i = 0; i < 4; i++) {
             int o = i * stride + 4;
             float u = Float.intBitsToFloat(v[o]), w = Float.intBitsToFloat(v[o + 1]);

@@ -73,7 +73,7 @@ public class ModRenderTypes extends RenderType {
         return ENTITY_CUTOUT_NO_CULL_OFFSET.apply(tex);
     }
 
-    // Cull-вариант для ЗАКРЫТЫХ solid-моделей: задние грани не рисуются (~2× меньше фрагментов).
+    // Cull variant for CLOSED solid models: back faces are not drawn (~2x fewer fragments).
     private static final Function<ResourceLocation, RenderType> ENTITY_CUTOUT_OFFSET = Util.memoize(tex ->
         create("ic_entity_cutout_offset",
             DefaultVertexFormat.NEW_ENTITY,
@@ -89,7 +89,7 @@ public class ModRenderTypes extends RenderType {
                 .createCompositeState(true)
         ));
 
-    /** Solid-модель: cull (оптимизация) ИЛИ NO_CULL (как было) — по конфигу cullSolidFaces. Мгновенный откат без пересборки. */
+    /** Solid model: cull (optimization) OR NO_CULL (as before), by the cullSolidFaces config. Instant rollback without rebuilding. */
     public static RenderType solidModel(ResourceLocation tex) {
         return com.jykito.industrialcore.Config.cullSolidFaces
                 ? ENTITY_CUTOUT_OFFSET.apply(tex) : ENTITY_CUTOUT_NO_CULL_OFFSET.apply(tex);
@@ -109,9 +109,9 @@ public class ModRenderTypes extends RenderType {
 
     public static RenderType plasmaRing() { return PLASMA_RING_TYPE; }
 
-    // Магнитное поле: полупрозрачные ленты-дуги без текстуры. TRANSLUCENT (не аддитив) — альфа реально
-    // управляет прозрачностью и пересечения не выжигаются в белый. ПИШЕТ глубину (COLOR_DEPTH_WRITE) —
-    // иначе облака (рисуются ПОЗЖЕ BER) просвечивают сквозь поле, особенно с шейдерами. sort=true.
+    // Magnetic field: translucent arc ribbons without a texture. TRANSLUCENT (not additive): alpha really
+    // controls transparency and intersections do not burn to white. It WRITES depth (COLOR_DEPTH_WRITE),
+    // otherwise clouds (drawn AFTER the BER) show through the field, especially with shaders. sort=true.
     private static final RenderType MAGNET_FIELD = create("ic_magnet_field",
         DefaultVertexFormat.POSITION_COLOR,
         VertexFormat.Mode.QUADS, 4096, false, true,
@@ -125,7 +125,7 @@ public class ModRenderTypes extends RenderType {
 
     public static RenderType magnetField() { return MAGNET_FIELD; }
 
-    // DEBUG: сплошной цвет, без текстуры, сквозь всё (проверка чистой геометрии)
+    // DEBUG: solid colour, no texture, through everything (bare geometry check)
     private static final RenderType DEBUG_GEO = create("ic_debug_geo",
         DefaultVertexFormat.POSITION_COLOR,
         VertexFormat.Mode.QUADS, 1024, false, false,

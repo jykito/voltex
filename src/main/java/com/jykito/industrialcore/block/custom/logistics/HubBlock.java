@@ -47,7 +47,7 @@ public class HubBlock extends BaseEntityBlock {
 
     public static final Map<Direction, BooleanProperty> PROPERTY_BY_DIRECTION = PipeBlock.PROPERTY_BY_DIRECTION;
 
-    // коробка 12×12 с уголками, подключения 6×6 глубиной 2 (модели item_hub / *_hub_port)
+    // 12x12 box with corners, connections 6x6, 2 deep (models item_hub / *_hub_port)
     private static final ConnectedShapes SHAPES = new ConnectedShapes(2, 14, 5, 11, 2);
 
     public HubBlock(Properties props) {

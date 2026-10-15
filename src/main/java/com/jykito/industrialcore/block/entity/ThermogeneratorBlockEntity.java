@@ -66,7 +66,7 @@ public class ThermogeneratorBlockEntity extends BlockEntity implements MenuProvi
     private final com.jykito.industrialcore.heat.IHeatHandler heatHandler = new com.jykito.industrialcore.heat.IHeatHandler() {
         @Override public int getHeat() { return heat; }
         @Override public int getMaxHeat() { return MAX_HEAT; }
-        @Override public int receiveHeat(int amount, boolean simulate) { return 0; } // источник: сам греет, не принимает
+        @Override public int receiveHeat(int amount, boolean simulate) { return 0; } // source: heats by itself, does not accept
     };
     private LazyOptional<com.jykito.industrialcore.heat.IHeatHandler> lazyHeat = LazyOptional.empty();
 
@@ -130,9 +130,9 @@ public class ThermogeneratorBlockEntity extends BlockEntity implements MenuProvi
     }
 
     /**
-     * Смотрит ли генератор в термостанцию. От этого зависит криогенный теплообменник: он даёт
-     * поток, который в одиночку девать некуда, поэтому работает только на станцию.
-     * Проверяется цель, а не соседство — станция должна быть именно приёмником тепла.
+     * Whether the generator faces a thermal station. The cryogenic heat exchanger depends on it: it produces
+     * a flow that has nowhere to go on its own, so it only works into the station.
+     * The target is checked, not adjacency: the station must actually be the heat receiver.
      */
     private static boolean feedsThermostation(Level level, BlockPos pos, BlockState state) {
         BlockEntity target = level.getBlockEntity(pos.relative(state.getValue(ThermogeneratorBlock.FACING)));
@@ -161,8 +161,8 @@ public class ThermogeneratorBlockEntity extends BlockEntity implements MenuProvi
             energyCost = 2000;
         }
         else if (upgradeSlot.getItem() == ModItems.CRYOGENIC_HEAT_EXCHANGER.get() && feedsThermostation(level, pos, state)) {
-            // Криогенный работает ТОЛЬКО в связке со станцией: она буфер и насос, и без неё
-            // такой поток тепла девать некуда. Одиночный термогенератор с ним работает как с пустым слотом.
+            // The cryogenic one works ONLY together with the station: the station is the buffer and the pump, and without it
+            // such a heat flow has nowhere to go. A standalone thermogenerator treats it as an empty slot.
             heatOutput = 60;
             energyCost = 4200;
         }

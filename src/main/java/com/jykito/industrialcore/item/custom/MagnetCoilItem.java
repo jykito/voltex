@@ -13,15 +13,15 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * Катушка электромагнита-ускорителя. Тир задаёт обороты и скорость набора нестабильности.
- * Вставляется ПКМ по держателю, снимается Shift+ПКМ. Статы выводятся в тултипе.
+ * Electromagnet-accelerator coil. The tier sets the spin and the instability build-up rate.
+ * Inserted with RMB on a holder, removed with Shift+RMB. Stats are shown in the tooltip.
  */
 public class MagnetCoilItem extends Item {
 
     private final int tier;
-    private final float spinMult;       // множитель оборотов
-    private final float instabPerTick;  // прирост нестабильности/тик под нагрузкой
-    private final String resourceKey;   // translatable-ключ требуемого питания
+    private final float spinMult;       // spin multiplier
+    private final float instabPerTick;  // instability gain per tick under load
+    private final String resourceKey;   // translatable key of the required power
 
     public MagnetCoilItem(int tier, float spinMult, float instabPerTick, String resourceKey, Properties props) {
         super(props);
@@ -34,7 +34,7 @@ public class MagnetCoilItem extends Item {
     public int getTier() { return tier; }
     public float getSpinMult() { return spinMult; }
     public float getInstabPerTick() { return instabPerTick; }
-    /** Базовая скорость крафта от тира катушки (катушка = движок магнита). */
+    /** Base crafting speed by coil tier (the coil is the magnet's engine). */
     public float getCraftSpeed() { return switch (tier) { case 3 -> 1.6f; case 2 -> 1.3f; default -> 1.0f; }; }
 
     @Override

@@ -3,30 +3,30 @@ package com.jykito.industrialcore.nanite;
 import net.minecraft.nbt.CompoundTag;
 
 /**
- * Клиентская копия атласа видов: что пришло последним {@link com.jykito.industrialcore.networking.AtlasSyncPacket}.
- * Без клиентских классов, поэтому безопасно и на выделенном сервере.
+ * Client copy of the species atlas: what the last {@link com.jykito.industrialcore.networking.AtlasSyncPacket} brought.
+ * No client classes, so it is safe on a dedicated server too.
  */
 public final class NaniteAtlasClient {
 
     private NaniteAtlasClient() {}
 
     private static CompoundTag data = new CompoundTag();
-    /** Пришёл ли атлас в этом заходе в мир: первая синхронизация (вход) всплывашек не даёт. */
+    /** Whether the atlas arrived during this session: the first sync (on join) gives no toasts. */
     private static boolean synced;
 
     public static void set(CompoundTag tag) { data = tag; synced = true; }
     public static CompoundTag data() { return data; }
     public static boolean synced() { return synced; }
-    /** Выход из мира: следующий вход снова начинает с чистой копии. */
+    /** Leaving the world: the next join starts from a clean copy again. */
     public static void reset() { data = new CompoundTag(); synced = false; }
 
-    /** Рекорд вида в тысячных или −1, если вид не открыт. */
+    /** Species record in thousandths, or −1 if the species is not unlocked. */
     public static int best(String speciesKey) {
         CompoundTag s = data.getCompound("S");
         return s.contains(speciesKey) ? s.getInt(speciesKey) : -1;
     }
 
-    /** Предмет, на котором вид открыли (id), или пустая строка. */
+    /** The item the species was unlocked on (id), or an empty string. */
     public static String icon(String speciesKey) { return data.getCompound("I").getString(speciesKey); }
 
     public static boolean trait(NaniteTrait t) { return data.getCompound("T").getBoolean(t.key()); }

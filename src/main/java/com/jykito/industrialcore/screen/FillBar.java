@@ -5,10 +5,10 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 
 /**
- * Анимированная заливка полосок энергии, тепла и прогресса.
+ * Animated fill of the energy, heat and progress bars.
  * <p>
- * Текстура 96×36: шесть кадров по 6 px друг под другом. Полоса длиннее 96 px набирается
- * повтором кадра. Кадр сменяется раз в {@code frameTicks} вызовов render экрана.
+ * Texture 96x36: six frames of 6 px stacked. A bar longer than 96 px is built
+ * by repeating the frame. The frame changes once every {@code frameTicks} screen render calls.
  */
 public final class FillBar {
 
@@ -16,7 +16,7 @@ public final class FillBar {
             new ResourceLocation(IndustrialCore.MODID, "textures/gui/energy_fill_6x_anim.png");
     public static final ResourceLocation HEAT =
             new ResourceLocation(IndustrialCore.MODID, "textures/gui/heat_fill_6x_anim.png");
-    /** Шевроны: косые полосы бегут вправо на 1 px за кадр. */
+    /** Chevrons: diagonal stripes move right by 1 px per frame. */
     public static final ResourceLocation PROGRESS =
             new ResourceLocation(IndustrialCore.MODID, "textures/gui/progress_fill_6x_anim.png");
 
@@ -28,7 +28,7 @@ public final class FillBar {
 
     public FillBar(int frameTicks) { this.frameTicks = frameTicks; }
 
-    /** Вызывать раз за render. Возвращает true, когда сменился кадр. */
+    /** Call once per render. Returns true when the frame changed. */
     public boolean advance() {
         if (++tick < frameTicks) return false;
         tick = 0;
@@ -36,7 +36,7 @@ public final class FillBar {
         return true;
     }
 
-    /** Заливка слева направо на {@code filled} px, высота полосы 6 px. */
+    /** Fill from left to right by {@code filled} px, bar height 6 px. */
     public void draw(GuiGraphics g, ResourceLocation tex, int x, int y, int filled) {
         draw(g, tex, x, y, filled, FRAME_H);
     }

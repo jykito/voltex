@@ -27,8 +27,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Кристаллизация в JEI: бак с жидкостью и слот затравки слева, предмет справа.
- * Затравка необязательна — рецепт без неё показывает только бак.
+ * Crystallization in JEI: a fluid tank and the seed slot on the left, the item on the right.
+ * The seed is optional: a recipe without it shows only the tank.
  */
 public class CrystallizerJeiCategory implements IRecipeCategory<CrystallizerRecipe> {
 
