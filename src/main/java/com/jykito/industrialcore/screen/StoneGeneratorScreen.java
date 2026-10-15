@@ -11,12 +11,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class StoneGeneratorScreen extends MachineScreen<StoneGeneratorMenu> {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/stone_generator_gui.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/stone_generator_gui.png");
 
     private static final int ENERGY_X = 72, ENERGY_Y = 97, BAR_H = 6;
 

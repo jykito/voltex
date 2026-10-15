@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "tag": "c:ingots/iron"
+    },
+    {
+      "item": "industrial_core:hammer"
+    }
+  ],
+  "result": {
+    "id": "industrial_core:iron_plate",
+    "count": 1
+  }
+}

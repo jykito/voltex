@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.custom;
+import com.mojang.serialization.MapCodec;
+import com.jykito.industrialcore.block.BlockUse;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.ItemInteractionResult;
 
 import com.jykito.industrialcore.block.entity.PanelCombinerBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -15,10 +19,13 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 public class PanelCombinerBlock extends BaseEntityBlock {
+
+    /** 1.21: block codec. Vanilla does not call it for mod blocks; there is one block instance, so unit is exact. */
+    @Override
+    protected MapCodec<? extends PanelCombinerBlock> codec() { return MapCodec.unit(this); }
 
     public PanelCombinerBlock(BlockBehaviour.Properties props) {
         super(props);
@@ -37,10 +44,15 @@ public class PanelCombinerBlock extends BaseEntityBlock {
     }
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        return BlockUse.toItemResult(use(state, level, pos, player, hand, hit));
+    }
+
+    /** Formerly Block.use (1.20.1); called from useItemOn for both hands, as before. */
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
                                  InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide && level.getBlockEntity(pos) instanceof PanelCombinerBlockEntity be) {
-            NetworkHooks.openScreen((ServerPlayer) player, be, pos);
+            ((ServerPlayer) player).openMenu(be, pos);
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
     }

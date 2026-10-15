@@ -1,0 +1,15 @@
+{
+  "type": "industrial_core:crystallizer_recipe",
+  "fluidInput": "industrial_core:molten_lead",
+  "fluidInputAmount": 144,
+  "ingredient": {
+    "tag": "c:ingots/tin"
+  },
+  "ingredientCount": 1,
+  "result": {
+    "id": "industrial_core:solder",
+    "count": 8
+  },
+  "processingTime": 160,
+  "energyCostPerTick": 60
+}

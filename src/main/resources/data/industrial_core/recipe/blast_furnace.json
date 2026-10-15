@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:bricks"
+    },
+    "B": {
+      "item": "industrial_core:heat_conductor"
+    },
+    "C": {
+      "item": "minecraft:obsidian"
+    },
+    "D": {
+      "item": "industrial_core:electric_furnace"
+    },
+    "E": {
+      "tag": "c:plates/iron"
+    }
+  },
+  "result": {
+    "id": "industrial_core:blast_furnace",
+    "count": 1
+  }
+}

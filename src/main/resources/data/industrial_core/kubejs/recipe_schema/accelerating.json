@@ -1,0 +1,61 @@
+{
+  "keys": [
+    {
+      "name": "result",
+      "role": "output",
+      "type": "item_stack"
+    },
+    {
+      "name": "inputs",
+      "role": "input",
+      "type": {
+        "type": "list",
+        "component": "flat_sized_ingredient"
+      }
+    },
+    {
+      "name": "fluid",
+      "role": "input",
+      "type": "fluid_stack",
+      "default_optional": true
+    },
+    {
+      "name": "minTier",
+      "type": "int",
+      "optional": 1
+    },
+    {
+      "name": "processingTime",
+      "type": "int",
+      "optional": 200
+    },
+    {
+      "name": "energyCostPerTick",
+      "type": "int",
+      "optional": 1000
+    },
+    {
+      "name": "minInstab",
+      "type": "float",
+      "optional": 0
+    },
+    {
+      "name": "bandLo",
+      "type": "float",
+      "optional": 0
+    },
+    {
+      "name": "bandHi",
+      "type": "float",
+      "optional": 0
+    },
+    {
+      "name": "lateOnly",
+      "type": "boolean",
+      "optional": false
+    }
+  ],
+  "unique": [
+    "result"
+  ]
+}

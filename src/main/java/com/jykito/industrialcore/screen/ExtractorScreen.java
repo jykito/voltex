@@ -9,7 +9,7 @@ import net.minecraft.world.entity.player.Inventory;
 public class ExtractorScreen extends BaseMachineScreen<ExtractorMenu> {
     public ExtractorScreen(ExtractorMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle,
-                new ResourceLocation(IndustrialCore.MODID, "textures/gui/extractor_gui.png"));
+                ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/extractor_gui.png"));
         PROG_X     = 112;
         PROG_Y     = 60;
         PROG_W     = 23;

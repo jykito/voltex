@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.item.upgrade;
+import net.minecraft.world.item.Item;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -24,7 +25,7 @@ public class AcceleratorItem extends MachineUpgradeItem {
     public float getEnergyMultiplier() { return energyMultiplier; }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         int speedPct  = Math.round((1f - speedMultiplier) * 100f);
         int energyPct = Math.round((energyMultiplier - 1f) * 100f);
         tooltip.add(Component.translatable("tooltip.industrial_core.accelerator_speed",

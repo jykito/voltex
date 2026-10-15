@@ -1,4 +1,9 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import java.util.Optional;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.block.custom.BlastFurnaceBlock;
 import com.jykito.industrialcore.item.upgrade.DirectionalUpgradeItem;
@@ -21,15 +26,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class BlastFurnaceBlockEntity extends BlockEntity implements MenuProvider {
+public class BlastFurnaceBlockEntity extends BlockEntity implements Caps.Provider, MenuProvider {
 
     private final com.jykito.industrialcore.recipe.CachedRecipe<BlastFurnaceRecipe> recipeCache =
             new com.jykito.industrialcore.recipe.CachedRecipe<>();
@@ -55,7 +57,6 @@ public class BlastFurnaceBlockEntity extends BlockEntity implements MenuProvider
             return !(stack.getItem() instanceof com.jykito.industrialcore.item.upgrade.MachineUpgradeItem);
         }
     };
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
     private int heat = 0;
     private final int MAX_HEAT = 4000;
@@ -74,7 +75,6 @@ public class BlastFurnaceBlockEntity extends BlockEntity implements MenuProvider
             return accepted;
         }
     };
-    private LazyOptional<com.jykito.industrialcore.heat.IHeatHandler> lazyHeat = LazyOptional.empty();
 
     protected final ContainerData data;
 
@@ -130,7 +130,7 @@ public class BlastFurnaceBlockEntity extends BlockEntity implements MenuProvider
             SimpleContainer c = new SimpleContainer(2);
             c.setItem(0, itemHandler.getStackInSlot(0));
             c.setItem(1, itemHandler.getStackInSlot(1));
-            return level.getRecipeManager().getRecipeFor(ModRecipes.BLAST_FURNACE_TYPE.get(), c, level).orElse(null);
+            return com.jykito.industrialcore.recipe.RecipeLookup.find(level.getRecipeManager(), ModRecipes.BLAST_FURNACE_TYPE.get(), c, level).orElse(null);
         }));
     }
 
@@ -212,38 +212,31 @@ public class BlastFurnaceBlockEntity extends BlockEntity implements MenuProvider
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) return lazyItemHandler.cast();
-        if (cap == com.jykito.industrialcore.heat.HeatCapability.HEAT) return lazyHeat.cast();
-        return super.getCapability(cap, side);
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.ItemHandler.BLOCK) return (T) itemHandler;
+        if (cap == com.jykito.industrialcore.heat.HeatCapability.HEAT) return (T) heatHandler;
+        return null;
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
-        lazyItemHandler = LazyOptional.of(() -> itemHandler);
-        lazyHeat = LazyOptional.of(() -> heatHandler);
     }
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyItemHandler.invalidate();
-        lazyHeat.invalidate();
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag tag) {
-        tag.put("inventory", itemHandler.serializeNBT());
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.put("inventory", itemHandler.serializeNBT(registries));
         tag.putInt("heat", heat);
         tag.putInt("progress", progress);
-        super.saveAdditional(tag);
+        super.saveAdditional(tag, registries);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        itemHandler.deserializeNBT(tag.getCompound("inventory"));
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        itemHandler.deserializeNBT(registries, tag.getCompound("inventory"));
         heat = tag.getInt("heat");
         progress = tag.getInt("progress");
     }

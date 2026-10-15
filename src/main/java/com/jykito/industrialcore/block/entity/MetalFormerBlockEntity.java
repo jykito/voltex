@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
 
 import com.jykito.industrialcore.menu.MetalFormerMenu;
 import com.jykito.industrialcore.recipe.MachineRecipe;
@@ -69,14 +70,14 @@ public class MetalFormerBlockEntity extends BaseMachineBlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         tag.putInt("metal_former_mode", currentMode);
-        super.saveAdditional(tag);
+        super.saveAdditional(tag, registries);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
 
         this.currentMode = tag.getInt("metal_former_mode") == 1 ? 1 : 0;
     }

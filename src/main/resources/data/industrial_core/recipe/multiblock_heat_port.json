@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:heat_pipe_t2"
+    },
+    "B": {
+      "item": "industrial_core:advanced_heat_exchanger"
+    },
+    "C": {
+      "item": "industrial_core:armor_sheet"
+    },
+    "D": {
+      "item": "industrial_core:multiblock_casing_advanced"
+    },
+    "E": {
+      "item": "industrial_core:cryogenic_heat_exchanger"
+    }
+  },
+  "result": {
+    "id": "industrial_core:multiblock_heat_port",
+    "count": 1
+  }
+}

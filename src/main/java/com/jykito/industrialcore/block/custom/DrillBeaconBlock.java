@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.custom;
+import com.mojang.serialization.MapCodec;
+import com.jykito.industrialcore.block.BlockUse;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.ItemInteractionResult;
 
 import com.jykito.industrialcore.block.entity.DrillBeaconBlockEntity;
 import com.jykito.industrialcore.block.entity.ModBlockEntities;
@@ -21,11 +25,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
-/** Буровой маяк: тренога со щупом. Целиком рисуется DrillBeaconBER (кристалл крутится, при скане по земле идут волны). */
+/** Drill beacon: a tripod with a probe. Drawn entirely by DrillBeaconBER (the crystal spins, waves run over the ground while scanning). */
 public class DrillBeaconBlock extends BaseEntityBlock {
+
+    /** 1.21: block codec. Vanilla does not call it for mod blocks; there is one block instance, so unit is exact. */
+    @Override
+    protected MapCodec<? extends DrillBeaconBlock> codec() { return MapCodec.unit(this); }
 
     private static final VoxelShape SHAPE = Block.box(1.5, 0, 1.5, 14.5, 24, 14.5);
 
@@ -57,13 +64,18 @@ public class DrillBeaconBlock extends BaseEntityBlock {
     }
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        return BlockUse.toItemResult(use(state, level, pos, player, hand, hit));
+    }
+
+    /** Formerly Block.use (1.20.1); called from useItemOn for both hands, as before. */
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof DrillBeaconBlockEntity be)
-            NetworkHooks.openScreen((ServerPlayer) player, be, pos);
+            ((ServerPlayer) player).openMenu(be, pos);
         return InteractionResult.sidedSuccess(level.isClientSide());
     }
 
-    /** Сломали — линза выпадает, участок уходит из реестра (шахтёр перестаёт его копать). */
+    /** When broken the lens drops and the area leaves the registry (the miner stops mining it). */
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock() && level.getBlockEntity(pos) instanceof DrillBeaconBlockEntity be) {

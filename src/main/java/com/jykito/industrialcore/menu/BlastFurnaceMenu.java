@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.menu;
+import com.jykito.industrialcore.capability.Caps;
 
 import com.jykito.industrialcore.block.ModBlocks;
 import com.jykito.industrialcore.block.entity.BlastFurnaceBlockEntity;
@@ -8,8 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 public class BlastFurnaceMenu extends MachineMenu {
@@ -25,7 +25,7 @@ public class BlastFurnaceMenu extends MachineMenu {
         this.blockEntity = (BlastFurnaceBlockEntity) entity;
         this.data = data;
 
-        this.blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
+        Caps.get(this.blockEntity, Caps.ITEM_HANDLER).ifPresent(iItemHandler -> {
             this.addSlot(new SlotItemHandler(iItemHandler, 0, 92, 37));
             this.addSlot(new SlotItemHandler(iItemHandler, 1, 92, 65));
             this.addSlot(new SlotItemHandler(iItemHandler, 2, 140, 51) {

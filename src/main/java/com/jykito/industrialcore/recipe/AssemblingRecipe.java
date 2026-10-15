@@ -1,33 +1,29 @@
 package com.jykito.industrialcore.recipe;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.SimpleContainer;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.Nullable;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 /**
- * Рецепт промышленного сборщика: несколько ингредиентов с количеством, необязательная жидкость,
- * результат: предмет и/или жидкость. Сырьё ядро берёт из входных портов структуры, жидкость — из портов
- * в режиме жидкости; жидкий результат уходит в выходные порты с баком.
- * JSON: { inputs:[{item|tag,count},...], fluid:{fluid,amount}?, result:{item,count}?, fluidResult:{fluid,amount}?,
+ * Industrial assembler recipe: several ingredients with counts, optional fluid,
+ * result: item and/or fluid. The core takes the input from the structure's input ports, fluid from ports
+ * in fluid mode; a fluid result goes into output ports with a tank.
+ * JSON: { inputs:[{item|tag,count},...], fluid:{fluid,amount}?, result:{id,count}?, fluidResult:{fluid,amount}?,
  *         processingTime, energyCostPerTick }
  */
-public class AssemblingRecipe implements Recipe<SimpleContainer> {
+public class AssemblingRecipe implements Recipe<ContainerInput> {
 
-    private final ResourceLocation id;
     private final Ingredient[] inputs;
     private final int[] counts;
     private final FluidStack fluid;
@@ -35,9 +31,9 @@ public class AssemblingRecipe implements Recipe<SimpleContainer> {
     private final FluidStack fluidResult;
     private final int processingTime, energyPerTick;
 
-    public AssemblingRecipe(ResourceLocation id, Ingredient[] inputs, int[] counts, FluidStack fluid, ItemStack result,
+    public AssemblingRecipe(Ingredient[] inputs, int[] counts, FluidStack fluid, ItemStack result,
                             FluidStack fluidResult, int processingTime, int energyPerTick) {
-        this.id = id; this.inputs = inputs; this.counts = counts; this.fluid = fluid; this.result = result;
+        this.inputs = inputs; this.counts = counts; this.fluid = fluid; this.result = result;
         this.fluidResult = fluidResult;
         this.processingTime = processingTime; this.energyPerTick = energyPerTick;
     }
@@ -50,12 +46,12 @@ public class AssemblingRecipe implements Recipe<SimpleContainer> {
     public int getProcessingTime()   { return processingTime; }
     public int getEnergyPerTick()    { return energyPerTick; }
 
-    /** Сборщик сам считает запасы по портам; ванильный поиск по контейнеру ему не нужен. */
-    @Override public boolean matches(SimpleContainer c, Level level) { return false; }
-    @Override public ItemStack assemble(SimpleContainer c, RegistryAccess a) { return result.copy(); }
+    /** The assembler counts the stock across ports itself; it does not need the vanilla container lookup. */
+    @Override public boolean matches(ContainerInput c, Level level) { return false; }
+    @Override public ItemStack assemble(ContainerInput c, HolderLookup.Provider registries) { return result.copy(); }
     @Override public boolean canCraftInDimensions(int w, int h) { return true; }
     @Override public boolean isSpecial() { return true; }
-    @Override public ItemStack getResultItem(RegistryAccess a) { return result; }
+    @Override public ItemStack getResultItem(HolderLookup.Provider registries) { return result; }
 
     @Override
     public NonNullList<Ingredient> getIngredients() {
@@ -64,63 +60,42 @@ public class AssemblingRecipe implements Recipe<SimpleContainer> {
         return list;
     }
 
-    @Override public ResourceLocation getId()            { return id; }
     @Override public RecipeSerializer<?> getSerializer() { return ModRecipes.ASSEMBLING_SERIALIZER.get(); }
     @Override public RecipeType<?> getType()             { return ModRecipes.ASSEMBLING_TYPE.get(); }
 
     public static class Serializer implements RecipeSerializer<AssemblingRecipe> {
         public static final Serializer INSTANCE = new Serializer();
 
-        @Override
-        public AssemblingRecipe fromJson(ResourceLocation id, JsonObject json) {
-            JsonArray arr = GsonHelper.getAsJsonArray(json, "inputs");
-            int n = arr.size();
-            Ingredient[] ing = new Ingredient[n];
-            int[] cnt = new int[n];
-            for (int i = 0; i < n; i++) {
-                JsonObject el = arr.get(i).getAsJsonObject();
-                ing[i] = Ingredient.fromJson(el);
-                cnt[i] = GsonHelper.getAsInt(el, "count", 1);
-            }
-            FluidStack fluid = fluidFromJson(json, "fluid");
-            FluidStack fluidResult = fluidFromJson(json, "fluidResult");
-            ItemStack result = ItemStack.EMPTY;
-            if (json.has("result")) {
-                JsonObject res = GsonHelper.getAsJsonObject(json, "result");
-                result = new ItemStack(GsonHelper.getAsItem(res, "item"), GsonHelper.getAsInt(res, "count", 1));
-            }
-            int time   = GsonHelper.getAsInt(json, "processingTime", 200);
-            int energy = GsonHelper.getAsInt(json, "energyCostPerTick", 1000);
-            return new AssemblingRecipe(id, ing, cnt, fluid, result, fluidResult, time, energy);
-        }
+        private static final MapCodec<AssemblingRecipe> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                RecipeCodecs.COUNTED_INPUTS.fieldOf("inputs").forGetter(r -> RecipeCodecs.sized(r.inputs, r.counts)),
+                RecipeCodecs.optionalFluid("fluid").forGetter(r -> r.fluid),
+                RecipeCodecs.optionalResult("result").forGetter(r -> r.result),
+                RecipeCodecs.optionalFluid("fluidResult").forGetter(r -> r.fluidResult),
+                Codec.INT.optionalFieldOf("processingTime", 200).forGetter(r -> r.processingTime),
+                Codec.INT.optionalFieldOf("energyCostPerTick", 1000).forGetter(r -> r.energyPerTick)
+        ).apply(i, (in, fluid, result, fluidResult, time, energy) -> new AssemblingRecipe(
+                RecipeCodecs.ingredients(in), RecipeCodecs.counts(in), fluid, result, fluidResult, time, energy)));
 
-        private static FluidStack fluidFromJson(JsonObject json, String key) {
-            if (!json.has(key)) return FluidStack.EMPTY;
-            JsonObject f = GsonHelper.getAsJsonObject(json, key);
-            var fl = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(GsonHelper.getAsString(f, "fluid")));
-            return fl == null ? FluidStack.EMPTY : new FluidStack(fl, GsonHelper.getAsInt(f, "amount", 1000));
-        }
+        private static final StreamCodec<RegistryFriendlyByteBuf, AssemblingRecipe> STREAM_CODEC =
+                StreamCodec.of(Serializer::write, Serializer::read);
 
-        @Override
-        public @Nullable AssemblingRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
-            int n = buf.readVarInt();
-            Ingredient[] ing = new Ingredient[n];
-            int[] cnt = new int[n];
-            for (int i = 0; i < n; i++) { ing[i] = Ingredient.fromNetwork(buf); cnt[i] = buf.readVarInt(); }
-            FluidStack fluid = FluidStack.readFromPacket(buf);
-            ItemStack result = buf.readItem();
-            FluidStack fluidResult = FluidStack.readFromPacket(buf);
+        @Override public MapCodec<AssemblingRecipe> codec() { return CODEC; }
+        @Override public StreamCodec<RegistryFriendlyByteBuf, AssemblingRecipe> streamCodec() { return STREAM_CODEC; }
+
+        private static AssemblingRecipe read(RegistryFriendlyByteBuf buf) {
+            RecipeCodecs.Counted in = RecipeCodecs.readCounted(buf);
+            FluidStack fluid = RecipeCodecs.readFluid(buf);
+            ItemStack result = RecipeCodecs.readItem(buf);
+            FluidStack fluidResult = RecipeCodecs.readFluid(buf);
             int time = buf.readVarInt(), energy = buf.readVarInt();
-            return new AssemblingRecipe(id, ing, cnt, fluid, result, fluidResult, time, energy);
+            return new AssemblingRecipe(in.inputs(), in.counts(), fluid, result, fluidResult, time, energy);
         }
 
-        @Override
-        public void toNetwork(FriendlyByteBuf buf, AssemblingRecipe r) {
-            buf.writeVarInt(r.inputs.length);
-            for (int i = 0; i < r.inputs.length; i++) { r.inputs[i].toNetwork(buf); buf.writeVarInt(r.counts[i]); }
-            r.fluid.writeToPacket(buf);
-            buf.writeItem(r.result);
-            r.fluidResult.writeToPacket(buf);
+        private static void write(RegistryFriendlyByteBuf buf, AssemblingRecipe r) {
+            RecipeCodecs.writeCounted(buf, r.inputs, r.counts);
+            RecipeCodecs.writeFluid(buf, r.fluid);
+            RecipeCodecs.writeItem(buf, r.result);
+            RecipeCodecs.writeFluid(buf, r.fluidResult);
             buf.writeVarInt(r.processingTime); buf.writeVarInt(r.energyPerTick);
         }
     }

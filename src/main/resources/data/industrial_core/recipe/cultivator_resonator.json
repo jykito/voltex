@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:quartz"
+    },
+    "B": {
+      "item": "industrial_core:amethyst_crystal"
+    },
+    "C": {
+      "item": "industrial_core:crystal_fiber"
+    },
+    "D": {
+      "item": "industrial_core:data_transfer_matrix"
+    },
+    "E": {
+      "item": "industrial_core:crystal_plate"
+    }
+  },
+  "result": {
+    "id": "industrial_core:cultivator_resonator",
+    "count": 1
+  }
+}

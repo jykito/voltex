@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " A ",
+    " B ",
+    " C "
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:diamond"
+    },
+    "B": {
+      "tag": "c:plates/iron"
+    },
+    "C": {
+      "item": "minecraft:flint"
+    }
+  },
+  "result": {
+    "id": "industrial_core:iron_drill_tip",
+    "count": 1
+  }
+}

@@ -9,12 +9,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 public class CrystallizerMenu extends MachineMenu {
 
-    /** Слоты машины: затравка, выход, четыре апгрейда. */
+    /** Machine slots: seed, output, four upgrades. */
     private static final int MACHINE_SLOTS = 6;
     private static final int INV_END = MACHINE_SLOTS + 36;
 

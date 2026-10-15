@@ -1,60 +1,44 @@
 package com.jykito.industrialcore.recipe;
 
-import com.google.gson.JsonObject;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.ShapedRecipe;
-import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
+/**
+ * Typed serializer for {@link MachineRecipe} (crushing, rolling, ...): the same json as the generic
+ * {@code machine_recipe}, but the recipe type is fixed by the serializer instead of a "machine_type" field.
+ * KubeJS writes machine recipes through these.
+ */
 public class MachineTypeRecipeSerializer implements RecipeSerializer<MachineRecipe> {
 
-    private final Supplier<RecipeType<?>> type;
+    private final MapCodec<MachineRecipe> codec;
+    private final StreamCodec<RegistryFriendlyByteBuf, MachineRecipe> streamCodec;
 
     public MachineTypeRecipeSerializer(Supplier<RecipeType<?>> type) {
-        this.type = type;
+        this.codec = RecordCodecBuilder.mapCodec(i -> i.group(
+                Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(r -> r.getIngredients().get(0)),
+                Codec.INT.optionalFieldOf("inputCount", 1).forGetter(MachineRecipe::getInputCount),
+                ItemStack.CODEC.fieldOf("result").forGetter(r -> r.getResultItem(null)),
+                Codec.INT.optionalFieldOf("processingTime", 200).forGetter(MachineRecipe::getProcessingTime),
+                Codec.INT.optionalFieldOf("energyCost", 50).forGetter(MachineRecipe::getEnergyCost),
+                Codec.STRING.optionalFieldOf("catalyst").forGetter(r -> Optional.ofNullable(r.getCatalystId())),
+                Codec.BOOL.optionalFieldOf("lateOnly", false).forGetter(MachineRecipe::isLateOnly)
+        ).apply(i, (input, inputCount, output, time, energy, catalyst, lateOnly) ->
+                new MachineRecipe(input, inputCount, output, time, energy, catalyst.orElse(null), type.get()).lateOnly(lateOnly)));
+        this.streamCodec = StreamCodec.of(
+                (buf, r) -> { MachineRecipe.writeCommon(buf, r); buf.writeBoolean(r.isLateOnly()); },
+                buf -> MachineRecipe.readCommon(buf, type).lateOnly(buf.readBoolean()));
     }
 
-    @Override
-    public MachineRecipe fromJson(ResourceLocation id, JsonObject json) {
-        Ingredient input   = Ingredient.fromJson(GsonHelper.getAsJsonObject(json, "ingredient"));
-        int inputCount     = GsonHelper.getAsInt(json, "inputCount", 1);
-        ItemStack output   = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
-        int processingTime = GsonHelper.getAsInt(json, "processingTime", 200);
-        int energyCost     = GsonHelper.getAsInt(json, "energyCost", 50);
-        String catalystId  = json.has("catalyst") ? GsonHelper.getAsString(json, "catalyst") : null;
-        return new MachineRecipe(id, input, inputCount, output, processingTime, energyCost, catalystId, type.get())
-                .lateOnly(GsonHelper.getAsBoolean(json, "lateOnly", false));
-    }
-
-    @Override
-    public @Nullable MachineRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
-        Ingredient input   = Ingredient.fromNetwork(buf);
-        int inputCount     = buf.readInt();
-        ItemStack output   = buf.readItem();
-        int processingTime = buf.readInt();
-        int energyCost     = buf.readInt();
-        String catalystId  = buf.readBoolean() ? buf.readUtf() : null;
-        return new MachineRecipe(id, input, inputCount, output, processingTime, energyCost, catalystId, type.get())
-                .lateOnly(buf.readBoolean());
-    }
-
-    @Override
-    public void toNetwork(FriendlyByteBuf buf, MachineRecipe recipe) {
-        recipe.getIngredients().get(0).toNetwork(buf);
-        buf.writeInt(recipe.getInputCount());
-        buf.writeItem(recipe.getResultItem(null));
-        buf.writeInt(recipe.getProcessingTime());
-        buf.writeInt(recipe.getEnergyCost());
-        String cat = recipe.getCatalystId();
-        buf.writeBoolean(cat != null);
-        if (cat != null) buf.writeUtf(cat);
-        buf.writeBoolean(recipe.isLateOnly());
-    }
+    @Override public MapCodec<MachineRecipe> codec() { return codec; }
+    @Override public StreamCodec<RegistryFriendlyByteBuf, MachineRecipe> streamCodec() { return streamCodec; }
 }

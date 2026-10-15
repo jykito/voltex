@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "BCB",
+    "DDD"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:cryo_crystal"
+    },
+    "B": {
+      "item": "industrial_core:superconducting_strand"
+    },
+    "C": {
+      "item": "industrial_core:depth_module_2"
+    },
+    "D": {
+      "item": "industrial_core:superconducting_wire"
+    }
+  },
+  "result": {
+    "id": "industrial_core:depth_module_3",
+    "count": 1
+  }
+}

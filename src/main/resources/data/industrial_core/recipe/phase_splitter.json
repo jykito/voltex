@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/electrum"
+    },
+    "B": {
+      "item": "industrial_core:superconductor_coil"
+    },
+    "C": {
+      "item": "industrial_core:heat_exchanger"
+    },
+    "D": {
+      "item": "industrial_core:machine_casing"
+    },
+    "E": {
+      "item": "industrial_core:data_transfer_matrix"
+    }
+  },
+  "result": {
+    "id": "industrial_core:phase_splitter",
+    "count": 1
+  }
+}

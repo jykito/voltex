@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.block.custom.StoneGeneratorBlock;
 import com.jykito.industrialcore.energy.MachineEnergy;
@@ -22,22 +26,19 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class StoneGeneratorBlockEntity extends BlockEntity implements MenuProvider {
+public class StoneGeneratorBlockEntity extends BlockEntity implements Caps.Provider, MenuProvider {
 
-    // База под работу без модуля. Под параллели баки растут сами, см. AdaptiveTank.
+    // Base for running without a module. With parallel the tanks grow by themselves, see AdaptiveTank.
     private static final int TANK_CAP = 8000;
     private static final int FE_PER_TICK = 200;
 
@@ -48,7 +49,6 @@ public class StoneGeneratorBlockEntity extends BlockEntity implements MenuProvid
             return UpgradeTargets.works(getBlockState().getBlock(), stack);
         }
     };
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
     private final IItemHandlerModifiable automationHandler = new IItemHandlerModifiable() {
         @Override public void setStackInSlot(int slot, @NotNull ItemStack stack) { itemHandler.setStackInSlot(slot, stack); }
         @Override public int getSlots() { return itemHandler.getSlots(); }
@@ -60,8 +60,7 @@ public class StoneGeneratorBlockEntity extends BlockEntity implements MenuProvid
     };
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
-    private final MachineEnergy energyStorage = MachineEnergy.consumer(100_000, 100_000); // приём = буфер, без потолка на вход
-    private LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.empty();
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(100_000, 100_000); // intake = buffer, no input cap
 
     public final FluidTank waterTank = new FluidTank(TANK_CAP, fs -> fs.getFluid() == Fluids.WATER) {
         @Override protected void onContentsChanged() {
@@ -93,7 +92,6 @@ public class StoneGeneratorBlockEntity extends BlockEntity implements MenuProvid
         @Override public @NotNull FluidStack drain(FluidStack resource, FluidAction action) { return FluidStack.EMPTY; }
         @Override public @NotNull FluidStack drain(int maxDrain, FluidAction action) { return FluidStack.EMPTY; }
     };
-    private LazyOptional<IFluidHandler> lazyFluid = LazyOptional.empty();
 
     private int progress = 0;
     private int maxProgress = 40;
@@ -149,7 +147,7 @@ public class StoneGeneratorBlockEntity extends BlockEntity implements MenuProvid
         StoneGeneratorMode m = StoneGeneratorMode.byId(mode);
 
         MachineUpgrades upg = MachineUpgrades.scan(itemHandler, 1, 4);
-        // Оба бака растут: партия ×64 берёт в 64 раза больше и воды, и лавы.
+        // Both tanks grow: a x64 batch takes 64 times more water and lava.
         boolean resized = AdaptiveTank.resize(waterTank, TANK_CAP, upg.parallel());
         resized        |= AdaptiveTank.resize(lavaTank,  TANK_CAP, upg.parallel());
         if (resized) level.sendBlockUpdated(pos, state, state, 3);
@@ -158,7 +156,7 @@ public class StoneGeneratorBlockEntity extends BlockEntity implements MenuProvid
         int fePerTick = upg.scaleEnergy(FE_PER_TICK);
 
         ItemStack out = itemHandler.getStackInSlot(0);
-        int outRoom = out.isEmpty() ? m.result.getMaxStackSize()
+        int outRoom = out.isEmpty() ? m.result.getDefaultMaxStackSize()
                 : (out.is(m.result) ? out.getMaxStackSize() - out.getCount() : 0);
         int waterAvail = m.waterCost > 0 ? waterTank.getFluidAmount() / m.waterCost : Integer.MAX_VALUE;
         int lavaAvail  = m.lavaCost  > 0 ? lavaTank.getFluidAmount()  / m.lavaCost  : Integer.MAX_VALUE;
@@ -188,7 +186,7 @@ public class StoneGeneratorBlockEntity extends BlockEntity implements MenuProvid
             level.sendBlockUpdated(pos, state, state, 3);
     }
 
-    @Override public CompoundTag getUpdateTag() { return saveWithoutMetadata(); }
+    @Override public CompoundTag getUpdateTag(HolderLookup.Provider registries) { return saveWithoutMetadata(registries); }
     @Nullable @Override public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
@@ -201,48 +199,40 @@ public class StoneGeneratorBlockEntity extends BlockEntity implements MenuProvid
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY)        return lazyEnergy.cast();
-        if (cap == ForgeCapabilities.ITEM_HANDLER)  return lazyItemHandler.cast();
-        if (cap == ForgeCapabilities.FLUID_HANDLER) return lazyFluid.cast();
-        return super.getCapability(cap, side);
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.EnergyStorage.BLOCK)        return (T) energyStorage;
+        if (cap == Capabilities.ItemHandler.BLOCK)  return (T) automationHandler;
+        if (cap == Capabilities.FluidHandler.BLOCK) return (T) fluidHandler;
+        return null;
     }
 
     @Override public void onLoad() {
         super.onLoad();
-        lazyEnergy = LazyOptional.of(() -> energyStorage);
-        lazyItemHandler = LazyOptional.of(() -> automationHandler);
-        lazyFluid = LazyOptional.of(() -> fluidHandler);
     }
 
-    @Override public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyEnergy.invalidate();
-        lazyItemHandler.invalidate();
-        lazyFluid.invalidate();
-    }
-
-    @Override protected void saveAdditional(CompoundTag tag) {
-        tag.put("inventory", itemHandler.serializeNBT());
+    @Override protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.put("inventory", itemHandler.serializeNBT(registries));
         tag.putInt("energy", energyStorage.getEnergyStored());
-        tag.put("waterTank", waterTank.writeToNBT(new CompoundTag()));
-        tag.put("lavaTank", lavaTank.writeToNBT(new CompoundTag()));
+        tag.put("waterTank", waterTank.writeToNBT(registries, new CompoundTag()));
+        tag.put("lavaTank", lavaTank.writeToNBT(registries, new CompoundTag()));
         AdaptiveTank.save(tag, "waterTankCapacity", waterTank);
         AdaptiveTank.save(tag, "lavaTankCapacity",  lavaTank);
         tag.putInt("progress", progress);
         tag.putInt("mode", mode);
         tag.putBoolean("running", running);
-        super.saveAdditional(tag);
+        super.saveAdditional(tag, registries);
     }
 
-    @Override public void load(CompoundTag tag) {
-        super.load(tag);
-        itemHandler.deserializeNBT(tag.getCompound("inventory"));
+    @Override public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        itemHandler.deserializeNBT(registries, tag.getCompound("inventory"));
         energyStorage.setEnergy(tag.getInt("energy"));
         AdaptiveTank.load(tag, "waterTankCapacity", waterTank, TANK_CAP);
         AdaptiveTank.load(tag, "lavaTankCapacity",  lavaTank,  TANK_CAP);
-        waterTank.readFromNBT(tag.getCompound("waterTank"));
-        lavaTank.readFromNBT(tag.getCompound("lavaTank"));
+        waterTank.readFromNBT(registries, tag.getCompound("waterTank"));
+        lavaTank.readFromNBT(registries, tag.getCompound("lavaTank"));
         progress = tag.getInt("progress");
         mode = tag.getInt("mode");
         running = tag.getBoolean("running");

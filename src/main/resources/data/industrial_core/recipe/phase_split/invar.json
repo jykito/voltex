@@ -1,0 +1,17 @@
+{
+  "type": "industrial_core:phase_splitter_recipe",
+  "ingredient": {
+    "item": "industrial_core:invar_ingot"
+  },
+  "inputCount": 2,
+  "result": {
+    "id": "industrial_core:iron_dust",
+    "count": 1
+  },
+  "result2": {
+    "id": "industrial_core:nickel_dust",
+    "count": 1
+  },
+  "processingTime": 200,
+  "energyCost": 80
+}

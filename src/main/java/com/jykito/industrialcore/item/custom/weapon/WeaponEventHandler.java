@@ -9,39 +9,39 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.bus.api.SubscribeEvent;
 
-import java.util.UUID;
 
 /**
- * Бой энергоклинком: «Рез» добирает долю урона, который съела бы броня цели; к удару добавляется контрудар нексита;
- * с полным заряженным комплектом нексита у клинка в руке выше скорость атаки.
+ * Energy blade combat: "Cut" adds a share of the damage the target's armor would have eaten; Nexite counter-strike is added to the hit;
+ * with a full charged Nexite set and the blade in hand, attack speed is higher.
  */
 public class WeaponEventHandler {
 
-    private static final UUID NEXITE_SPEED = UUID.fromString("6f0f6c1e-3c2a-4f7a-9c55-4a1b2e7d9a11");
+    private static final ResourceLocation NEXITE_SPEED = ResourceLocation.fromNamespaceAndPath(com.jykito.industrialcore.IndustrialCore.MODID, "nexite_blade_speed");
     private static final double NEXITE_SPEED_BONUS = 0.4;
 
-    @SubscribeEvent
-    public void onLivingHurt(LivingHurtEvent event) {
-        DamageSource src = event.getSource();
-        if (!(src.getEntity() instanceof Player player) || src.getDirectEntity() != player || !src.is(DamageTypes.PLAYER_ATTACK)) return;
-        if (player.level().isClientSide()) return;
+    /** A melee hit of a charged energy blade, so the pre-armor step applies (see PreArmorDamage). */
+    public static boolean applies(DamageSource src) {
+        if (!(src.getEntity() instanceof Player player) || src.getDirectEntity() != player || !src.is(DamageTypes.PLAYER_ATTACK)) return false;
+        if (player.level().isClientSide()) return false;
         ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof EnergyBladeItem) || !EnergyBladeItem.charged(stack)) return;
-        float amount = event.getAmount();
+        return stack.getItem() instanceof EnergyBladeItem && EnergyBladeItem.charged(stack);
+    }
+
+    /** Pre-armor step: "Cut" adds part of what the armor would eat, plus the stored Nexite counter-strike. */
+    public static float boost(LivingEntity target, DamageSource src, float amount) {
+        Player player = (Player) src.getEntity();
+        ItemStack stack = player.getMainHandItem();
         if (EnergyBladeItem.mode(stack) == EnergyBladeItem.MODE_CUT) {
-            LivingEntity target = event.getEntity();
-            float after = CombatRules.getDamageAfterAbsorb(amount, target.getArmorValue(), (float) target.getAttributeValue(Attributes.ARMOR_TOUGHNESS));
+            float after = CombatRules.getDamageAfterAbsorb(target, amount, src, target.getArmorValue(), (float) target.getAttributeValue(Attributes.ARMOR_TOUGHNESS));
             amount += (amount - after) * EnergyBladeItem.PIERCE;
         }
         float counter = EnergyBladeItem.takeCounter(player);
         amount += counter;
-        event.setAmount(amount);
-        if (counter >= 0.1f) {   // контрудар сработал — его должно быть видно и слышно (юзер: «контрудар не воркает»)
-            LivingEntity target = event.getEntity();
+        if (counter >= 0.1f) {   // the counter-strike fired, it must be visible and audible (author: "the counter-strike does not work")
             player.level().playSound(null, target.getX(), target.getY(), target.getZ(), net.minecraft.sounds.SoundEvents.PLAYER_ATTACK_CRIT,
                     net.minecraft.sounds.SoundSource.PLAYERS, 1.0f, 0.6f);
             if (player.level() instanceof net.minecraft.server.level.ServerLevel srv) {
@@ -51,17 +51,18 @@ public class WeaponEventHandler {
             player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.industrial_core.energy_blade.counter_hit",
                     String.format(java.util.Locale.ROOT, "%.1f", counter)), true);
         }
+        return amount;
     }
 
     @SubscribeEvent
-    public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END || event.player.level().isClientSide() || event.player.tickCount % 10 != 0) return;
-        Player player = event.player;
+    public void onPlayerTick(PlayerTickEvent.Post event) {
+        Player player = event.getEntity();
+        if (player.level().isClientSide() || player.tickCount % 10 != 0) return;
         AttributeInstance speed = player.getAttribute(Attributes.ATTACK_SPEED);
         if (speed == null) return;
         boolean want = player.getMainHandItem().getItem() instanceof EnergyBladeItem && EnergyBladeItem.fullNexite(player);
         boolean has = speed.getModifier(NEXITE_SPEED) != null;
-        if (want && !has) speed.addTransientModifier(new AttributeModifier(NEXITE_SPEED, "Nexite blade", NEXITE_SPEED_BONUS, AttributeModifier.Operation.ADDITION));
+        if (want && !has) speed.addTransientModifier(new AttributeModifier(NEXITE_SPEED, NEXITE_SPEED_BONUS, AttributeModifier.Operation.ADD_VALUE));
         else if (!want && has) speed.removeModifier(NEXITE_SPEED);
     }
 }

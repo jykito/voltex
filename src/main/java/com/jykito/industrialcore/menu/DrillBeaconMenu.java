@@ -10,9 +10,9 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
-/** Окно бурового маяка: слот линзы, ход скана, слой глубины; состав слоя — из клиентской копии маяка. */
+/** Drill beacon window: lens slot, scan progress, depth layer; the layer composition comes from the client copy of the beacon. */
 public class DrillBeaconMenu extends MachineMenu {
 
     public static final int LENS_X = 222, LENS_Y = 41, INV_X = 44, INV_Y = 145;
@@ -42,15 +42,15 @@ public class DrillBeaconMenu extends MachineMenu {
     public int bandLo() { return data.get(3); }
     public int bandHi() { return data.get(4); }
     public int top()    { return data.get(5); }
-    public int minY()   { return (short) data.get(6); }   // низ мира отрицательный: знак через short
+    public int minY()   { return (short) data.get(6); }   // the bottom of the world is negative: the sign goes through short
 
-    /** Нижняя и верхняя высота слоя (включительно). */
+    /** Lower and upper layer height (inclusive). */
     public int yFrom() { return minY() + 16 * bandLo(); }
     public int yTo()   { return minY() + 16 * bandHi() + 15; }
 
     public int scaledScan(int px) { return scaleProgress(step(), total(), px); }
 
-    /** 0/1 — нижняя граница вниз/вверх, 2/3 — верхняя, 4 — пересканировать. */
+    /** 0/1 lower bound down/up, 2/3 upper bound, 4 rescan. */
     @Override
     public boolean clickMenuButton(Player player, int id) {
         if (id < 0 || id > 4) return false;

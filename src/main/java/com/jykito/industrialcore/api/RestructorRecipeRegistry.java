@@ -3,7 +3,7 @@ package com.jykito.industrialcore.api;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,16 +43,16 @@ public class RestructorRecipeRegistry {
 
     public static Optional<RestructorRecipeData> findMatchData(ItemStack input, ItemStack catalyst) {
         for (KubeRecipe r : RECIPES) {
-            Item inputItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(r.inputId()));
+            Item inputItem = BuiltInRegistries.ITEM.get(ResourceLocation.parse(r.inputId()));
             if (inputItem == null) continue;
             if (!input.is(inputItem) || input.getCount() < r.inputCount()) continue;
 
             if (r.catalystId() != null && !r.catalystId().isEmpty()) {
-                Item catItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(r.catalystId()));
+                Item catItem = BuiltInRegistries.ITEM.get(ResourceLocation.parse(r.catalystId()));
                 if (catItem == null || catalyst.isEmpty() || !catalyst.is(catItem)) continue;
             }
 
-            Item outputItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(r.outputId()));
+            Item outputItem = BuiltInRegistries.ITEM.get(ResourceLocation.parse(r.outputId()));
             if (outputItem == null) continue;
 
             return Optional.of(new RestructorRecipeData(

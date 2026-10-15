@@ -4,22 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Условия редких черт ({@link NaniteTrait}): камера эволюции зовёт {@link #update} после каждого поколения с тем, что вокруг.
- * Счётчики живут в геноме, черта, раз появившись, остаётся.
+ * Conditions for rare traits ({@link NaniteTrait}): the evolution chamber calls {@link #update} after every generation with what is around it.
+ * The counters live in the genome; once a trait appears, it stays.
  */
 public final class NaniteTraits {
 
     private NaniteTraits() {}
 
-    /** Пироните мало потолка: нужно ещё столько поколений на тепле от {@link #HOT}, иначе хватило бы одного в конце. */
+    /** Pyronite needs more than the cap: this many more generations in heat from {@link #HOT}, otherwise one at the end would be enough. */
     public static final int HOT_GENERATIONS = 20;
     public static final float HOT = 0.9f, PYRONITE_STABILITY = 0.5f, PYRONITE_CAP_SHARE = 0.95f, CHIMERA_SHARE = 0.25f;
     public static final int CHIMERA_TARGETS = 3;
 
-    /** Что было вокруг камеры в это поколение. */
+    /** What was around the chamber during this generation. */
     public record Env(boolean cold, boolean field, float heat) {}
 
-    /** Обновить счётчики штамма после поколения под цель {@code target}; возвращает черты, появившиеся сейчас. */
+    /** Update the strain counters after a generation for target {@code target}; returns the traits that appeared now. */
     public static List<NaniteTrait> update(NaniteGenome g, NaniteGenome.Kind kind, String target, Env env) {
         List<NaniteTrait> got = new ArrayList<>();
         if (env.cold()) g.coldGens++;

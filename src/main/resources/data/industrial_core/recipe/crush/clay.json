@@ -1,0 +1,14 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:crushing",
+  "ingredient": {
+    "item": "minecraft:clay"
+  },
+  "inputCount": 1,
+  "result": {
+    "id": "minecraft:clay_ball",
+    "count": 4
+  },
+  "processingTime": 84,
+  "energyCost": 30
+}

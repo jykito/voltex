@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "A A",
+    "BCB",
+    " D "
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/bronze"
+    },
+    "B": {
+      "item": "industrial_core:gold_conductor"
+    },
+    "C": {
+      "item": "industrial_core:electric_motor"
+    },
+    "D": {
+      "item": "industrial_core:battery"
+    }
+  },
+  "result": {
+    "id": "industrial_core:electric_wrench",
+    "count": 1
+  }
+}

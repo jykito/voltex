@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " A ",
+    "BCB",
+    " D "
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:sticky_piston"
+    },
+    "B": {
+      "item": "industrial_core:rubber"
+    },
+    "C": {
+      "item": "industrial_core:electric_motor"
+    },
+    "D": {
+      "item": "industrial_core:copper_cable"
+    }
+  },
+  "result": {
+    "id": "industrial_core:item_puller",
+    "count": 1
+  }
+}

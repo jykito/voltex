@@ -3,7 +3,7 @@ package com.jykito.industrialcore.jei;
 import com.jykito.industrialcore.IndustrialCore;
 import com.jykito.industrialcore.recipe.CrystallizerRecipe;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -21,19 +21,19 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * Кристаллизация в JEI: бак с жидкостью и слот затравки слева, предмет справа.
- * Затравка необязательна — рецепт без неё показывает только бак.
+ * Crystallization in JEI: a fluid tank and the seed slot on the left, the item on the right.
+ * The seed is optional: a recipe without it shows only the tank.
  */
 public class CrystallizerJeiCategory implements IRecipeCategory<CrystallizerRecipe> {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/jei/jei_crystallizer.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/jei/jei_crystallizer.png");
 
     private static final int TEX_W = 154, TEX_H = 160, VIS_W = 154, VIS_H = 91;
 
@@ -83,7 +83,7 @@ public class CrystallizerJeiCategory implements IRecipeCategory<CrystallizerReci
         FluidStack in = recipe.makeFluidInput();
         IRecipeSlotBuilder tank = builder.addSlot(RecipeIngredientRole.INPUT, TANK_X, TANK_Y);
         if (!in.isEmpty()) {
-            tank.setCustomRenderer(ForgeTypes.FLUID_STACK,
+            tank.setCustomRenderer(NeoForgeTypes.FLUID_STACK,
                         new FluidTankRenderer(TANK_W, TANK_H, TEXTURE, GLASS_U, GLASS_V, TEX_W, TEX_H))
                 .addFluidStack(in.getFluid(), in.getAmount());
         }

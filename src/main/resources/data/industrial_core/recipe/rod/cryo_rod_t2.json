@@ -1,0 +1,17 @@
+{
+  "type": "industrial_core:rod_fabrication_recipe",
+  "result": {
+    "id": "industrial_core:cryo_rod_t2",
+    "count": 1
+  },
+  "ingredient1": {
+    "item": "industrial_core:cryo_rod"
+  },
+  "ingredient2": {
+    "item": "industrial_core:cryo_crystal"
+  },
+  "count1": 1,
+  "count2": 2,
+  "processingTime": 400,
+  "energyCostPerTick": 800
+}

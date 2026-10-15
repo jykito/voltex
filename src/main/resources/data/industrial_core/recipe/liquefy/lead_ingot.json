@@ -1,0 +1,12 @@
+{
+  "type": "industrial_core:liquefier_recipe",
+  "ingredient": {
+    "tag": "c:ingots/lead"
+  },
+  "itemCount": 1,
+  "requiredHeat": 1000,
+  "fluid": "industrial_core:molten_lead",
+  "fluidAmount": 144,
+  "processingTime": 200,
+  "energyCostPerTick": 40
+}

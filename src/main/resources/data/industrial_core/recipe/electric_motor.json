@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/iron"
+    },
+    "B": {
+      "item": "industrial_core:rubber"
+    },
+    "C": {
+      "item": "industrial_core:copper_solenoid"
+    },
+    "D": {
+      "tag": "c:ingots/iron"
+    },
+    "E": {
+      "item": "industrial_core:solder"
+    }
+  },
+  "result": {
+    "id": "industrial_core:electric_motor",
+    "count": 1
+  }
+}

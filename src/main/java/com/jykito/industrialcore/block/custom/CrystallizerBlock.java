@@ -1,4 +1,9 @@
 package com.jykito.industrialcore.block.custom;
+import com.mojang.serialization.MapCodec;
+import com.jykito.industrialcore.block.BlockUse;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.ItemInteractionResult;
+import com.jykito.industrialcore.capability.Caps;
 
 import com.jykito.industrialcore.block.entity.CrystallizerBlockEntity;
 import com.jykito.industrialcore.block.entity.ModBlockEntities;
@@ -23,14 +28,17 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Кристаллизатор: жидкость на вход, предмет на выход. Такого рецепта в моде не было,
- * поэтому машина работает своим типом {@code crystallizing}, а не через {@code machine_recipe}.
+ * Crystallizer: liquid in, item out. The mod had no such recipe before,
+ * so the machine runs its own {@code crystallizing} type rather than going through {@code machine_recipe}.
  */
 public class CrystallizerBlock extends BaseEntityBlock {
+
+    /** 1.21: block codec. Vanilla does not call it for mod blocks; there is one block instance, so unit is exact. */
+    @Override
+    protected MapCodec<? extends CrystallizerBlock> codec() { return MapCodec.unit(this); }
 
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
@@ -57,12 +65,17 @@ public class CrystallizerBlock extends BaseEntityBlock {
     }
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        return BlockUse.toItemResult(use(state, level, pos, player, hand, hit));
+    }
+
+    /** Formerly Block.use (1.20.1); called from useItemOn for both hands, as before. */
     public InteractionResult use(BlockState state, Level level, BlockPos pos,
                                  Player player, InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide()) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof CrystallizerBlockEntity crystallizer)
-                NetworkHooks.openScreen((ServerPlayer) player, crystallizer, pos);
+                ((ServerPlayer) player).openMenu(crystallizer, pos);
         }
         return InteractionResult.sidedSuccess(level.isClientSide());
     }
@@ -81,14 +94,14 @@ public class CrystallizerBlock extends BaseEntityBlock {
         builder.add(FACING, LIT);
     }
 
-    /** Содержимое падает отдельно: лут-таблица отдаёт только сам блок. */
+    /** Contents drop separately: the loot table only drops the block itself. */
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos,
                          BlockState newState, boolean moving) {
         if (state.getBlock() != newState.getBlock()) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be != null) {
-                be.getCapability(net.minecraftforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER)
+                Caps.get(be, Caps.ITEM_HANDLER)
                         .ifPresent(h -> {
                             for (int i = 0; i < h.getSlots(); i++) {
                                 var stack = h.getStackInSlot(i);

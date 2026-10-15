@@ -1,0 +1,22 @@
+{
+  "replace": false,
+  "values": [
+    "#c:dusts/iron",
+    "#c:dusts/gold",
+    "#c:dusts/copper",
+    "#c:dusts/tin",
+    "#c:dusts/lead",
+    "#c:dusts/aluminum",
+    "#c:dusts/nickel",
+    "#c:dusts/silver",
+    "#c:dusts/bronze",
+    "#c:dusts/diamond",
+    "#c:dusts/emerald",
+    "#c:dusts/lapis",
+    "#c:dusts/coal",
+    "#c:dusts/netherite",
+    "#c:dusts/lithium",
+    "#c:dusts/silicon",
+    "#c:dusts/amethyst"
+  ]
+}

@@ -28,7 +28,7 @@ import java.util.List;
 public class BlastFurnaceJeiCategory implements IRecipeCategory<BlastFurnaceRecipe> {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/jei/jei_blast_furnace.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/jei/jei_blast_furnace.png");
     private static final int TEX_W = 154, TEX_H = 140, VIS_W = 154, VIS_H = 84;
 
     private static final int IN1_X = 47, IN1_Y = 13, IN2_X = 47, IN2_Y = 41, OUT_X = 95, OUT_Y = 27;

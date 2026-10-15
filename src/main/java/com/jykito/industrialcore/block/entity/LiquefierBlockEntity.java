@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.block.custom.LiquefierBlock;
 import com.jykito.industrialcore.energy.MachineEnergy;
@@ -24,20 +28,17 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.energy.EnergyStorage;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
+public class LiquefierBlockEntity extends BlockEntity implements Caps.Provider, MenuProvider {
 
     private final com.jykito.industrialcore.recipe.CachedRecipe<LiquefierRecipe> recipeCache =
             new com.jykito.industrialcore.recipe.CachedRecipe<>();
@@ -53,7 +54,6 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
             };
         }
     };
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
     private final IItemHandlerModifiable automationHandler = new IItemHandlerModifiable() {
         @Override public void setStackInSlot(int slot, @NotNull ItemStack stack) { itemHandler.setStackInSlot(slot, stack); }
@@ -72,8 +72,7 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
 
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
-    private final MachineEnergy energyStorage = MachineEnergy.consumer(50000, 50000); // приём = буфер, без потолка на вход
-    private LazyOptional<EnergyStorage> lazyEnergyHandler = LazyOptional.empty();
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(50000, 50000); // intake = buffer, no input cap
 
     private static final int TANK_BASE = 8000;
 
@@ -85,10 +84,9 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
                 level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
         }
     };
-    private LazyOptional<IFluidHandler> lazyFluidHandler = LazyOptional.empty();
 
     private int heat = 0;
-    private int litGrace = 0; // анти-мигание LIT (грейс через MachineLit)
+    private int litGrace = 0; // anti-flicker for LIT (grace via MachineLit)
     private static final int MAX_HEAT = 10000;
     private boolean isReceivingHeat = false;
 
@@ -101,7 +99,6 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
             return accepted;
         }
     };
-    private LazyOptional<com.jykito.industrialcore.heat.IHeatHandler> lazyHeat = LazyOptional.empty();
 
     protected final ContainerData data;
     private int progress = 0;
@@ -155,7 +152,7 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
         MachineUpgrades upg = MachineUpgrades.scan(itemHandler, 2, 5);
 
         if (AdaptiveTank.resize(outputTank, TANK_BASE, upg.parallel()))
-            level.sendBlockUpdated(pos, state, state, 3); // шкала бака считается от ёмкости, клиенту нужна новая
+            level.sendBlockUpdated(pos, state, state, 3); // the tank gauge is computed from capacity, the client needs the new one
 
         LiquefierRecipe recipe = findRecipe(level);
         this.maxProgress = recipe != null ? upg.scaleTime(recipe.getProcessingTime()) : 200;
@@ -187,7 +184,7 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
         boolean wantLit = litGrace > 0;
         if (wasLit != wantLit) {
             BlockState ns = state.setValue(LiquefierBlock.LIT, wantLit);
-            if (wantLit) // новая сессия работы (с грейсом) — новая случайная лицевая анимация
+            if (wantLit) // new work session (with grace): a new random face animation
                 ns = ns.setValue(LiquefierBlock.VARIANT, level.random.nextInt(LiquefierBlock.VARIANTS));
             level.setBlock(pos, ns, 3);
         }
@@ -203,7 +200,7 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
         return recipeCache.get(() -> {
             ItemStack s0 = itemHandler.getStackInSlot(0);
             ItemStack s1 = itemHandler.getStackInSlot(1);
-            for (LiquefierRecipe r : level.getRecipeManager().getAllRecipesFor(ModRecipes.LIQUEFYING_TYPE.get())) {
+            for (LiquefierRecipe r : com.jykito.industrialcore.recipe.RecipeLookup.all(level, ModRecipes.LIQUEFYING_TYPE.get())) {
                 if (!r.inputsMatch(s0, s1)) continue;
                 FluidStack out = r.makeFluidOutput();
                 if (out.isEmpty()) continue;
@@ -257,7 +254,7 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
         outputTank.fill(out, IFluidHandler.FluidAction.EXECUTE);
     }
 
-    @Override public CompoundTag getUpdateTag() { return saveWithoutMetadata(); }
+    @Override public CompoundTag getUpdateTag(HolderLookup.Provider registries) { return saveWithoutMetadata(registries); }
 
     @Nullable
     @Override
@@ -277,50 +274,39 @@ public class LiquefierBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY)        return lazyEnergyHandler.cast();
-        if (cap == ForgeCapabilities.ITEM_HANDLER)  return lazyItemHandler.cast();
-        if (cap == ForgeCapabilities.FLUID_HANDLER) return lazyFluidHandler.cast();
-        if (cap == com.jykito.industrialcore.heat.HeatCapability.HEAT) return lazyHeat.cast();
-        return super.getCapability(cap, side);
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.EnergyStorage.BLOCK)        return (T) energyStorage;
+        if (cap == Capabilities.ItemHandler.BLOCK)  return (T) automationHandler;
+        if (cap == Capabilities.FluidHandler.BLOCK) return (T) outputTank;
+        if (cap == com.jykito.industrialcore.heat.HeatCapability.HEAT) return (T) heatHandler;
+        return null;
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
-        lazyEnergyHandler = LazyOptional.of(() -> energyStorage);
-        lazyItemHandler   = LazyOptional.of(() -> automationHandler);
-        lazyFluidHandler  = LazyOptional.of(() -> outputTank);
-        lazyHeat          = LazyOptional.of(() -> heatHandler);
     }
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyEnergyHandler.invalidate();
-        lazyItemHandler.invalidate();
-        lazyFluidHandler.invalidate();
-        lazyHeat.invalidate();
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag tag) {
-        tag.put("inventory", itemHandler.serializeNBT());
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.put("inventory", itemHandler.serializeNBT(registries));
         tag.putInt("energy", energyStorage.getEnergyStored());
-        tag.put("outputTank", outputTank.writeToNBT(new CompoundTag()));
+        tag.put("outputTank", outputTank.writeToNBT(registries, new CompoundTag()));
         AdaptiveTank.save(tag, "outputTankCapacity", outputTank);
         tag.putInt("progress", progress);
         tag.putInt("heat", heat);
-        super.saveAdditional(tag);
+        super.saveAdditional(tag, registries);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        itemHandler.deserializeNBT(tag.getCompound("inventory"));
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        itemHandler.deserializeNBT(registries, tag.getCompound("inventory"));
         energyStorage.setEnergy(tag.getInt("energy"));
         AdaptiveTank.load(tag, "outputTankCapacity", outputTank, TANK_BASE);
-        outputTank.readFromNBT(tag.getCompound("outputTank"));
+        outputTank.readFromNBT(registries, tag.getCompound("outputTank"));
         progress = tag.getInt("progress");
         heat = tag.getInt("heat");
     }

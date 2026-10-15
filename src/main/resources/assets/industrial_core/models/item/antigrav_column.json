@@ -1,5 +1,5 @@
 {
-    "loader": "forge:obj",
+    "loader": "neoforge:obj",
     "model": "industrial_core:models/block/antigrav_pilon_item.obj",
     "flip_v": true,
     "textures": {

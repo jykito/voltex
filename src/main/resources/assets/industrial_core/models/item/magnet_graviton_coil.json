@@ -1,5 +1,5 @@
 {
-    "loader": "forge:obj",
+    "loader": "neoforge:obj",
     "model": "industrial_core:models/item/magnet_graviton_coil.obj",
     "flip_v": true,
     "render_type": "minecraft:cutout",

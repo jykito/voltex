@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "EFE"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:exotic_matter"
+    },
+    "B": {
+      "item": "industrial_core:nexite_chestplate"
+    },
+    "C": {
+      "item": "industrial_core:heat_resistant_plating"
+    },
+    "D": {
+      "item": "industrial_core:singularity_core"
+    },
+    "E": {
+      "item": "industrial_core:kronium_alloy"
+    },
+    "F": {
+      "item": "industrial_core:plasma_core"
+    }
+  },
+  "result": {
+    "id": "industrial_core:plasma_chestplate",
+    "count": 1
+  }
+}

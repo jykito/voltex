@@ -1,5 +1,11 @@
 package com.jykito.industrialcore.recipe;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.Codec;
 
+import net.minecraft.core.HolderLookup;
 import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
@@ -12,10 +18,9 @@ import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-public class OreWashingRecipe implements Recipe<SimpleContainer> {
+public class OreWashingRecipe implements Recipe<ContainerInput> {
 
-    private final ResourceLocation id;
-    /** Рецепт только для лейт-машины (её промышленный режим); малая машина его не видит. */
+    /** Recipe for the late machine only (its industrial mode); the small machine does not see it. */
     private boolean lateOnly;
     private final Ingredient input;
     private final int inputCount;
@@ -27,10 +32,9 @@ public class OreWashingRecipe implements Recipe<SimpleContainer> {
     private final int processingTime;
     private final int energyCostPerTick;
 
-    public OreWashingRecipe(ResourceLocation id, Ingredient input, int inputCount, int waterAmount,
+    public OreWashingRecipe(Ingredient input, int inputCount, int waterAmount,
                             ItemStack result, float resultChance, ItemStack byproduct, float byproductChance,
                             int processingTime, int energyCostPerTick) {
-        this.id = id;
         this.input = input;
         this.inputCount = inputCount;
         this.waterAmount = waterAmount;
@@ -45,16 +49,16 @@ public class OreWashingRecipe implements Recipe<SimpleContainer> {
     public boolean isLateOnly() { return lateOnly; }
 
     @Override
-    public boolean matches(SimpleContainer container, Level level) {
+    public boolean matches(ContainerInput container, Level level) {
         if (lateOnly) return false;
         if (level.isClientSide()) return false;
         return input.test(container.getItem(0)) && container.getItem(0).getCount() >= inputCount;
     }
 
-    @Override public ItemStack assemble(SimpleContainer c, RegistryAccess a) { return result.copy(); }
+    @Override public ItemStack assemble(ContainerInput c, HolderLookup.Provider a) { return result.copy(); }
     @Override public boolean canCraftInDimensions(int w, int h) { return true; }
     @Override public boolean isSpecial() { return true; }
-    @Override public ItemStack getResultItem(RegistryAccess a) { return result.copy(); }
+    @Override public ItemStack getResultItem(HolderLookup.Provider a) { return result.copy(); }
 
     public Ingredient getInput()           { return input; }
     public int        getInputCount()      { return inputCount; }
@@ -74,55 +78,57 @@ public class OreWashingRecipe implements Recipe<SimpleContainer> {
         return list;
     }
 
-    @Override public ResourceLocation getId()            { return id; }
     @Override public RecipeSerializer<?> getSerializer() { return ModRecipes.ORE_WASHING_SERIALIZER.get(); }
     @Override public RecipeType<?> getType()             { return ModRecipes.ORE_WASHING_TYPE.get(); }
 
     public static class Serializer implements RecipeSerializer<OreWashingRecipe> {
         public static final Serializer INSTANCE = new Serializer();
 
-        @Override
-        public OreWashingRecipe fromJson(ResourceLocation id, JsonObject json) {
-            Ingredient input  = Ingredient.fromJson(GsonHelper.getAsJsonObject(json, "ingredient"));
-            int inputCount    = GsonHelper.getAsInt(json, "inputCount", 1);
-            int waterAmount   = GsonHelper.getAsInt(json, "waterAmount", 1000);
-            ItemStack result  = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
-            float resultChance = GsonHelper.getAsFloat(json, "resultChance", 1.0f);
-            ItemStack byprod  = json.has("byproduct")
-                    ? ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "byproduct"))
-                    : ItemStack.EMPTY;
-            float byprodChance = GsonHelper.getAsFloat(json, "byproductChance", 1.0f);
-            int processingTime = GsonHelper.getAsInt(json, "processingTime", 200);
-            int energyCost     = GsonHelper.getAsInt(json, "energyCostPerTick", 40);
-            OreWashingRecipe recipe__ = new OreWashingRecipe(id, input, inputCount, waterAmount, result, resultChance, byprod, byprodChance, processingTime, energyCost);
-            recipe__.lateOnly = GsonHelper.getAsBoolean(json, "lateOnly", false);
-            return recipe__;
-        }
+        private static final MapCodec<OreWashingRecipe> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(r -> r.input),
+                Codec.INT.optionalFieldOf("inputCount", 1).forGetter(r -> r.inputCount),
+                Codec.INT.optionalFieldOf("waterAmount", 1000).forGetter(r -> r.waterAmount),
+                ItemStack.CODEC.fieldOf("result").forGetter(r -> r.result),
+                Codec.FLOAT.optionalFieldOf("resultChance", 1.0f).forGetter(r -> r.resultChance),
+                RecipeCodecs.optionalResult("byproduct").forGetter(r -> r.byproduct),
+                Codec.FLOAT.optionalFieldOf("byproductChance", 1.0f).forGetter(r -> r.byproductChance),
+                Codec.INT.optionalFieldOf("processingTime", 200).forGetter(r -> r.processingTime),
+                Codec.INT.optionalFieldOf("energyCostPerTick", 40).forGetter(r -> r.energyCostPerTick),
+                Codec.BOOL.optionalFieldOf("lateOnly", false).forGetter(r -> r.lateOnly)
+        ).apply(i, (input, inputCount, water, result, resultChance, byprod, byprodChance, time, energy, lateOnly) -> {
+            OreWashingRecipe r = new OreWashingRecipe(input, inputCount, water, result, resultChance, byprod, byprodChance, time, energy);
+            r.lateOnly = lateOnly;
+            return r;
+        }));
 
-        @Override
-        public @Nullable OreWashingRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
-            Ingredient input = Ingredient.fromNetwork(buf);
+        private static final StreamCodec<RegistryFriendlyByteBuf, OreWashingRecipe> STREAM_CODEC =
+                StreamCodec.of(Serializer::write, Serializer::read);
+
+        @Override public MapCodec<OreWashingRecipe> codec() { return CODEC; }
+        @Override public StreamCodec<RegistryFriendlyByteBuf, OreWashingRecipe> streamCodec() { return STREAM_CODEC; }
+
+        private static OreWashingRecipe read(RegistryFriendlyByteBuf buf) {
+            Ingredient input = RecipeCodecs.readIngredient(buf);
             int inputCount   = buf.readInt();
             int waterAmount  = buf.readInt();
-            ItemStack result = buf.readItem();
+            ItemStack result = RecipeCodecs.readItem(buf);
             float resultChance = buf.readFloat();
-            ItemStack byprod = buf.readItem();
+            ItemStack byprod = RecipeCodecs.readItem(buf);
             float byprodChance = buf.readFloat();
             int processingTime = buf.readInt();
             int energyCost     = buf.readInt();
-            OreWashingRecipe recipe__ = new OreWashingRecipe(id, input, inputCount, waterAmount, result, resultChance, byprod, byprodChance, processingTime, energyCost);
-            recipe__.lateOnly = buf.readBoolean();
-            return recipe__;
+            OreWashingRecipe recipe = new OreWashingRecipe(input, inputCount, waterAmount, result, resultChance, byprod, byprodChance, processingTime, energyCost);
+            recipe.lateOnly = buf.readBoolean();
+            return recipe;
         }
 
-        @Override
-        public void toNetwork(FriendlyByteBuf buf, OreWashingRecipe r) {
-            r.input.toNetwork(buf);
+        private static void write(RegistryFriendlyByteBuf buf, OreWashingRecipe r) {
+            RecipeCodecs.writeIngredient(buf, r.input);
             buf.writeInt(r.inputCount);
             buf.writeInt(r.waterAmount);
-            buf.writeItem(r.result);
+            RecipeCodecs.writeItem(buf, r.result);
             buf.writeFloat(r.resultChance);
-            buf.writeItem(r.byproduct);
+            RecipeCodecs.writeItem(buf, r.byproduct);
             buf.writeFloat(r.byproductChance);
             buf.writeInt(r.processingTime);
             buf.writeInt(r.energyCostPerTick);

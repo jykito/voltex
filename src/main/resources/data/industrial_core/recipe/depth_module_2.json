@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "BCB",
+    "DDD"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:cryolite"
+    },
+    "B": {
+      "item": "industrial_core:crystal_plate"
+    },
+    "C": {
+      "tag": "c:components/machine_casing"
+    },
+    "D": {
+      "item": "industrial_core:thermal_insulation"
+    }
+  },
+  "result": {
+    "id": "industrial_core:depth_module_2",
+    "count": 1
+  }
+}

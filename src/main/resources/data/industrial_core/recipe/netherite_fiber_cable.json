@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "BCB",
+    "   "
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:bare_netherite_wire"
+    },
+    "B": {
+      "item": "industrial_core:kronium_alloy"
+    },
+    "C": {
+      "item": "industrial_core:rubber"
+    }
+  },
+  "result": {
+    "id": "industrial_core:netherite_fiber_cable",
+    "count": 3
+  }
+}

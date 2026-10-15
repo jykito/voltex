@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.custom;
+import com.mojang.serialization.MapCodec;
+import com.jykito.industrialcore.block.BlockUse;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.ItemInteractionResult;
 
 import com.jykito.industrialcore.block.entity.EvolutionChamberBlockEntity;
 import com.jykito.industrialcore.block.entity.ModBlockEntities;
@@ -28,15 +32,18 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Камера эволюции нанитов: штамм и руда внутри, энергия и (по желанию) тепло снаружи.
- * Блок не цельный (основание, стеклянная колба в стойках, крышка — модель из tools/texture_viewer/evolution_chamber_def.js, E2),
- * поэтому своя форма и noOcclusion в свойствах.
+ * Nanite evolution chamber: strain and ore inside, energy and (optionally) heat from outside.
+ * The block is not a full cube (base, glass flask in posts, lid; model from tools/texture_viewer/evolution_chamber_def.js, E2),
+ * hence its own shape and noOcclusion in the properties.
  */
 public class EvolutionChamberBlock extends BaseEntityBlock {
+
+    /** 1.21: block codec. Vanilla does not call it for mod blocks; there is one block instance, so unit is exact. */
+    @Override
+    protected MapCodec<? extends EvolutionChamberBlock> codec() { return MapCodec.unit(this); }
 
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
@@ -70,9 +77,14 @@ public class EvolutionChamberBlock extends BaseEntityBlock {
     }
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        return BlockUse.toItemResult(use(state, level, pos, player, hand, hit));
+    }
+
+    /** Formerly Block.use (1.20.1); called from useItemOn for both hands, as before. */
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof EvolutionChamberBlockEntity be)
-            NetworkHooks.openScreen((ServerPlayer) player, be, pos);
+            ((ServerPlayer) player).openMenu(be, pos);
         return InteractionResult.sidedSuccess(level.isClientSide());
     }
 
@@ -88,7 +100,7 @@ public class EvolutionChamberBlock extends BaseEntityBlock {
         builder.add(FACING, LIT);
     }
 
-    /** Содержимое падает отдельно: лут-таблица отдаёт только сам блок. */
+    /** Contents drop separately: the loot table only drops the block itself. */
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moving) {
         if (state.getBlock() != newState.getBlock() && level.getBlockEntity(pos) instanceof EvolutionChamberBlockEntity be) {

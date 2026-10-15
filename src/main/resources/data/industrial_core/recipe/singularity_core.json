@@ -1,0 +1,46 @@
+{
+  "type": "industrial_core:accelerating",
+  "inputs": [
+    {
+      "item": "industrial_core:accelerator_mk1",
+      "count": 1
+    },
+    {
+      "item": "industrial_core:cryo_rod_t3",
+      "count": 1
+    },
+    {
+      "item": "industrial_core:star_shard",
+      "count": 1
+    },
+    {
+      "item": "industrial_core:quantum_capacitor",
+      "count": 1
+    },
+    {
+      "type": "neoforge:components",
+      "items": "industrial_core:capsule",
+      "components": {
+        "industrial_core:fluid_content": {
+          "id": "industrial_core:molten_amethyst",
+          "amount": 1000
+        }
+      },
+      "count": 1
+    },
+    {
+      "item": "industrial_core:netherite_fiber_cable",
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "industrial_core:singularity_core",
+    "count": 1
+  },
+  "minTier": 2,
+  "processingTime": 400,
+  "energyCostPerTick": 5000,
+  "minInstab": 60,
+  "bandLo": 62,
+  "bandHi": 70
+}

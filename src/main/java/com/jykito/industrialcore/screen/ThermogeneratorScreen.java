@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Inventory;
 public class ThermogeneratorScreen extends MachineScreen<ThermogeneratorMenu> {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/thermogenerator_gui.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/thermogenerator_gui.png");
 
     private static final int HEAT_BAR_X = 77, HEAT_BAR_Y = 97, HEAT_BAR_W = 110, HEAT_BAR_H = 6;
 

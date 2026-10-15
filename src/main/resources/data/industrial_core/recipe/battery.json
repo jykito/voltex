@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " A ",
+    "BCB",
+    "DED"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:copper_cable"
+    },
+    "B": {
+      "tag": "c:plates/lead"
+    },
+    "C": {
+      "tag": "minecraft:wool"
+    },
+    "D": {
+      "tag": "c:plates/tin"
+    },
+    "E": {
+      "tag": "c:dusts/redstone"
+    }
+  },
+  "result": {
+    "id": "industrial_core:battery",
+    "count": 1
+  }
+}

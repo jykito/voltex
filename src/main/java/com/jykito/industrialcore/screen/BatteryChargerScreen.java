@@ -10,7 +10,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class BatteryChargerScreen extends MachineScreen<BatteryChargerMenu> {
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/battery_charger_gui.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/battery_charger_gui.png");
 
     private static final int BAR_X = 72, BAR_Y = 98, BAR_H = 6;
 

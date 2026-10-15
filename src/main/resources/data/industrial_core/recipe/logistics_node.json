@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "EFE"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/gold"
+    },
+    "B": {
+      "item": "industrial_core:textolite_board"
+    },
+    "C": {
+      "item": "industrial_core:copper_cable"
+    },
+    "D": {
+      "item": "industrial_core:machine_casing"
+    },
+    "E": {
+      "tag": "c:plates/iron"
+    },
+    "F": {
+      "tag": "c:dusts/redstone"
+    }
+  },
+  "result": {
+    "id": "industrial_core:logistics_node",
+    "count": 1
+  }
+}

@@ -1,31 +1,42 @@
 package com.jykito.industrialcore.networking;
 
+import com.jykito.industrialcore.IndustrialCore;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+
 import com.jykito.industrialcore.item.custom.PlasmaArmorEventHandler;
 import com.jykito.industrialcore.item.custom.PlasmaArmorItem;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
-public class PlasmaBurstPacket {
+public class PlasmaBurstPacket implements CustomPacketPayload {
+    public static final Type<PlasmaBurstPacket> TYPE =
+            new Type<>(ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "plasma_burst"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, PlasmaBurstPacket> STREAM_CODEC =
+            StreamCodec.ofMember(PlasmaBurstPacket::toBytes, PlasmaBurstPacket::new);
+
+    @Override
+    public Type<PlasmaBurstPacket> type() { return TYPE; }
+
 
     private static final EquipmentSlot[] ARMOR_SLOTS = {
         EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
     };
 
     public PlasmaBurstPacket() {}
-    public PlasmaBurstPacket(FriendlyByteBuf buf) {}
-    public void toBytes(FriendlyByteBuf buf) {}
+    public PlasmaBurstPacket(RegistryFriendlyByteBuf buf) {}
+    public void toBytes(RegistryFriendlyByteBuf buf) {}
 
-    public boolean handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context ctx = supplier.get();
+    public void handle(IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
-            ServerPlayer player = ctx.getSender();
+            ServerPlayer player = (ServerPlayer) ctx.player();
             if (player == null) return;
 
             List<ItemStack> pieces = new ArrayList<>();
@@ -37,7 +48,6 @@ public class PlasmaBurstPacket {
             if (pieces.size() == 4 && PlasmaArmorEventHandler.isBurstReady(pieces)) {
                 PlasmaArmorEventHandler.triggerPlasmaBurst(player, pieces);
             }
-        });
-        return true;
+        });
     }
 }

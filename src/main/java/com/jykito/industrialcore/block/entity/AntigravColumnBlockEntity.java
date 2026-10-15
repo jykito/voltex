@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.heat.HeatBuffer;
 import com.jykito.industrialcore.heat.HeatCapability;
@@ -14,8 +18,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,31 +26,30 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Антиграв-колонна: подставка (блок-модель, коннект теплотрубы снизу) + парящий пилон (BER).
- * Принимает тепло из теплосети в буфер; выемки/углы пилона светятся по нагреву (аддитив в BER).
- * Активные колонны рядом с магнитом гасят нестабильность (тепло→стабильность, реестр COLUMNS).
+ * Antigrav column: base (block model, heat pipe connection from below) + floating pylon (BER).
+ * Takes heat from the heat network into a buffer; the pylon's grooves and corners glow by heat (additive in the BER).
+ * Active columns next to the magnet dampen instability (heat -> stability, COLUMNS registry).
  */
-public class AntigravColumnBlockEntity extends BlockEntity {
+public class AntigravColumnBlockEntity extends BlockEntity implements Caps.Provider  {
 
     public static final int MAX_HEAT = 4000;
-    private static final int ACTIVE_MIN = 200; // ниже — «холодная», в стабильность не идёт
+    private static final int ACTIVE_MIN = 200; // below that it is "cold" and does not contribute to stability
 
     private final HeatBuffer buffer = new HeatBuffer(MAX_HEAT);
-    private LazyOptional<IHeatHandler> lazyHeat = LazyOptional.empty();
     private int lastSyncHeat = -1000;
 
-    // клиентское сглаживание свечения (тепло синкается ступеньками — догоняем плавно)
+    // client smoothing of the glow (heat syncs in steps, we catch up smoothly)
     private float clientHeatPrev = 0f, clientHeatCurr = 0f;
     private boolean clientInit = false;
 
-    // «работает на магнит»: магнит помечает колонну каждый тик, флаг декеймится; синк на клиент для BER-эффекта
+    // "working for the magnet": the magnet marks the column every tick, the flag decays; synced to the client for the BER effect
     private static final int ENGAGED_HOLD = 10;
     private int engagedTicks = 0;
     private boolean lastEngagedSync = false;
-    private float clientEngaged = 0f;                     // сглаженный 0..1 для эффекта
-    private float clientAngle = 0f, clientAnglePrev = 0f; // накопленный угол вращения (быстрее при работе)
+    private float clientEngaged = 0f;                     // smoothed 0..1 for the effect
+    private float clientAngle = 0f, clientAnglePrev = 0f; // accumulated rotation angle (faster while working)
 
-    // серверный реестр колонн — магнит по нему считает охлаждение в радиусе (тепло→стабильность)
+    // server registry of columns: the magnet uses it to compute cooling in a radius (heat -> stability)
     public static final Set<AntigravColumnBlockEntity> COLUMNS =
             Collections.newSetFromMap(new ConcurrentHashMap<>());
 
@@ -59,48 +60,42 @@ public class AntigravColumnBlockEntity extends BlockEntity {
     @Override
     public void onLoad() {
         super.onLoad();
-        lazyHeat = LazyOptional.of(() -> buffer);
         if (level != null && !level.isClientSide()) COLUMNS.add(this);
     }
 
     @Override
     public void setRemoved() {
         super.setRemoved();
-        lazyHeat.invalidate();
         COLUMNS.remove(this);
     }
 
+        @NotNull
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyHeat.invalidate();
-    }
-
-    @NotNull
-    @Override
-    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == HeatCapability.HEAT && side == Direction.DOWN) return lazyHeat.cast(); // тепло ТОЛЬКО снизу
-        return super.getCapability(cap, side);
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == HeatCapability.HEAT && side == Direction.DOWN) return (T) buffer; // heat ONLY from below
+        return null;
     }
 
     public int getHeat() { return buffer.getHeat(); }
     public float getHeatFraction() { return buffer.getHeat() / (float) MAX_HEAT; }
-    /** Идёт ли в стабильность магнита (вклад масштабируется долей тепла). */
+    /** Whether it contributes to the magnet's stability (the contribution scales with the heat fraction). */
     public boolean isActive() { return buffer.getHeat() >= ACTIVE_MIN; }
 
-    /** Магнит зовёт каждый тик, пока колонна ему помогает (в радиусе + активна) → визуальный эффект. */
+    /** The magnet calls this every tick while the column helps it (in radius + active) -> visual effect. */
     public void markEngaged() { engagedTicks = ENGAGED_HOLD; }
     public boolean isEngaged() { return engagedTicks > 0; }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, AntigravColumnBlockEntity be) {
-        if (be.engagedTicks > 0) be.engagedTicks--;                       // магнит перестал звать → затухает
+        if (be.engagedTicks > 0) be.engagedTicks--;                       // the magnet stopped calling -> fades out
         boolean eng = be.isEngaged();
         int cur = be.buffer.getHeat();
-        if (Math.abs(cur - be.lastSyncHeat) >= 150 || eng != be.lastEngagedSync) { // синк свечения/«работы» на клиент
+        if (Math.abs(cur - be.lastSyncHeat) >= 150 || eng != be.lastEngagedSync) { // sync glow and "working" to the client
             be.lastSyncHeat = cur; be.lastEngagedSync = eng;
             level.sendBlockUpdated(pos, state, state, 2);
         }
-        if (cur > 0) { // очень мягкая утечка — тепло держится ровнее (меньше мигания при слабой подпитке)
+        if (cur > 0) { // very gentle leak: heat holds steadier (less flicker with a weak supply)
             be.buffer.extract(Math.max(1, cur / 2500));
             be.setChanged();
         }
@@ -110,46 +105,46 @@ public class AntigravColumnBlockEntity extends BlockEntity {
         float target = be.buffer.getHeat();
         if (!be.clientInit) { be.clientInit = true; be.clientHeatPrev = be.clientHeatCurr = target; }
         be.clientHeatPrev = be.clientHeatCurr;
-        be.clientHeatCurr += (target - be.clientHeatCurr) * 0.07f; // мягкий догон — гасит мигание при неровной подпитке
+        be.clientHeatCurr += (target - be.clientHeatCurr) * 0.07f; // gentle catch-up: removes flicker with an uneven supply
         if (Math.abs(target - be.clientHeatCurr) < 0.5f) be.clientHeatCurr = target;
-        // «работа на магнит»: плавный уровень эффекта + накопление угла (быстрее при работе)
+        // "working for the magnet": smooth effect level + angle accumulation (faster while working)
         be.clientEngaged += ((be.isEngaged() ? 1f : 0f) - be.clientEngaged) * 0.1f;
         be.clientAnglePrev = be.clientAngle;
-        be.clientAngle = (be.clientAngle + 1.5f + be.clientEngaged * 3.0f) % 360f; // 1.5°/тик → до 4.5 при работе
+        be.clientAngle = (be.clientAngle + 1.5f + be.clientEngaged * 3.0f) % 360f; // 1.5°/tick -> up to 4.5 while working
     }
 
-    /** Сглаженный нагрев для свечения (интерполяция между тиками). */
+    /** Smoothed heat for the glow (interpolated between ticks). */
     public float getRenderHeat(float partialTick) { return Mth.lerp(partialTick, clientHeatPrev, clientHeatCurr); }
 
-    /** Плавный угол вращения пилона (быстрее, когда колонна работает на магнит; с разматыванием 360→0). */
+    /** Smooth pylon rotation angle (faster when the column works for the magnet; wraps 360 -> 0). */
     public float getRenderAngle(float partialTick) {
         float a0 = clientAnglePrev, a1 = clientAngle;
         if (a1 < a0) a1 += 360f;
         return (a0 + (a1 - a0) * partialTick) % 360f;
     }
-    /** 0..1 — насколько колонна «работает на магнит» (для эффекта в BER). */
+    /** 0..1: how much the column is "working for the magnet" (for the BER effect). */
     public float getEngagedLevel() { return clientEngaged; }
 
-    @Override
-    public AABB getRenderBoundingBox() {
-        return new AABB(worldPosition).inflate(2); // пилон ~2 блока — расширяем bbox чтоб не срезался
+    /** Render bounds of the renderer (see its getRenderBoundingBox). */
+    public AABB renderBounds() {
+        return new AABB(worldPosition).inflate(2); // the pylon is ~2 blocks tall, so the bbox is expanded to avoid clipping
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         tag.putInt("heat", buffer.getHeat());
         tag.putBoolean("eng", isEngaged());
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         buffer.setHeat(tag.getInt("heat"));
         engagedTicks = tag.getBoolean("eng") ? ENGAGED_HOLD : 0;
     }
 
-    @Override public CompoundTag getUpdateTag() { CompoundTag t = new CompoundTag(); saveAdditional(t); return t; }
-    @Override public void handleUpdateTag(CompoundTag tag) { load(tag); }
+    @Override public CompoundTag getUpdateTag(HolderLookup.Provider registries) { CompoundTag t = new CompoundTag(); saveAdditional(t, registries); return t; }
+    @Override public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) { loadAdditional(tag, registries); }
     @Nullable @Override public Packet<ClientGamePacketListener> getUpdatePacket() { return ClientboundBlockEntityDataPacket.create(this); }
 }

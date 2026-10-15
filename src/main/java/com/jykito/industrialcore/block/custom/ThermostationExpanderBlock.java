@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.block.custom;
+import com.mojang.serialization.MapCodec;
 
 import com.jykito.industrialcore.block.entity.ThermostationBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -17,8 +18,12 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import org.jetbrains.annotations.Nullable;
 
-/** Расширитель термостанции: +2 термоген-грани +1 охлад сзади; FACING наследуется от блока снизу (ядра). */
+/** Thermal station expander: +2 thermogenerator faces, +1 cooling at the back; FACING is inherited from the block below (the core). */
 public class ThermostationExpanderBlock extends BaseEntityBlock {
+
+    /** 1.21: block codec. Vanilla does not call it for mod blocks; there is one block instance, so unit is exact. */
+    @Override
+    protected MapCodec<? extends ThermostationExpanderBlock> codec() { return MapCodec.unit(this); }
 
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty UP   = ThermostationCoreBlock.UP;
@@ -34,7 +39,7 @@ public class ThermostationExpanderBlock extends BaseEntityBlock {
         Level l = ctx.getLevel();
         BlockPos pos = ctx.getClickedPos();
         BlockState below = l.getBlockState(pos.below());
-        // ориентацию берём у башни снизу (ядро/расширитель) — «защёлкивается» в общий FACING; иначе по игроку
+        // take the orientation from the tower below (core/expander), it snaps to the shared FACING; otherwise from the player
         Direction facing = ThermostationCoreBlock.isTower(below) && below.hasProperty(FACING)
                 ? below.getValue(FACING)
                 : ctx.getHorizontalDirection().getOpposite();

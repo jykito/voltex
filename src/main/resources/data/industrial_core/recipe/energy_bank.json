@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "EEE"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:lithium_battery"
+    },
+    "B": {
+      "type": "neoforge:components",
+      "items": "industrial_core:capsule",
+      "components": {
+        "industrial_core:fluid_content": {
+          "id": "industrial_core:coolant",
+          "amount": 1000
+        }
+      }
+    },
+    "C": {
+      "item": "industrial_core:composite"
+    },
+    "D": {
+      "tag": "c:components/machine_casing"
+    },
+    "E": {
+      "tag": "c:plates/electrum"
+    }
+  },
+  "result": {
+    "id": "industrial_core:energy_bank",
+    "count": 1
+  }
+}

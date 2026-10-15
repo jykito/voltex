@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:superconductor_coil"
+    },
+    "B": {
+      "item": "industrial_core:emerald_flux_cable"
+    },
+    "C": {
+      "item": "industrial_core:condensator"
+    },
+    "D": {
+      "item": "industrial_core:magnet_copper_coil"
+    }
+  },
+  "result": {
+    "id": "industrial_core:magnet_superconductor_coil",
+    "count": 1
+  }
+}

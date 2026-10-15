@@ -1,0 +1,58 @@
+{
+  "keys": [
+    {
+      "name": "result",
+      "role": "output",
+      "type": "item_stack"
+    },
+    {
+      "name": "ingredient",
+      "role": "input",
+      "type": "ingredient"
+    },
+    {
+      "name": "inputCount",
+      "type": "int",
+      "optional": 1
+    },
+    {
+      "name": "waterAmount",
+      "type": "int",
+      "optional": 1000
+    },
+    {
+      "name": "resultChance",
+      "type": "float",
+      "optional": 1
+    },
+    {
+      "name": "byproduct",
+      "role": "output",
+      "type": "item_stack",
+      "default_optional": true
+    },
+    {
+      "name": "byproductChance",
+      "type": "float",
+      "optional": 1
+    },
+    {
+      "name": "processingTime",
+      "type": "int",
+      "optional": 200
+    },
+    {
+      "name": "energyCostPerTick",
+      "type": "int",
+      "optional": 40
+    },
+    {
+      "name": "lateOnly",
+      "type": "boolean",
+      "optional": false
+    }
+  ],
+  "unique": [
+    "result"
+  ]
+}

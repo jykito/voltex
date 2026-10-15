@@ -1,31 +1,31 @@
 package com.jykito.industrialcore.recipe;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.SimpleContainer;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.Nullable;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 /**
- * Рецепт ускорителя: 1–8 РАЗНЫХ ингредиентов (общие слоты 0-7) → выход. 2 входа = «столкновение», 8 = «сборка».
- * minInstab — экзо-гейт (крафт идёт только при нестабильности ≥ порога). [bandLo,bandHi] — полоса нестабильности,
- * удержание в которой на завершении даёт ×2 (контролируемо колоннами). minTier — минимальная катушка.
- * JSON: { inputs:[{item|tag,count},...], result:{item,count}, minTier, processingTime, energyCostPerTick, minInstab, bandLo, bandHi }
+ * Accelerator recipe: 1-8 DIFFERENT ingredients (shared slots 0-7) -> output. 2 inputs = "collision", 8 = "assembly".
+ * minInstab is the exo gate (crafting runs only with instability ≥ the threshold). [bandLo,bandHi] is the instability band;
+ * holding it at completion gives x2 (controlled with columns). minTier is the minimum coil.
+ * JSON: { inputs:[{item|tag,count},...], result:{id,count}, minTier, processingTime, energyCostPerTick, minInstab, bandLo, bandHi,
+ *         fluid:{fluid,amount}?, lateOnly? }
  */
-public class AcceleratorRecipe implements Recipe<SimpleContainer> {
+public class AcceleratorRecipe implements Recipe<ContainerInput> {
 
-    private final ResourceLocation id;
-    /** Рецепт только для лейт-машины (её промышленный режим); малая машина его не видит. */
-    private boolean lateOnly;
+    /** Recipe for the late machine only (its industrial mode); the small machine does not see it. */
+    private final boolean lateOnly;
     private final Ingredient[] inputs;
     private final int[] counts;
     private final ItemStack result;
@@ -34,13 +34,16 @@ public class AcceleratorRecipe implements Recipe<SimpleContainer> {
     private final int energyPerTick;
     private final float minInstab;
     private final float bandLo, bandHi;
+    /** Fluid input (late magnet port); the old magnet has no fluid input, so such recipes are lateOnly only. */
+    private final FluidStack fluid;
 
-    public AcceleratorRecipe(ResourceLocation id, Ingredient[] inputs, int[] counts, ItemStack result,
+    public AcceleratorRecipe(Ingredient[] inputs, int[] counts, ItemStack result,
                              int minTier, int processingTime, int energyPerTick,
-                             float minInstab, float bandLo, float bandHi) {
-        this.id = id; this.inputs = inputs; this.counts = counts; this.result = result;
+                             float minInstab, float bandLo, float bandHi, boolean lateOnly, FluidStack fluid) {
+        this.inputs = inputs; this.counts = counts; this.result = result;
         this.minTier = minTier; this.processingTime = processingTime; this.energyPerTick = energyPerTick;
         this.minInstab = minInstab; this.bandLo = bandLo; this.bandHi = bandHi;
+        this.lateOnly = lateOnly; this.fluid = fluid;
     }
 
     public Ingredient[] getInputs()  { return inputs; }
@@ -50,13 +53,13 @@ public class AcceleratorRecipe implements Recipe<SimpleContainer> {
     public int getProcessingTime()   { return processingTime; }
     public int getEnergyPerTick()    { return energyPerTick; }
     public float getMinInstab()      { return minInstab; }
-    /** В оптимальной полосе нестабильности → удвоение выхода. */
+    /** In the optimal instability band -> output doubled. */
     public boolean inBand(float instab) { return bandHi > bandLo && instab >= bandLo && instab <= bandHi; }
-    /** Полоса [bandLo,bandHi] теперь = диапазон, в котором дрейфует резонансная цель (см. ElectromagnetCoreBlockEntity). */
+    /** The [bandLo,bandHi] band is now the range the resonance target drifts in (see ElectromagnetCoreBlockEntity). */
     public float getBandLo() { return bandLo; }
     public float getBandHi() { return bandHi; }
 
-    /** Все ингредиенты есть в слотах 0-7 (жадное сопоставление: каждому — свой слот с нужным count). */
+    /** All ingredients are in slots 0-7 (greedy matching: each gets its own slot with the required count). */
     public boolean matches(ItemStack[] slots) {
         if (lateOnly) return false;
         boolean[] used = new boolean[slots.length];
@@ -72,12 +75,10 @@ public class AcceleratorRecipe implements Recipe<SimpleContainer> {
     }
 
     public boolean isLateOnly() { return lateOnly; }
-    /** Жидкость на входе (порт лейт-магнита); у старого магнита жидкого входа нет — такие рецепты только lateOnly. */
-    private FluidStack fluid = FluidStack.EMPTY;
     public FluidStack getFluid() { return fluid; }
 
     @Override
-    public boolean matches(SimpleContainer c, Level level) {
+    public boolean matches(ContainerInput c, Level level) {
         if (lateOnly) return false;
         if (level.isClientSide()) return false;
         ItemStack[] slots = new ItemStack[c.getContainerSize()];
@@ -85,10 +86,10 @@ public class AcceleratorRecipe implements Recipe<SimpleContainer> {
         return matches(slots);
     }
 
-    @Override public ItemStack assemble(SimpleContainer c, RegistryAccess a) { return result.copy(); }
+    @Override public ItemStack assemble(ContainerInput c, HolderLookup.Provider registries) { return result.copy(); }
     @Override public boolean canCraftInDimensions(int w, int h) { return true; }
     @Override public boolean isSpecial() { return true; }
-    @Override public ItemStack getResultItem(RegistryAccess a) { return result; }
+    @Override public ItemStack getResultItem(HolderLookup.Provider registries) { return result; }
 
     @Override
     public NonNullList<Ingredient> getIngredients() {
@@ -97,66 +98,51 @@ public class AcceleratorRecipe implements Recipe<SimpleContainer> {
         return list;
     }
 
-    @Override public ResourceLocation getId()            { return id; }
     @Override public RecipeSerializer<?> getSerializer() { return ModRecipes.ACCELERATOR_SERIALIZER.get(); }
     @Override public RecipeType<?> getType()             { return ModRecipes.ACCELERATING_TYPE.get(); }
 
     public static class Serializer implements RecipeSerializer<AcceleratorRecipe> {
         public static final Serializer INSTANCE = new Serializer();
 
-        @Override
-        public AcceleratorRecipe fromJson(ResourceLocation id, JsonObject json) {
-            JsonArray arr = GsonHelper.getAsJsonArray(json, "inputs");
-            int n = arr.size();
-            Ingredient[] ing = new Ingredient[n];
-            int[] cnt = new int[n];
-            for (int i = 0; i < n; i++) {
-                JsonObject el = arr.get(i).getAsJsonObject();
-                ing[i] = Ingredient.fromJson(el);
-                cnt[i] = GsonHelper.getAsInt(el, "count", 1);
-            }
-            JsonObject res = GsonHelper.getAsJsonObject(json, "result");
-            ItemStack result = new ItemStack(GsonHelper.getAsItem(res, "item"), GsonHelper.getAsInt(res, "count", 1));
-            int minTier = GsonHelper.getAsInt(json, "minTier", 1);
-            int time    = GsonHelper.getAsInt(json, "processingTime", 200);
-            int energy  = GsonHelper.getAsInt(json, "energyCostPerTick", 1000);
-            float minInstab = GsonHelper.getAsFloat(json, "minInstab", 0f);
-            float bandLo    = GsonHelper.getAsFloat(json, "bandLo", 0f);
-            float bandHi    = GsonHelper.getAsFloat(json, "bandHi", 0f);
-            AcceleratorRecipe recipe__ = new AcceleratorRecipe(id, ing, cnt, result, minTier, time, energy, minInstab, bandLo, bandHi);
-            recipe__.lateOnly = GsonHelper.getAsBoolean(json, "lateOnly", false);
-            if (json.has("fluid")) {
-                JsonObject f = GsonHelper.getAsJsonObject(json, "fluid");
-                var fl = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(GsonHelper.getAsString(f, "fluid")));
-                if (fl != null) recipe__.fluid = new FluidStack(fl, GsonHelper.getAsInt(f, "amount", 1000));
-            }
-            return recipe__;
-        }
+        private static final MapCodec<AcceleratorRecipe> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                RecipeCodecs.COUNTED_INPUTS.fieldOf("inputs").forGetter(r -> RecipeCodecs.sized(r.inputs, r.counts)),
+                ItemStack.CODEC.fieldOf("result").forGetter(r -> r.result),
+                Codec.INT.optionalFieldOf("minTier", 1).forGetter(r -> r.minTier),
+                Codec.INT.optionalFieldOf("processingTime", 200).forGetter(r -> r.processingTime),
+                Codec.INT.optionalFieldOf("energyCostPerTick", 1000).forGetter(r -> r.energyPerTick),
+                Codec.FLOAT.optionalFieldOf("minInstab", 0f).forGetter(r -> r.minInstab),
+                Codec.FLOAT.optionalFieldOf("bandLo", 0f).forGetter(r -> r.bandLo),
+                Codec.FLOAT.optionalFieldOf("bandHi", 0f).forGetter(r -> r.bandHi),
+                Codec.BOOL.optionalFieldOf("lateOnly", false).forGetter(r -> r.lateOnly),
+                RecipeCodecs.optionalFluid("fluid").forGetter(r -> r.fluid)
+        ).apply(i, (in, result, minTier, time, energy, minInstab, bandLo, bandHi, lateOnly, fluid) -> new AcceleratorRecipe(
+                RecipeCodecs.ingredients(in), RecipeCodecs.counts(in), result, minTier, time, energy,
+                minInstab, bandLo, bandHi, lateOnly, fluid)));
 
-        @Override
-        public @Nullable AcceleratorRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
-            int n = buf.readVarInt();
-            Ingredient[] ing = new Ingredient[n];
-            int[] cnt = new int[n];
-            for (int i = 0; i < n; i++) { ing[i] = Ingredient.fromNetwork(buf); cnt[i] = buf.readVarInt(); }
-            ItemStack result = buf.readItem();
+        private static final StreamCodec<RegistryFriendlyByteBuf, AcceleratorRecipe> STREAM_CODEC =
+                StreamCodec.of(Serializer::write, Serializer::read);
+
+        @Override public MapCodec<AcceleratorRecipe> codec() { return CODEC; }
+        @Override public StreamCodec<RegistryFriendlyByteBuf, AcceleratorRecipe> streamCodec() { return STREAM_CODEC; }
+
+        private static AcceleratorRecipe read(RegistryFriendlyByteBuf buf) {
+            RecipeCodecs.Counted in = RecipeCodecs.readCounted(buf);
+            ItemStack result = RecipeCodecs.readItem(buf);
             int minTier = buf.readVarInt(), time = buf.readVarInt(), energy = buf.readVarInt();
             float minInstab = buf.readFloat(), bandLo = buf.readFloat(), bandHi = buf.readFloat();
-            AcceleratorRecipe recipe__ = new AcceleratorRecipe(id, ing, cnt, result, minTier, time, energy, minInstab, bandLo, bandHi);
-            recipe__.lateOnly = buf.readBoolean();
-            recipe__.fluid = buf.readFluidStack();
-            return recipe__;
+            boolean lateOnly = buf.readBoolean();
+            FluidStack fluid = RecipeCodecs.readFluid(buf);
+            return new AcceleratorRecipe(in.inputs(), in.counts(), result, minTier, time, energy,
+                    minInstab, bandLo, bandHi, lateOnly, fluid);
         }
 
-        @Override
-        public void toNetwork(FriendlyByteBuf buf, AcceleratorRecipe r) {
-            buf.writeVarInt(r.inputs.length);
-            for (int i = 0; i < r.inputs.length; i++) { r.inputs[i].toNetwork(buf); buf.writeVarInt(r.counts[i]); }
-            buf.writeItem(r.result);
+        private static void write(RegistryFriendlyByteBuf buf, AcceleratorRecipe r) {
+            RecipeCodecs.writeCounted(buf, r.inputs, r.counts);
+            RecipeCodecs.writeItem(buf, r.result);
             buf.writeVarInt(r.minTier); buf.writeVarInt(r.processingTime); buf.writeVarInt(r.energyPerTick);
             buf.writeFloat(r.minInstab); buf.writeFloat(r.bandLo); buf.writeFloat(r.bandHi);
             buf.writeBoolean(r.lateOnly);
-            buf.writeFluidStack(r.fluid);
+            RecipeCodecs.writeFluid(buf, r.fluid);
         }
     }
 }

@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CCC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:rubber"
+    },
+    "B": {
+      "tag": "c:plates/tin"
+    },
+    "C": {
+      "item": "industrial_core:bare_ferro_wire"
+    }
+  },
+  "result": {
+    "id": "industrial_core:ferro_cable",
+    "count": 3
+  }
+}

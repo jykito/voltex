@@ -1,0 +1,20 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "ae2"
+    }
+  ],
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:compressing",
+  "ingredient": {
+    "item": "ae2:certus_quartz_crystal"
+  },
+  "inputCount": 16,
+  "result": {
+    "id": "ae2:flawless_budding_quartz",
+    "count": 1
+  },
+  "processingTime": 210,
+  "energyCost": 100
+}

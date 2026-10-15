@@ -1,7 +1,7 @@
 package com.jykito.industrialcore.jei;
 
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
@@ -54,7 +54,7 @@ public class CapsuleFillerJeiCategory implements IRecipeCategory<CapsuleFillerJe
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, CapsuleFillerJeiRecipe recipe, IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.CATALYST, FLUID_X, FLUID_Y)
-               .setCustomRenderer(ForgeTypes.FLUID_STACK, new FluidTankRenderer(TANK_W, TANK_H, texture, GLASS_U, GLASS_V, TEX_W, TEX_H))
+               .setCustomRenderer(NeoForgeTypes.FLUID_STACK, new FluidTankRenderer(TANK_W, TANK_H, texture, GLASS_U, GLASS_V, TEX_W, TEX_H))
                .addFluidStack(recipe.fluid().getFluid(), recipe.fluid().getAmount());
 
         builder.addSlot(RecipeIngredientRole.INPUT, IN_X, IN_Y).addItemStack(recipe.emptyContainer());

@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:glass"
+    },
+    "B": {
+      "tag": "c:gems/diamond"
+    },
+    "C": {
+      "item": "industrial_core:glass_fiber"
+    },
+    "D": {
+      "item": "industrial_core:photonic_lens"
+    }
+  },
+  "result": {
+    "id": "industrial_core:miner_lens_1",
+    "count": 1
+  }
+}

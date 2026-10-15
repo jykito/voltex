@@ -1,4 +1,9 @@
 package com.jykito.industrialcore.block.entity;
+import com.jykito.industrialcore.block.ModBlocks;
+import net.minecraft.core.HolderLookup;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.block.custom.CryoCasingBlock;
 import com.jykito.industrialcore.block.custom.CryoCoreBlock;
@@ -29,69 +34,66 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.energy.EnergyStorage;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Ядро криокамеры.
+ * Cryo chamber core.
  *
- * <h2>В чём смысл</h2>
- * Тепло здесь <b>топливо</b>, а не побочка: абсорбционный принцип, как у газовых холодильников.
- * Цепочка {@code FE → термостанция → тепло → теплотрубы → криокамера → холод}.
+ * <h2>The point</h2>
+ * Heat here is <b>fuel</b>, not a by-product: the absorption principle, like gas refrigerators.
+ * The chain is {@code FE -> thermal station -> heat -> heat pipes -> cryo chamber -> cold}.
  * <p>
- * Камера — не станок, а <b>установка</b>. Она копит {@link #depth ГЛУБИНУ}, и глубина и есть
- * настоящий ресурс: она набирается минутами устойчивой подачи и теряется быстрее, чем растёт.
- * Поэтому камеру не выключают.
+ * The chamber is not a machine but an <b>installation</b>. It accumulates {@link #depth DEPTH}, and depth is
+ * the real resource: it builds up over minutes of steady supply and is lost faster than it grows.
+ * That is why the chamber is never switched off.
  *
- * <h2>Как считается глубина</h2>
- * Каждый тик буфер тепла обнуляется и его содержимое читается как приток за этот тик. Приток
- * больше текущей глубины — глубина растёт, меньше — падает. Равновесие ровно там, где
- * глубина равна притоку, поэтому таблица ступеней читается напрямую в «тепле в тик».
+ * <h2>How depth is computed</h2>
+ * Every tick the heat buffer is zeroed and its contents are read as the inflow for that tick. Inflow
+ * above the current depth makes depth grow, below makes it fall. Equilibrium is exactly where
+ * depth equals inflow, so the stage table reads directly in "heat per tick".
  * <p>
- * Обнуление буфера ещё и держит его пустым, а теплотруба качает в потребителя по свободному
- * месту — если бы буфер стоял полным, подача бы захлебнулась.
+ * Zeroing the buffer also keeps it empty, and a heat pipe pumps into a consumer by free
+ * space; if the buffer stayed full, the supply would choke.
  *
  *
- * <h2>Отказа нет намеренно</h2>
- * Просадка подачи просто ставит работу на паузу, прогресс сохраняется. Наказание за срыв
- * (потеря партии, трескающиеся панели) обсуждалось и <b>отвергнуто</b>: взрыв уже занят квенчем
- * магнита, и второй такой же отказ сделал бы все мультиблоки мода похожими друг на друга.
- * Не возвращать.
+ * <h2>No failure on purpose</h2>
+ * A supply drop just pauses the work, progress is kept. A penalty for interruption
+ * (losing the batch, cracking panels) was discussed and <b>rejected</b>: explosions are already taken by the magnet
+ * quench, and a second failure of the same kind would make all the mod's multiblocks feel alike.
+ * Do not bring it back.
  */
-public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
+public class CryoCoreBlockEntity extends BlockEntity implements Caps.Provider, MenuProvider {
 
-    // ---- структура (тир 2 отличается только этими числами) ----
+    // ---- structure (tier 2 differs only in these numbers) ----
     private static final int DEPTH_D = 4, HEIGHT = 4, HALF_WIDTH = 2;
     private static final int FRIDGE_D = 2, FRIDGE_S = 0;
     private static final int CHECK_INTERVAL = 20;
 
-    // ---- слоты ----
+    // ---- slots ----
     private static final int SLOT_INPUT = 0, SLOT_OUTPUT = 1, SLOT_ROD_FIRST = 2, SLOT_ROD_LAST = 4;
-    /** Модуль глубины: разрешение уходить глубже. Не тратится, старший перекрывает младший. */
+    /** Depth module: permission to go deeper. Not consumed, a higher one overrides a lower one. */
     private static final int SLOT_MODULE = 5;
 
-    // ---- ступени: порог глубины и расход хладагента в тик ----
+    // ---- stages: depth threshold and coolant usage per tick ----
     /**
-     * Пороги привязаны к тому, что реально можно выдать. Полная башня термостанции на криогенных
-     * теплообменниках даёт 1920 тепла в тик, а её пропуск при пятнадцати радиаторах — 1900.
-     * Обе стены сходятся почти в точку, поэтому верхняя ступень стоит на 1800: эндгейм это
-     * достроенная башня, а не «поставь вторую станцию».
+     * The thresholds are tied to what can actually be delivered. A full thermal station tower on cryogenic
+     * heat exchangers gives 1920 heat per tick, and its throughput with fifteen radiators is 1900.
+     * Both limits meet almost at one point, so the top stage sits at 1800: the endgame is
+     * a finished tower, not "place a second station".
      */
     private static final int[] STAGE_DEPTH   = {200, 800, 1800};
     private static final int[] STAGE_COOLANT = { 10,  40,  120};
     public  static final int MAX_DEPTH = 1800;
 
-    /** Глубина растёт на единицу в тик, а теряется втрое быстрее: срыв подачи должен быть дорог. */
+    /** Depth grows by one per tick and is lost three times faster: a supply failure must be costly. */
     private static final int DEPTH_RISE = 1, DEPTH_FALL = 3;
 
     private static final int TANK_CAP = 8000;
@@ -99,9 +101,9 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
     private static final int MAX_HEAT = 20_000;
 
     /**
-     * Сколько износа копится на одну единицу прочности стержня. Само накопление идёт квадратом
-     * ступени, поэтому глубина и есть цена: T1 на третьей ступени живёт около четырёх минут,
-     * а на первой — часами.
+     * How much wear accumulates per one point of rod durability. The accumulation itself goes with the square
+     * of the stage, so depth is the price: a T1 rod on the third stage lasts about four minutes,
+     * and on the first one for hours.
      */
     private static final int WEAR_PER_POINT = 40;
 
@@ -111,9 +113,9 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
         @Override protected void onContentsChanged(int slot) { recipeCache.markDirty(); setChanged(); }
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-            // Выход тут РАЗРЕШЁН намеренно: машина кладёт результат этим же хранилищем, и запрет
-            // на уровне хранилища съедал бы готовый предмет молча. Руками и автоматикой в него
-            // не положить — это ловится в меню (mayPlace) и в automationHandler.
+            // Output is ALLOWED here on purpose: the machine puts the result through this same storage, and blocking
+            // it at the storage level would silently eat the finished item. Hands and automation cannot
+            // put into it; that is caught in the menu (mayPlace) and in automationHandler.
             return switch (slot) {
                 case SLOT_INPUT, SLOT_OUTPUT -> !isRod(stack) && !(stack.getItem() instanceof DepthModuleItem);
                 case SLOT_MODULE             -> stack.getItem() instanceof DepthModuleItem;
@@ -121,7 +123,6 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
             };
         }
     };
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
     private static boolean isRod(ItemStack s) {
         return s.getItem() == ModItems.CRYO_ROD.get()
@@ -129,7 +130,7 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
             || s.getItem() == ModItems.CRYO_ROD_T3.get();
     }
 
-    /** Стержень ускоряет работу и тем сильнее, чем он лучше. */
+    /** The rod speeds up the work, the better the rod the more. */
     private static float rodBonus(ItemStack s) {
         if (s.getItem() == ModItems.CRYO_ROD_T3.get()) return 1.00f;
         if (s.getItem() == ModItems.CRYO_ROD_T2.get()) return 0.50f;
@@ -156,18 +157,17 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
     private final MachineEnergy energyStorage = MachineEnergy.consumer(ENERGY_CAPACITY, ENERGY_CAPACITY);
-    private LazyOptional<EnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
-    /** Хладагент внутрь. */
+    /** Coolant in. */
     public final FluidTank coolantTank = new FluidTank(TANK_CAP,
             fs -> fs.getFluid() == ModFluids.SOURCE_COOLANT.get()) {
         @Override protected void onContentsChanged() { markTankChanged(); }
     };
-    /** Отработанный хладагент наружу — его освежает обогатитель (enrich/coolant_regen: отработка + лазуритовая пыль). */
+    /** Spent coolant out; the enricher refreshes it (enrich/coolant_regen: spent coolant + lapis dust). */
     public final FluidTank hotTank = new FluidTank(TANK_CAP) {
         @Override protected void onContentsChanged() { markTankChanged(); }
     };
-    /** Жидкий продукт: третья ступень даёт сверхтекучий конденсат. */
+    /** Liquid product: the third stage gives superfluid condensate. */
     public final FluidTank productTank = new FluidTank(TANK_CAP) {
         @Override protected void onContentsChanged() { markTankChanged(); }
     };
@@ -179,7 +179,7 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
     }
 
-    /** Наружу: принимаем хладагент, отдаём отработку и продукт. */
+    /** From outside: we accept coolant, give out spent coolant and product. */
     private final IFluidHandler combinedFluid = new IFluidHandler() {
         @Override public int getTanks() { return 3; }
         @Override public @NotNull FluidStack getFluidInTank(int t) {
@@ -197,12 +197,11 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
             return out.isEmpty() ? hotTank.drain(max, action) : out;
         }
     };
-    private LazyOptional<IFluidHandler> lazyFluidHandler = LazyOptional.empty();
 
-    // ---- тепло ----
-    /** Буфер прихода за тик. Обнуляется каждый тик, поэтому труба всегда качает на полную. */
+    // ---- heat ----
+    /** Inflow buffer per tick. Zeroed every tick, so the pipe always pumps at full rate. */
     private int heatAccum = 0;
-    /** Приток за прошлый тик — то, что показывается игроку и что задаёт глубину. */
+    /** Inflow of the previous tick: what the player sees and what sets the depth. */
     private int heatInflow = 0;
 
     private final com.jykito.industrialcore.heat.IHeatHandler heatHandler = new com.jykito.industrialcore.heat.IHeatHandler() {
@@ -214,12 +213,11 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
             return accepted;
         }
     };
-    private LazyOptional<com.jykito.industrialcore.heat.IHeatHandler> lazyHeat = LazyOptional.empty();
 
-    // ---- состояние ----
+    // ---- state ----
     private int checkTimer = 0;
     private boolean formed = false;
-    /** Ступень прошлого тика, только для достижения (не сохраняется). */
+    /** Stage of the previous tick, only for the advancement (not saved). */
     private int lastStage = 0;
     private int depth = 0;
     private int progress = 0;
@@ -266,10 +264,10 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
     public int getDepth()      { return depth; }
     public int getHeatInflow() { return heatInflow; }
 
-    /** Ступень по текущей глубине: 0 — камера ещё ничего не умеет. */
+    /** Stage by current depth: 0 means the chamber cannot do anything yet. */
     public int getStage() { return stageFor(depth); }
 
-    /** До какой ступени пускает вставленный модуль. Без модуля — только первая. */
+    /** Up to which stage the inserted module allows. Without a module, only the first. */
     public int allowedStage() {
         ItemStack m = itemHandler.getStackInSlot(SLOT_MODULE);
         return m.getItem() instanceof DepthModuleItem mod ? mod.getTier() : 1;
@@ -285,7 +283,7 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
         return stage >= 1 && stage <= STAGE_DEPTH.length ? STAGE_DEPTH[stage - 1] : 0;
     }
 
-    /** Расход хладагента в тик на этой ступени — тем же числом его показывает JEI. */
+    /** Coolant usage per tick at this stage; JEI shows it with the same number. */
     public static int coolantPerTick(int stage) {
         return stage >= 1 && stage <= STAGE_COOLANT.length ? STAGE_COOLANT[stage - 1] : STAGE_COOLANT[0];
     }
@@ -295,7 +293,7 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     private void tick(Level level, BlockPos pos, BlockState state) {
-        // Приход за тик и обнуление буфера: держим место свободным, иначе труба перестанет качать.
+        // Inflow per tick and zeroing the buffer: keep the space free, otherwise the pipe stops pumping.
         heatInflow = heatAccum;
         heatAccum = 0;
 
@@ -309,7 +307,7 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
             linkCasings(level, pos, state, nowFormed);
         }
 
-        // Разобранная камера мгновенно теряет глубину: держать её нечем.
+        // An unformed chamber loses depth at once: there is nothing to hold it.
         if (!formed) {
             if (depth > 0) { depth = Math.max(0, depth - DEPTH_FALL * 4); setChanged(); }
             progress = 0;
@@ -317,15 +315,15 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
             return;
         }
 
-        // Глубина идёт за притоком, но упирается в потолок модуля: без разрешения камера глубже
-        // не пойдёт, сколько тепла ни лей. Именно это и не обходится количеством котельных.
+        // Depth follows inflow but stops at the module cap: without permission the chamber does not go deeper
+        // however much heat you pour in. That is exactly what cannot be bypassed by adding more boilers.
         int cap = depthForStage(allowedStage());
         if (heatInflow > depth)      depth = Math.min(cap, depth + DEPTH_RISE);
         else if (heatInflow < depth) depth = Math.max(0, depth - DEPTH_FALL);
-        if (depth > cap) depth = cap;   // модуль вынули на ходу
+        if (depth > cap) depth = cap;   // the module was removed while running
 
         int stage = getStage();
-        if (stage == 3 && lastStage != 3)   // достижение «На самом дне»: только в момент перехода, не каждый тик
+        if (stage == 3 && lastStage != 3)   // advancement "At the Very Bottom": only at the moment of transition, not every tick
             com.jykito.industrialcore.advancement.VoltexEventTrigger.award(level, pos, 16,
                     com.jykito.industrialcore.advancement.VoltexEventTrigger.CRYO_STAGE_3);
         lastStage = stage;
@@ -343,9 +341,9 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
                     && hotTank.getSpace() >= coolantPerTick;
             boolean hasEnergy  = energyStorage.getEnergyStored() >= energyPerTick;
 
-            // Не сошлось хоть одно условие — работа просто встаёт, прогресс стоит на месте.
-            // Наказания за просадку нет намеренно: взрыв уже занят квенчем магнита, и второй
-            // такой же отказ сделал бы все мультиблоки мода одинаковыми.
+            // If any single condition fails, the work just stops and progress stays where it is.
+            // There is no penalty for a drop on purpose: explosions are already taken by the magnet quench, and a second
+            // failure of the same kind would make all the mod's multiblocks alike.
             if (deepEnough && hasCoolant && hasEnergy) {
                 energyStorage.consumeEnergy(energyPerTick);
                 cycleCoolant(coolantPerTick);
@@ -362,13 +360,13 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
         setChanged();
     }
 
-    /** Хладагент проходит через камеру и уходит горячим — его освежает обогатитель. */
+    /** Coolant passes through the chamber and leaves hot; the enricher refreshes it. */
     private void cycleCoolant(int amount) {
         coolantTank.drain(amount, IFluidHandler.FluidAction.EXECUTE);
         hotTank.fill(new FluidStack(ModFluids.SOURCE_HOT_COOLANT.get(), amount), IFluidHandler.FluidAction.EXECUTE);
     }
 
-    /** Стержни — теплообменники внутри: ускоряют работу и стачиваются тем быстрее, чем глубже камера. */
+    /** Rods are heat exchangers inside: they speed up the work and wear out faster the deeper the chamber is. */
     private float rodSpeedFactor() {
         float f = 1f;
         for (int s = SLOT_ROD_FIRST; s <= SLOT_ROD_LAST; s++)
@@ -377,16 +375,18 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     private void wearRods(Level level, int stage) {
-        rodWear += Math.max(1, stage * stage); // третья ступень стачивает вдевятеро быстрее первой
+        rodWear += Math.max(1, stage * stage); // the third stage wears them nine times faster than the first
         if (rodWear < WEAR_PER_POINT) return;
         rodWear -= WEAR_PER_POINT;
 
-        // Стачиваются ВСЕ вставленные разом: три стержня дают четырёхкратную скорость, но и
-        // расходуются втрое быстрее. Иначе набивать все слоты было бы бесплатным выигрышем.
+        // ALL inserted rods wear at once: three rods give four times the speed, but also
+        // wear out three times faster. Otherwise filling every slot would be a free win.
         for (int s = SLOT_ROD_FIRST; s <= SLOT_ROD_LAST; s++) {
             ItemStack rod = itemHandler.getStackInSlot(s);
             if (rod.isEmpty()) continue;
-            if (rod.hurt(1, level.random, null)) itemHandler.setStackInSlot(s, ItemStack.EMPTY);
+            final int slot = s;
+            if (level instanceof net.minecraft.server.level.ServerLevel sl)
+                rod.hurtAndBreak(1, sl, (net.minecraft.world.entity.LivingEntity) null, broken -> itemHandler.setStackInSlot(slot, ItemStack.EMPTY));
         }
     }
 
@@ -400,12 +400,12 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
         return recipeCache.get(() -> {
             ItemStack in = itemHandler.getStackInSlot(SLOT_INPUT);
             if (in.isEmpty()) return null;
-            for (CryoRecipe r : level.getRecipeManager().getAllRecipesFor(ModRecipes.CRYO_FREEZING_TYPE.get())) {
+            for (CryoRecipe r : com.jykito.industrialcore.recipe.RecipeLookup.all(level, ModRecipes.CRYO_FREEZING_TYPE.get())) {
                 if (!r.inputMatches(in)) continue;
                 if (r.hasItemResult() && !fitsOutput(r.getResult())) continue;
                 if (r.hasFluidResult()) {
                     FluidStack out = r.makeFluidResult();
-                    if (!productTank.isEmpty() && !productTank.getFluid().isFluidEqual(out)) continue;
+                    if (!productTank.isEmpty() && !FluidStack.isSameFluidSameComponents(productTank.getFluid(), out)) continue;
                     if (productTank.getSpace() < out.getAmount()) continue;
                 }
                 return r;
@@ -417,7 +417,7 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
     private boolean fitsOutput(ItemStack result) {
         ItemStack out = itemHandler.getStackInSlot(SLOT_OUTPUT);
         if (out.isEmpty()) return true;
-        if (!ItemStack.isSameItemSameTags(out, result)) return false;
+        if (!ItemStack.isSameItemSameComponents(out, result)) return false;
         return out.getCount() + result.getCount() <= out.getMaxStackSize();
     }
 
@@ -430,18 +430,32 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     /**
-     * Прописывает корпусу, где ядро, — тогда тепло можно подавать в любой блок пола или потолка.
+     * Tells the casing where the core is, so heat can be fed into any floor or ceiling block.
      * <p>
-     * Это полсотни граней наружу вместо шести у ядра, а глубокой ступени нужно несколько линий
-     * труб сразу. Обходятся только два слоя корпуса, раз в {@link #CHECK_INTERVAL} тиков; связь
-     * переписывается заново каждый раз, поэтому подменённый блок подхватится сам.
+     * That is about fifty faces outside instead of the core's six, and a deep stage needs several pipe
+     * lines at once. Only two casing layers are visited, once every {@link #CHECK_INTERVAL} ticks; the link
+     * is rewritten every time, so a replaced block is picked up by itself.
      */
+    /** The core block is being broken: the casings stop exposing it. */
+    public void unlinkCasings() {
+        if (level != null && !level.isClientSide()) linkCasings(level, worldPosition, getBlockState(), false);
+    }
+
+    /** Broken core: rods, depth module, input and output fall out; the tanks are lost, as with the other machines. */
+    public void dropContents() {
+        if (level == null || level.isClientSide()) return;
+        for (int i = 0; i < itemHandler.getSlots(); i++) {
+            ItemStack s = itemHandler.getStackInSlot(i);
+            if (!s.isEmpty()) net.minecraft.world.Containers.dropItemStack(level, worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), s);
+        }
+    }
+
     private void linkCasings(Level level, BlockPos pos, BlockState state, boolean formedNow) {
         Direction facing = state.getValue(CryoCoreBlock.FACING);
         for (int h : new int[]{0, HEIGHT}) {
             for (int d = 0; d <= DEPTH_D; d++) {
                 for (int s = -HALF_WIDTH; s <= HALF_WIDTH; s++) {
-                    if (h == 0 && d == 0 && s == 0) continue;              // само ядро
+                    if (h == 0 && d == 0 && s == 0) continue;              // the core itself
                     BlockEntity be = level.getBlockEntity(local(pos, facing, d, s, h));
                     if (!(be instanceof CryoCasingBlockEntity casing)) continue;
                     if (formedNow) casing.setCore(pos); else casing.clearCore();
@@ -450,11 +464,11 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
         }
     }
 
-    // Обмерзание панелей по ступени убрано. Пробовали красить тинтом — не вышло и не выйдет:
-    // тинт УМНОЖАЕТ цвет, то есть умеет только затемнять, а иней должен делать стекло белее.
-    // Если решим вернуться — только слоем поверх панели с отдельной текстурой инея.
+    // Panel frosting by stage was removed. Tinting was tried and did not and will not work:
+    // tint MULTIPLIES the colour, so it can only darken, and frost has to make the glass whiter.
+    // If we come back to it, only as a layer over the panel with a separate frost texture.
 
-    /** Колонна холодильников горит вместе с ядром. */
+    /** The refrigerator column lights up together with the core. */
     private void lightFridges(Level level, BlockPos pos, Direction facing, boolean lit) {
         for (int h = 1; h < HEIGHT; h++) {
             BlockPos p = local(pos, facing, FRIDGE_D, FRIDGE_S, h);
@@ -465,13 +479,13 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
         }
     }
 
-    /** Первое несовпадение с описанием структуры, или null если всё на месте. */
+    /** The first mismatch with the structure description, or null if everything is in place. */
     @Nullable
-    public String firstMismatch(Level level, BlockPos pos, BlockState state) {
+    public Component firstMismatch(Level level, BlockPos pos, BlockState state) {
         return checkStructure(level, pos, state);
     }
 
-    /** Позиция в локальных осях ядра: d вглубь, s вбок, h вверх. */
+    /** Position in the core's local axes: d inwards, s sideways, h up. */
     private static BlockPos local(BlockPos core, Direction facing, int d, int s, int h) {
         Direction back  = facing.getOpposite();
         Direction right = facing.getClockWise();
@@ -479,32 +493,40 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Nullable
-    private String checkStructure(Level level, BlockPos pos, BlockState state) {
+    private Component checkStructure(Level level, BlockPos pos, BlockState state) {
         Direction facing = state.getValue(CryoCoreBlock.FACING);
 
         for (int h = 0; h <= HEIGHT; h++) {
             for (int d = 0; d <= DEPTH_D; d++) {
                 for (int s = -HALF_WIDTH; s <= HALF_WIDTH; s++) {
-                    if (h == 0 && d == 0 && s == 0) continue;              // само ядро
+                    if (h == 0 && d == 0 && s == 0) continue;              // the core itself
 
                     BlockPos p = local(pos, facing, d, s, h);
                     Part want = partAt(d, s, h);
                     if (!fits(want, level.getBlockState(p)))
-                        return want.label + " @ " + p.getX() + ", " + p.getY() + ", " + p.getZ();
+                        return Component.empty().append(want.label()).append(" @ " + p.getX() + ", " + p.getY() + ", " + p.getZ());
                 }
             }
         }
         return null;
     }
 
-    /** Что должно стоять в этой клетке. Одно описание раскладки на проверку и на сборку жезлом. */
+    /** What must stand in this cell. One layout description for both the check and the wand build. */
     private enum Part {
-        CASING("корпус"), GLASS("стекло"), FRIDGE("холодильник"), AIR("пусто");
-        final String label;
-        Part(String label) { this.label = label; }
+        CASING, GLASS, FRIDGE, AIR;
+
+        /** Name shown to the player in the "Missing: ..." message. */
+        Component label() {
+            return switch (this) {
+                case CASING -> ModBlocks.CRYO_CASING.get().getName();
+                case GLASS  -> ModBlocks.CRYO_GLASS.get().getName();
+                case FRIDGE -> ModBlocks.REFRIGERATION_CHAMBER.get().getName();
+                case AIR    -> Component.translatable("msg.industrial_core.cryo.empty_space");
+            };
+        }
     }
 
-    /** Подходит ли блок в клетку. Общий критерий для проверки и для сборки палочкой. */
+    /** Whether the block fits the cell. A shared criterion for the check and for the wand build. */
     private static boolean fits(Part want, BlockState st) {
         return switch (want) {
             case CASING -> st.getBlock() instanceof CryoCasingBlock;
@@ -522,21 +544,21 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     /**
-     * Ставит камеру вокруг ядра структурной палочкой: в творческом бесплатно и поверх всего, в выживании из инвентаря и только в пустое.
+     * Builds the chamber around the core with the structure wand: in creative for free and over everything, in survival from the inventory and only into empty cells.
      * <p>
-     * Раскладку берёт из {@link #partAt}, той же, по которой идёт проверка. Иначе сборка и
-     * валидатор со временем разъедутся, и жезл будет ставить то, что камера не примет.
+     * The layout comes from {@link #partAt}, the same one the check uses. Otherwise the build and
+     * the validator would drift apart over time, and the wand would place what the chamber does not accept.
      */
     public static void buildStructure(Level level, BlockPos corePos, Direction facing, WandBuild wb) {
         for (int h = 0; h <= HEIGHT; h++) {
             for (int d = 0; d <= DEPTH_D; d++) {
                 for (int s = -HALF_WIDTH; s <= HALF_WIDTH; s++) {
-                    if (h == 0 && d == 0 && s == 0) continue;              // само ядро
+                    if (h == 0 && d == 0 && s == 0) continue;              // the core itself
                     BlockPos p = local(corePos, facing, d, s, h);
                     Part part = partAt(d, s, h);
                     if (fits(part, level.getBlockState(p))) continue;
-                    // в творческом палочка расчищает и перезаписывает всё, как раньше;
-                    // в выживании чужое не ломает: ставит только в пустое и из инвентаря
+                    // in creative the wand clears and overwrites everything, as before;
+                    // in survival it does not break other blocks: it only places into empty cells and from the inventory
                     if (part == Part.AIR) {
                         if (wb.free()) wb.overwrite(level, p, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
                         else wb.markBlocked();
@@ -547,8 +569,8 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
                         case GLASS  -> com.jykito.industrialcore.block.ModBlocks.CRYO_GLASS.get().defaultBlockState();
                         default     -> com.jykito.industrialcore.block.ModBlocks.REFRIGERATION_CHAMBER.get().defaultBlockState();
                     };
-                    // флаг 3 внутри: соседям приходит обновление, поэтому соединения панелей и корпуса
-                    // сходятся сами, без второго прохода
+                    // flag 3 inside: neighbours get an update, so panel and casing connections
+                    // come together by themselves, without a second pass
                     if (wb.free()) wb.overwrite(level, p, put);
                     else wb.place(level, p, put);
                 }
@@ -556,7 +578,7 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
         }
     }
 
-    @Override public CompoundTag getUpdateTag() { return saveWithoutMetadata(); }
+    @Override public CompoundTag getUpdateTag(HolderLookup.Provider registries) { return saveWithoutMetadata(registries); }
 
     @Nullable
     @Override
@@ -572,40 +594,29 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY)        return lazyEnergyHandler.cast();
-        if (cap == ForgeCapabilities.ITEM_HANDLER)  return lazyItemHandler.cast();
-        if (cap == ForgeCapabilities.FLUID_HANDLER) return lazyFluidHandler.cast();
-        if (cap == com.jykito.industrialcore.heat.HeatCapability.HEAT) return lazyHeat.cast();
-        return super.getCapability(cap, side);
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.EnergyStorage.BLOCK)        return (T) energyStorage;
+        if (cap == Capabilities.ItemHandler.BLOCK)  return (T) automationHandler;
+        if (cap == Capabilities.FluidHandler.BLOCK) return (T) combinedFluid;
+        if (cap == com.jykito.industrialcore.heat.HeatCapability.HEAT) return (T) heatHandler;
+        return null;
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
-        lazyEnergyHandler = LazyOptional.of(() -> energyStorage);
-        lazyItemHandler   = LazyOptional.of(() -> automationHandler);
-        lazyFluidHandler  = LazyOptional.of(() -> combinedFluid);
-        lazyHeat          = LazyOptional.of(() -> heatHandler);
     }
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyEnergyHandler.invalidate();
-        lazyItemHandler.invalidate();
-        lazyFluidHandler.invalidate();
-        lazyHeat.invalidate();
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put("inventory", itemHandler.serializeNBT());
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        tag.put("inventory", itemHandler.serializeNBT(registries));
         tag.putInt("energy", energyStorage.getEnergyStored());
-        tag.put("coolantTank", coolantTank.writeToNBT(new CompoundTag()));
-        tag.put("hotTank",     hotTank.writeToNBT(new CompoundTag()));
-        tag.put("productTank", productTank.writeToNBT(new CompoundTag()));
+        tag.put("coolantTank", coolantTank.writeToNBT(registries, new CompoundTag()));
+        tag.put("hotTank",     hotTank.writeToNBT(registries, new CompoundTag()));
+        tag.put("productTank", productTank.writeToNBT(registries, new CompoundTag()));
         tag.putBoolean("formed", formed);
         tag.putInt("depth", depth);
         tag.putInt("progress", progress);
@@ -614,20 +625,20 @@ public class CryoCoreBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        // ⚠️ deserializeNBT берёт число слотов из NBT, а не из кода. Камеры, сохранённые до
-        // появления слота модуля, приносят Size=5 и схлопывают хранилище назад — тик потом
-        // падает на шестом слоте. Выкидываем Size, тогда размер остаётся кодовый, а предметы
-        // разложатся по своим индексам. Та же грабля ждёт любую машину, у которой вырос
-        // список слотов.
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        // ⚠️ deserializeNBT takes the slot count from NBT, not from the code. Chambers saved before
+        // the module slot existed bring Size=5 and shrink the storage back; the tick then
+        // crashes on the sixth slot. We drop Size, so the size stays as in the code and the items
+        // go to their own indices. The same trap waits for any machine whose
+        // slot list grew.
         CompoundTag inv = tag.getCompound("inventory").copy();
         inv.remove("Size");
-        itemHandler.deserializeNBT(inv);
+        itemHandler.deserializeNBT(registries, inv);
         energyStorage.setEnergy(tag.getInt("energy"));
-        coolantTank.readFromNBT(tag.getCompound("coolantTank"));
-        hotTank.readFromNBT(tag.getCompound("hotTank"));
-        productTank.readFromNBT(tag.getCompound("productTank"));
+        coolantTank.readFromNBT(registries, tag.getCompound("coolantTank"));
+        hotTank.readFromNBT(registries, tag.getCompound("hotTank"));
+        productTank.readFromNBT(registries, tag.getCompound("productTank"));
         formed = tag.getBoolean("formed");
         depth = tag.getInt("depth");
         progress = tag.getInt("progress");

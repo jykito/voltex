@@ -1,0 +1,42 @@
+{
+  "keys": [
+    {
+      "name": "output",
+      "role": "output",
+      "type": "item_stack"
+    },
+    {
+      "name": "input",
+      "role": "input",
+      "type": "ingredient"
+    },
+    {
+      "name": "inputCount",
+      "type": "int",
+      "optional": 1
+    },
+    {
+      "name": "time",
+      "type": "int",
+      "optional": 100
+    },
+    {
+      "name": "energy",
+      "type": "int",
+      "optional": 200
+    },
+    {
+      "name": "category",
+      "type": "string",
+      "optional": "mineral"
+    },
+    {
+      "name": "keepInput",
+      "type": "boolean",
+      "optional": true
+    }
+  ],
+  "unique": [
+    "output"
+  ]
+}

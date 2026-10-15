@@ -1,4 +1,9 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import java.util.Optional;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.block.custom.CrateBlock;
 import com.jykito.industrialcore.menu.CrateMenu;
@@ -12,19 +17,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class CrateBlockEntity extends BlockEntity implements MenuProvider {
+public class CrateBlockEntity extends BlockEntity implements Caps.Provider, MenuProvider {
 
     private final int rows;
     private final ItemStackHandler items;
-    private LazyOptional<IItemHandler> lazyItems = LazyOptional.empty();
 
     public CrateBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CRATE_BE.get(), pos, state);
@@ -49,24 +50,24 @@ public class CrateBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) return lazyItems.cast();
-        return super.getCapability(cap, side);
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.ItemHandler.BLOCK) return (T) items;
+        return null;
     }
 
-    @Override public void onLoad()         { super.onLoad();         lazyItems = LazyOptional.of(() -> items); }
-    @Override public void invalidateCaps() { super.invalidateCaps(); lazyItems.invalidate(); }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        tag.put("items", items.serializeNBT());
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.put("items", items.serializeNBT(registries));
+        super.saveAdditional(tag, registries);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
 
-        if (tag.contains("items")) items.deserializeNBT(tag.getCompound("items"));
+        if (tag.contains("items")) items.deserializeNBT(registries, tag.getCompound("items"));
     }
 }

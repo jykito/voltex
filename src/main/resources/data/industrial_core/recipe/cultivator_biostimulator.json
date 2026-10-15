@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "EBE"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:biomass"
+    },
+    "B": {
+      "item": "minecraft:bone_meal"
+    },
+    "C": {
+      "item": "industrial_core:crystal_fiber"
+    },
+    "D": {
+      "item": "industrial_core:electric_motor"
+    },
+    "E": {
+      "tag": "c:dusts/lapis"
+    }
+  },
+  "result": {
+    "id": "industrial_core:cultivator_biostimulator",
+    "count": 1
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CAC"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/gold"
+    },
+    "B": {
+      "item": "industrial_core:logic_board"
+    },
+    "C": {
+      "item": "industrial_core:component_heat_vent"
+    }
+  },
+  "result": {
+    "id": "industrial_core:advanced_heat_vent",
+    "count": 1
+  }
+}

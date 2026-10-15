@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "BCB",
+    "DDD"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:glass"
+    },
+    "B": {
+      "tag": "c:plates/diamond"
+    },
+    "C": {
+      "item": "industrial_core:crystal_plate"
+    },
+    "D": {
+      "item": "industrial_core:silicon"
+    }
+  },
+  "result": {
+    "id": "industrial_core:photonic_lens",
+    "count": 2
+  }
+}

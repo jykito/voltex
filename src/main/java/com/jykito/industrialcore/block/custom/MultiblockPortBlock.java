@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.custom;
+import com.mojang.serialization.MapCodec;
+import com.jykito.industrialcore.block.BlockUse;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.ItemInteractionResult;
 
 import com.jykito.industrialcore.block.ModBlocks;
 import com.jykito.industrialcore.block.entity.EnergyPortBlockEntity;
@@ -27,18 +31,21 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.fluids.FluidUtil;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Порт лейт-мультиблока: через него идёт весь обмен структуры с миром. Сам ничего не делает
- * и не тикает, это хранилище, из которого ядро берёт и в которое кладёт.
+ * Late multiblock port: all exchange between the structure and the world goes through it. It does nothing by itself
+ * and does not tick; it is storage the core takes from and puts into.
  * <p>
- * Рядом с продвинутой обшивкой или стеклом порт сам переходит на тёмную текстуру ({@link #DARK}),
- * на обычной обшивке остаётся светлым. Влияет только на вид: ядро ищет порты по блоку, не по состоянию.
+ * Next to advanced casing or glass the port switches to the dark texture by itself ({@link #DARK}),
+ * on regular casing it stays light. This only affects the look: the core finds ports by block, not by state.
  */
 public class MultiblockPortBlock extends BaseEntityBlock {
+
+    /** 1.21: block codec. Vanilla does not call it for mod blocks; there is one block instance, so unit is exact. */
+    @Override
+    protected MapCodec<? extends MultiblockPortBlock> codec() { return MapCodec.unit(this); }
 
     public enum Kind { INPUT, OUTPUT, ENERGY, HEAT }
 
@@ -59,7 +66,7 @@ public class MultiblockPortBlock extends BaseEntityBlock {
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> b) { b.add(DARK); }
 
-    /** Тёмный вид, если хоть один сосед — продвинутая обшивка или продвинутое стекло. */
+    /** Dark look if at least one neighbour is advanced casing or advanced glass. */
     private static boolean nearAdvanced(BlockGetter level, BlockPos pos) {
         for (Direction d : Direction.values()) {
             BlockState n = level.getBlockState(pos.relative(d));
@@ -78,7 +85,7 @@ public class MultiblockPortBlock extends BaseEntityBlock {
         return state.setValue(DARK, nearAdvanced(level, pos));
     }
 
-    /** Палочка ставит порт через setBlock без контекста размещения: вид досчитываем здесь. */
+    /** The wand places the port via setBlock without a placement context, so the look is computed here. */
     @Override
     public void onPlace(BlockState state, Level level, BlockPos pos, BlockState old, boolean moving) {
         super.onPlace(state, level, pos, old, moving);
@@ -96,7 +103,7 @@ public class MultiblockPortBlock extends BaseEntityBlock {
         };
     }
 
-    /** Тикают вход и выход ради автообмена с соседями, тепловой — ради остывания; разъёму тик не нужен. */
+    /** Input and output tick for auto-exchange with neighbours, the heat port ticks to cool down; the connector needs no tick. */
     @Nullable @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (level.isClientSide || kind == Kind.ENERGY) return null;
@@ -105,13 +112,18 @@ public class MultiblockPortBlock extends BaseEntityBlock {
     }
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        return BlockUse.toItemResult(use(state, level, pos, player, hand, hit));
+    }
+
+    /** Formerly Block.use (1.20.1); called from useItemOn for both hands, as before. */
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (kind == Kind.HEAT) return InteractionResult.PASS;   // окна нет: тепло видно в ядре
-        // ведро и прочие ёмкости: налить во вход, набрать из выхода, сторона внешняя
+        if (kind == Kind.HEAT) return InteractionResult.PASS;   // no window: heat is shown in the core
+        // bucket and other containers: fill the input, drain the output, outer side
         if (kind != Kind.ENERGY && FluidUtil.interactWithFluidHandler(player, hand, level, pos, hit.getDirection()))
             return InteractionResult.sidedSuccess(level.isClientSide());
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof MenuProvider be)
-            NetworkHooks.openScreen((ServerPlayer) player, be, pos);
+            ((ServerPlayer) player).openMenu(be, pos);
         return InteractionResult.sidedSuccess(level.isClientSide());
     }
 

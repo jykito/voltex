@@ -15,8 +15,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
@@ -29,13 +29,13 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-/** Показывает связи логистики простыми прямыми линиями (когда в руке Линкер). */
+/** Shows logistics links as simple straight lines (when the Linker is in hand). */
 @OnlyIn(Dist.CLIENT)
 public class LogisticsBeamRenderer<T extends BlockEntity> implements BlockEntityRenderer<T> {
 
     public static final float[] COL_PREVIEW = {1.0f, 0.85f, 0.2f};
 
-    // палитра для окраски линий, чтобы одинаковые блоки не путались
+    // palette for colouring the lines, so identical blocks are not confused
     private static final float[][] PALETTE = {
         {0.0f, 0.9f, 1.0f},
         {1.0f, 0.85f, 0.0f},
@@ -95,10 +95,10 @@ public class LogisticsBeamRenderer<T extends BlockEntity> implements BlockEntity
             ps.pushPose();
             ps.translate(snap.origin.getX() - cam.x, snap.origin.getY() - cam.y, snap.origin.getZ() - cam.z);
             Matrix4f pose = ps.last().pose();
-            Matrix3f norm = ps.last().normal();
+            PoseStack.Pose norm = ps.last();
 
             for (BlockPos target : snap.links) {
-                // каждую пару рисуем один раз
+                // each pair is drawn once
                 if (inPending.contains(target.asLong()) && snap.origin.asLong() >= target.asLong()) continue;
                 if (!level.isLoaded(target) || level.getBlockEntity(target) == null) continue;
 
@@ -117,13 +117,13 @@ public class LogisticsBeamRenderer<T extends BlockEntity> implements BlockEntity
         PENDING.clear();
     }
 
-    /** Превью-линия от выбранного источника к блоку под прицелом. */
+    /** Preview line from the selected source to the block under the crosshair. */
     public static void renderPreviewLine(PoseStack ps, MultiBufferSource.BufferSource buf,
                                          Vec3 cam, BlockPos from, BlockPos to, float[] col) {
         VertexConsumer vc = buf.getBuffer(RenderType.lines());
         ps.pushPose();
         ps.translate(from.getX() - cam.x, from.getY() - cam.y, from.getZ() - cam.z);
-        line(vc, ps.last().pose(), ps.last().normal(),
+        line(vc, ps.last().pose(), ps.last(),
                 0.5f, 0.5f, 0.5f,
                 (to.getX() - from.getX()) + 0.5f,
                 (to.getY() - from.getY()) + 0.5f,
@@ -133,15 +133,15 @@ public class LogisticsBeamRenderer<T extends BlockEntity> implements BlockEntity
         buf.endBatch(RenderType.lines());
     }
 
-    private static void line(VertexConsumer vc, Matrix4f pose, Matrix3f norm,
+    private static void line(VertexConsumer vc, Matrix4f pose, PoseStack.Pose norm,
                              float ax, float ay, float az, float bx, float by, float bz,
                              float r, float g, float b) {
         float dx = bx - ax, dy = by - ay, dz = bz - az;
         float len = Mth.sqrt(dx * dx + dy * dy + dz * dz);
         if (len < 1.0e-4f) return;
         dx /= len; dy /= len; dz /= len;
-        vc.vertex(pose, ax, ay, az).color(r, g, b, 1.0f).normal(norm, dx, dy, dz).endVertex();
-        vc.vertex(pose, bx, by, bz).color(r, g, b, 1.0f).normal(norm, dx, dy, dz).endVertex();
+        vc.addVertex(pose, ax, ay, az).setColor(r, g, b, 1.0f).setNormal(norm, dx, dy, dz);
+        vc.addVertex(pose, bx, by, bz).setColor(r, g, b, 1.0f).setNormal(norm, dx, dy, dz);
     }
 
     public static Collection<BlockPos> getLinks(BlockEntity be) {

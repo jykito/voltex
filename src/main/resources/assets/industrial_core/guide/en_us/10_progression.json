@@ -32,14 +32,13 @@
         },
         {
           "type": "text",
-          "text": "The magnet produces **exotic matter** and **star shards**. They are used to make the quantum capacitor, the singularity core and the stellar matrix, the most expensive materials in the mod."
+          "text": "The magnet produces **exotic matter** and **star shards**. The shards go into the singularity core and the stellar matrix, also made on the magnet, the most expensive materials in the mod. Exotic matter goes into Plasma armor, material containers, the graviton coil and the matter fabricator."
         },
         {
           "type": "items",
           "items": [
             "industrial_core:exotic_matter",
             "industrial_core:star_shard",
-            "industrial_core:quantum_capacitor",
             "industrial_core:singularity_core",
             "industrial_core:stellar_matrix"
           ]

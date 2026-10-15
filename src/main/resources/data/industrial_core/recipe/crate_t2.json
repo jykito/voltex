@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/iron"
+    },
+    "B": {
+      "tag": "c:plates/bronze"
+    },
+    "C": {
+      "item": "industrial_core:textolite_board"
+    },
+    "D": {
+      "item": "industrial_core:crate_t1"
+    }
+  },
+  "result": {
+    "id": "industrial_core:crate_t2",
+    "count": 1
+  }
+}

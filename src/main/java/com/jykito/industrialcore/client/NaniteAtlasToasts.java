@@ -1,5 +1,7 @@
 package com.jykito.industrialcore.client;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import com.jykito.industrialcore.IndustrialCore;
 import com.jykito.industrialcore.nanite.NaniteAtlas;
 import com.jykito.industrialcore.nanite.NaniteAtlasClient;
@@ -12,16 +14,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 
 /**
- * Новый атлас с сервера против прежней копии: на каждый новый вид, новую отметку и редкий вид — всплывашка
- * ({@link NaniteAtlasToast}). Первая синхронизация после входа в мир просто загружает атлас.
+ * New atlas from the server against the previous copy: a toast for every new species, new mark and rare species
+ * ({@link NaniteAtlasToast}). The first sync after joining the world just loads the atlas.
  */
-@Mod.EventBusSubscriber(modid = IndustrialCore.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = IndustrialCore.MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
 public final class NaniteAtlasToasts {
 
     private NaniteAtlasToasts() {}

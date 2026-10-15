@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "BCB",
+    "NNN"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/aluminum"
+    },
+    "B": {
+      "item": "industrial_core:thermal_insulation"
+    },
+    "C": {
+      "item": "industrial_core:cryolite"
+    },
+    "N": {
+      "tag": "c:ingots/nickel"
+    }
+  },
+  "result": {
+    "id": "industrial_core:cryo_casing",
+    "count": 8
+  }
+}

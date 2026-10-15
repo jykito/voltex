@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ACA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:armor_sheet"
+    },
+    "B": {
+      "item": "industrial_core:servo_drive"
+    },
+    "C": {
+      "item": "industrial_core:hardened_steel_ingot"
+    },
+    "D": {
+      "item": "industrial_core:machine_casing"
+    }
+  },
+  "result": {
+    "id": "industrial_core:mechanism_block",
+    "count": 1
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "type": "industrial_core:assembling",
+  "inputs": [
+    {
+      "item": "industrial_core:control_unit",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:armor_sheet",
+      "count": 8
+    },
+    {
+      "item": "industrial_core:emerald_flux_cable",
+      "count": 16
+    },
+    {
+      "item": "industrial_core:crate_t3"
+    },
+    {
+      "item": "industrial_core:barrel_t3"
+    },
+    {
+      "item": "industrial_core:energy_bank"
+    },
+    {
+      "item": "industrial_core:superconducting_wire",
+      "count": 16
+    },
+    {
+      "item": "industrial_core:hub_upgrade_t3"
+    },
+    {
+      "item": "industrial_core:logic_board",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:lithium",
+      "count": 32
+    }
+  ],
+  "fluid": {
+    "id": "industrial_core:mechanical_alloy",
+    "amount": 4000
+  },
+  "result": {
+    "id": "industrial_core:port_upgrade_basic",
+    "count": 1
+  },
+  "processingTime": 1200,
+  "energyCostPerTick": 16000
+}

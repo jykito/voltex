@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:quartz"
+    },
+    "B": {
+      "item": "industrial_core:superconducting_wire"
+    },
+    "C": {
+      "item": "industrial_core:crystal_fiber"
+    },
+    "D": {
+      "item": "industrial_core:data_transfer_matrix"
+    },
+    "E": {
+      "item": "industrial_core:logic_board"
+    }
+  },
+  "result": {
+    "id": "industrial_core:parallel_module",
+    "count": 1
+  }
+}

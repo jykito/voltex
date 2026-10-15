@@ -1,4 +1,9 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import java.util.Optional;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.block.ModBlocks;
 import com.jykito.industrialcore.block.custom.ThermostationCoreBlock;
@@ -20,47 +25,58 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import com.jykito.industrialcore.menu.ThermostationMenu;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Термостанция (башня): ядро + расширители вверх. Термогены толкают тепло в боковые грани любого
- * слоя → всё копится в буфере ЯДРА. Радиаторы на задних гранях слоёв отводят тепло. Ядро толкает
- * агрегированный выход вниз (к трубе/колоннам). Перегрев (~100%) → halt, остывает до 50% → снова.
- * Один BE-класс на ядро и расширитель; логику тикает только ядро, расширитель форвардит тепло в ядро.
+ * Thermal station (tower): core + expanders above. Thermogenerators push heat into the side faces of any
+ * layer -> it all accumulates in the CORE buffer. Radiators on the back faces of the layers remove heat. The core pushes
+ * the aggregated output down (to a pipe/columns), paying FE per unit pushed. A full buffer does not stop the station:
+ * it just accepts no more heat, so the thermogenerators are held back.
+ * One BE class for core and expander; only the core ticks the logic, the expander forwards heat to the core.
  */
-public class ThermostationBlockEntity extends BlockEntity implements MenuProvider {
+public class ThermostationBlockEntity extends BlockEntity implements Caps.Provider, MenuProvider {
 
-    private static final int HEAT_BASE      = 40_000;   // буфер соло-ядра
-    private static final int HEAT_PER_EXP   = 20_000;   // +буфер за каждый расширитель
-    private static final int HEAT_MAX_CAP   = HEAT_BASE + 15 * HEAT_PER_EXP; // потолок под конструктор буфера
-    private static final int BASE_OUTPUT    = 100;      // выход соло-ядра /тик
-    private static final int OUTPUT_PER_RAD = 120;      // +пропуск за радиатор /тик
-    public  static final int ENERGY_CAP      = 100_000; // буфер FE ядра
-    private static final int ENERGY_PER_HEAT = 5;       // FE за единицу вытолкнутого тепла
+    private static final int HEAT_BASE      = 40_000;   // buffer of a solo core
+    private static final int HEAT_PER_EXP   = 20_000;   // +buffer per expander
+    private static final int HEAT_MAX_CAP   = HEAT_BASE + 15 * HEAT_PER_EXP; // cap for the buffer constructor
+    private static final int BASE_OUTPUT    = 100;      // output of a solo core per tick
+    private static final int OUTPUT_PER_RAD = 120;      // +throughput per radiator per tick
+    public  static final int ENERGY_CAP      = 100_000; // core FE buffer
+    private static final int ENERGY_PER_HEAT = 5;       // FE per unit of heat pushed out
 
-    private final HeatBuffer buffer = new HeatBuffer(HEAT_MAX_CAP);  // реальный кап выставляется по высоте башни (rescan)
+    private final HeatBuffer buffer = new HeatBuffer(HEAT_MAX_CAP);  // the real cap is set by tower height (rescan)
     private int radScanCd = 0, radiators = 0, maxOutput = BASE_OUTPUT;
-    private int activeCd = 0;                                        // «работает» держится N тик после выхлопа (анти-мерцание)
+    private int activeCd = 0;                                        // "working" holds for N ticks after an output (anti-flicker)
 
-    private LazyOptional<IHeatHandler> lazyIn = LazyOptional.empty();  // приём на боковые грани → буфер ядра
-    private LazyOptional<IHeatHandler> lazyOut = LazyOptional.empty(); // выход ВНИЗ (ядро): труба видит для коннекта, приём=0
+    private final IHeatHandler heatIn = new IHeatHandler() {
+        @Override public int getHeat()    { HeatBuffer b = coreBuffer(); return b == null ? 0 : b.getHeat(); }
+        @Override public int getMaxHeat()  { HeatBuffer b = coreBuffer(); return b == null ? HEAT_BASE : b.getMaxHeat(); }
+        @Override public int receiveHeat(int amount, boolean simulate) {
+            ThermostationBlockEntity c = core();
+            if (c == null) return 0;
+            int acc = c.buffer.receiveHeat(amount, simulate);         // full buffer -> 0 (back-pressure on thermogenerators)
+            if (!simulate && acc > 0) c.genAccum += acc;              // generation tracking for the GUI
+            return acc;
+        }
+    };  // intake on the side faces -> core buffer
+    private final IHeatHandler heatOut = new IHeatHandler() {              // output face downwards: the pipe "sees" it -> draws the joint
+        @Override public int getHeat()    { HeatBuffer b = coreBuffer(); return b == null ? 0 : b.getHeat(); }
+        @Override public int getMaxHeat()  { HeatBuffer b = coreBuffer(); return b == null ? HEAT_BASE : b.getMaxHeat(); }
+        @Override public int receiveHeat(int amount, boolean simulate) { return 0; } // this is the output, it does not take heat back
+    }; // output DOWN (core): the pipe sees it for connecting, intake = 0
 
-    private final MachineEnergy energyStorage = MachineEnergy.consumer(ENERGY_CAP, ENERGY_CAP);   // FE-вход на задней грани ЯДРА
-    private LazyOptional<IEnergyStorage> energyOptional = LazyOptional.empty();
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(ENERGY_CAP, ENERGY_CAP);   // FE input on the CORE back face
 
-    private final ItemStackHandler itemHandler = new ItemStackHandler(1) {  // слот x2-апгрейда (пока залочен в меню)
+    private final ItemStackHandler itemHandler = new ItemStackHandler(1) {  // x2 upgrade slot (locked in the menu for now)
         @Override protected void onContentsChanged(int s) { setChanged(); }
     };
-    private int genAccum = 0, genRate = 0;                             // трекинг генерации тепла/тик (для GUI)
+    private int genAccum = 0, genRate = 0;                             // heat generation per tick tracking (for the GUI)
     protected final ContainerData data;
 
     public ThermostationBlockEntity(BlockPos pos, BlockState state) {
@@ -103,7 +119,7 @@ public class ThermostationBlockEntity extends BlockEntity implements MenuProvide
                 ? getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING) : Direction.NORTH;
     }
 
-    /** Буфер ядра башни (у ядра — свой; у расширителя — спускаемся вниз к ядру). */
+    /** Buffer of the tower core (the core has its own; an expander walks down to the core). */
     @Nullable private HeatBuffer coreBuffer() { ThermostationBlockEntity c = core(); return c == null ? null : c.buffer; }
 
     @Nullable private ThermostationBlockEntity core() {
@@ -118,62 +134,42 @@ public class ThermostationBlockEntity extends BlockEntity implements MenuProvide
         return null;
     }
 
-    // боковые грани (по FACING) принимают тепло от термогенов
+    // side faces (by FACING) accept heat from thermogenerators
     private boolean isInputSide(Direction side) {
         Direction f = facing();
         return side == f.getClockWise() || side == f.getCounterClockWise();
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
         if (cap == HeatCapability.HEAT && side != null) {
-            if (isInputSide(side)) return lazyIn.cast();
-            if (side == Direction.DOWN && isCore()) return lazyOut.cast();  // выход вниз к трубе (визуал стыка)
+            if (isInputSide(side)) return (T) heatIn;
+            if (side == Direction.DOWN && isCore()) return (T) heatOut;  // output down to the pipe (joint visual)
         }
-        if (cap == ForgeCapabilities.ENERGY && isCore() && (side == null || side == facing().getOpposite()))
-            return energyOptional.cast();                                   // FE-вход на задней грани ядра
-        return super.getCapability(cap, side);
+        if (cap == Capabilities.EnergyStorage.BLOCK && isCore() && (side == null || side == facing().getOpposite()))
+            return (T) energyStorage;                                   // FE input on the core back face
+        return null;
     }
 
-    @Override public void onLoad() {
-        super.onLoad();
-        lazyIn = LazyOptional.of(() -> new IHeatHandler() {
-            @Override public int getHeat()    { HeatBuffer b = coreBuffer(); return b == null ? 0 : b.getHeat(); }
-            @Override public int getMaxHeat()  { HeatBuffer b = coreBuffer(); return b == null ? HEAT_BASE : b.getMaxHeat(); }
-            @Override public int receiveHeat(int amount, boolean simulate) {
-                ThermostationBlockEntity c = core();
-                if (c == null) return 0;
-                int acc = c.buffer.receiveHeat(amount, simulate);         // полный буфер → 0 (back-pressure термогенам)
-                if (!simulate && acc > 0) c.genAccum += acc;              // трекинг генерации для GUI
-                return acc;
-            }
-        });
-        lazyOut = LazyOptional.of(() -> new IHeatHandler() {              // грань-выход вниз: труба «видит» → рисует стык
-            @Override public int getHeat()    { HeatBuffer b = coreBuffer(); return b == null ? 0 : b.getHeat(); }
-            @Override public int getMaxHeat()  { HeatBuffer b = coreBuffer(); return b == null ? HEAT_BASE : b.getMaxHeat(); }
-            @Override public int receiveHeat(int amount, boolean simulate) { return 0; } // это выход — назад тепло не берём
-        });
-        energyOptional = LazyOptional.of(() -> energyStorage);
-    }
 
-    @Override public void invalidateCaps() { super.invalidateCaps(); lazyIn.invalidate(); lazyOut.invalidate(); energyOptional.invalidate(); }
-
-    // ── тик только у ядра ──
+    // ── tick only on the core ──
     public static void serverTick(Level level, BlockPos pos, BlockState state, ThermostationBlockEntity be) {
         if (!be.isCore()) return;
 
-        be.genRate = be.genAccum; be.genAccum = 0;   // снапшот генерации/тик для GUI
+        be.genRate = be.genAccum; be.genAccum = 0;   // generation per tick snapshot for the GUI
 
-        if (--be.radScanCd <= 0) { be.radScanCd = 10; be.rescan(level); } // скан башни: радиаторы + высота (троттл)
+        if (--be.radScanCd <= 0) { be.radScanCd = 10; be.rescan(level); } // tower scan: radiators + height (throttled)
 
-        // выход вниз: min(пропуск, тепло, энергобюджет); платим FE за вытолкнутое
+        // output down: min(throughput, heat, energy budget); pay FE for what was pushed
         boolean worked = false;
         int have = be.buffer.getHeat();
         if (have > 0) {
             int budget = be.energyStorage.getEnergyStored() / ENERGY_PER_HEAT;
             int want = Math.min(be.maxOutput, Math.min(have, budget));
             if (want > 0) {
-                IHeatHandler down = neighborHeat(level, pos.below(), Direction.UP); // выход к трубе/колоннам
+                IHeatHandler down = neighborHeat(level, pos.below(), Direction.UP); // output to the pipe/columns
                 if (down != null) {
                     int accepted = down.receiveHeat(want, false);
                     if (accepted > 0) {
@@ -186,14 +182,14 @@ public class ThermostationBlockEntity extends BlockEntity implements MenuProvide
             }
         }
 
-        // визуал on/off: «работает» держится 10 тик после последнего выхлопа (анти-мерцание)
+        // visual on/off: "working" holds 10 ticks after the last output (anti-flicker)
         if (worked) be.activeCd = 10; else if (be.activeCd > 0) be.activeCd--;
         boolean active = be.activeCd > 0;
         if (state.hasProperty(ThermostationCoreBlock.ACTIVE) && state.getValue(ThermostationCoreBlock.ACTIVE) != active)
             level.setBlock(pos, state.setValue(ThermostationCoreBlock.ACTIVE, active), 3);
     }
 
-    /** Скан башни вверх: буфер = HEAT_BASE + расширители×HEAT_PER_EXP; пропуск = BASE_OUTPUT + радиаторы×OUTPUT_PER_RAD. */
+    /** Tower scan upwards: buffer = HEAT_BASE + expanders × HEAT_PER_EXP; throughput = BASE_OUTPUT + radiators × OUTPUT_PER_RAD. */
     private void rescan(Level level) {
         int rad = 0, expanders = 0; BlockPos p = worldPosition;
         for (int i = 0; i < 16; i++) {
@@ -211,23 +207,23 @@ public class ThermostationBlockEntity extends BlockEntity implements MenuProvide
 
     @Nullable private static IHeatHandler neighborHeat(Level level, BlockPos pos, Direction from) {
         BlockEntity be = level.getBlockEntity(pos);
-        return be == null ? null : be.getCapability(HeatCapability.HEAT, from).resolve().orElse(null);
+        return be == null ? null : Caps.get(be, Caps.HEAT, from).orElse(null);
     }
 
-    @Override protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    @Override protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         tag.putInt("heat", buffer.getHeat());
         tag.putInt("energy", energyStorage.getEnergyStored());
-        tag.put("inv", itemHandler.serializeNBT());
+        tag.put("inv", itemHandler.serializeNBT(registries));
     }
 
-    @Override public void load(CompoundTag tag) {
-        super.load(tag);
+    @Override public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         buffer.setHeat(tag.getInt("heat"));
         energyStorage.setEnergy(tag.getInt("energy"));
-        if (tag.contains("inv")) itemHandler.deserializeNBT(tag.getCompound("inv"));
+        if (tag.contains("inv")) itemHandler.deserializeNBT(registries, tag.getCompound("inv"));
     }
 
-    @Override public CompoundTag getUpdateTag() { CompoundTag t = new CompoundTag(); saveAdditional(t); return t; }
+    @Override public CompoundTag getUpdateTag(HolderLookup.Provider registries) { CompoundTag t = new CompoundTag(); saveAdditional(t, registries); return t; }
     @Nullable @Override public Packet<ClientGamePacketListener> getUpdatePacket() { return ClientboundBlockEntityDataPacket.create(this); }
 }

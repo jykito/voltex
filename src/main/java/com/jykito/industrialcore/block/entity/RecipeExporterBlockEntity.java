@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -18,8 +19,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.LevelResource;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Files;
@@ -69,7 +70,7 @@ public class RecipeExporterBlockEntity extends BlockEntity implements MenuProvid
         }
 
         String json = new GsonBuilder().setPrettyPrinting().create().toJson(root);
-        var resKey = ForgeRegistries.ITEMS.getKey(result.getItem());
+        var resKey = BuiltInRegistries.ITEM.getKey(result.getItem());
         String name = resKey == null ? "recipe" : resKey.getPath();
 
         try {
@@ -153,32 +154,32 @@ public class RecipeExporterBlockEntity extends BlockEntity implements MenuProvid
         return root;
     }
 
+    private com.mojang.serialization.DynamicOps<com.google.gson.JsonElement> jsonOps() {
+        return level.registryAccess().createSerializationContext(com.mojang.serialization.JsonOps.INSTANCE);
+    }
+
+    /** 1.21 result format: {"id", "count", "components"}. */
     private JsonObject resultJson(ItemStack result) {
-        JsonObject res = new JsonObject();
-        res.addProperty("item", idOf(result));
-        if (result.getCount() > 1) res.addProperty("count", result.getCount());
-        if (result.hasTag()) res.addProperty("nbt", result.getTag().toString());
-        return res;
+        return ItemStack.CODEC.encodeStart(jsonOps(), result).getOrThrow().getAsJsonObject();
     }
 
     private JsonObject ingredientJson(ItemStack s) {
-        JsonObject ing = new JsonObject();
-        if (s.hasTag()) {
-            ing.addProperty("type", "forge:nbt");
+        if (s.getComponentsPatch().isEmpty()) {
+            JsonObject ing = new JsonObject();
             ing.addProperty("item", idOf(s));
-            ing.addProperty("nbt", s.getTag().toString());
-        } else {
-            ing.addProperty("item", idOf(s));
+            return ing;
         }
-        return ing;
+        // exact components, like the strict forge:nbt ingredient of 1.20.1
+        var ing = net.neoforged.neoforge.common.crafting.DataComponentIngredient.of(true, s);
+        return net.minecraft.world.item.crafting.Ingredient.CODEC.encodeStart(jsonOps(), ing).getOrThrow().getAsJsonObject();
     }
 
     private String signature(ItemStack s) {
-        return idOf(s) + "|" + (s.hasTag() ? s.getTag().toString() : "");
+        return idOf(s) + "|" + (s.getComponentsPatch().isEmpty() ? "" : s.getComponentsPatch().toString());
     }
 
     private String idOf(ItemStack s) {
-        var k = ForgeRegistries.ITEMS.getKey(s.getItem());
+        var k = BuiltInRegistries.ITEM.getKey(s.getItem());
         return k == null ? "minecraft:air" : k.toString();
     }
 
@@ -187,14 +188,14 @@ public class RecipeExporterBlockEntity extends BlockEntity implements MenuProvid
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        tag.put("inventory", itemHandler.serializeNBT());
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.put("inventory", itemHandler.serializeNBT(registries));
+        super.saveAdditional(tag, registries);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        itemHandler.deserializeNBT(tag.getCompound("inventory"));
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        itemHandler.deserializeNBT(registries, tag.getCompound("inventory"));
     }
 }

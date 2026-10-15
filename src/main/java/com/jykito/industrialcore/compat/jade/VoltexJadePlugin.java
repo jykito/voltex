@@ -9,9 +9,9 @@ import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.WailaPlugin;
 
 /**
- * Точка входа Jade. Класс находит сам Jade по аннотации при своём старте —
- * если мода нет, никто сюда не заглядывает и отсутствующие классы никого не смущают.
- * Поэтому ссылаться на него из кода мода нельзя.
+ * Jade entry point. Jade finds the class by annotation when it starts;
+ * if the mod is absent nobody looks here and the missing classes bother nobody.
+ * That is why mod code must not reference it.
  */
 @WailaPlugin(IndustrialCore.MODID)
 public class VoltexJadePlugin implements IWailaPlugin {

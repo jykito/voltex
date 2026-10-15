@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CPC",
+    "AMA",
+    "CPC"
+  ],
+  "key": {
+    "C": {
+      "item": "industrial_core:cryolite"
+    },
+    "P": {
+      "item": "industrial_core:crystal_plate"
+    },
+    "A": {
+      "tag": "c:plates/aluminum"
+    },
+    "M": {
+      "item": "industrial_core:microcontroller"
+    }
+  },
+  "result": {
+    "id": "industrial_core:cryo_core",
+    "count": 1
+  }
+}

@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Inventory;
 public class RodFabricatorScreen extends MachineScreen<RodFabricatorMenu> {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/rod_fabricator_gui.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/rod_fabricator_gui.png");
 
     private static final int BAR_X = 72, BAR_Y = 97, BAR_H = 6;
 

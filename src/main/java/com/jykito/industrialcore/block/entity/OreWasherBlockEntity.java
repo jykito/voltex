@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.item.custom.NaniteStrainItem;
 import com.jykito.industrialcore.nanite.NaniteProcessing;
@@ -27,20 +31,17 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.energy.EnergyStorage;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
+public class OreWasherBlockEntity extends BlockEntity implements Caps.Provider, MenuProvider {
 
     private final com.jykito.industrialcore.recipe.CachedRecipe<OreWashingRecipe> recipeCache =
             new com.jykito.industrialcore.recipe.CachedRecipe<>();
@@ -55,7 +56,6 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
             return true;
         }
     };
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
     private final IItemHandlerModifiable automationHandler = new IItemHandlerModifiable() {
         @Override public void setStackInSlot(int slot, @NotNull ItemStack stack) { itemHandler.setStackInSlot(slot, stack); }
@@ -75,10 +75,9 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
 
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
-    private final MachineEnergy energyStorage = MachineEnergy.consumer(64000, 64000); // приём = буфер, без потолка на вход
-    private LazyOptional<EnergyStorage> lazyEnergyHandler = LazyOptional.empty();
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(64000, 64000); // intake = buffer, no input cap
 
-    // База под работу без модуля: 8 промывок. Под параллели бак растёт сам, см. AdaptiveTank.
+    // Base for running without a module: 8 washes. With parallel the tank grows by itself, see AdaptiveTank.
     private static final int TANK_BASE = 8000;
 
     public final FluidTank waterTank = new FluidTank(TANK_BASE, fs -> fs.getFluid() == Fluids.WATER) {
@@ -100,7 +99,6 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
         @Override public @NotNull FluidStack drain(FluidStack resource, FluidAction action) { return FluidStack.EMPTY; }
         @Override public @NotNull FluidStack drain(int maxDrain, FluidAction action) { return FluidStack.EMPTY; }
     };
-    private LazyOptional<IFluidHandler> lazyFluidHandler = LazyOptional.empty();
 
     protected final ContainerData data;
     private int progress = 0;
@@ -138,10 +136,10 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
         MachineUpgrades upg = MachineUpgrades.scan(itemHandler, 4, 7);
 
         if (AdaptiveTank.resize(waterTank, TANK_BASE, upg.parallel()))
-            level.sendBlockUpdated(pos, state, state, 3); // шкала бака считается от ёмкости, клиенту нужна новая
+            level.sendBlockUpdated(pos, state, state, 3); // the tank gauge is computed from capacity, the client needs the new one
 
         if (upg.fluidPull() != null && waterTank.getSpace() > 0) {
-            MachineIO.neighbor(level, pos, upg.fluidPull(), ForgeCapabilities.FLUID_HANDLER).ifPresent(nh -> {
+            MachineIO.neighbor(level, pos, upg.fluidPull(), Caps.FLUID_HANDLER).ifPresent(nh -> {
                 FluidStack drained = nh.drain(new FluidStack(Fluids.WATER, Math.min(1000, waterTank.getSpace())), IFluidHandler.FluidAction.EXECUTE);
                 if (!drained.isEmpty()) waterTank.fill(drained, IFluidHandler.FluidAction.EXECUTE);
             });
@@ -180,8 +178,8 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
         return recipeCache.get(() -> {
             ItemStack in = itemHandler.getStackInSlot(0);
             if (in.isEmpty()) return null;
-            for (OreWashingRecipe r : level.getRecipeManager().getAllRecipesFor(ModRecipes.ORE_WASHING_TYPE.get())) {
-                if (r.isLateOnly()) continue;   // только для промышленного промывателя
+            for (OreWashingRecipe r : com.jykito.industrialcore.recipe.RecipeLookup.all(level, ModRecipes.ORE_WASHING_TYPE.get())) {
+                if (r.isLateOnly()) continue;   // industrial ore washer only
                 if (!r.getInput().test(in) || in.getCount() < r.getInputCount()) continue;
                 if (waterTank.getFluidAmount() < r.getWaterAmount()) continue;
                 if (!outputsFit(r)) continue;
@@ -224,7 +222,7 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
 
             if (recipe.getResultChance() >= 1.0f || level.random.nextFloat() < recipe.getResultChance()) {
                 insertOutput(recipe.getResult());
-                // переработчик: второй основной продукт, если ему есть место (лишнее не теряем, просто не выдаём)
+                // processor: a second main product if there is room for it (the extra is not lost, just not given out)
                 if (NaniteProcessing.extra(level, strain, input, 1) > 0 && fits(recipe.getResult())) insertOutput(recipe.getResult());
             }
             if (recipe.hasByproduct() && level.random.nextFloat() < recipe.getByproductChance()) {
@@ -236,7 +234,7 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
         if (done > 0) setChanged();
     }
 
-    /** Слот апгрейда со штаммом-переработчиком или −1. */
+    /** Upgrade slot with a processor strain, or −1. */
     private int naniteSlot() {
         for (int s = 4; s <= 7; s++) if (itemHandler.getStackInSlot(s).getItem() instanceof NaniteStrainItem) return s;
         return -1;
@@ -249,7 +247,7 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public CompoundTag getUpdateTag() { return saveWithoutMetadata(); }
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) { return saveWithoutMetadata(registries); }
 
     @Nullable
     @Override
@@ -265,46 +263,37 @@ public class OreWasherBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY)        return lazyEnergyHandler.cast();
-        if (cap == ForgeCapabilities.ITEM_HANDLER)  return lazyItemHandler.cast();
-        if (cap == ForgeCapabilities.FLUID_HANDLER) return lazyFluidHandler.cast();
-        return super.getCapability(cap, side);
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.EnergyStorage.BLOCK)        return (T) energyStorage;
+        if (cap == Capabilities.ItemHandler.BLOCK)  return (T) automationHandler;
+        if (cap == Capabilities.FluidHandler.BLOCK) return (T) fillOnlyHandler;
+        return null;
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
-        lazyEnergyHandler = LazyOptional.of(() -> energyStorage);
-        lazyItemHandler   = LazyOptional.of(() -> automationHandler);
-        lazyFluidHandler  = LazyOptional.of(() -> fillOnlyHandler);
     }
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyEnergyHandler.invalidate();
-        lazyItemHandler.invalidate();
-        lazyFluidHandler.invalidate();
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag tag) {
-        tag.put("inventory", itemHandler.serializeNBT());
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.put("inventory", itemHandler.serializeNBT(registries));
         tag.putInt("energy", energyStorage.getEnergyStored());
-        tag.put("waterTank", waterTank.writeToNBT(new CompoundTag()));
+        tag.put("waterTank", waterTank.writeToNBT(registries, new CompoundTag()));
         AdaptiveTank.save(tag, "waterTankCapacity", waterTank);
         tag.putInt("progress", progress);
-        super.saveAdditional(tag);
+        super.saveAdditional(tag, registries);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        itemHandler.deserializeNBT(tag.getCompound("inventory"));
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        itemHandler.deserializeNBT(registries, tag.getCompound("inventory"));
         energyStorage.setEnergy(tag.getInt("energy"));
         AdaptiveTank.load(tag, "waterTankCapacity", waterTank, TANK_BASE);
-        waterTank.readFromNBT(tag.getCompound("waterTank"));
+        waterTank.readFromNBT(registries, tag.getCompound("waterTank"));
         progress = tag.getInt("progress");
     }
 }

@@ -10,10 +10,10 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.items.SlotItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -29,24 +29,24 @@ public class CrateMenu extends MachineMenu {
         this(id, inv, (CrateBlockEntity) inv.player.level().getBlockEntity(buf.readBlockPos()));
     }
 
-    // ── раскладка GUI: координаты с арта юзера, общие для меню и экрана ──
-    // Файл 256×315, отображается целиком. Шаг сетки 19 в обе стороны.
+    // ── GUI layout: coordinates from the author's art, shared by the menu and the screen ──
+    // The file is 256x315 and displayed whole. Grid step 19 both ways.
     private static final int SLOT_X = 44, STEP = 19;
     public static final int BTN_X = 220, BTN_SIZE = 10;
     public static final int GUI_W = 256, GUI_H = 315;
 
     /**
-     * Куда экран сажает инвентарь игрока НЕЗАВИСИМО от тира: иначе при открытии разных
-     * ящиков нижняя половина окна скачет, потому что содержимое в трёх png на разной высоте.
-     * Берём invY самого высокого тира (T3) — значит остальные сдвигаются только вниз,
-     * в пустое место холста, и за верх экрана ничего не уезжает.
+     * Where the screen puts the player inventory REGARDLESS of tier: otherwise when opening different
+     * crates the bottom half of the window jumps, because the contents sit at different heights in the three pngs.
+     * We take invY of the tallest tier (T3), so the others only shift down,
+     * into the empty area of the canvas, and nothing goes off the top of the screen.
      */
     public static final int ANCHOR_INV_Y = 204;
 
     /**
-     * Y-координаты и текстура на тир. Кнопки сверху вниз: добрать, скинуть совпадающее, сортировка.
-     * Имя текстуры живёт здесь же, иначе соответствие «ряды → тир» пришлось бы держать
-     * вторым switch в экране и обновлять оба при добавлении тира.
+     * Y coordinates and texture per tier. Buttons from top to bottom: restock, dump matching, sort.
+     * The texture name lives here too, otherwise the "rows -> tier" mapping would have to be kept
+     * as a second switch in the screen and both updated when a tier is added.
      */
     public record Layout(int crateY, int invY, int hotbarY, int restockY, int depositY, int sortY, String tier) {}
 
@@ -54,7 +54,7 @@ public class CrateMenu extends MachineMenu {
         return switch (rows) {
             case 8  -> new Layout(36, 195, 258, 32, 45, 58, "t2");
             case 10 -> new Layout(7,  204, 267,  3, 16, 29, "t3");
-            default -> new Layout(24, 145, 208, 20, 33, 46, "t1");   // 6 рядов
+            default -> new Layout(24, 145, 208, 20, 33, 46, "t1");   // 6 rows
         };
     }
 
@@ -113,8 +113,8 @@ public class CrateMenu extends MachineMenu {
         }
     }
 
-    // ── кнопки GUI (штатный путь: клиент шлёт handleInventoryButtonClick → сервер зовёт это) ──
-    // 0 = сортировка, 1 = скинуть совпадающее, 2 = добрать
+    // ── GUI buttons (standard path: the client sends handleInventoryButtonClick -> the server calls this) ──
+    // 0 = sort, 1 = dump matching, 2 = restock
     @Override
     public boolean clickMenuButton(Player player, int id) {
         ItemStackHandler h = blockEntity.getItems();
@@ -129,7 +129,7 @@ public class CrateMenu extends MachineMenu {
         return true;
     }
 
-    /** Схлопнуть одинаковые стаки и разложить по id (по имени реестра, затем по убыванию количества). */
+    /** Merge identical stacks and sort by id (by registry name, then by count descending). */
     private static void sortContents(ItemStackHandler h) {
         int n = h.getSlots();
         List<ItemStack> buckets = new ArrayList<>();
@@ -138,13 +138,13 @@ public class CrateMenu extends MachineMenu {
             if (!s.isEmpty()) {
                 boolean merged = false;
                 for (ItemStack b : buckets)
-                    if (ItemStack.isSameItemSameTags(b, s)) { b.grow(s.getCount()); merged = true; break; }
+                    if (ItemStack.isSameItemSameComponents(b, s)) { b.grow(s.getCount()); merged = true; break; }
                 if (!merged) buckets.add(s.copy());
             }
             h.setStackInSlot(i, ItemStack.EMPTY);
         }
         buckets.sort(Comparator
-                .comparing((ItemStack st) -> ForgeRegistries.ITEMS.getKey(st.getItem()).toString())
+                .comparing((ItemStack st) -> BuiltInRegistries.ITEM.getKey(st.getItem()).toString())
                 .thenComparingInt(st -> -st.getCount()));
         int slot = 0;
         for (ItemStack b : buckets) {
@@ -162,12 +162,12 @@ public class CrateMenu extends MachineMenu {
     private static boolean crateHas(ItemStackHandler h, ItemStack s) {
         for (int i = 0; i < h.getSlots(); i++) {
             ItemStack cs = h.getStackInSlot(i);
-            if (!cs.isEmpty() && ItemStack.isSameItemSameTags(cs, s)) return true;
+            if (!cs.isEmpty() && ItemStack.isSameItemSameComponents(cs, s)) return true;
         }
         return false;
     }
 
-    /** Скинуть из инвентаря в ящик всё, тип чего в ящике уже есть. */
+    /** Dump from the inventory into the crate everything whose type is already in the crate. */
     private static void depositMatching(Player player, ItemStackHandler h) {
         var items = player.getInventory().items;
         for (int i = 0; i < items.size(); i++) {
@@ -177,7 +177,7 @@ public class CrateMenu extends MachineMenu {
         }
     }
 
-    /** Добрать из ящика — дополнить существующие стаки игрока до максимума. */
+    /** Restock from the crate: top up the player's existing stacks to the maximum. */
     private static void restock(Player player, ItemStackHandler h) {
         var items = player.getInventory().items;
         for (int i = 0; i < items.size(); i++) {
@@ -186,7 +186,7 @@ public class CrateMenu extends MachineMenu {
             int need = p.getMaxStackSize() - p.getCount();
             for (int c = 0; c < h.getSlots() && need > 0; c++) {
                 ItemStack cs = h.getStackInSlot(c);
-                if (cs.isEmpty() || !ItemStack.isSameItemSameTags(cs, p)) continue;
+                if (cs.isEmpty() || !ItemStack.isSameItemSameComponents(cs, p)) continue;
                 ItemStack got = h.extractItem(c, Math.min(need, cs.getCount()), false);
                 p.grow(got.getCount());
                 need -= got.getCount();

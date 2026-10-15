@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "BCB",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:dusts/redstone"
+    },
+    "B": {
+      "item": "minecraft:diamond"
+    },
+    "C": {
+      "item": "industrial_core:lithium_battery"
+    }
+  },
+  "result": {
+    "id": "industrial_core:flux_core",
+    "count": 1
+  }
+}

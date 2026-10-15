@@ -5,9 +5,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 /**
- * Переработчик в промывщике (малом и мультиблоке): на каждую операцию с шансом {@link NaniteGenome#secondOutputChance} (до 30%)
- * основной продукт выходит ещё раз. Материал берётся со входа рецепта (сырьё, руда). Время не трогает — это работа ускорителей.
- * Износ как у добытчика, но реже: операций у промывщика намного больше, чем циклов у шахтёра.
+ * Processor in the ore washer (small and multiblock): for each operation, with chance {@link NaniteGenome#secondOutputChance} (up to 30%)
+ * the main product comes out once more. The material comes from the recipe input (raw material, ore). It does not touch time, that is the accelerators' job.
+ * Wear like the miner's, but rarer: the ore washer does far more operations than the miner does cycles.
  */
 public final class NaniteProcessing {
 
@@ -15,7 +15,7 @@ public final class NaniteProcessing {
 
     public static final float WEAR_CHANCE = 0.01f, WEAR = 0.97f;
 
-    /** Сколько дополнительных продуктов дали {@code ops} операций (у резонатора иногда два на операцию). */
+    /** How many extra products {@code ops} operations gave (a resonator sometimes gives two per operation). */
     public static int extra(Level level, ItemStack strain, Item input, int ops) {
         if (strain.isEmpty() || ops <= 0) return 0;
         NaniteGenome g = NaniteGenome.read(strain);
@@ -26,12 +26,12 @@ public final class NaniteProcessing {
         boolean resonator = g.has(NaniteTrait.RESONATOR);
         for (int i = 0; i < ops; i++) if (level.random.nextFloat() < chance) {
             n++;
-            if (resonator && level.random.nextFloat() < NaniteTrait.RESONATOR_CHANCE) n++;   // резонанс: ещё один
+            if (resonator && level.random.nextFloat() < NaniteTrait.RESONATOR_CHANCE) n++;   // resonance: one more
         }
         return n;
     }
 
-    /** Штамм после {@code ops} операций: тот же предмет, если износа не случилось, иначе изношенная копия. */
+    /** Strain after {@code ops} operations: the same item if no wear happened, otherwise a worn copy. */
     public static ItemStack wear(Level level, ItemStack strain, int ops) {
         if (strain.isEmpty() || ops <= 0) return strain;
         NaniteGenome g = NaniteGenome.read(strain);

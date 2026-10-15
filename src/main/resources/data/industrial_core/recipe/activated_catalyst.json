@@ -1,0 +1,43 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/electrum"
+    },
+    "B": {
+      "type": "neoforge:components",
+      "items": "industrial_core:capsule",
+      "components": {
+        "industrial_core:fluid_content": {
+          "id": "industrial_core:molten_amethyst",
+          "amount": 1000
+        }
+      }
+    },
+    "C": {
+      "item": "industrial_core:condensator"
+    },
+    "D": {
+      "item": "industrial_core:basic_catalyst"
+    },
+    "E": {
+      "type": "neoforge:components",
+      "items": "industrial_core:capsule",
+      "components": {
+        "industrial_core:fluid_content": {
+          "id": "industrial_core:coolant",
+          "amount": 1000
+        }
+      }
+    }
+  },
+  "result": {
+    "id": "industrial_core:activated_catalyst",
+    "count": 1
+  }
+}

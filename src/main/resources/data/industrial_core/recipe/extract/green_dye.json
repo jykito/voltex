@@ -1,0 +1,14 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:extracting",
+  "ingredient": {
+    "item": "minecraft:cactus"
+  },
+  "inputCount": 1,
+  "result": {
+    "id": "minecraft:green_dye",
+    "count": 2
+  },
+  "processingTime": 105,
+  "energyCost": 30
+}

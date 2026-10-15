@@ -1,0 +1,37 @@
+{
+  "parent": "industrial_core:voltex/crusher",
+  "display": {
+    "icon": {
+      "id": "industrial_core:restructor"
+    },
+    "title": {
+      "translate": "advancements.industrial_core.restructor.title"
+    },
+    "description": {
+      "translate": "advancements.industrial_core.restructor.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_restructor": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "industrial_core:restructor"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_restructor"
+    ]
+  ]
+}

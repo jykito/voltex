@@ -1,0 +1,14 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:crushing",
+  "ingredient": {
+    "item": "minecraft:stone"
+  },
+  "inputCount": 1,
+  "result": {
+    "id": "minecraft:cobblestone",
+    "count": 1
+  },
+  "processingTime": 84,
+  "energyCost": 30
+}

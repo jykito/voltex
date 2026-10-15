@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Inventory;
 public class LiquefierScreen extends MachineScreen<LiquefierMenu> {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/liquefier_gui.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/liquefier_gui.png");
 
     private static final int ENERGY_X = 72, ENERGY_Y = 98, BAR_H = 6;
     private static final int HEAT_X = 72, HEAT_Y = 108;

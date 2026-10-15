@@ -1,20 +1,32 @@
 package com.jykito.industrialcore.networking;
 
+import com.jykito.industrialcore.IndustrialCore;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+
 import com.jykito.industrialcore.menu.MePortMenu;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
 
-import java.util.function.Supplier;
 
 /**
- * Окно МЭ-порта → сервер: то, что не влезает в клик по слоту или кнопку окна.
- * AMOUNT — колесо над клеткой настройки (index: 0..26 предметы, 27..29 жидкости, value — шаг);
- * GHOST — перетаскивание из JEI в клетку настройки; PRIORITY — приоритет порта шаблонов.
+ * ME port window -> server: whatever does not fit into a slot click or a window button.
+ * AMOUNT is the scroll wheel over a config cell (index: 0..26 items, 27..29 fluids, value is the step);
+ * GHOST is a drag from JEI into a config cell; PRIORITY is the pattern port priority.
  */
-public class MePortPacket {
+public class MePortPacket implements CustomPacketPayload {
+    public static final Type<MePortPacket> TYPE =
+            new Type<>(ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "me_port"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, MePortPacket> STREAM_CODEC =
+            StreamCodec.ofMember(MePortPacket::toBytes, MePortPacket::new);
+
+    @Override
+    public Type<MePortPacket> type() { return TYPE; }
+
     public static final int AMOUNT = 0, GHOST = 1, PRIORITY = 2;
 
     private final int containerId, op, index, value;
@@ -29,20 +41,19 @@ public class MePortPacket {
     public static MePortPacket ghost(int containerId, int index, ItemStack item, FluidStack fluid) { return new MePortPacket(containerId, GHOST, index, 0, item, fluid); }
     public static MePortPacket priority(int containerId, int value) { return new MePortPacket(containerId, PRIORITY, 0, value, ItemStack.EMPTY, FluidStack.EMPTY); }
 
-    public MePortPacket(FriendlyByteBuf buf) {
+    public MePortPacket(RegistryFriendlyByteBuf buf) {
         containerId = buf.readVarInt(); op = buf.readVarInt(); index = buf.readVarInt(); value = buf.readVarInt();
-        item = buf.readItem(); fluid = FluidStack.readFromPacket(buf);
+        item = ItemStack.OPTIONAL_STREAM_CODEC.decode(buf); fluid = FluidStack.OPTIONAL_STREAM_CODEC.decode(buf);
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
+    public void toBytes(RegistryFriendlyByteBuf buf) {
         buf.writeVarInt(containerId); buf.writeVarInt(op); buf.writeVarInt(index); buf.writeVarInt(value);
-        buf.writeItem(item); fluid.writeToPacket(buf);
+        ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, item); FluidStack.OPTIONAL_STREAM_CODEC.encode(buf, fluid);
     }
 
-    public boolean handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context ctx = supplier.get();
+    public void handle(IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
-            ServerPlayer player = ctx.getSender();
+            ServerPlayer player = (ServerPlayer) ctx.player();
             if (player == null || !(player.containerMenu instanceof MePortMenu menu) || menu.containerId != containerId) return;
             if (!menu.stillValid(player)) return;
             switch (op) {
@@ -51,7 +62,6 @@ public class MePortPacket {
                 case PRIORITY -> menu.setPriority(value);
                 default -> {}
             }
-        });
-        return true;
+        });
     }
 }

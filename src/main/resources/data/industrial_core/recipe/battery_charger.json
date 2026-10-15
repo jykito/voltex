@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/gold"
+    },
+    "B": {
+      "item": "industrial_core:copper_cable"
+    },
+    "C": {
+      "item": "industrial_core:battery"
+    },
+    "D": {
+      "item": "industrial_core:machine_casing"
+    }
+  },
+  "result": {
+    "id": "industrial_core:battery_charger",
+    "count": 1
+  }
+}

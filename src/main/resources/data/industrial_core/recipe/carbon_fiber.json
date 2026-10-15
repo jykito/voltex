@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " A ",
+    "ABA",
+    " A "
+  ],
+  "key": {
+    "A": {
+      "tag": "c:dusts/coal"
+    },
+    "B": {
+      "item": "industrial_core:tree_resin"
+    }
+  },
+  "result": {
+    "id": "industrial_core:carbon_fiber",
+    "count": 1
+  }
+}

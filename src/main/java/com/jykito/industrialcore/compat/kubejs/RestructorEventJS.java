@@ -1,11 +1,11 @@
 package com.jykito.industrialcore.compat.kubejs;
 
 import com.jykito.industrialcore.api.RestructorRecipeRegistry;
-import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.event.KubeStartupEvent;
 
 import java.util.Map;
 
-public class RestructorEventJS extends EventJS {
+public class RestructorEventJS implements KubeStartupEvent {
 
     public void register(Object params) {
         if (!(params instanceof Map<?, ?> map)) {

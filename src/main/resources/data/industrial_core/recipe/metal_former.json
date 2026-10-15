@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/iron"
+    },
+    "B": {
+      "tag": "c:plates/copper"
+    },
+    "C": {
+      "item": "industrial_core:electric_motor"
+    },
+    "D": {
+      "item": "industrial_core:machine_casing"
+    }
+  },
+  "result": {
+    "id": "industrial_core:metal_former",
+    "count": 1
+  }
+}

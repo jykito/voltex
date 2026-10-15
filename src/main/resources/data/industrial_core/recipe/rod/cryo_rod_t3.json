@@ -1,0 +1,24 @@
+{
+  "type": "industrial_core:rod_fabrication_recipe",
+  "result": {
+    "id": "industrial_core:cryo_rod_t3",
+    "count": 1
+  },
+  "ingredient1": {
+    "item": "industrial_core:cryo_rod_t2"
+  },
+  "ingredient2": {
+    "type": "neoforge:components",
+    "items": "industrial_core:capsule",
+    "components": {
+      "industrial_core:fluid_content": {
+        "id": "industrial_core:superfluid_condensate",
+        "amount": 1000
+      }
+    }
+  },
+  "count1": 1,
+  "count2": 1,
+  "processingTime": 600,
+  "energyCostPerTick": 1600
+}

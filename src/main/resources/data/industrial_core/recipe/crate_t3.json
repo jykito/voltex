@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "BCB",
+    "ADA"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/aluminum"
+    },
+    "B": {
+      "item": "industrial_core:textolite_board"
+    },
+    "C": {
+      "item": "industrial_core:crate_t2"
+    },
+    "D": {
+      "item": "industrial_core:electric_motor"
+    }
+  },
+  "result": {
+    "id": "industrial_core:crate_t3",
+    "count": 1
+  }
+}

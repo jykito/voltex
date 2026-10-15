@@ -1,0 +1,31 @@
+{
+  "type": "industrial_core:accelerating",
+  "inputs": [
+    {
+      "item": "industrial_core:exotic_matter",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:netherite_fiber_cable",
+      "count": 1
+    },
+    {
+      "item": "industrial_core:kronium_alloy",
+      "count": 1
+    },
+    {
+      "item": "industrial_core:capsule",
+      "count": 8
+    }
+  ],
+  "result": {
+    "id": "industrial_core:material_container",
+    "count": 1
+  },
+  "minTier": 2,
+  "processingTime": 300,
+  "energyCostPerTick": 4000,
+  "minInstab": 55,
+  "bandLo": 58,
+  "bandHi": 64
+}

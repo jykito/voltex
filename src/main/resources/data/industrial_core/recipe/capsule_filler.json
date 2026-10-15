@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:glass"
+    },
+    "B": {
+      "item": "industrial_core:capsule"
+    },
+    "C": {
+      "tag": "c:plates/iron"
+    },
+    "D": {
+      "tag": "c:components/machine_casing"
+    },
+    "E": {
+      "item": "industrial_core:fluid_valve"
+    }
+  },
+  "result": {
+    "id": "industrial_core:capsule_filler",
+    "count": 1
+  }
+}

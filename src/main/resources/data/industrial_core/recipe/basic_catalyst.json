@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " A ",
+    "BCB",
+    " D "
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:amethyst_crystal"
+    },
+    "B": {
+      "tag": "c:ingots/electrum"
+    },
+    "C": {
+      "tag": "c:gems/diamond"
+    },
+    "D": {
+      "item": "industrial_core:crystal_plate"
+    }
+  },
+  "result": {
+    "id": "industrial_core:basic_catalyst",
+    "count": 1
+  }
+}

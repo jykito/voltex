@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "A A",
+    "BCB",
+    "ADA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:kronit"
+    },
+    "B": {
+      "item": "industrial_core:carbon_composite_ingot"
+    },
+    "C": {
+      "item": "industrial_core:flux_core"
+    },
+    "D": {
+      "item": "industrial_core:netherite_fiber_cable"
+    }
+  },
+  "result": {
+    "id": "industrial_core:nexite_chestplate",
+    "count": 1
+  }
+}

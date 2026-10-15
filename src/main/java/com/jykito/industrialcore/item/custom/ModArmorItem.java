@@ -11,14 +11,14 @@ public class ModArmorItem extends ArmorItem {
 
     private final String materialName;
 
-    public ModArmorItem(ArmorMaterial material, Type type, Properties properties, String materialName) {
-        super(material, type, properties);
+    public ModArmorItem(net.minecraft.core.Holder<ArmorMaterial> material, Type type, Properties properties, String materialName) {
+        super(material, type, properties.durability(com.jykito.industrialcore.item.ModArmorMaterials.durability(material, type)));
         this.materialName = materialName;
     }
 
     @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-        int layer = slot == EquipmentSlot.LEGS ? 2 : 1;
-        return IndustrialCore.MODID + ":textures/models/armor/" + materialName + "_layer_" + layer + ".png";
+    public net.minecraft.resources.ResourceLocation getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, ArmorMaterial.Layer layer, boolean innerModel) {
+        int layerNo = innerModel ? 2 : 1;
+        return net.minecraft.resources.ResourceLocation.parse(IndustrialCore.MODID + ":textures/models/armor/" + materialName + "_layer_" + layerNo + ".png");
     }
 }

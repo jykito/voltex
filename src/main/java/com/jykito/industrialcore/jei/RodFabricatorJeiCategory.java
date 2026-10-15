@@ -27,7 +27,7 @@ import java.util.List;
 public class RodFabricatorJeiCategory implements IRecipeCategory<RodFabricatorRecipe> {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/jei/jei_rod_fabricator.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/jei/jei_rod_fabricator.png");
     private static final int TEX_W = 154, TEX_H = 140, VIS_W = 154, VIS_H = 84;
 
     private static final int IN1_X = 44, IN1_Y = 14, IN2_X = 44, IN2_Y = 36, OUT_X = 93, OUT_Y = 25;

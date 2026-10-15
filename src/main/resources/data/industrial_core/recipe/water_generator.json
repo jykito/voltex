@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:glass"
+    },
+    "B": {
+      "item": "industrial_core:fluid_valve"
+    },
+    "C": {
+      "tag": "c:ingots/nickel"
+    },
+    "D": {
+      "tag": "c:components/machine_casing"
+    },
+    "E": {
+      "item": "industrial_core:electric_motor"
+    }
+  },
+  "result": {
+    "id": "industrial_core:water_generator",
+    "count": 1
+  }
+}

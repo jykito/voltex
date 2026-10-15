@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.block.custom.EvolutionChamberBlock;
 import com.jykito.industrialcore.energy.MachineEnergy;
@@ -28,13 +32,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,16 +43,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Камера эволюции: штамм нанитов отбирается под корм из второго слота ({@link NaniteFeed}): руда — добытчик,
- * пыль — переработчик, образец исследования — учёный. Класс закрепляется с первого поколения, штамм другого класса
- * камера не ведёт. Поколение — {@link #GENERATION_TICKS} тиков, съедает одну руду или пыль (образец не расходуется);
- * энергия идёт потиково. Тепло из теплосети ускоряет поколения до {@link #HEAT_SPEEDUP} раз
- * и делает шаги отбора крупнее, но снижает стабильность штамма ({@link NaniteEvolution}).
+ * Evolution chamber: the nanite strain is selected by the feed in the second slot ({@link NaniteFeed}): ore makes a miner,
+ * dust a processor, a research sample a scientist. The class is fixed from the first generation, a strain of another class
+ * is not evolved by the chamber. A generation is {@link #GENERATION_TICKS} ticks and eats one ore or dust (the sample is not consumed);
+ * energy is drawn per tick. Heat from the heat network speeds generations up to {@link #HEAT_SPEEDUP} times
+ * and makes selection steps larger, but lowers the strain stability ({@link NaniteEvolution}).
  * <p>
- * Для графика в окне камера помнит сродство к целевой руде за последние {@link #HISTORY} поколений.
- * Числа предварительные, баланс позже.
+ * For the graph in the window the chamber remembers the affinity to the target ore over the last {@link #HISTORY} generations.
+ * Numbers are preliminary, balance comes later.
  */
-public class EvolutionChamberBlockEntity extends BlockEntity implements MenuProvider {
+public class EvolutionChamberBlockEntity extends BlockEntity implements Caps.Provider, MenuProvider {
 
     public static final int SLOT_STRAIN = 0, SLOT_FEED = 1;
     public static final int GENERATION_TICKS = 400;
@@ -62,7 +63,7 @@ public class EvolutionChamberBlockEntity extends BlockEntity implements MenuProv
     public static final int FIELD_RADIUS = 8;
     private static final int PROGRESS_SCALE = 100;
 
-    /** Новые значения только в конец: порядковый номер уходит клиенту. */
+    /** Add new values only at the end: the ordinal is sent to the client. */
     public enum Status { WORKING, NO_STRAIN, NO_FEED, NO_ENERGY, WRONG_KIND }
 
     private final ItemStackHandler items = new ItemStackHandler(2) {
@@ -73,7 +74,7 @@ public class EvolutionChamberBlockEntity extends BlockEntity implements MenuProv
         @Override public int getSlotLimit(int slot) { return slot == SLOT_STRAIN ? 1 : 64; }
     };
 
-    /** Снаружи только кладут: руду и штаммы. Забирать штамм — руками, иначе воронка утащит его посреди отбора. */
+    /** From outside things are only inserted: ore and strains. The strain is taken out by hand, otherwise a hopper would pull it mid-selection. */
     private final IItemHandler automation = new IItemHandler() {
         @Override public int getSlots() { return items.getSlots(); }
         @Override public @NotNull ItemStack getStackInSlot(int slot) { return items.getStackInSlot(slot); }
@@ -97,14 +98,11 @@ public class EvolutionChamberBlockEntity extends BlockEntity implements MenuProv
         }
     };
 
-    private final LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.of(() -> energy);
-    private final LazyOptional<IItemHandler> lazyItems = LazyOptional.of(() -> automation);
-    private final LazyOptional<IHeatHandler> lazyHeat = LazyOptional.of(() -> heatHandler);
 
     private int progress;
     private Status status = Status.NO_STRAIN;
 
-    /** Сродство к целевой руде по поколениям (тысячные) и какая руда цель. Синхронизируется клиенту для графика. */
+    /** Affinity to the target ore per generation (thousandths) and which ore is the target. Synced to the client for the graph. */
     private final List<Integer> history = new ArrayList<>();
     private @Nullable String historyTarget;
     private @Nullable Item historyIcon;
@@ -119,7 +117,7 @@ public class EvolutionChamberBlockEntity extends BlockEntity implements MenuProv
 
     private float heatFraction() { return heat / (float) MAX_HEAT; }
 
-    // ───────── тик ─────────
+    // ───────── tick ─────────
 
     public void tick(Level level, BlockPos pos, BlockState state) {
         if (!heated && heat > 0) heat = Math.max(0, heat - HEAT_LOSS);
@@ -171,23 +169,23 @@ public class EvolutionChamberBlockEntity extends BlockEntity implements MenuProv
 
     private static int permille(float v) { return Math.round(v * 1000); }
 
-    /** Холод для криофила: вплотную к камере блок криоветки (криокорпус, криостекло, ядро криокамеры…). */
+    /** Cold for a cryophile: a cryo branch block right next to the chamber (cryo casing, cryo glass, cryo chamber core...). */
     private boolean cold(Level level) {
         for (Direction d : Direction.values()) {
-            ResourceLocation id = ForgeRegistries.BLOCKS.getKey(level.getBlockState(worldPosition.relative(d)).getBlock());
+            ResourceLocation id = BuiltInRegistries.BLOCK.getKey(level.getBlockState(worldPosition.relative(d)).getBlock());
             if (id != null && id.getNamespace().equals(com.jykito.industrialcore.IndustrialCore.MODID) && id.getPath().startsWith("cryo")) return true;
         }
         return false;
     }
 
-    /** Поле для резонатора: ядро магнита-ускорителя в {@link #FIELD_RADIUS} блоках. Раз в поколение, не каждый тик. */
+    /** Field for a resonator: a magnet-accelerator core within {@link #FIELD_RADIUS} blocks. Once per generation, not every tick. */
     private boolean field(Level level) {
         for (BlockPos p : BlockPos.betweenClosed(worldPosition.offset(-FIELD_RADIUS, -FIELD_RADIUS, -FIELD_RADIUS), worldPosition.offset(FIELD_RADIUS, FIELD_RADIUS, FIELD_RADIUS)))
             if (level.getBlockState(p).is(com.jykito.industrialcore.block.ModBlocks.ELECTROMAGNET_CORE.get())) return true;
         return false;
     }
 
-    // ───────── окно ─────────
+    // ───────── window ─────────
 
     private final ContainerData data = new ContainerData() {
         @Override public int get(int i) {
@@ -215,23 +213,19 @@ public class EvolutionChamberBlockEntity extends BlockEntity implements MenuProv
         return new EvolutionChamberMenu(id, inv, this, data);
     }
 
-    // ───────── возможности, синк, сохранение ─────────
+    // ───────── capabilities, sync, saving ─────────
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY) return lazyEnergy.cast();
-        if (cap == ForgeCapabilities.ITEM_HANDLER) return lazyItems.cast();
-        if (cap == HeatCapability.HEAT) return lazyHeat.cast();
-        return super.getCapability(cap, side);
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.EnergyStorage.BLOCK) return (T) energy;
+        if (cap == Capabilities.ItemHandler.BLOCK) return (T) automation;
+        if (cap == HeatCapability.HEAT) return (T) heatHandler;
+        return null;
     }
 
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyEnergy.invalidate(); lazyItems.invalidate(); lazyHeat.invalidate();
-    }
-
-    private void sync() {
+        private void sync() {
         setChanged();
         if (level != null && !level.isClientSide()) level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
     }
@@ -239,7 +233,7 @@ public class EvolutionChamberBlockEntity extends BlockEntity implements MenuProv
     private void writeHistory(CompoundTag tag) {
         tag.putIntArray("hist", history);
         if (historyTarget != null) tag.putString("target", historyTarget);
-        if (historyIcon != null) tag.putString("icon", String.valueOf(ForgeRegistries.ITEMS.getKey(historyIcon)));
+        if (historyIcon != null) tag.putString("icon", String.valueOf(BuiltInRegistries.ITEM.getKey(historyIcon)));
     }
 
     private void readHistory(CompoundTag tag) {
@@ -247,13 +241,13 @@ public class EvolutionChamberBlockEntity extends BlockEntity implements MenuProv
         for (int v : tag.getIntArray("hist")) history.add(v);
         historyTarget = tag.contains("target") ? tag.getString("target") : null;
         ResourceLocation icon = tag.contains("icon") ? ResourceLocation.tryParse(tag.getString("icon")) : null;
-        historyIcon = icon == null ? null : ForgeRegistries.ITEMS.getValue(icon);
+        historyIcon = icon == null ? null : BuiltInRegistries.ITEM.get(icon);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put("inventory", items.serializeNBT());
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        tag.put("inventory", items.serializeNBT(registries));
         tag.putInt("energy", energy.getEnergyStored());
         tag.putInt("heat", heat);
         tag.putInt("progress", progress);
@@ -261,31 +255,31 @@ public class EvolutionChamberBlockEntity extends BlockEntity implements MenuProv
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        items.deserializeNBT(tag.getCompound("inventory"));
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        items.deserializeNBT(registries, tag.getCompound("inventory"));
         energy.setEnergy(tag.getInt("energy"));
         heat = Math.max(0, Math.min(MAX_HEAT, tag.getInt("heat")));
         progress = tag.getInt("progress");
         readHistory(tag);
     }
 
-    /** Клиенту — только график (энергия и прочее идут через окно). */
+    /** Only the graph goes to the client (energy and the rest go through the window). */
     @Override
-    public CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         CompoundTag tag = new CompoundTag();
         writeHistory(tag);
         return tag;
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) { readHistory(tag); }
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) { readHistory(tag); }
 
     @Override
     public @Nullable Packet<ClientGamePacketListener> getUpdatePacket() { return ClientboundBlockEntityDataPacket.create(this); }
 
     @Override
-    public void onDataPacket(net.minecraft.network.Connection net, ClientboundBlockEntityDataPacket pkt) {
-        if (pkt.getTag() != null) handleUpdateTag(pkt.getTag());
+    public void onDataPacket(net.minecraft.network.Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries) {
+        if (pkt.getTag() != null) handleUpdateTag(pkt.getTag(), registries);
     }
 }

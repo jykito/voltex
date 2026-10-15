@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DAD",
+    " B ",
+    " C "
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:diamond"
+    },
+    "B": {
+      "tag": "c:plates/netherite"
+    },
+    "C": {
+      "item": "industrial_core:hardened_steel_ingot"
+    },
+    "D": {
+      "tag": "c:dusts/diamond"
+    }
+  },
+  "result": {
+    "id": "industrial_core:netherite_drill_tip",
+    "count": 1
+  }
+}

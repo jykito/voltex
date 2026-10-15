@@ -3,7 +3,7 @@ package com.jykito.industrialcore.jei;
 import com.jykito.industrialcore.IndustrialCore;
 import com.jykito.industrialcore.recipe.OreWashingRecipe;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -22,7 +22,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +30,7 @@ import java.util.List;
 public class OreWasherJeiCategory implements IRecipeCategory<OreWashingRecipe> {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/jei/jei_ore_washer.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/jei/jei_ore_washer.png");
     private static final int TEX_W = 154, TEX_H = 150, VIS_W = 154, VIS_H = 95;
 
     private static final int TANK_X = 28, TANK_Y = 17, TANK_W = 16, TANK_H = 48;
@@ -66,7 +66,7 @@ public class OreWasherJeiCategory implements IRecipeCategory<OreWashingRecipe> {
     public void setRecipe(IRecipeLayoutBuilder builder, OreWashingRecipe recipe, IFocusGroup focuses) {
 
         builder.addSlot(RecipeIngredientRole.INPUT, TANK_X, TANK_Y)
-               .setCustomRenderer(ForgeTypes.FLUID_STACK,
+               .setCustomRenderer(NeoForgeTypes.FLUID_STACK,
                        new FluidTankRenderer(TANK_W, TANK_H, TEXTURE, GLASS_U, GLASS_V, TEX_W, TEX_H))
                .addFluidStack(Fluids.WATER, recipe.getWaterAmount());
 

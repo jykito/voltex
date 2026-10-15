@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " A ",
+    "BAB",
+    " A "
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:carbon_plate"
+    },
+    "B": {
+      "item": "minecraft:clay_ball"
+    }
+  },
+  "result": {
+    "id": "industrial_core:graphite_rod",
+    "count": 1
+  }
+}

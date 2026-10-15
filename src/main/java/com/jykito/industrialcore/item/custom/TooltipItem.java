@@ -19,10 +19,11 @@ public class TooltipItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
+        @Nullable Level level = context.level();
 
         tooltipComponents.add(Component.translatable(this.tooltipKey).withStyle(ChatFormatting.LIGHT_PURPLE));
 
-        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
+        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
     }
 }

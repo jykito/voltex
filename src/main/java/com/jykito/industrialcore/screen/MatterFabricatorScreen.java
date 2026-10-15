@@ -13,7 +13,7 @@ import net.minecraft.world.entity.player.Inventory;
 public class MatterFabricatorScreen extends AbstractContainerScreen<MatterFabricatorMenu> {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/matter_fabricator_gui.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/matter_fabricator_gui.png");
 
     private static final int PROG_X = 83, PROG_Y = 37, PROG_W = 88, PROG_H = 68;
     private static final int PROG_SRC_U = 83, PROG_SRC_V = 243;
@@ -35,7 +35,6 @@ public class MatterFabricatorScreen extends AbstractContainerScreen<MatterFabric
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(g);
         super.render(g, mouseX, mouseY, partialTick);
         this.renderTooltip(g, mouseX, mouseY);
 

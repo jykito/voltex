@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/invar"
+    },
+    "B": {
+      "item": "industrial_core:textolite_board"
+    },
+    "C": {
+      "tag": "c:plates/gold"
+    },
+    "D": {
+      "item": "industrial_core:integral_heat_vent"
+    }
+  },
+  "result": {
+    "id": "industrial_core:component_heat_vent",
+    "count": 1
+  }
+}

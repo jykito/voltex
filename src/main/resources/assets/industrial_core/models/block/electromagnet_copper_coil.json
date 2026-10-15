@@ -1,5 +1,5 @@
 {
-    "loader": "forge:obj",
+    "loader": "neoforge:obj",
     "model": "industrial_core:models/block/electromagnet_copper_coil.obj",
     "flip_v": true,
     "textures": {

@@ -25,7 +25,7 @@ import java.util.List;
 public class PhaseSplitterRecipeCategory implements IRecipeCategory<PhaseSplitterRecipe> {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/jei/jei_phase_splitter.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/jei/jei_phase_splitter.png");
     private static final int TEX_W = 154, TEX_H = 150, VIS_W = 154, VIS_H = 95;
 
     private static final int IN_X = 41, IN_Y = 32;

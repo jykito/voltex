@@ -13,12 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Схема промышленного шахтёра 5×5×6 под его модель (tools/texture_viewer/industrial_miner_def.js): четыре ноги по углам,
- * под днищем пусто (там крутится бур), пол 5×5, стены с ядром в середине фасада, крыша 5×5, мачта в два блока.
- * Собранная структура прячется (каркас невидим), её рисует IndustrialMinerBER.
+ * Industrial miner schema 5x5x6 matching its model (tools/texture_viewer/industrial_miner_def.js): four legs at the corners,
+ * empty under the bottom (the drill spins there), a 5x5 floor, walls with the core in the middle of the front, a 5x5 roof, a two-block mast.
+ * A formed structure hides (the frame is invisible), IndustrialMinerBER draws it.
  * <p>
- * Слои снизу вверх, ядро в слое {@link #CORE_LAYER}; строки от фасада (0, с ядром) вглубь; столбцы поперёк фасада.
- * F — каркас, K — ядро, _ — должно быть пусто или заменяемо (трава), . — не проверяется.
+ * Layers bottom to top, the core in layer {@link #CORE_LAYER}; rows from the front (0, with the core) inwards; columns across the front.
+ * F frame, K core, _ must be empty or replaceable (grass), . not checked.
  */
 public final class IndustrialMinerStructure {
 
@@ -33,17 +33,17 @@ public final class IndustrialMinerStructure {
 
     private IndustrialMinerStructure() {}
 
-    /** Клетка схемы в мире: слой y, строка r (вглубь от фасада), столбец c — при ядре в core, смотрящем в facing. */
+    /** A schema cell in the world: layer y, row r (inwards from the front), column c, with the core at core facing facing. */
     public static BlockPos at(BlockPos core, Direction facing, int y, int r, int c) {
         return core.relative(facing.getOpposite(), r).relative(facing.getClockWise(), c - 2).above(y - CORE_LAYER);
     }
 
-    /** Центр основания (середина нижнего слоя) — от него BER отсчитывает модель. */
+    /** Centre of the base (middle of the bottom layer): the BER positions the model from it. */
     public static BlockPos base(BlockPos core, Direction facing) {
         return at(core, facing, 0, 2, 2);
     }
 
-    /** Первая неверная клетка: что там должно быть (F — каркас, _ — пусто). */
+    /** The first wrong cell: what must be there (F frame, _ empty). */
     public record Problem(BlockPos pos, char expected) {}
 
     public static @Nullable Problem check(Level level, BlockPos core, Direction facing) {
@@ -61,8 +61,8 @@ public final class IndustrialMinerStructure {
     }
 
     /**
-     * Достройка структурной палочкой: недостающий каркас ставится (в выживании — из инвентаря), место под днищем
-     * в творческом расчищается, в выживании занятая клетка только засчитывается — чужое палочка не ломает.
+     * Completion with the structure wand: the missing frame is placed (in survival from the inventory), the space under the bottom
+     * is cleared in creative, in survival an occupied cell is just counted; the wand does not break other blocks.
      */
     public static void build(Level level, BlockPos core, Direction facing, WandBuild wb) {
         BlockState frame = ModBlocks.INDUSTRIAL_MINER_FRAME.get().defaultBlockState();
@@ -82,7 +82,7 @@ public final class IndustrialMinerStructure {
                 }
     }
 
-    /** Все клетки каркаса. */
+    /** All frame cells. */
     public static List<BlockPos> frames(BlockPos core, Direction facing) {
         List<BlockPos> out = new ArrayList<>(72);
         for (int y = 0; y < LAYERS.length; y++)

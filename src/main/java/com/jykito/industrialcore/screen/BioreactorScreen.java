@@ -10,11 +10,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
 /**
- * Окно биореактора: раскладка промывателя (бак воды, вход, три выхода, апгрейды) плюс слот добавки над входом,
- * под энергобаром полоса тепла (юзер 2026-10-10: «убери подсказку про тепло, просто теплобар»).
+ * Bioreactor window: the ore washer layout (water tank, input, three outputs, upgrades) plus the additive slot above the input,
+ * a heat bar under the energy bar (author, 2026-10-10: "remove the heat hint, just a heat bar").
  */
 public class BioreactorScreen extends MachineScreen<BioreactorMenu> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(IndustrialCore.MODID, "textures/gui/bioreactor_gui.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/bioreactor_gui.png");
     private static final int BAR_X = 72, BAR_Y = 97, BAR_W = 110, BAR_H = 6, HEAT_Y = 107;
     private static final int TANK_W = 16, TANK_H = 48, TANK_X = 57, TANK_Y = 39;
     private static final int GLASS_U = 130, GLASS_V = 229;

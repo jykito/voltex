@@ -1,0 +1,21 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "ae2"
+    }
+  ],
+  "type": "industrial_core:growing_recipe",
+  "input": {
+    "item": "ae2:flawed_budding_quartz"
+  },
+  "inputCount": 1,
+  "output": {
+    "id": "ae2:certus_quartz_crystal",
+    "count": 4
+  },
+  "time": 300,
+  "energy": 200,
+  "category": "mineral",
+  "keepInput": true
+}

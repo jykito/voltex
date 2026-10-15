@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "EFE"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:singularity_core"
+    },
+    "B": {
+      "item": "industrial_core:star_shard"
+    },
+    "C": {
+      "item": "industrial_core:advanced_parallel_module"
+    },
+    "D": {
+      "item": "industrial_core:solar_panel_t8"
+    },
+    "E": {
+      "item": "industrial_core:quantum_capacitor"
+    },
+    "F": {
+      "item": "industrial_core:netherite_fiber_cable"
+    }
+  },
+  "result": {
+    "id": "industrial_core:solar_panel_t9",
+    "count": 1
+  }
+}

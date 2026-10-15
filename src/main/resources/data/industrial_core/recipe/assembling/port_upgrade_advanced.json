@@ -1,0 +1,49 @@
+{
+  "type": "industrial_core:assembling",
+  "inputs": [
+    {
+      "item": "industrial_core:port_upgrade_basic",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:control_unit",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:quantum_capacitor",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:singularity_core"
+    },
+    {
+      "item": "industrial_core:netherite_fiber_cable",
+      "count": 16
+    },
+    {
+      "item": "industrial_core:star_shard",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:advanced_parallel_module"
+    },
+    {
+      "item": "industrial_core:superconducting_winding",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:kronium_alloy",
+      "count": 8
+    }
+  ],
+  "fluid": {
+    "id": "industrial_core:cryoplasma",
+    "amount": 2000
+  },
+  "result": {
+    "id": "industrial_core:port_upgrade_advanced",
+    "count": 1
+  },
+  "processingTime": 1200,
+  "energyCostPerTick": 16000
+}

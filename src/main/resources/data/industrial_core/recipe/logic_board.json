@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "EFE"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/gold"
+    },
+    "B": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "C": {
+      "item": "industrial_core:transistor"
+    },
+    "D": {
+      "item": "industrial_core:textolite_board"
+    },
+    "E": {
+      "item": "industrial_core:condensator"
+    },
+    "F": {
+      "item": "industrial_core:solder"
+    }
+  },
+  "result": {
+    "id": "industrial_core:logic_board",
+    "count": 1
+  }
+}

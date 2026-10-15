@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.energy.MachineEnergy;
 import com.jykito.industrialcore.item.upgrade.MachineUpgradeItem;
@@ -18,17 +22,14 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class BaseMachineBlockEntity extends BlockEntity implements MenuProvider {
+public abstract class BaseMachineBlockEntity extends BlockEntity implements Caps.Provider, MenuProvider {
 
     private static volatile int recipeGeneration = 0;
     public static void markAllRecipesDirty() { recipeGeneration++; }
@@ -69,11 +70,9 @@ public abstract class BaseMachineBlockEntity extends BlockEntity implements Menu
         @Override public boolean isItemValid(int slot, @NotNull ItemStack stack) { return itemHandler.isItemValid(slot, stack); }
     };
 
-    // приём = буфер: потолок на вход ничего не ограничивал (расход рецепта на порядок ниже),
-    // только тормозил доливку после простоя. Как у электропечи.
+    // intake = buffer: the input cap limited nothing (recipe usage is an order of magnitude lower),
+    // it only slowed refilling after idling. Same as the electric furnace.
     protected final MachineEnergy energyStorage = MachineEnergy.consumer(64000, 64000);
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
-    private LazyOptional<IEnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
     protected int progress = 0;
     protected int maxProgress = 200;
@@ -125,8 +124,7 @@ public abstract class BaseMachineBlockEntity extends BlockEntity implements Menu
             SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
             for (int i = 0; i < itemHandler.getSlots(); i++)
                 inventory.setItem(i, itemHandler.getStackInSlot(i));
-            cachedRecipe = level.getRecipeManager()
-                    .getRecipeFor(getRecipeType(), inventory, level)
+            cachedRecipe = com.jykito.industrialcore.recipe.RecipeLookup.find(level.getRecipeManager(), getRecipeType(), inventory, level)
                     .orElse(null);
             recipeDirty = false;
             myRecipeGeneration = recipeGeneration;
@@ -144,9 +142,9 @@ public abstract class BaseMachineBlockEntity extends BlockEntity implements Menu
             if (canInsertItemIntoOutputSlot(result)
                     && canInsertAmountIntoOutputSlot(result.getCount() * actualParallel)) {
 
-                // Время из рецепта как есть, множат только апгрейды. Прежние 0.7 (глобальный
-                // «-30% времени») перенесены прямо в json рецептов crushing/compressing/extracting/
-                // rolling/extruding, иначе JEI показывал время из файла, а машина работала быстрее.
+                // Time comes from the recipe as is, only upgrades multiply it. The old 0.7 (a global
+                // "-30% time") was moved straight into the json of the crushing/compressing/extracting/
+                // rolling/extruding recipes, otherwise JEI showed the time from the file while the machine ran faster.
                 this.maxProgress       = upg.scaleTime(r.getProcessingTime());
                 this.energyCostPerTick = upg.scaleEnergy(r.getEnergyCost());
 
@@ -198,42 +196,37 @@ public abstract class BaseMachineBlockEntity extends BlockEntity implements Menu
 
     private boolean canInsertAmountIntoOutputSlot(int amount) {
         ItemStack out = itemHandler.getStackInSlot(1);
-        return out.getMaxStackSize() >= out.getCount() + amount;
+        // 1.21: an empty stack reports max size 1 (it reads the component map), in 1.20.1 it was 64 (air).
+        // The amount is already capped by the result's stack size in tick(), so an empty slot always fits.
+        return out.isEmpty() || out.getMaxStackSize() >= out.getCount() + amount;
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY)       return lazyEnergyHandler.cast();
-        if (cap == ForgeCapabilities.ITEM_HANDLER) return lazyItemHandler.cast();
-        return super.getCapability(cap, side);
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.EnergyStorage.BLOCK)       return (T) energyStorage;
+        if (cap == Capabilities.ItemHandler.BLOCK) return (T) automationHandler;
+        return null;
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
-        lazyItemHandler   = LazyOptional.of(() -> automationHandler);
-        lazyEnergyHandler = LazyOptional.of(() -> energyStorage);
     }
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyItemHandler.invalidate();
-        lazyEnergyHandler.invalidate();
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag tag) {
-        tag.put("inventory", itemHandler.serializeNBT());
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.put("inventory", itemHandler.serializeNBT(registries));
         tag.putInt("energy", energyStorage.getEnergyStored());
         tag.putInt("progress", progress);
-        super.saveAdditional(tag);
+        super.saveAdditional(tag, registries);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        itemHandler.deserializeNBT(tag.getCompound("inventory"));
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        itemHandler.deserializeNBT(registries, tag.getCompound("inventory"));
         energyStorage.setEnergy(tag.getInt("energy"));
         progress = tag.getInt("progress");
     }

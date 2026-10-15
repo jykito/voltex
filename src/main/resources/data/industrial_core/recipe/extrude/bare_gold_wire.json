@@ -1,0 +1,14 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:extruding",
+  "ingredient": {
+    "tag": "c:plates/gold"
+  },
+  "inputCount": 1,
+  "result": {
+    "id": "industrial_core:bare_gold_wire",
+    "count": 4
+  },
+  "processingTime": 140,
+  "energyCost": 100
+}

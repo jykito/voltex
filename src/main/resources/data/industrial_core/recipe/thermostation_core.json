@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:heat_resistant_plating"
+    },
+    "B": {
+      "item": "industrial_core:logic_board"
+    },
+    "C": {
+      "item": "industrial_core:heat_exchanger"
+    },
+    "D": {
+      "item": "industrial_core:thermogenerator"
+    },
+    "E": {
+      "tag": "c:components/machine_casing"
+    }
+  },
+  "result": {
+    "id": "industrial_core:thermostation_core",
+    "count": 1
+  }
+}

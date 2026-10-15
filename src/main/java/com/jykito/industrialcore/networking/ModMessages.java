@@ -1,113 +1,43 @@
 package com.jykito.industrialcore.networking;
 
-import com.jykito.industrialcore.IndustrialCore;
-import com.jykito.industrialcore.networking.DrillModeSwitchPacket;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public class ModMessages {
-    private static SimpleChannel INSTANCE;
-    private static int packetId = 0;
-    private static int id() {
-        return packetId++;
+
+    /** Mod bus. Handlers run on the main thread (the default in NeoForge 21). */
+    public static void register(RegisterPayloadHandlersEvent event) {
+        PayloadRegistrar net = event.registrar("1");
+
+        net.playToServer(MetalFormerModePacket.TYPE, MetalFormerModePacket.STREAM_CODEC, MetalFormerModePacket::handle);
+        net.playToServer(DrillModeSwitchPacket.TYPE, DrillModeSwitchPacket.STREAM_CODEC, DrillModeSwitchPacket::handle);
+        net.playToServer(NodeReorderPacket.TYPE, NodeReorderPacket.STREAM_CODEC, NodeReorderPacket::handle);
+        net.playToServer(HubFilterPacket.TYPE, HubFilterPacket.STREAM_CODEC, HubFilterPacket::handle);
+        net.playToServer(HubFilterQtyPacket.TYPE, HubFilterQtyPacket.STREAM_CODEC, HubFilterQtyPacket::handle);
+        net.playToServer(HubFluidFilterPacket.TYPE, HubFluidFilterPacket.STREAM_CODEC, HubFluidFilterPacket::handle);
+        net.playToServer(PlasmaBurstPacket.TYPE, PlasmaBurstPacket.STREAM_CODEC, PlasmaBurstPacket::handle);
+        net.playToServer(ExportRecipePacket.TYPE, ExportRecipePacket.STREAM_CODEC, ExportRecipePacket::handle);
+        net.playToServer(MagnetThrottlePacket.TYPE, MagnetThrottlePacket.STREAM_CODEC, MagnetThrottlePacket::handle);
+        net.playToServer(MePortPacket.TYPE, MePortPacket.STREAM_CODEC, MePortPacket::handle);
+
+        net.playToClient(AtlasSyncPacket.TYPE, AtlasSyncPacket.STREAM_CODEC, AtlasSyncPacket::handle);
+        net.playToClient(GaussShotPacket.TYPE, GaussShotPacket.STREAM_CODEC, GaussShotPacket::handle);
     }
 
-    public static void register() {
-        SimpleChannel net = NetworkRegistry.ChannelBuilder
-                .named(new ResourceLocation(IndustrialCore.MODID, "messages"))
-                .networkProtocolVersion(() -> "1.0")
-                .clientAcceptedVersions(s -> true)
-                .serverAcceptedVersions(s -> true)
-                .simpleChannel();
-
-        INSTANCE = net;
-
-        net.messageBuilder(MetalFormerModePacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(MetalFormerModePacket::new)
-                .encoder(MetalFormerModePacket::toBytes)
-                .consumerMainThread(MetalFormerModePacket::handle)
-                .add();
-
-        net.messageBuilder(DrillModeSwitchPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(DrillModeSwitchPacket::new)
-                .encoder(DrillModeSwitchPacket::toBytes)
-                .consumerMainThread(DrillModeSwitchPacket::handle)
-                .add();
-
-        net.messageBuilder(NodeReorderPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(NodeReorderPacket::new)
-                .encoder(NodeReorderPacket::toBytes)
-                .consumerMainThread(NodeReorderPacket::handle)
-                .add();
-
-        net.messageBuilder(HubFilterPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(HubFilterPacket::new)
-                .encoder(HubFilterPacket::toBytes)
-                .consumerMainThread(HubFilterPacket::handle)
-                .add();
-
-        net.messageBuilder(HubFilterQtyPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(HubFilterQtyPacket::new)
-                .encoder(HubFilterQtyPacket::toBytes)
-                .consumerMainThread(HubFilterQtyPacket::handle)
-                .add();
-
-        net.messageBuilder(HubFluidFilterPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(HubFluidFilterPacket::new)
-                .encoder(HubFluidFilterPacket::toBytes)
-                .consumerMainThread(HubFluidFilterPacket::handle)
-                .add();
-
-        net.messageBuilder(PlasmaBurstPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(PlasmaBurstPacket::new)
-                .encoder(PlasmaBurstPacket::toBytes)
-                .consumerMainThread(PlasmaBurstPacket::handle)
-                .add();
-
-        net.messageBuilder(ExportRecipePacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(ExportRecipePacket::new)
-                .encoder(ExportRecipePacket::toBytes)
-                .consumerMainThread(ExportRecipePacket::handle)
-                .add();
-
-        net.messageBuilder(AtlasSyncPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(AtlasSyncPacket::new)
-                .encoder(AtlasSyncPacket::toBytes)
-                .consumerMainThread(AtlasSyncPacket::handle)
-                .add();
-
-        net.messageBuilder(MagnetThrottlePacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(MagnetThrottlePacket::new)
-                .encoder(MagnetThrottlePacket::toBytes)
-                .consumerMainThread(MagnetThrottlePacket::handle)
-                .add();
-
-        net.messageBuilder(GaussShotPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(GaussShotPacket::new)
-                .encoder(GaussShotPacket::toBytes)
-                .consumerMainThread(GaussShotPacket::handle)
-                .add();
-
-        net.messageBuilder(MePortPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(MePortPacket::new)
-                .encoder(MePortPacket::toBytes)
-                .consumerMainThread(MePortPacket::handle)
-                .add();
-
+    public static void sendToPlayer(CustomPacketPayload message, ServerPlayer player) {
+        PacketDistributor.sendToPlayer(player, message);
     }
 
-    public static <MSG> void sendToPlayer(MSG message, net.minecraft.server.level.ServerPlayer player) {
-        INSTANCE.send(net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> player), message);
+    /** To everyone who sees the entity, and to the entity itself (if it is a player). */
+    public static void sendToTrackingAndSelf(CustomPacketPayload message, Entity entity) {
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, message);
     }
 
-    /** Всем, кто видит сущность, и ей самой (если это игрок). */
-    public static <MSG> void sendToTrackingAndSelf(MSG message, net.minecraft.world.entity.Entity entity) {
-        INSTANCE.send(net.minecraftforge.network.PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), message);
-    }
-
-    public static <MSG> void sendToServer(MSG message) {
-        INSTANCE.sendToServer(message);
+    public static void sendToServer(CustomPacketPayload message) {
+        PacketDistributor.sendToServer(message);
     }
 }

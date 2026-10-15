@@ -1,0 +1,70 @@
+{
+  "type": "industrial_core:assembling",
+  "inputs": [
+    {
+      "item": "industrial_core:crusher",
+      "count": 8
+    },
+    {
+      "item": "industrial_core:iron_drill_tip",
+      "count": 16
+    },
+    {
+      "item": "industrial_core:netherite_drill_tip",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:industrial_drill"
+    },
+    {
+      "item": "industrial_core:diamond_plate",
+      "count": 32
+    },
+    {
+      "item": "industrial_core:hardened_steel_rod",
+      "count": 32
+    },
+    {
+      "item": "minecraft:flint",
+      "count": 64
+    },
+    {
+      "item": "minecraft:obsidian",
+      "count": 32
+    },
+    {
+      "item": "industrial_core:kronit",
+      "count": 8
+    },
+    {
+      "item": "industrial_core:mechanism_block",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:control_unit",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:servo_drive",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:armor_sheet",
+      "count": 32
+    },
+    {
+      "item": "industrial_core:quantum_capacitor",
+      "count": 2
+    }
+  ],
+  "fluid": {
+    "id": "industrial_core:mechanical_alloy",
+    "amount": 16000
+  },
+  "result": {
+    "id": "industrial_core:multiblock_macerator",
+    "count": 1
+  },
+  "processingTime": 1200,
+  "energyCostPerTick": 16000
+}

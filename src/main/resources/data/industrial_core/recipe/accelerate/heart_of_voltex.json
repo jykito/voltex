@@ -1,0 +1,74 @@
+{
+  "type": "industrial_core:accelerating",
+  "inputs": [
+    {
+      "item": "industrial_core:solar_panel_t10"
+    },
+    {
+      "item": "industrial_core:voltex_plate",
+      "count": 16
+    },
+    {
+      "item": "industrial_core:resonance_matrix",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:singularity_core",
+      "count": 8
+    },
+    {
+      "item": "industrial_core:electric_motor"
+    },
+    {
+      "item": "industrial_core:logic_board"
+    },
+    {
+      "item": "industrial_core:electric_motor_advanced"
+    },
+    {
+      "item": "industrial_core:microcontroller"
+    },
+    {
+      "item": "industrial_core:superconductor_coil"
+    },
+    {
+      "item": "industrial_core:electric_motor_extended"
+    },
+    {
+      "item": "industrial_core:data_card_crystallography"
+    },
+    {
+      "item": "industrial_core:data_card_cryophysics"
+    },
+    {
+      "item": "industrial_core:data_card_matter"
+    },
+    {
+      "item": "industrial_core:data_card_stellar"
+    },
+    {
+      "item": "industrial_core:exotic_matter",
+      "count": 16
+    },
+    {
+      "item": "industrial_core:star_shard",
+      "count": 16
+    },
+    {
+      "item": "industrial_core:quantum_capacitor",
+      "count": 8
+    }
+  ],
+  "fluid": {
+    "id": "industrial_core:voltex_essence",
+    "amount": 8000
+  },
+  "result": {
+    "id": "industrial_core:heart_of_voltex",
+    "count": 1
+  },
+  "minTier": 3,
+  "processingTime": 4800,
+  "energyCostPerTick": 200000,
+  "lateOnly": true
+}

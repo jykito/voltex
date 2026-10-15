@@ -9,8 +9,8 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
- * Структурное стекло мультиблока: та же сшивка, что у обшивки (рамка только по контуру
- * остекления), но прозрачное. Грани между соседними стёклами не рисуются, как у ванильного стекла.
+ * Multiblock structural glass: the same joining as the casing (frame only along the outline
+ * of the glazing), but transparent. Faces between neighbouring glass blocks are not drawn, like vanilla glass.
  */
 public class StructuralGlassBlock extends ConnectedCasingBlock {
 

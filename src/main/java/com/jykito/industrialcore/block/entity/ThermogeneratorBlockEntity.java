@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.block.custom.ThermogeneratorBlock;
 import com.jykito.industrialcore.energy.MachineEnergy;
@@ -18,20 +22,16 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.energy.EnergyStorage;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ThermogeneratorBlockEntity extends BlockEntity implements MenuProvider {
+public class ThermogeneratorBlockEntity extends BlockEntity implements Caps.Provider, MenuProvider {
 
     private final MachineEnergy energyStorage = MachineEnergy.consumer(20000, 20000);
-    private LazyOptional<EnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
     private int currentGeneration = 0;
 
@@ -46,7 +46,6 @@ public class ThermogeneratorBlockEntity extends BlockEntity implements MenuProvi
                 || stack.getItem() == com.jykito.industrialcore.item.ModItems.CRYOGENIC_HEAT_EXCHANGER.get();
         }
     };
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
     private final IItemHandlerModifiable automationHandler = new IItemHandlerModifiable() {
         @Override public void setStackInSlot(int slot, @NotNull ItemStack stack) { itemHandler.setStackInSlot(slot, stack); }
@@ -66,9 +65,8 @@ public class ThermogeneratorBlockEntity extends BlockEntity implements MenuProvi
     private final com.jykito.industrialcore.heat.IHeatHandler heatHandler = new com.jykito.industrialcore.heat.IHeatHandler() {
         @Override public int getHeat() { return heat; }
         @Override public int getMaxHeat() { return MAX_HEAT; }
-        @Override public int receiveHeat(int amount, boolean simulate) { return 0; } // источник: сам греет, не принимает
+        @Override public int receiveHeat(int amount, boolean simulate) { return 0; } // source: heats by itself, does not accept
     };
-    private LazyOptional<com.jykito.industrialcore.heat.IHeatHandler> lazyHeat = LazyOptional.empty();
 
     protected final ContainerData data;
 
@@ -105,17 +103,6 @@ public class ThermogeneratorBlockEntity extends BlockEntity implements MenuProvi
     @Override
     public void onLoad() {
         super.onLoad();
-        lazyEnergyHandler = LazyOptional.of(() -> energyStorage);
-        lazyItemHandler = LazyOptional.of(() -> automationHandler);
-        lazyHeat = LazyOptional.of(() -> heatHandler);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyEnergyHandler.invalidate();
-        lazyItemHandler.invalidate();
-        lazyHeat.invalidate();
     }
 
     @Override
@@ -130,9 +117,9 @@ public class ThermogeneratorBlockEntity extends BlockEntity implements MenuProvi
     }
 
     /**
-     * Смотрит ли генератор в термостанцию. От этого зависит криогенный теплообменник: он даёт
-     * поток, который в одиночку девать некуда, поэтому работает только на станцию.
-     * Проверяется цель, а не соседство — станция должна быть именно приёмником тепла.
+     * Whether the generator faces a thermal station. The cryogenic heat exchanger depends on it: it produces
+     * a flow that has nowhere to go on its own, so it only works into the station.
+     * The target is checked, not adjacency: the station must actually be the heat receiver.
      */
     private static boolean feedsThermostation(Level level, BlockPos pos, BlockState state) {
         BlockEntity target = level.getBlockEntity(pos.relative(state.getValue(ThermogeneratorBlock.FACING)));
@@ -161,8 +148,8 @@ public class ThermogeneratorBlockEntity extends BlockEntity implements MenuProvi
             energyCost = 2000;
         }
         else if (upgradeSlot.getItem() == ModItems.CRYOGENIC_HEAT_EXCHANGER.get() && feedsThermostation(level, pos, state)) {
-            // Криогенный работает ТОЛЬКО в связке со станцией: она буфер и насос, и без неё
-            // такой поток тепла девать некуда. Одиночный термогенератор с ним работает как с пустым слотом.
+            // The cryogenic one works ONLY together with the station: the station is the buffer and the pump, and without it
+            // such a heat flow has nowhere to go. A standalone thermogenerator treats it as an empty slot.
             heatOutput = 60;
             energyCost = 4200;
         }
@@ -175,7 +162,7 @@ public class ThermogeneratorBlockEntity extends BlockEntity implements MenuProvi
             BlockEntity be = level.getBlockEntity(pos.relative(facing));
             if (be != null) {
                 com.jykito.industrialcore.heat.IHeatHandler heat =
-                        be.getCapability(com.jykito.industrialcore.heat.HeatCapability.HEAT, facing.getOpposite()).resolve().orElse(null);
+                        Caps.get(be, Caps.HEAT, facing.getOpposite()).orElse(null);
                 if (heat != null) heat.receiveHeat(heatOutput, false);
             }
         }
@@ -198,27 +185,29 @@ public class ThermogeneratorBlockEntity extends BlockEntity implements MenuProvi
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY) return lazyEnergyHandler.cast();
-        if (cap == ForgeCapabilities.ITEM_HANDLER) return lazyItemHandler.cast();
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.EnergyStorage.BLOCK) return (T) energyStorage;
+        if (cap == Capabilities.ItemHandler.BLOCK) return (T) automationHandler;
         if (cap == com.jykito.industrialcore.heat.HeatCapability.HEAT
                 && (side == null || side == getBlockState().getValue(ThermogeneratorBlock.FACING)))
-            return lazyHeat.cast();
-        return super.getCapability(cap, side);
+            return (T) heatHandler;
+        return null;
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        tag.put("inventory", itemHandler.serializeNBT());
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.put("inventory", itemHandler.serializeNBT(registries));
         tag.putInt("energy", energyStorage.getEnergyStored());
         tag.putInt("heat", heat);
-        super.saveAdditional(tag);
+        super.saveAdditional(tag, registries);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        itemHandler.deserializeNBT(tag.getCompound("inventory"));
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        itemHandler.deserializeNBT(registries, tag.getCompound("inventory"));
 
         energyStorage.setEnergy(tag.getInt("energy"));
         heat = tag.getInt("heat");

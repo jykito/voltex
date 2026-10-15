@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDE",
+    "AAA"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/iron"
+    },
+    "B": {
+      "item": "minecraft:glass"
+    },
+    "C": {
+      "item": "minecraft:bucket"
+    },
+    "D": {
+      "item": "industrial_core:machine_casing"
+    },
+    "E": {
+      "item": "industrial_core:electric_motor"
+    }
+  },
+  "result": {
+    "id": "industrial_core:ore_washer",
+    "count": 1
+  }
+}

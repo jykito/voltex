@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.custom;
+import com.mojang.serialization.MapCodec;
+import com.jykito.industrialcore.block.BlockUse;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.ItemInteractionResult;
 
 import com.jykito.industrialcore.block.entity.RecipeExporterBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -13,11 +17,13 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 public class RecipeExporterBlock extends BaseEntityBlock {
+
+    /** 1.21: block codec. Vanilla does not call it for mod blocks; there is one block instance, so unit is exact. */
+    @Override
+    protected MapCodec<? extends RecipeExporterBlock> codec() { return MapCodec.unit(this); }
 
     public RecipeExporterBlock(Properties pProperties) {
         super(pProperties);
@@ -33,11 +39,16 @@ public class RecipeExporterBlock extends BaseEntityBlock {
     }
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+        return BlockUse.toItemResult(use(pState, pLevel, pPos, pPlayer, pHand, pHit));
+    }
+
+    /** Formerly Block.use (1.20.1); called from useItemOn for both hands, as before. */
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         if (!pLevel.isClientSide()) {
             BlockEntity entity = pLevel.getBlockEntity(pPos);
             if (entity instanceof RecipeExporterBlockEntity exporter) {
-                NetworkHooks.openScreen((ServerPlayer) pPlayer, exporter, pPos);
+                ((ServerPlayer) pPlayer).openMenu(exporter, pPos);
             }
         }
         return InteractionResult.sidedSuccess(pLevel.isClientSide());

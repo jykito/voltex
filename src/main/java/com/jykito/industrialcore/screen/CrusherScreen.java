@@ -9,6 +9,6 @@ import net.minecraft.world.entity.player.Inventory;
 public class CrusherScreen extends BaseMachineScreen<CrusherMenu> {
     public CrusherScreen(CrusherMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
 
-        super(pMenu, pPlayerInventory, pTitle, new ResourceLocation(IndustrialCore.MODID + ":textures/gui/crusher_gui.png"));
+        super(pMenu, pPlayerInventory, pTitle, ResourceLocation.parse(IndustrialCore.MODID + ":textures/gui/crusher_gui.png"));
     }
 }

@@ -2,7 +2,7 @@ package com.jykito.industrialcore.jei;
 
 import com.jykito.industrialcore.recipe.GrowingRecipe;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
@@ -62,7 +62,7 @@ public class GrowingJeiCategory implements IRecipeCategory<GrowingRecipe> {
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, GrowingRecipe recipe, IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.CATALYST, TANK_X, TANK_Y)
-               .setCustomRenderer(ForgeTypes.FLUID_STACK,
+               .setCustomRenderer(NeoForgeTypes.FLUID_STACK,
                        new FluidTankRenderer(TANK_W, TANK_H, texture, GLASS_U, GLASS_V, TEX_W, TEX_H))
                .addFluidStack(Fluids.WATER, WATER_PER_RECIPE);
 

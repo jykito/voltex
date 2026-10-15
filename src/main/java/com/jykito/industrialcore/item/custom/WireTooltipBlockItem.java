@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.item.custom;
+import net.minecraft.world.item.Item;
 
 import com.jykito.industrialcore.block.custom.wire.WireTier;
 import net.minecraft.ChatFormatting;
@@ -21,10 +22,11 @@ public class WireTooltipBlockItem extends BlockItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag isAdvanced) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag isAdvanced) {
+        @Nullable Level level = context.level();
         int rate = tier.getMaxTransferRate();
         String text = (rate == Integer.MAX_VALUE) ? "∞ FE/t" : String.format("%,d FE/t", rate);
         tooltip.add(Component.literal(text).withStyle(ChatFormatting.AQUA));
-        super.appendHoverText(stack, level, tooltip, isAdvanced);
+        super.appendHoverText(stack, context, tooltip, isAdvanced);
     }
 }

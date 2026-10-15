@@ -13,9 +13,8 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,16 +35,20 @@ public class PlasmaArmorEventHandler {
         };
     }
 
-    @SubscribeEvent
-    public void onLivingHurt(LivingHurtEvent event) {
-        if (!(event.getEntity() instanceof Player player)) return;
-        if (player.level().isClientSide()) return;
+    /** Whether this suit takes part in the hit at all (see {@link PreArmorDamage}). */
+    static boolean applies(LivingEntity target) {
+        return target instanceof Player p && !getPlasmaPieces(p).isEmpty();
+    }
+
+    /** Pre-armor step, see {@link PreArmorDamage}: returns the damage left after the suit, ≤ 0 means nothing gets through. */
+    static float absorb(LivingEntity target, float damage) {
+        if (!(target instanceof Player player)) return damage;
+        if (player.level().isClientSide()) return damage;
 
         List<ItemStack> pieces  = getPlasmaPieces(player);
         List<ItemStack> charged = getChargedPieces(pieces);
-        if (charged.isEmpty()) return;
+        if (charged.isEmpty()) return damage;
 
-        float damage         = event.getAmount();
         float absorptionRate = getAbsorptionRate(charged.size());
         float wantAbsorb     = damage * absorptionRate;
         int   feCost         = (int) (wantAbsorb * PlasmaArmorItem.FE_PER_DMG);
@@ -71,24 +74,18 @@ public class PlasmaArmorEventHandler {
             playShieldEffect(player);
         }
 
-        float remaining = damage - actualAbsorb;
-        if (remaining <= 0.0f) {
-            event.setCanceled(true);
-        } else {
-            event.setAmount(remaining);
-        }
-
+        return damage - actualAbsorb;   // ≤ 0: nothing gets through (the old cancel)
     }
 
     @SubscribeEvent
-    public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) return;
-        if (event.player.level().isClientSide()) return;
-        if (event.player.tickCount % 20 != 0) return;
+    public void onPlayerTick(PlayerTickEvent.Post event) {
+        Player player = event.getEntity();
+        if (player.level().isClientSide()) return;
+        if (player.tickCount % 20 != 0) return;
 
-        List<ItemStack> pieces = getPlasmaPieces(event.player);
+        List<ItemStack> pieces = getPlasmaPieces(player);
         if (pieces.size() == 4 && !getChargedPieces(pieces).isEmpty()) {
-            event.player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 30, 0, false, false));
+            player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 30, 0, false, false));
         }
     }
 

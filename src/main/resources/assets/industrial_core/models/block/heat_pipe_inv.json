@@ -2089,7 +2089,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -2169,7 +2169,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -2249,7 +2249,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -2329,7 +2329,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -2409,7 +2409,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -2489,7 +2489,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -2569,7 +2569,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -2649,7 +2649,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -2729,7 +2729,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -2809,7 +2809,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -2889,7 +2889,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -2969,7 +2969,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -3049,7 +3049,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -3129,7 +3129,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -3209,7 +3209,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -3289,7 +3289,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -3369,7 +3369,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -3449,7 +3449,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -3529,7 +3529,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -3609,7 +3609,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -3689,7 +3689,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -3769,7 +3769,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -3849,7 +3849,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -3929,7 +3929,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -4009,7 +4009,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		},
@@ -4089,7 +4089,7 @@
 					"texture": "#1"
 				}
 			},
-			"forge_data": {
+			"neoforge_data": {
 				"block_light": 15
 			}
 		}

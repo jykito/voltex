@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.custom;
+import com.mojang.serialization.MapCodec;
+import com.jykito.industrialcore.block.BlockUse;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.ItemInteractionResult;
 
 import com.jykito.industrialcore.block.entity.LateMachineCoreBlockEntity;
 import com.jykito.industrialcore.block.entity.ModBlockEntities;
@@ -25,27 +29,30 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Ядро лейт-мультиблока: лицо смотрит на игрока при установке, LIT включает анимацию лица.
- * Форма структуры и тип рецептов задаются при регистрации, логика общая
+ * Late multiblock core: the face turns to the player on placement, LIT enables the face animation.
+ * The structure shape and recipe type are set at registration, the logic is shared
  * ({@link LateMachineCoreBlockEntity}).
  */
 public class LateMachineCoreBlock extends HorizontalDirectionalBlock implements EntityBlock {
+
+    /** 1.21: block codec. Vanilla does not call it for mod blocks; there is one block instance, so unit is exact. */
+    @Override
+    protected MapCodec<? extends LateMachineCoreBlock> codec() { return MapCodec.unit(this); }
 
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
     private final LateMultiblockPattern pattern;
     private final java.util.List<LateRecipe.Mode> modes;
 
-    /** Ядро с одним набором рецептов: режимов нет, кнопки в GUI тоже. */
+    /** Core with a single recipe set: no modes, and no button in the GUI. */
     public LateMachineCoreBlock(Properties props, LateMultiblockPattern pattern, LateRecipe.Source recipes) {
         this(props, pattern, new LateRecipe.Mode("single", recipes));
     }
 
-    /** Ядро с режимами: игрок переключает их кнопкой в GUI, у каждого свои рецепты. */
+    /** Core with modes: the player switches them with a button in the GUI, each has its own recipes. */
     public LateMachineCoreBlock(Properties props, LateMultiblockPattern pattern, LateRecipe.Mode... modes) {
         super(props);
         this.pattern = pattern;
@@ -55,7 +62,7 @@ public class LateMachineCoreBlock extends HorizontalDirectionalBlock implements 
 
     public LateMultiblockPattern pattern() { return pattern; }
     public java.util.List<LateRecipe.Mode> modes() { return modes; }
-    /** Рецепты режима; номер вне списка (например, после смены блока) — первый режим. */
+    /** Recipes of a mode; an index outside the list (for example after the block changed) means the first mode. */
     public LateRecipe.Source recipes(int mode) { return modes.get(mode >= 0 && mode < modes.size() ? mode : 0).source(); }
 
     @Override
@@ -78,7 +85,7 @@ public class LateMachineCoreBlock extends HorizontalDirectionalBlock implements 
         return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
 
-    /** Штамм из слота промывщика падает отдельно: лут-таблица отдаёт только сам блок. */
+    /** The strain in the washer slot drops separately: the loot table only drops the block itself. */
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moving) {
         if (state.getBlock() != newState.getBlock() && level.getBlockEntity(pos) instanceof LateMachineCoreBlockEntity be)
@@ -98,9 +105,14 @@ public class LateMachineCoreBlock extends HorizontalDirectionalBlock implements 
     }
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        return BlockUse.toItemResult(use(state, level, pos, player, hand, hit));
+    }
+
+    /** Formerly Block.use (1.20.1); called from useItemOn for both hands, as before. */
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof LateMachineCoreBlockEntity be)
-            NetworkHooks.openScreen((ServerPlayer) player, be, pos);
+            ((ServerPlayer) player).openMenu(be, pos);
         return InteractionResult.sidedSuccess(level.isClientSide());
     }
 }

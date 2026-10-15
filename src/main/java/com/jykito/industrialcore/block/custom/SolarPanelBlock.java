@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.block.custom;
+import com.mojang.serialization.MapCodec;
 
 import com.jykito.industrialcore.block.entity.ModBlockEntities;
 import com.jykito.industrialcore.block.entity.SolarPanelBlockEntity;
@@ -9,6 +10,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 public class SolarPanelBlock extends BaseSolarPanel {
+
+    /** 1.21: block codec. Vanilla does not call it for mod blocks; there is one block instance, so unit is exact. */
+    @Override
+    protected MapCodec<? extends SolarPanelBlock> codec() { return MapCodec.unit(this); }
 
     public final SolarPanelTier tier;
 

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "tag": "c:ingots/tin"
+    },
+    {
+      "tag": "c:ingots/lead"
+    },
+    {
+      "item": "industrial_core:cutters"
+    }
+  ],
+  "result": {
+    "id": "industrial_core:solder",
+    "count": 4
+  }
+}

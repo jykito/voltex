@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.item;
+import com.jykito.industrialcore.capability.Caps;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -13,12 +14,10 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.fluids.FluidActionResult;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.templates.FluidHandlerItemStack;
+import net.neoforged.neoforge.fluids.FluidActionResult;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
 import org.jetbrains.annotations.Nullable;
 
 public class UniversalCapsuleItem extends Item {
@@ -28,13 +27,8 @@ public class UniversalCapsuleItem extends Item {
     }
 
     @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-        return new FluidHandlerItemStack(stack, 1000);
-    }
-
-    @Override
     public Component getName(ItemStack pStack) {
-        return pStack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).map(handler -> {
+        return Caps.get(pStack, Caps.FLUID_HANDLER_ITEM).map(handler -> {
             FluidStack fluid = handler.getFluidInTank(0);
             if (!fluid.isEmpty()) {
                 return Component.translatable(this.getDescriptionId(pStack))
@@ -60,7 +54,7 @@ public class UniversalCapsuleItem extends Item {
             return InteractionResultHolder.fail(itemstack);
         }
 
-        return itemstack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).map(handler -> {
+        return Caps.get(itemstack, Caps.FLUID_HANDLER_ITEM).map(handler -> {
             FluidStack currentFluid = handler.getFluidInTank(0);
 
             if (currentFluid.isEmpty()) {

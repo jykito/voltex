@@ -1,5 +1,11 @@
 package com.jykito.industrialcore.recipe;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.Codec;
 
+import net.minecraft.core.HolderLookup;
 import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
@@ -13,20 +19,18 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Рецепт биореактора (Э3): биомасса + добавка + вода → органика, которую обычно дают мобы.
- * Культура растёт только в тепле: тепло не тратится, но ниже {@code requiredHeat} реактор стоит.
+ * Bioreactor recipe (E3): biomass + additive + water -> organics usually dropped by mobs.
+ * The culture only grows in heat: heat is not spent, but below {@code requiredHeat} the reactor stands.
  */
-public class BioreactorRecipe implements Recipe<SimpleContainer> {
+public class BioreactorRecipe implements Recipe<ContainerInput> {
 
-    private final ResourceLocation id;
     private final Ingredient input, additive;
     private final int inputCount, additiveCount, waterAmount;
     private final ItemStack result;
     private final int processingTime, energyCostPerTick, requiredHeat;
 
-    public BioreactorRecipe(ResourceLocation id, Ingredient input, int inputCount, Ingredient additive, int additiveCount,
+    public BioreactorRecipe(Ingredient input, int inputCount, Ingredient additive, int additiveCount,
                             int waterAmount, ItemStack result, int processingTime, int energyCostPerTick, int requiredHeat) {
-        this.id = id;
         this.input = input;
         this.inputCount = inputCount;
         this.additive = additive;
@@ -38,21 +42,21 @@ public class BioreactorRecipe implements Recipe<SimpleContainer> {
         this.requiredHeat = requiredHeat;
     }
 
-    /** Подходят ли биомасса и добавка (вода и тепло проверяет машина). */
+    /** Whether the biomass and additive fit (the machine checks water and heat). */
     public boolean matches(ItemStack in, ItemStack add) {
         return input.test(in) && in.getCount() >= inputCount
                 && (additive.isEmpty() ? add.isEmpty() || additiveCount == 0 : additive.test(add) && add.getCount() >= additiveCount);
     }
 
     @Override
-    public boolean matches(SimpleContainer container, Level level) {
+    public boolean matches(ContainerInput container, Level level) {
         return !level.isClientSide() && matches(container.getItem(0), container.getItem(1));
     }
 
-    @Override public ItemStack assemble(SimpleContainer c, RegistryAccess a) { return result.copy(); }
+    @Override public ItemStack assemble(ContainerInput c, HolderLookup.Provider a) { return result.copy(); }
     @Override public boolean canCraftInDimensions(int w, int h) { return true; }
     @Override public boolean isSpecial() { return true; }
-    @Override public ItemStack getResultItem(RegistryAccess a) { return result.copy(); }
+    @Override public ItemStack getResultItem(HolderLookup.Provider a) { return result.copy(); }
 
     public Ingredient getInput()          { return input; }
     public int        getInputCount()     { return inputCount; }
@@ -73,47 +77,48 @@ public class BioreactorRecipe implements Recipe<SimpleContainer> {
         return list;
     }
 
-    @Override public ResourceLocation getId()            { return id; }
     @Override public RecipeSerializer<?> getSerializer() { return ModRecipes.BIOREACTOR_SERIALIZER.get(); }
     @Override public RecipeType<?> getType()             { return ModRecipes.BIOREACTOR_TYPE.get(); }
 
     public static class Serializer implements RecipeSerializer<BioreactorRecipe> {
         public static final Serializer INSTANCE = new Serializer();
 
-        @Override
-        public BioreactorRecipe fromJson(ResourceLocation id, JsonObject json) {
-            Ingredient input   = Ingredient.fromJson(GsonHelper.getAsJsonObject(json, "ingredient"));
-            int inputCount     = GsonHelper.getAsInt(json, "inputCount", 1);
-            Ingredient additive = json.has("additive") ? Ingredient.fromJson(GsonHelper.getAsJsonObject(json, "additive")) : Ingredient.EMPTY;
-            int additiveCount  = GsonHelper.getAsInt(json, "additiveCount", 1);
-            int waterAmount    = GsonHelper.getAsInt(json, "waterAmount", 250);
-            ItemStack result   = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
-            int processingTime = GsonHelper.getAsInt(json, "processingTime", 400);
-            int energyCost     = GsonHelper.getAsInt(json, "energyCostPerTick", 60);
-            int requiredHeat   = GsonHelper.getAsInt(json, "requiredHeat", 800);
-            return new BioreactorRecipe(id, input, inputCount, additive, additiveCount, waterAmount, result, processingTime, energyCost, requiredHeat);
-        }
+        private static final MapCodec<BioreactorRecipe> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(r -> r.input),
+                Codec.INT.optionalFieldOf("inputCount", 1).forGetter(r -> r.inputCount),
+                Ingredient.CODEC_NONEMPTY.optionalFieldOf("additive", Ingredient.EMPTY).forGetter(r -> r.additive),
+                Codec.INT.optionalFieldOf("additiveCount", 1).forGetter(r -> r.additiveCount),
+                Codec.INT.optionalFieldOf("waterAmount", 250).forGetter(r -> r.waterAmount),
+                ItemStack.CODEC.fieldOf("result").forGetter(r -> r.result),
+                Codec.INT.optionalFieldOf("processingTime", 400).forGetter(r -> r.processingTime),
+                Codec.INT.optionalFieldOf("energyCostPerTick", 60).forGetter(r -> r.energyCostPerTick),
+                Codec.INT.optionalFieldOf("requiredHeat", 800).forGetter(r -> r.requiredHeat)
+        ).apply(i, BioreactorRecipe::new));
 
-        @Override
-        public @Nullable BioreactorRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
-            Ingredient input = Ingredient.fromNetwork(buf);
+        private static final StreamCodec<RegistryFriendlyByteBuf, BioreactorRecipe> STREAM_CODEC =
+                StreamCodec.of(Serializer::write, Serializer::read);
+
+        @Override public MapCodec<BioreactorRecipe> codec() { return CODEC; }
+        @Override public StreamCodec<RegistryFriendlyByteBuf, BioreactorRecipe> streamCodec() { return STREAM_CODEC; }
+
+        private static BioreactorRecipe read(RegistryFriendlyByteBuf buf) {
+            Ingredient input = RecipeCodecs.readIngredient(buf);
             int inputCount = buf.readInt();
-            Ingredient additive = Ingredient.fromNetwork(buf);
+            Ingredient additive = RecipeCodecs.readIngredient(buf);
             int additiveCount = buf.readInt();
             int waterAmount = buf.readInt();
-            ItemStack result = buf.readItem();
+            ItemStack result = RecipeCodecs.readItem(buf);
             int processingTime = buf.readInt(), energyCost = buf.readInt(), requiredHeat = buf.readInt();
-            return new BioreactorRecipe(id, input, inputCount, additive, additiveCount, waterAmount, result, processingTime, energyCost, requiredHeat);
+            return new BioreactorRecipe(input, inputCount, additive, additiveCount, waterAmount, result, processingTime, energyCost, requiredHeat);
         }
 
-        @Override
-        public void toNetwork(FriendlyByteBuf buf, BioreactorRecipe r) {
-            r.input.toNetwork(buf);
+        private static void write(RegistryFriendlyByteBuf buf, BioreactorRecipe r) {
+            RecipeCodecs.writeIngredient(buf, r.input);
             buf.writeInt(r.inputCount);
-            r.additive.toNetwork(buf);
+            RecipeCodecs.writeIngredient(buf, r.additive);
             buf.writeInt(r.additiveCount);
             buf.writeInt(r.waterAmount);
-            buf.writeItem(r.result);
+            RecipeCodecs.writeItem(buf, r.result);
             buf.writeInt(r.processingTime);
             buf.writeInt(r.energyCostPerTick);
             buf.writeInt(r.requiredHeat);

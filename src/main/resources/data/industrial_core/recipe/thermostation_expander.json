@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "ACA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:heat_resistant_plating"
+    },
+    "B": {
+      "item": "industrial_core:heat_conductor"
+    },
+    "C": {
+      "tag": "c:components/machine_casing"
+    }
+  },
+  "result": {
+    "id": "industrial_core:thermostation_expander",
+    "count": 1
+  }
+}

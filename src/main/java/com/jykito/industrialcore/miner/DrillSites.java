@@ -11,7 +11,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -19,17 +19,17 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Реестр буровых участков мира: что лежит под каждым буровым маяком в выбранном слое.
+ * Registry of the world's drill sites: what lies under each drill beacon in the selected layer.
  * <p>
- * Хранится в данных Верхнего мира, поэтому промышленный шахтёр читает состав участка, не загружая чанк маяка,
- * даже если маяк в другом измерении. Маяк пишет сюда после скана, смены слоя или линзы и удаляет запись, когда его
- * ломают или линза больше не подходит к измерению.
+ * Stored in the Overworld data, so the industrial miner reads a site's composition without loading the beacon chunk,
+ * even if the beacon is in another dimension. The beacon writes here after a scan or a layer or lens change and removes the entry when it
+ * is broken or the lens no longer fits the dimension.
  */
 public final class DrillSites extends SavedData {
 
     private static final String NAME = "industrial_core_drill_sites";
 
-    /** Состав участка: число блоков руды по предмету, средняя высота руды и всего блоков в слое. */
+    /** Site composition: ore block count per item, average ore height and total blocks in the layer. */
     public record Site(Map<Item, Long> weights, int avgY, long total) {}
 
     private final Map<String, Site> sites = new HashMap<>();
@@ -39,7 +39,7 @@ public final class DrillSites extends SavedData {
     }
 
     public static DrillSites get(MinecraftServer server) {
-        return server.overworld().getDataStorage().computeIfAbsent(DrillSites::load, DrillSites::new, NAME);
+        return server.overworld().getDataStorage().computeIfAbsent(new SavedData.Factory<>(DrillSites::new, DrillSites::load), NAME);
     }
 
     public @Nullable Site get(ResourceKey<Level> dim, BlockPos pos) {
@@ -56,7 +56,7 @@ public final class DrillSites extends SavedData {
     }
 
     @Override
-    public CompoundTag save(CompoundTag tag) {
+    public CompoundTag save(CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
         ListTag list = new ListTag();
         sites.forEach((k, s) -> {
             CompoundTag e = new CompoundTag();
@@ -65,7 +65,7 @@ public final class DrillSites extends SavedData {
             e.putLong("t", s.total());
             ListTag w = new ListTag();
             s.weights().forEach((item, n) -> {
-                ResourceLocation id = ForgeRegistries.ITEMS.getKey(item);
+                ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
                 if (id == null) return;
                 CompoundTag o = new CompoundTag();
                 o.putString("i", id.toString());
@@ -79,15 +79,15 @@ public final class DrillSites extends SavedData {
         return tag;
     }
 
-    private static DrillSites load(CompoundTag tag) {
+    private static DrillSites load(CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
         DrillSites d = new DrillSites();
         for (Tag t : tag.getList("sites", Tag.TAG_COMPOUND)) {
             CompoundTag e = (CompoundTag) t;
             Map<Item, Long> w = new LinkedHashMap<>();
             for (Tag o : e.getList("w", Tag.TAG_COMPOUND)) {
                 CompoundTag c = (CompoundTag) o;
-                Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(c.getString("i")));
-                if (item != null && item != Items.AIR) w.put(item, c.getLong("n"));   // руда удалённого мода просто выпадает из состава
+                Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(c.getString("i")));
+                if (item != null && item != Items.AIR) w.put(item, c.getLong("n"));   // ore of a removed mod simply drops out of the composition
             }
             d.sites.put(e.getString("k"), new Site(w, e.getInt("y"), e.getLong("t")));
         }

@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.menu;
+import com.jykito.industrialcore.capability.Caps;
 
 import com.jykito.industrialcore.block.ModBlocks;
 import com.jykito.industrialcore.block.entity.BatteryChargerBlockEntity;
@@ -8,8 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class BatteryChargerMenu extends MachineMenu {
     public final BatteryChargerBlockEntity blockEntity;
@@ -24,7 +24,7 @@ public class BatteryChargerMenu extends MachineMenu {
         this.blockEntity = (BatteryChargerBlockEntity) entity;
         this.data = data;
 
-        this.blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
+        Caps.get(this.blockEntity, Caps.ITEM_HANDLER).ifPresent(iItemHandler -> {
             this.addSlot(new SlotItemHandler(iItemHandler, 0, 120, 62));
         });
 
@@ -48,7 +48,7 @@ public class BatteryChargerMenu extends MachineMenu {
         if (this.slots.isEmpty()) return 0;
         ItemStack stack = this.slots.get(0).getItem();
         if (stack.isEmpty()) return 0;
-        return stack.getCapability(ForgeCapabilities.ENERGY).map(e -> {
+        return Caps.get(stack, Caps.ENERGY).map(e -> {
             int max = e.getMaxEnergyStored();
             return max <= 0 ? 0 : (int)((long) e.getEnergyStored() * barHeight / max);
         }).orElse(0);
@@ -64,7 +64,7 @@ public class BatteryChargerMenu extends MachineMenu {
         if (index < 1) {
             if (!moveItemStackTo(sourceStack, 1, 37, true)) return ItemStack.EMPTY;
         } else if (index < 37) {
-            if (sourceStack.getCapability(ForgeCapabilities.ENERGY).isPresent()) {
+            if (Caps.get(sourceStack, Caps.ENERGY).isPresent()) {
                 if (!moveItemStackTo(sourceStack, 0, 1, false)) return ItemStack.EMPTY;
             } else {
                 return ItemStack.EMPTY;

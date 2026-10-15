@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.item.upgrade;
+import net.minecraft.world.item.Item;
 
 import com.jykito.industrialcore.block.ModBlocks;
 import com.jykito.industrialcore.recipe.GrowingRecipe;
@@ -36,7 +37,7 @@ public class CultivatorUpgradeItem extends MachineUpgradeItem {
     public GrowingRecipe.Category getCategory() { return mode.category; }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable(mode.tooltipKey).withStyle(ChatFormatting.GREEN));
         tooltip.add(Component.translatable("tooltip.industrial_core.cultivator_only").withStyle(ChatFormatting.DARK_GRAY));
         UpgradeTargets.append(tooltip, ModBlocks.CULTIVATOR);

@@ -1,5 +1,11 @@
 package com.jykito.industrialcore.recipe;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.Codec;
 
+import net.minecraft.core.HolderLookup;
 import com.google.gson.JsonObject;
 import com.jykito.industrialcore.IndustrialCore;
 import net.minecraft.core.NonNullList;
@@ -11,12 +17,11 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.Nullable;
 
-public class MachineRecipe implements Recipe<SimpleContainer> {
-    private final ResourceLocation id;
-    /** Рецепт только для лейт-машины (её промышленный режим); малая машина его не видит. */
+public class MachineRecipe implements Recipe<ContainerInput> {
+    /** Recipe for the late machine only (its industrial mode); the small machine does not see it. */
     private boolean lateOnly;
     private final Ingredient input;
     private final int inputCount;
@@ -26,9 +31,8 @@ public class MachineRecipe implements Recipe<SimpleContainer> {
     @Nullable private final String catalystId;
     private final RecipeType<?> type;
 
-    public MachineRecipe(ResourceLocation id, Ingredient input, int inputCount, ItemStack output,
+    public MachineRecipe(Ingredient input, int inputCount, ItemStack output,
                          int processingTime, int energyCost, @Nullable String catalystId, RecipeType<?> type) {
-        this.id = id;
         this.input = input;
         this.inputCount = inputCount;
         this.output = output;
@@ -40,25 +44,25 @@ public class MachineRecipe implements Recipe<SimpleContainer> {
 
     public boolean isLateOnly() { return lateOnly; }
 
-    /** Для типовых сериализаторов (crushing, rolling, ... — через них идёт KubeJS): пометка «только лейт». */
+    /** For the typed serializers (crushing, rolling, ...; KubeJS goes through them): the "late only" marker. */
     MachineRecipe lateOnly(boolean v) { this.lateOnly = v; return this; }
 
     @Override
-    public boolean matches(SimpleContainer pContainer, Level pLevel) {
+    public boolean matches(ContainerInput pContainer, Level pLevel) {
         if (lateOnly) return false;
         if (pLevel.isClientSide()) return false;
         if (!input.test(pContainer.getItem(0)) || pContainer.getItem(0).getCount() < inputCount) return false;
         if (catalystId == null) return true;
         ItemStack cat = pContainer.getContainerSize() > 1 ? pContainer.getItem(1) : ItemStack.EMPTY;
         if (cat.isEmpty()) return false;
-        ResourceLocation catKey = ForgeRegistries.ITEMS.getKey(cat.getItem());
+        ResourceLocation catKey = BuiltInRegistries.ITEM.getKey(cat.getItem());
         return catKey != null && catKey.toString().equals(catalystId);
     }
 
     @Nullable public String getCatalystId() { return catalystId; }
 
     @Override
-    public ItemStack assemble(SimpleContainer pContainer, RegistryAccess pRegistryAccess) {
+    public ItemStack assemble(ContainerInput pContainer, HolderLookup.Provider pRegistryAccess) {
         return output.copy();
     }
 
@@ -70,7 +74,7 @@ public class MachineRecipe implements Recipe<SimpleContainer> {
     @Override public boolean isSpecial() { return true; }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess pRegistryAccess) {
+    public ItemStack getResultItem(HolderLookup.Provider pRegistryAccess) {
         return output.copy();
     }
 
@@ -85,8 +89,6 @@ public class MachineRecipe implements Recipe<SimpleContainer> {
         return list;
     }
 
-    @Override
-    public ResourceLocation getId() { return id; }
 
     @Override
     public RecipeSerializer<?> getSerializer() { return ModRecipes.MACHINE_SERIALIZER.get(); }
@@ -94,76 +96,68 @@ public class MachineRecipe implements Recipe<SimpleContainer> {
     @Override
     public RecipeType<?> getType() { return type; }
 
+    /** "machine_type" of the generic serializer: only the mod's own recipe types, as before. */
+    static final Codec<RecipeType<?>> MACHINE_TYPE = ResourceLocation.CODEC.comapFlatMap(id -> {
+        for (var entry : ModRecipes.RECIPE_TYPES.getEntries())
+            if (entry.getId().equals(id)) return com.mojang.serialization.DataResult.success(entry.get());
+        return com.mojang.serialization.DataResult.error(() -> "Unknown machine_type: " + id);
+    }, type -> BuiltInRegistries.RECIPE_TYPE.getKey(type));
+
+    /** Network part shared by the generic and the typed serializers (the type is written by the generic one only). */
+    static void writeCommon(RegistryFriendlyByteBuf buf, MachineRecipe r) {
+        RecipeCodecs.writeIngredient(buf, r.input);
+        buf.writeInt(r.inputCount);
+        RecipeCodecs.writeItem(buf, r.output);
+        buf.writeInt(r.processingTime);
+        buf.writeInt(r.energyCost);
+        buf.writeBoolean(r.catalystId != null);
+        if (r.catalystId != null) buf.writeUtf(r.catalystId);
+    }
+
+    static MachineRecipe readCommon(RegistryFriendlyByteBuf buf, java.util.function.Supplier<RecipeType<?>> type) {
+        Ingredient input   = RecipeCodecs.readIngredient(buf);
+        int inputCount     = buf.readInt();
+        ItemStack output   = RecipeCodecs.readItem(buf);
+        int processingTime = buf.readInt();
+        int energyCost     = buf.readInt();
+        String catalystId  = buf.readBoolean() ? buf.readUtf() : null;
+        return new MachineRecipe(input, inputCount, output, processingTime, energyCost, catalystId, type.get());
+    }
+
     public static class Serializer implements RecipeSerializer<MachineRecipe> {
         public static final Serializer INSTANCE = new Serializer();
 
-        @Override
-        public MachineRecipe fromJson(ResourceLocation pRecipeId, JsonObject pSerializedRecipe) {
-            String typeStr = GsonHelper.getAsString(pSerializedRecipe, "machine_type");
+        private static final MapCodec<MachineRecipe> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                MACHINE_TYPE.fieldOf("machine_type").forGetter(r -> r.type),
+                Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(r -> r.input),
+                Codec.INT.optionalFieldOf("inputCount", 1).forGetter(r -> r.inputCount),
+                ItemStack.CODEC.fieldOf("result").forGetter(r -> r.output),
+                Codec.INT.optionalFieldOf("processingTime", 200).forGetter(r -> r.processingTime),
+                Codec.INT.optionalFieldOf("energyCost", 50).forGetter(r -> r.energyCost),
+                Codec.STRING.optionalFieldOf("catalyst").forGetter(r -> java.util.Optional.ofNullable(r.catalystId)),
+                Codec.BOOL.optionalFieldOf("lateOnly", false).forGetter(r -> r.lateOnly)
+        ).apply(i, (type, input, inputCount, output, time, energy, catalyst, lateOnly) ->
+                new MachineRecipe(input, inputCount, output, time, energy, catalyst.orElse(null), type).lateOnly(lateOnly)));
 
-            RecipeType<?> recipeType = null;
-            for (var entry : ModRecipes.RECIPE_TYPES.getEntries()) {
-                if (entry.getId().toString().equals(typeStr)) {
-                    recipeType = entry.get();
-                    break;
-                }
-            }
-            if (recipeType == null) {
-                throw new com.google.gson.JsonSyntaxException("Unknown machine_type: " + typeStr + " (recipe " + pRecipeId + ")");
-            }
+        private static final StreamCodec<RegistryFriendlyByteBuf, MachineRecipe> STREAM_CODEC =
+                StreamCodec.of(Serializer::write, Serializer::read);
 
-            Ingredient input = Ingredient.fromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "ingredient"));
-            int inputCount = GsonHelper.getAsInt(pSerializedRecipe, "inputCount", 1);
-            ItemStack output = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "result"));
-            int processingTime = GsonHelper.getAsInt(pSerializedRecipe, "processingTime", 200);
-            int energyCost = GsonHelper.getAsInt(pSerializedRecipe, "energyCost", 50);
-            String catalystId = pSerializedRecipe.has("catalyst")
-                    ? GsonHelper.getAsString(pSerializedRecipe, "catalyst") : null;
+        @Override public MapCodec<MachineRecipe> codec() { return CODEC; }
+        @Override public StreamCodec<RegistryFriendlyByteBuf, MachineRecipe> streamCodec() { return STREAM_CODEC; }
 
-            MachineRecipe recipe__ = new MachineRecipe(pRecipeId, input, inputCount, output, processingTime, energyCost, catalystId, recipeType);
-            recipe__.lateOnly = GsonHelper.getAsBoolean(pSerializedRecipe, "lateOnly", false);
-            return recipe__;
+        private static MachineRecipe read(RegistryFriendlyByteBuf buf) {
+            MachineRecipe partial = readCommon(buf, ModRecipes.CRUSHING_TYPE::get);
+            ResourceLocation typeId = buf.readResourceLocation();
+            RecipeType<?> type = BuiltInRegistries.RECIPE_TYPE.get(typeId);
+            MachineRecipe recipe = new MachineRecipe(partial.input, partial.inputCount, partial.output,
+                    partial.processingTime, partial.energyCost, partial.catalystId, type != null ? type : ModRecipes.CRUSHING_TYPE.get());
+            return recipe.lateOnly(buf.readBoolean());
         }
 
-        @Override
-        public @Nullable MachineRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
-            Ingredient input = Ingredient.fromNetwork(pBuffer);
-            int inputCount = pBuffer.readInt();
-            ItemStack output = pBuffer.readItem();
-            int processingTime = pBuffer.readInt();
-            int energyCost = pBuffer.readInt();
-            String catalystId = pBuffer.readBoolean() ? pBuffer.readUtf() : null;
-            String typeStr = pBuffer.readUtf();
-
-            RecipeType<?> recipeType = ModRecipes.CRUSHING_TYPE.get();
-            for (var entry : ModRecipes.RECIPE_TYPES.getEntries()) {
-                if (entry.getId().toString().equals(typeStr)) {
-                    recipeType = entry.get();
-                    break;
-                }
-            }
-
-            MachineRecipe recipe__ = new MachineRecipe(pRecipeId, input, inputCount, output, processingTime, energyCost, catalystId, recipeType);
-            recipe__.lateOnly = pBuffer.readBoolean();
-            return recipe__;
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf pBuffer, MachineRecipe pRecipe) {
-            pRecipe.input.toNetwork(pBuffer);
-            pBuffer.writeInt(pRecipe.inputCount);
-            pBuffer.writeItem(pRecipe.output);
-            pBuffer.writeInt(pRecipe.processingTime);
-            pBuffer.writeInt(pRecipe.energyCost);
-
-            pBuffer.writeBoolean(pRecipe.catalystId != null);
-            if (pRecipe.catalystId != null) pBuffer.writeUtf(pRecipe.catalystId);
-
-            ResourceLocation typeId = ModRecipes.RECIPE_TYPES.getEntries().stream()
-                    .filter(e -> e.get() == pRecipe.getType())
-                    .findFirst().get().getId();
-            pBuffer.writeUtf(typeId.toString());
-            pBuffer.writeBoolean(pRecipe.lateOnly);
+        private static void write(RegistryFriendlyByteBuf buf, MachineRecipe r) {
+            writeCommon(buf, r);
+            buf.writeResourceLocation(BuiltInRegistries.RECIPE_TYPE.getKey(r.getType()));
+            buf.writeBoolean(r.lateOnly);
         }
     }
 }

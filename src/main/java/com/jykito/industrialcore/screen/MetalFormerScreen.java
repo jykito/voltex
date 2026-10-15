@@ -13,7 +13,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class MetalFormerScreen extends BaseMachineScreen<MetalFormerMenu> {
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/metal_former_gui.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/metal_former_gui.png");
 
     private ModeButton modeButton;
 

@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.item.upgrade;
+import net.minecraft.world.item.Item;
 
 import com.jykito.industrialcore.block.ModBlocks;
 import net.minecraft.ChatFormatting;
@@ -36,7 +37,7 @@ public class BlastUpgradeItem extends MachineUpgradeItem {
     public int getParallel()          { return type.parallel; }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         int speedPct = Math.round((1f - type.speedMultiplier) * 100f);
         tooltip.add(Component.translatable("tooltip.industrial_core.blast_upgrade_speed", speedPct).withStyle(ChatFormatting.GREEN));
         if (type.parallel > 1)

@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "BCB",
+    "ADA"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/iron"
+    },
+    "B": {
+      "item": "industrial_core:copper_cable"
+    },
+    "C": {
+      "item": "industrial_core:machine_casing"
+    },
+    "D": {
+      "item": "industrial_core:textolite_board"
+    }
+  },
+  "result": {
+    "id": "industrial_core:item_hub",
+    "count": 1
+  }
+}

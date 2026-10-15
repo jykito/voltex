@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
 public class OreWasherScreen extends MachineScreen<OreWasherMenu> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(IndustrialCore.MODID + ":textures/gui/ore_washer_gui.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.parse(IndustrialCore.MODID + ":textures/gui/ore_washer_gui.png");
     private static final int BAR_X = 72, BAR_Y = 97, BAR_H = 6;
 
     private static final int TANK_W = 16, TANK_H = 48, TANK_X = 57, TANK_Y = 39;

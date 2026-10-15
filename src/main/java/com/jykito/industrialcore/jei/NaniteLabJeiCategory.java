@@ -35,16 +35,16 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Окно JEI нанолаборатории (макет Н3 «Лестница тем», выбор юзера 2026-10-09: «показать, где достать плашки памяти»).
- * Один рецепт на тему. Слева все четыре темы столбиком: образец, название, полоска изученности с порогом допуска;
- * тема этого рецепта подсвечена, остальные притушены — видно, какая ступень за какой. Справа сам рецепт:
- * штамм учёного (не расходуется, изнашивается) и пустая карта → карта темы, ниже расход и время записи
- * (на пороге {@link NaniteLab#ticks} от порога, при полной изученности — FAST_TICKS). Рамка — лейт-рамка, как у окон
- * лейт-машин ({@link LateJeiCategory.Frame}), клетки — его клетка из окна порта.
+ * Nanite lab JEI window (mockup N3 "Topic ladder", the author's choice 2026-10-09: "show where to get the memory plates").
+ * One recipe per topic. On the left all four topics in a column: sample, name, knowledge bar with the admission threshold;
+ * this recipe's topic is highlighted, the others dimmed, so you see which step comes after which. On the right the recipe itself:
+ * a scientist strain (not consumed, wears out) and a blank card -> the topic card, usage and writing time below
+ * (at the threshold {@link NaniteLab#ticks} of the threshold, at full knowledge FAST_TICKS). The frame is the late frame, as in the
+ * late machine windows ({@link LateJeiCategory.Frame}), the cells are the author's cell from the port window.
  */
 public class NaniteLabJeiCategory implements IRecipeCategory<NaniteLabJeiCategory.Theme> {
 
-    /** Тема и её порог изученности. */
+    /** Topic and its knowledge threshold. */
     public record Theme(String key, float threshold) {}
 
     public static List<Theme> themes() {
@@ -53,10 +53,10 @@ public class NaniteLabJeiCategory implements IRecipeCategory<NaniteLabJeiCategor
         return out;
     }
 
-    private static final ResourceLocation PROGRESS = new ResourceLocation(IndustrialCore.MODID, "textures/gui/progress_fill_6x_anim.png");
+    private static final ResourceLocation PROGRESS = ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/progress_fill_6x_anim.png");
     private static final int W = 176, H = 104, CELL = 18;
     private static final int ROW_X = 7, ROW_Y = 7, ROW_STEP = 22, ROW_W = 120, ROW_H = 21;
-    private static final int BAR_X = 31, BAR_W = 64, BAR_H = 5;   // строка: образец, название, полоска до порога и «N%»; карта темы — выходом справа
+    private static final int BAR_X = 31, BAR_W = 64, BAR_H = 5;   // line: sample, name, bar up to the threshold and "N%"; the topic card as the output on the right
     private static final int STRAIN_X = 131, BLANK_X = 151, IN_Y = 7, PROG_X = 132, PROG_Y = 31, PROG_W = 36, PROG_H = 8, OUT_X = 141, OUT_Y = 45;
     private static final int INFO_X = 131, INFO_Y = 70;
     private static final int C_DIM = 0xFF6A6A6A, C_TIME = 0xFFB0B0B0, PROG_CYCLE_MS = 2000;
@@ -80,14 +80,14 @@ public class NaniteLabJeiCategory implements IRecipeCategory<NaniteLabJeiCategor
     @Override public IDrawable getIcon()       { return icon; }
 
     private static ItemStack[] samples(String theme) {
-        TagKey<Item> tag = TagKey.create(Registries.ITEM, new ResourceLocation(IndustrialCore.MODID, NaniteFeed.RESEARCH_PREFIX + theme));
+        TagKey<Item> tag = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, NaniteFeed.RESEARCH_PREFIX + theme));
         return Ingredient.of(tag).getItems();
     }
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, Theme t, IFocusGroup focuses) {
         int pct = Math.round(t.threshold() * 100);
-        // образец своей темы — в его строке лестницы
+        // the sample of its own topic sits in its line of the ladder
         int row = rowOf(t.key());
         builder.addSlot(RecipeIngredientRole.INPUT, ROW_X + 3, ROW_Y + ROW_STEP * row + 2)
                .setBackground(cell, -1, -1)
@@ -126,13 +126,13 @@ public class NaniteLabJeiCategory implements IRecipeCategory<NaniteLabJeiCategor
             boolean on = key.equals(t.key());
             int y = ROW_Y + ROW_STEP * row++, color = 0xFF000000 | NaniteColors.theme(key);
             box(g, ROW_X, y, ROW_W, ROW_H);
-            if (!on) {                                                   // образец чужой темы — картинкой, не слотом
+            if (!on) {                                                   // a sample of another topic is a picture, not a slot
                 cell.draw(g, ROW_X + 2, y + 1);
                 ItemStack[] s = samples(key);
                 if (s.length > 0) g.renderItem(s[0], ROW_X + 3, y + 2);
             }
             g.drawString(font, Component.translatable("nanite_theme.industrial_core." + key), BAR_X, y + 3, on ? color : C_DIM, false);
-            // полоска изученности: залита до порога, риска на пороге
+            // knowledge bar: filled up to the threshold, a tick at the threshold
             int fill = Math.round(BAR_W * e.getValue());
             g.fill(BAR_X, y + 13, BAR_X + BAR_W, y + 13 + BAR_H, 0xFF0A0A0A);
             g.fill(BAR_X, y + 13, BAR_X + fill, y + 13 + BAR_H, on ? color : dim(color));
@@ -140,17 +140,17 @@ public class NaniteLabJeiCategory implements IRecipeCategory<NaniteLabJeiCategor
             g.drawString(font, Math.round(e.getValue() * 100) + "%", BAR_X + BAR_W + 4, y + 12, on ? color : C_DIM, false);
             if (!on) g.fill(ROW_X + 1, y + 1, ROW_X + ROW_W - 1, y + ROW_H - 1, 0x80171717);
         }
-        // прогресс как у окон лейт-машин: ниша, лента с шевронами по кругу
+        // progress as in the late machine windows: a recess, a chevron strip in a loop
         box(g, PROG_X, PROG_Y, PROG_W, PROG_H);
         chevrons.advance();
         int filled = (int) (System.currentTimeMillis() % PROG_CYCLE_MS * (PROG_W - 2) / PROG_CYCLE_MS);
         if (filled > 0) JeiGui.tileFill(g, PROGRESS, PROG_X + 1, PROG_Y + 1, filled, chevrons.frame());
-        // расход и время записи: на пороге → при полной изученности
+        // usage and writing time: at the threshold -> at full knowledge
         JeiGui.smallText(g, font, JeiGui.fe(NaniteLabBlockEntity.ENERGY_PER_TICK) + " FE/t", INFO_X, INFO_Y, JeiGui.ENERGY);
         JeiGui.smallText(g, font, JeiGui.secs(NaniteLab.ticks(t.threshold())) + " → " + JeiGui.secs(NaniteLab.FAST_TICKS), INFO_X, INFO_Y + JeiGui.SMALL_LINE, C_TIME);
     }
 
-    /** Ниша как у табло ядра: тёмный верх-лево, светлый низ-право. */
+    /** Recess like the core display: dark top-left, light bottom-right. */
     private static void box(GuiGraphics g, int x, int y, int w, int h) {
         g.fill(x, y, x + w, y + h, 0xFF0F0F0F);
         g.fill(x, y, x + w, y + 1, 0xFF1B1B1B); g.fill(x, y, x + 1, y + h, 0xFF1B1B1B);

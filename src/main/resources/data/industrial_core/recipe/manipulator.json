@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/iron"
+    },
+    "B": {
+      "item": "minecraft:piston"
+    },
+    "C": {
+      "item": "industrial_core:gold_conductor"
+    },
+    "D": {
+      "item": "industrial_core:electric_motor"
+    },
+    "E": {
+      "tag": "c:dusts/redstone"
+    }
+  },
+  "result": {
+    "id": "industrial_core:manipulator",
+    "count": 1
+  }
+}

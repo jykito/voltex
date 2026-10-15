@@ -1,0 +1,14 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:crushing",
+  "ingredient": {
+    "item": "minecraft:sugar_cane"
+  },
+  "inputCount": 1,
+  "result": {
+    "id": "minecraft:sugar",
+    "count": 2
+  },
+  "processingTime": 84,
+  "energyCost": 30
+}

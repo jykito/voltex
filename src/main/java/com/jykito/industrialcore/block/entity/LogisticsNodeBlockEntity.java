@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
 
 import com.jykito.industrialcore.menu.LogisticsNodeMenu;
 import net.minecraft.core.BlockPos;
@@ -67,18 +68,18 @@ public class LogisticsNodeBlockEntity extends BlockEntity implements MenuProvide
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         tag.putLongArray("links", linkedPositions.stream().mapToLong(BlockPos::asLong).toArray());
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         linkedPositions.clear();
         for (long l : tag.getLongArray("links")) linkedPositions.add(BlockPos.of(l));
     }
 
-    @Override public CompoundTag getUpdateTag() { CompoundTag t = new CompoundTag(); saveAdditional(t); return t; }
-    @Override public void handleUpdateTag(CompoundTag tag) { load(tag); }
+    @Override public CompoundTag getUpdateTag(HolderLookup.Provider registries) { CompoundTag t = new CompoundTag(); saveAdditional(t, registries); return t; }
+    @Override public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) { loadAdditional(tag, registries); }
     @Nullable @Override public Packet<ClientGamePacketListener> getUpdatePacket() { return ClientboundBlockEntityDataPacket.create(this); }
 }

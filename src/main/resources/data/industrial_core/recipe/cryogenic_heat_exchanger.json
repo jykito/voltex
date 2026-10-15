@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "BCB",
+    "ADA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:cryolite"
+    },
+    "B": {
+      "item": "industrial_core:superconducting_wire"
+    },
+    "C": {
+      "type": "neoforge:components",
+      "items": "industrial_core:capsule",
+      "components": {
+        "industrial_core:fluid_content": {
+          "id": "industrial_core:hot_coolant",
+          "amount": 1000
+        }
+      }
+    },
+    "D": {
+      "item": "industrial_core:advanced_heat_exchanger"
+    }
+  },
+  "result": {
+    "id": "industrial_core:cryogenic_heat_exchanger",
+    "count": 1
+  }
+}

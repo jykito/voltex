@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.item.upgrade;
+import net.minecraft.world.item.Item;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -20,7 +21,7 @@ public class AdvancedParallelModuleItem extends MachineUpgradeItem {
     public int getParallelCount() { return parallelCount; }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("tooltip.industrial_core.parallel_count", parallelCount).withStyle(ChatFormatting.GOLD));
         UpgradeTargets.append(tooltip, UpgradeTargets.PARALLEL);
     }

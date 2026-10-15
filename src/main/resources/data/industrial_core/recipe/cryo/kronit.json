@@ -1,0 +1,14 @@
+{
+  "type": "industrial_core:cryo_recipe",
+  "ingredient": {
+    "item": "industrial_core:hardened_steel_ingot"
+  },
+  "ingredientCount": 2,
+  "requiredStage": 2,
+  "result": {
+    "id": "industrial_core:kronit",
+    "count": 1
+  },
+  "processingTime": 400,
+  "energyCostPerTick": 200
+}

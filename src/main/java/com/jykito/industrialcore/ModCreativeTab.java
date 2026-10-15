@@ -1,4 +1,6 @@
 package com.jykito.industrialcore;
+import com.jykito.industrialcore.item.ModDataComponents;
+import com.jykito.industrialcore.capability.Caps;
 
 import com.jykito.industrialcore.item.ModItems;
 import com.jykito.industrialcore.item.custom.ElectricDrillItem;
@@ -11,20 +13,19 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public final class ModCreativeTab {
 
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, IndustrialCore.MODID);
 
-    public static final RegistryObject<CreativeModeTab> INDUSTRIAL_TAB =
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> INDUSTRIAL_TAB =
             CREATIVE_MODE_TABS.register("industrial_tab", () -> CreativeModeTab.builder()
                     .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
                     .title(Component.translatable("creativetab.industrial_tab"))
@@ -75,7 +76,7 @@ public final class ModCreativeTab {
                         output.accept(ModItems.CULTIVATOR_T2_ITEM.get());
                         output.accept(ModItems.ORE_WASHER_ITEM.get());
                         output.accept(ModItems.BIOREACTOR_ITEM.get());
-                        if (Config.devTools) output.accept(ModItems.RECIPE_EXPORTER_ITEM.get()); // дев-тул: пишет json в пак
+                        if (Config.devTools) output.accept(ModItems.RECIPE_EXPORTER_ITEM.get()); // dev tool: writes json into the pack
                         output.accept(ModItems.ROD_FABRICATOR_ITEM.get());
                         output.accept(ModItems.EXTRACTOR_ITEM.get());
                         output.accept(ModItems.PHASE_SPLITTER_ITEM.get());
@@ -169,7 +170,7 @@ public final class ModCreativeTab {
                         output.accept(ModItems.MULTIBLOCK_OUTPUT_PORT_ITEM.get());
                         output.accept(ModItems.MULTIBLOCK_ENERGY_PORT_ITEM.get());
                         output.accept(ModItems.MULTIBLOCK_HEAT_PORT_ITEM.get());
-                        if (com.jykito.industrialcore.compat.ae2.MePorts.AE2) {   // без AE2 МЭ-порты — просто порты, во вкладке их не показываем
+                        if (com.jykito.industrialcore.compat.ae2.MePorts.AE2) {   // without AE2 the ME ports are plain ports, so we do not show them in the tab
                             output.accept(ModItems.ME_INPUT_PORT_ITEM.get());
                             output.accept(ModItems.ME_OUTPUT_PORT_ITEM.get());
                             output.accept(ModItems.ME_PATTERN_PORT_ITEM.get());
@@ -302,23 +303,23 @@ public final class ModCreativeTab {
                         output.accept(ModItems.CUTTERS.get());
                         output.accept(ModItems.ELECTRIC_WRENCH.get());
                         ItemStack fullWrench = new ItemStack(ModItems.ELECTRIC_WRENCH.get());
-                        fullWrench.getOrCreateTag().putInt("energy", ElectricWrenchItem.CAPACITY);
+                        fullWrench.set(ModDataComponents.ENERGY.get(), ElectricWrenchItem.CAPACITY);
                         output.accept(fullWrench);
                         output.accept(ModItems.ELECTRIC_DRILL.get());
                         ItemStack fullElectric = new ItemStack(ModItems.ELECTRIC_DRILL.get());
-                        fullElectric.getOrCreateTag().putInt("energy", ElectricDrillItem.CAPACITY);
+                        fullElectric.set(ModDataComponents.ENERGY.get(), ElectricDrillItem.CAPACITY);
                         output.accept(fullElectric);
                         output.accept(ModItems.INDUSTRIAL_DRILL.get());
                         ItemStack fullIndustrial = new ItemStack(ModItems.INDUSTRIAL_DRILL.get());
-                        fullIndustrial.getOrCreateTag().putInt("energy", IndustrialDrillItem.CAPACITY);
+                        fullIndustrial.set(ModDataComponents.ENERGY.get(), IndustrialDrillItem.CAPACITY);
                         output.accept(fullIndustrial);
                         output.accept(ModItems.ENERGY_BLADE.get());
                         ItemStack fullBlade = new ItemStack(ModItems.ENERGY_BLADE.get());
-                        fullBlade.getOrCreateTag().putInt("energy", com.jykito.industrialcore.item.custom.weapon.EnergyBladeItem.CAPACITY);
+                        fullBlade.set(ModDataComponents.ENERGY.get(), com.jykito.industrialcore.item.custom.weapon.EnergyBladeItem.CAPACITY);
                         output.accept(fullBlade);
                         output.accept(ModItems.GAUSS_RIFLE.get());
                         ItemStack fullGauss = new ItemStack(ModItems.GAUSS_RIFLE.get());
-                        fullGauss.getOrCreateTag().putInt("energy", com.jykito.industrialcore.item.custom.weapon.GaussRifleItem.CAPACITY);
+                        fullGauss.set(ModDataComponents.ENERGY.get(), com.jykito.industrialcore.item.custom.weapon.GaussRifleItem.CAPACITY);
                         output.accept(fullGauss);
 
                         output.accept(ModItems.ITEM_PUSHER.get());
@@ -345,19 +346,19 @@ public final class ModCreativeTab {
 
                         output.accept(ModItems.BATTERY.get());
                         ItemStack fullBattery = new ItemStack(ModItems.BATTERY.get());
-                        fullBattery.getOrCreateTag().putInt("energy", 10000);
+                        fullBattery.set(ModDataComponents.ENERGY.get(), 10000);
                         output.accept(fullBattery);
                         output.accept(ModItems.LITHIUM_BATTERY.get());
                         ItemStack fullLithium = new ItemStack(ModItems.LITHIUM_BATTERY.get());
-                        fullLithium.getOrCreateTag().putInt("energy", 50000);
+                        fullLithium.set(ModDataComponents.ENERGY.get(), 50000);
                         output.accept(fullLithium);
                         output.accept(ModItems.FLUX_CORE.get());
                         ItemStack fullCrystal = new ItemStack(ModItems.FLUX_CORE.get());
-                        fullCrystal.getOrCreateTag().putInt("energy", 100000);
+                        fullCrystal.set(ModDataComponents.ENERGY.get(), 100000);
                         output.accept(fullCrystal);
                         output.accept(ModItems.PLASMA_CORE.get());
                         ItemStack fullLapotron = new ItemStack(ModItems.PLASMA_CORE.get());
-                        fullLapotron.getOrCreateTag().putInt("energy", 500000);
+                        fullLapotron.set(ModDataComponents.ENERGY.get(), 500000);
                         output.accept(fullLapotron);
                         output.accept(ModItems.ENERGY_BACKPACK_T1.get());
                         output.accept(ModItems.ENERGY_BACKPACK_T2.get());
@@ -374,42 +375,42 @@ public final class ModCreativeTab {
 
                         output.accept(ModItems.PLASMA_HELMET.get());
                         ItemStack fullPlasmaHelmet = new ItemStack(ModItems.PLASMA_HELMET.get());
-                        fullPlasmaHelmet.getOrCreateTag().putInt("Energy", com.jykito.industrialcore.item.custom.PlasmaArmorItem.CAPACITY);
+                        fullPlasmaHelmet.set(ModDataComponents.ENERGY.get(), com.jykito.industrialcore.item.custom.PlasmaArmorItem.CAPACITY);
                         output.accept(fullPlasmaHelmet);
                         output.accept(ModItems.PLASMA_CHESTPLATE.get());
                         ItemStack fullPlasmaChest = new ItemStack(ModItems.PLASMA_CHESTPLATE.get());
-                        fullPlasmaChest.getOrCreateTag().putInt("Energy", com.jykito.industrialcore.item.custom.PlasmaArmorItem.CAPACITY);
+                        fullPlasmaChest.set(ModDataComponents.ENERGY.get(), com.jykito.industrialcore.item.custom.PlasmaArmorItem.CAPACITY);
                         output.accept(fullPlasmaChest);
                         output.accept(ModItems.PLASMA_LEGGINGS.get());
                         ItemStack fullPlasmaLegs = new ItemStack(ModItems.PLASMA_LEGGINGS.get());
-                        fullPlasmaLegs.getOrCreateTag().putInt("Energy", com.jykito.industrialcore.item.custom.PlasmaArmorItem.CAPACITY);
+                        fullPlasmaLegs.set(ModDataComponents.ENERGY.get(), com.jykito.industrialcore.item.custom.PlasmaArmorItem.CAPACITY);
                         output.accept(fullPlasmaLegs);
                         output.accept(ModItems.PLASMA_BOOTS.get());
                         ItemStack fullPlasmaBoots = new ItemStack(ModItems.PLASMA_BOOTS.get());
-                        fullPlasmaBoots.getOrCreateTag().putInt("Energy", com.jykito.industrialcore.item.custom.PlasmaArmorItem.CAPACITY);
+                        fullPlasmaBoots.set(ModDataComponents.ENERGY.get(), com.jykito.industrialcore.item.custom.PlasmaArmorItem.CAPACITY);
                         output.accept(fullPlasmaBoots);
                         output.accept(ModItems.NEXITE_HELMET.get());
                         ItemStack fullNexHelmet = new ItemStack(ModItems.NEXITE_HELMET.get());
-                        fullNexHelmet.getOrCreateTag().putInt("Energy", com.jykito.industrialcore.item.custom.NexiteArmorItem.CAPACITY);
+                        fullNexHelmet.set(ModDataComponents.ENERGY.get(), com.jykito.industrialcore.item.custom.NexiteArmorItem.CAPACITY);
                         output.accept(fullNexHelmet);
                         output.accept(ModItems.NEXITE_CHESTPLATE.get());
                         ItemStack fullNexChest = new ItemStack(ModItems.NEXITE_CHESTPLATE.get());
-                        fullNexChest.getOrCreateTag().putInt("Energy", com.jykito.industrialcore.item.custom.NexiteArmorItem.CAPACITY);
+                        fullNexChest.set(ModDataComponents.ENERGY.get(), com.jykito.industrialcore.item.custom.NexiteArmorItem.CAPACITY);
                         output.accept(fullNexChest);
                         output.accept(ModItems.NEXITE_LEGGINGS.get());
                         ItemStack fullNexLegs = new ItemStack(ModItems.NEXITE_LEGGINGS.get());
-                        fullNexLegs.getOrCreateTag().putInt("Energy", com.jykito.industrialcore.item.custom.NexiteArmorItem.CAPACITY);
+                        fullNexLegs.set(ModDataComponents.ENERGY.get(), com.jykito.industrialcore.item.custom.NexiteArmorItem.CAPACITY);
                         output.accept(fullNexLegs);
                         output.accept(ModItems.NEXITE_BOOTS.get());
                         ItemStack fullNexBoots = new ItemStack(ModItems.NEXITE_BOOTS.get());
-                        fullNexBoots.getOrCreateTag().putInt("Energy", com.jykito.industrialcore.item.custom.NexiteArmorItem.CAPACITY);
+                        fullNexBoots.set(ModDataComponents.ENERGY.get(), com.jykito.industrialcore.item.custom.NexiteArmorItem.CAPACITY);
                         output.accept(fullNexBoots);
 
                         output.accept(ModItems.UNIVERSAL_CAPSULE.get());
-                        for (Fluid fluid : ForgeRegistries.FLUIDS.getValues()) {
+                        for (Fluid fluid : BuiltInRegistries.FLUID.stream().toList()) {
                             if (fluid == Fluids.EMPTY || !fluid.isSource(fluid.defaultFluidState())) continue;
                             ItemStack fullCapsule = new ItemStack(ModItems.UNIVERSAL_CAPSULE.get());
-                            fullCapsule.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(handler ->
+                            Caps.get(fullCapsule, Caps.FLUID_HANDLER_ITEM).ifPresent(handler ->
                                     handler.fill(new FluidStack(fluid, 1000), IFluidHandlerItem.FluidAction.EXECUTE));
                             output.accept(fullCapsule);
                         }

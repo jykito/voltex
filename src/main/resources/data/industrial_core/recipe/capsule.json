@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    " A ",
+    "   "
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/tin"
+    },
+    "B": {
+      "item": "minecraft:glass"
+    }
+  },
+  "result": {
+    "id": "industrial_core:capsule",
+    "count": 4
+  }
+}

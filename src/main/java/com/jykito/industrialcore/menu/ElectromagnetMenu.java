@@ -9,22 +9,22 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Меню ускорителя. Слоты: 0..7 — кольцо входов, 8 — выход, 9/10 — улучшения (пока заблокированы).
- * Энергия синкается через ContainerData(6); жидкости читаются из BE напрямую (синк getUpdateTag).
+ * Accelerator menu. Slots: 0..7 the input ring, 8 output, 9/10 upgrades (locked for now).
+ * Energy syncs through ContainerData(6); fluids are read from the BE directly (getUpdateTag sync).
  */
 public class ElectromagnetMenu extends MachineMenu {
     public final ElectromagnetCoreBlockEntity blockEntity;
     private final ContainerData data;
-    private final BlockPos anchorPos;   // якорь дистанции stillValid: ядро при обычном открытии, контроллер при удалённом
+    private final BlockPos anchorPos;   // distance anchor for stillValid: the core when opened normally, the controller when opened remotely
 
-    // 8 входных слотов: СИНИЕ 0-3 = пучок A (левая дуга), КРАСНЫЕ 4-7 = пучок B (правая дуга)
+    // 8 input slots: BLUE 0-3 = beam A (left arc), RED 4-7 = beam B (right arc)
     private static final int[][] INPUTS = {
-        {120, 22}, {97, 31}, {84, 52}, {97, 73},   // синие (A)
-        {143, 31}, {156, 52}, {143, 73}, {120, 82} // красные (B)
+        {120, 22}, {97, 31}, {84, 52}, {97, 73},   // blue (A)
+        {143, 31}, {156, 52}, {143, 73}, {120, 82} // red (B)
     };
     private static final int MACHINE_SLOTS = 11;
 
@@ -49,16 +49,16 @@ public class ElectromagnetMenu extends MachineMenu {
 
         for (int i = 0; i < 8; i++) this.addSlot(new SlotItemHandler(h, i, INPUTS[i][0], INPUTS[i][1]));
 
-        this.addSlot(new SlotItemHandler(h, 8, 120, 52) {            // выход
+        this.addSlot(new SlotItemHandler(h, 8, 120, 52) {            // output
             @Override public boolean mayPlace(@NotNull ItemStack stack) { return false; }
         });
-        // Апгрейд и катушка — клетки вровень с полосами резонанса и мощности (y 101..118), под ними место для молнии энергии.
-        this.addSlot(new SlotItemHandler(h, 9, 186, 102) {           // апгрейд: Фазозахват (авто-×2)
+        // Upgrade and coil: cells level with the resonance and power bars (y 101..118), with room for the energy bolt below them.
+        this.addSlot(new SlotItemHandler(h, 9, 186, 102) {           // upgrade: Phase Lock (auto x2)
             @Override public boolean mayPlace(@NotNull ItemStack stack) {
                 return stack.getItem() == com.jykito.industrialcore.item.ModItems.PHASE_LOCK_UPGRADE.get();
             }
         });
-        this.addSlot(new SlotItemHandler(h, 10, 54, 102) {           // катушка: вставить/вынуть (читается ядром)
+        this.addSlot(new SlotItemHandler(h, 10, 54, 102) {           // coil: insert/remove (read by the core)
             @Override public boolean mayPlace(@NotNull ItemStack stack) {
                 return stack.getItem() instanceof com.jykito.industrialcore.item.custom.MagnetCoilItem;
             }
@@ -70,15 +70,15 @@ public class ElectromagnetMenu extends MachineMenu {
         addDataSlots(data);
     }
 
-    public int getProgress()    { return data.get(0); }   // тик крафта
-    public int getMaxProgress() { return data.get(1); }   // длина крафта
+    public int getProgress()    { return data.get(0); }   // craft tick
+    public int getMaxProgress() { return data.get(1); }   // craft length
     public int getInstability() { return data.get(6); }   // 0..100 %
     public boolean isWorking()  { return data.get(7) != 0; }
-    public boolean isDoubling() { return data.get(8) != 0; }  // заряд резонанса полон → ×2
-    public int getResonanceTarget() { return data.get(9); }   // 0..100 — дрейфующая цель
-    public int getResonanceCharge() { return data.get(10); }  // 0..100 — заряд резонанса
-    public int getThrottle()        { return data.get(11); }  // 0..100 — позиция троттла
-    public int getCoilTier() {   // из слота катушки (10), синкается контейнером — для инфо-панели (радиус поля)
+    public boolean isDoubling() { return data.get(8) != 0; }  // resonance charge full -> x2
+    public int getResonanceTarget() { return data.get(9); }   // 0..100 drifting target
+    public int getResonanceCharge() { return data.get(10); }  // 0..100 resonance charge
+    public int getThrottle()        { return data.get(11); }  // 0..100 throttle position
+    public int getCoilTier() {   // from the coil slot (10), synced by the container, for the info panel (field radius)
         var c = slots.get(10).getItem();
         return c.getItem() instanceof com.jykito.industrialcore.item.custom.MagnetCoilItem m ? m.getTier() : 0;
     }
@@ -101,9 +101,9 @@ public class ElectromagnetMenu extends MachineMenu {
         if (index < MACHINE_SLOTS) {
             if (!moveItemStackTo(sourceStack, MACHINE_SLOTS, INV_END, true)) return ItemStack.EMPTY;
         } else if (sourceStack.getItem() instanceof com.jykito.industrialcore.item.custom.MagnetCoilItem) {
-            if (!moveItemStackTo(sourceStack, 10, 11, false)) return ItemStack.EMPTY; // катушка → слот 10
+            if (!moveItemStackTo(sourceStack, 10, 11, false)) return ItemStack.EMPTY; // coil -> slot 10
         } else {
-            if (!moveItemStackTo(sourceStack, 0, 8, false)) return ItemStack.EMPTY; // прочее → входы 0..7
+            if (!moveItemStackTo(sourceStack, 0, 8, false)) return ItemStack.EMPTY; // everything else -> inputs 0..7
         }
 
         if (sourceStack.getCount() == 0) sourceSlot.set(ItemStack.EMPTY);
@@ -115,7 +115,7 @@ public class ElectromagnetMenu extends MachineMenu {
     @Override
     public boolean stillValid(Player player) {
         if (blockEntity == null || blockEntity.getLevel() == null) return false;
-        // дистанция до якоря: ядро при обычном GUI, контроллер при удалённом (поле не пускает к ядру)
+        // distance to the anchor: the core with the normal GUI, the controller with the remote one (the field keeps you away from the core)
         return player.distanceToSqr(anchorPos.getX() + 0.5, anchorPos.getY() + 0.5, anchorPos.getZ() + 0.5) <= 64.0;
     }
 }

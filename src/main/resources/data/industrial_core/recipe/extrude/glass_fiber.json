@@ -1,0 +1,14 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:extruding",
+  "ingredient": {
+    "item": "minecraft:glass"
+  },
+  "inputCount": 1,
+  "result": {
+    "id": "industrial_core:glass_fiber",
+    "count": 4
+  },
+  "processingTime": 140,
+  "energyCost": 100
+}

@@ -9,11 +9,11 @@ public final class JeiGui {
     private JeiGui() {}
 
     public static final ResourceLocation FURNACE =
-            new ResourceLocation("minecraft", "textures/gui/container/furnace.png");
+            ResourceLocation.fromNamespaceAndPath("minecraft", "textures/gui/container/furnace.png");
     public static final ResourceLocation ENERGY_FILL =
-            new ResourceLocation("industrial_core", "textures/gui/energy_fill_6x_anim.png");
+            ResourceLocation.fromNamespaceAndPath("industrial_core", "textures/gui/energy_fill_6x_anim.png");
     public static final ResourceLocation HEAT_FILL =
-            new ResourceLocation("industrial_core", "textures/gui/heat_fill_6x_anim.png");
+            ResourceLocation.fromNamespaceAndPath("industrial_core", "textures/gui/heat_fill_6x_anim.png");
 
     public static final int FILL_TILE_W = 96, FILL_H = 6, FILL_SHEET_W = 96, FILL_SHEET_H = 36,
                             FILL_FRAMES = 6, FILL_FRAME_TICKS = 16;

@@ -13,7 +13,7 @@ import net.minecraft.world.entity.player.Inventory;
 public class RestructorScreen extends AbstractContainerScreen<RestructorMenu> {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID + ":textures/gui/restructor_gui.png");
+            ResourceLocation.parse(IndustrialCore.MODID + ":textures/gui/restructor_gui.png");
 
     private static final int PROGRESS_X = 122, PROGRESS_Y = 59, PROGRESS_W = 12, PROGRESS_H = 17;
     private static final int PROGRESS_SRC_U = 166, PROGRESS_SRC_V = 260;
@@ -37,7 +37,6 @@ public class RestructorScreen extends AbstractContainerScreen<RestructorMenu> {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(guiGraphics);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
         renderBarTooltip(guiGraphics, mouseX, mouseY);

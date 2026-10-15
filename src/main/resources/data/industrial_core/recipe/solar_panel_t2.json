@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "BCB",
+    "DED"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:carbon_plate"
+    },
+    "B": {
+      "item": "industrial_core:textolite_board"
+    },
+    "C": {
+      "item": "industrial_core:solar_panel_t1"
+    },
+    "D": {
+      "item": "industrial_core:silicon"
+    },
+    "E": {
+      "item": "industrial_core:electric_motor"
+    }
+  },
+  "result": {
+    "id": "industrial_core:solar_panel_t2",
+    "count": 1
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "AAA",
+    "AAA"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:ingots/nickel"
+    }
+  },
+  "result": {
+    "id": "industrial_core:nickel_block",
+    "count": 1
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "BCB"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/electrum"
+    },
+    "B": {
+      "tag": "c:plates/invar"
+    },
+    "C": {
+      "item": "industrial_core:heat_exchanger"
+    }
+  },
+  "result": {
+    "id": "industrial_core:advanced_heat_exchanger",
+    "count": 1
+  }
+}

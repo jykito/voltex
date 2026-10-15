@@ -15,9 +15,9 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * 3D-иконка силовой брони: в инвентаре, JEI и гайде предмет рисуется самой деталью {@link PowerSuitModel}
- * (у предмета модель builtin/entity, повороты по местам показа — в её display). Деталь центрируется
- * и масштабируется под ячейку; руки и ноги слегка разведены, как на ванильных иконках брони.
+ * 3D icon of the power suit: in the inventory, JEI and the guide the item is drawn as the {@link PowerSuitModel} part itself
+ * (the item model is builtin/entity, rotations per display context are in its display). The part is centred
+ * and scaled to the slot; arms and legs are spread slightly, like vanilla armor icons.
  */
 public final class ArmorIconRenderer extends BlockEntityWithoutLevelRenderer {
 
@@ -32,7 +32,7 @@ public final class ArmorIconRenderer extends BlockEntityWithoutLevelRenderer {
         super(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
     }
 
-    /** Центр детали в пикселях модели (y вниз, от шеи) и масштаб, при котором она в повороте gui [25,-35,0] влезает в 16 px. */
+    /** Centre of the part in model pixels (y down, from the neck) and the scale at which it fits into 16 px at gui rotation [25,-35,0]. */
     private record Fit(float cx, float cy, float cz, float scale) {}
 
     private static Fit fit(EquipmentSlot slot) {
@@ -50,15 +50,15 @@ public final class ArmorIconRenderer extends BlockEntityWithoutLevelRenderer {
         EquipmentSlot slot = armor.getEquipmentSlot();
         PowerSuitModel model = PowerSuitModel.forSlot(slot);
         model.poseForIcon();
-        ResourceLocation tex = new ResourceLocation(armor.getArmorTexture(stack, null, slot, null));
+        ResourceLocation tex = armor.getArmorTexture(stack, null, slot, null, false);
         Fit f = fit(slot);
         ps.pushPose();
         ps.translate(0.5, 0.5, 0.5);
         ps.scale(f.scale, f.scale, f.scale);
-        ps.mulPose(Axis.XP.rotationDegrees(180));   // модель: y вниз, лицо на −z -> предмет: y вверх, лицо к зрителю
+        ps.mulPose(Axis.XP.rotationDegrees(180));   // model: y down, face at −z -> item: y up, face towards the viewer
         ps.translate(-f.cx / 16, -f.cy / 16, -f.cz / 16);
-        VertexConsumer vc = ItemRenderer.getArmorFoilBuffer(buf, RenderType.armorCutoutNoCull(tex), false, stack.hasFoil());
-        model.renderToBuffer(ps, vc, light, overlay, 1f, 1f, 1f, 1f);
+        VertexConsumer vc = ItemRenderer.getArmorFoilBuffer(buf, RenderType.armorCutoutNoCull(tex), stack.hasFoil());
+        model.renderToBuffer(ps, vc, light, overlay, 0xFFFFFFFF);
         ps.popPose();
     }
 }

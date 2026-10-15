@@ -1,0 +1,45 @@
+{
+  "type": "industrial_core:accelerating",
+  "inputs": [
+    {
+      "item": "industrial_core:electric_motor_extended"
+    },
+    {
+      "item": "industrial_core:control_unit",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:servo_drive",
+      "count": 8
+    },
+    {
+      "item": "industrial_core:mechanism_block",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:quantum_capacitor",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:kronium_alloy",
+      "count": 16
+    },
+    {
+      "item": "industrial_core:photonic_lens",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:singularity_core"
+    }
+  ],
+  "result": {
+    "id": "industrial_core:multiblock_crafter",
+    "count": 1
+  },
+  "minTier": 2,
+  "processingTime": 1200,
+  "energyCostPerTick": 8000,
+  "minInstab": 47,
+  "bandLo": 50,
+  "bandHi": 56
+}

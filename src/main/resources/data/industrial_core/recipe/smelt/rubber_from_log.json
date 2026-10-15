@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "industrial_core:resin_log"
+  },
+  "result": {
+    "id": "industrial_core:rubber"
+  },
+  "experience": 0.5,
+  "cookingtime": 200
+}

@@ -4,13 +4,13 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 
 /**
- * Одно поколение отбора в камере эволюции. Из штамма вырастает {@link #CANDIDATES} потомков со случайными сдвигами,
- * выживает лучший под целевую руду; родитель тоже в отборе, поэтому сродство к цели не падает.
+ * One selection generation in the evolution chamber. The strain produces {@link #CANDIDATES} offspring with random shifts,
+ * the best one for the target ore survives; the parent is in the selection too, so the affinity to the target does not drop.
  * <p>
- * Рост замедляется у потолка (шаг пропорционален запасу до потолка класса {@link NaniteGenome#cap}), отсюда плато на графике.
- * У переработчика шаг мельче: около +3–4% за поколение до потолка 30% (у остальных около +7% до +300%).
- * Тепло крупнее шаги и быстрее поколения (это считает камера), но каждое горячее поколение снижает стабильность;
- * без тепла стабильность понемногу восстанавливается.
+ * Growth slows near the cap (the step is proportional to the room left to the class cap {@link NaniteGenome#cap}), hence the plateau on the graph.
+ * A processor has a finer step: about +3-4% per generation up to the 30% cap (the others about +7% up to +300%).
+ * Heat gives larger steps and faster generations (the chamber computes that), but every hot generation lowers stability;
+ * without heat stability slowly recovers.
  */
 public final class NaniteEvolution {
 
@@ -18,16 +18,16 @@ public final class NaniteEvolution {
 
     public static final int CANDIDATES = 8;
     private static final float STEP = 0.05f, STEP_HEAT = 0.07f;
-    /** Переработчик: лучший из 8 потомков даёт около 1.4σ, то есть +3.5% за поколение в начале. */
+    /** Processor: the best of 8 offspring gives about 1.4σ, that is +3.5% per generation at the start. */
     private static final float PROCESSOR_STEP = 0.025f, PROCESSOR_STEP_HEAT = 0.035f;
-    /** Учёный: около +4% изученности за поколение в начале; до 90% (звёздная физика) — порядка 55 поколений без тепла. */
+    /** Scientist: about +4% knowledge per generation at the start; up to 90% (stellar physics) takes around 55 generations without heat. */
     private static final float SCIENTIST_STEP = 0.03f, SCIENTIST_STEP_HEAT = 0.04f;
     private static final float DRIFT = 0.02f, FLUID_STEP = 0.03f, FLUID_WEIGHT = 0.25f;
     private static final float STABILITY_LOSS = 0.03f, STABILITY_GAIN = 0.02f, COLD = 0.05f;
 
     /**
-     * Новое поколение штамма под цель {@code target} (материал или тема); {@code heat} — доля тепла камеры 0..1.
-     * Пустой штамм получает класс корма; штамм другого класса камера сюда не пускает.
+     * A new strain generation for target {@code target} (material or topic); {@code heat} is the chamber heat fraction 0..1.
+     * An empty strain gets the feed's class; the chamber does not let a strain of another class in.
      */
     public static NaniteGenome step(NaniteGenome parent, NaniteGenome.Kind kind, String target, Item feed, float heat, RandomSource rnd) {
         NaniteGenome best = parent;
@@ -46,13 +46,13 @@ public final class NaniteEvolution {
         NaniteGenome out = best == parent ? parent.copy() : best;
         if (out.kind() == null) out.setKind(kind);
         out.rememberIcon(target, feed);
-        float loss = out.has(NaniteTrait.CRYOPHILE) ? 0f : STABILITY_LOSS * heat;   // криофилу тепло не страшно
+        float loss = out.has(NaniteTrait.CRYOPHILE) ? 0f : STABILITY_LOSS * heat;   // heat does not bother a cryophile
         out.setStability(out.stability() + (heat > COLD ? -loss : STABILITY_GAIN));
         out.nextGeneration();
         return out;
     }
 
-    /** Сродство к цели; у добытчика в зачёт идёт и экономия буровой жижи (у остальных жижи нет). */
+    /** Affinity to the target; for a miner, drill fluid savings count too (the others use no fluid). */
     public static float fitness(NaniteGenome g, String target, boolean miner) {
         return g.bonus(target) + (miner ? FLUID_WEIGHT * (1f - g.fluid()) : 0f);
     }

@@ -1,5 +1,11 @@
 package com.jykito.industrialcore.recipe;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.Codec;
 
+import net.minecraft.core.HolderLookup;
 import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
@@ -10,13 +16,12 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.Nullable;
 
-public class LiquefierRecipe implements Recipe<SimpleContainer> {
+public class LiquefierRecipe implements Recipe<ContainerInput> {
 
-    private final ResourceLocation id;
     private final Ingredient ingredient;
     private final int ingredientCount;
     private final Ingredient ingredient2;
@@ -27,13 +32,11 @@ public class LiquefierRecipe implements Recipe<SimpleContainer> {
     private final int processingTime;
     private final int energyCostPerTick;
 
-    public LiquefierRecipe(ResourceLocation id,
-                           Ingredient ingredient, int ingredientCount,
+    public LiquefierRecipe(Ingredient ingredient, int ingredientCount,
                            Ingredient ingredient2, int ingredientCount2,
                            int requiredHeat,
                            ResourceLocation fluidOutputId, int fluidOutputAmount,
                            int processingTime, int energyCostPerTick) {
-        this.id                = id;
         this.ingredient        = ingredient;
         this.ingredientCount   = ingredientCount;
         this.ingredient2       = ingredient2;
@@ -46,7 +49,7 @@ public class LiquefierRecipe implements Recipe<SimpleContainer> {
     }
 
     @Override
-    public boolean matches(SimpleContainer container, Level level) {
+    public boolean matches(ContainerInput container, Level level) {
         if (level.isClientSide()) return false;
         return inputsMatch(container.getItem(0), container.getItem(1));
     }
@@ -66,13 +69,13 @@ public class LiquefierRecipe implements Recipe<SimpleContainer> {
             && ingredient2.test(slotB) && slotB.getCount() >= ingredientCount2;
     }
 
-    @Override public ItemStack assemble(SimpleContainer c, RegistryAccess a) { return ItemStack.EMPTY; }
+    @Override public ItemStack assemble(ContainerInput c, HolderLookup.Provider a) { return ItemStack.EMPTY; }
     @Override public boolean canCraftInDimensions(int w, int h) { return true; }
     @Override public boolean isSpecial() { return true; }
-    @Override public ItemStack getResultItem(RegistryAccess a) { return ItemStack.EMPTY; }
+    @Override public ItemStack getResultItem(HolderLookup.Provider a) { return ItemStack.EMPTY; }
 
     public FluidStack makeFluidOutput() {
-        var fluid = ForgeRegistries.FLUIDS.getValue(fluidOutputId);
+        var fluid = BuiltInRegistries.FLUID.get(fluidOutputId);
         return fluid == null ? FluidStack.EMPTY : new FluidStack(fluid, fluidOutputAmount);
     }
 
@@ -93,53 +96,50 @@ public class LiquefierRecipe implements Recipe<SimpleContainer> {
         return list;
     }
 
-    @Override public ResourceLocation getId()            { return id; }
     @Override public RecipeSerializer<?> getSerializer() { return ModRecipes.LIQUEFIER_SERIALIZER.get(); }
     @Override public RecipeType<?> getType()             { return ModRecipes.LIQUEFYING_TYPE.get(); }
 
     public static class Serializer implements RecipeSerializer<LiquefierRecipe> {
         public static final Serializer INSTANCE = new Serializer();
 
-        @Override
-        public LiquefierRecipe fromJson(ResourceLocation id, JsonObject json) {
-            Ingredient ingredient   = Ingredient.fromJson(GsonHelper.getAsJsonObject(json, "ingredient"));
-            int ingredientCount     = GsonHelper.getAsInt(json, "itemCount", 1);
+        /** Here "fluid" is a plain id string. No "ingredient2" means its count is 0. */
+        private static final MapCodec<LiquefierRecipe> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(r -> r.ingredient),
+                Codec.INT.optionalFieldOf("itemCount", 1).forGetter(r -> r.ingredientCount),
+                Ingredient.CODEC_NONEMPTY.optionalFieldOf("ingredient2", Ingredient.EMPTY).forGetter(r -> r.ingredient2),
+                Codec.INT.optionalFieldOf("itemCount2", 1).forGetter(r -> r.ingredientCount2),
+                Codec.INT.optionalFieldOf("requiredHeat", 1000).forGetter(r -> r.requiredHeat),
+                ResourceLocation.CODEC.fieldOf("fluid").forGetter(r -> r.fluidOutputId),
+                Codec.INT.optionalFieldOf("fluidAmount", 1000).forGetter(r -> r.fluidOutputAmount),
+                Codec.INT.optionalFieldOf("processingTime", 200).forGetter(r -> r.processingTime),
+                Codec.INT.optionalFieldOf("energyCostPerTick", 40).forGetter(r -> r.energyCostPerTick)
+        ).apply(i, (ing, count, ing2, count2, heat, fluidOut, fluidAmount, time, energy) ->
+                new LiquefierRecipe(ing, count, ing2, ing2.isEmpty() ? 0 : count2, heat, fluidOut, fluidAmount, time, energy)));
 
-            Ingredient ingredient2  = Ingredient.EMPTY;
-            int ingredientCount2    = 0;
-            if (json.has("ingredient2")) {
-                ingredient2      = Ingredient.fromJson(GsonHelper.getAsJsonObject(json, "ingredient2"));
-                ingredientCount2 = GsonHelper.getAsInt(json, "itemCount2", 1);
-            }
-            int requiredHeat        = GsonHelper.getAsInt(json, "requiredHeat", 1000);
-            ResourceLocation fluidOut = new ResourceLocation(GsonHelper.getAsString(json, "fluid"));
-            int fluidAmount         = GsonHelper.getAsInt(json, "fluidAmount", 1000);
-            int processingTime      = GsonHelper.getAsInt(json, "processingTime", 200);
-            int energyCostPerTick   = GsonHelper.getAsInt(json, "energyCostPerTick", 40);
-            return new LiquefierRecipe(id, ingredient, ingredientCount, ingredient2, ingredientCount2,
-                    requiredHeat, fluidOut, fluidAmount, processingTime, energyCostPerTick);
-        }
+        private static final StreamCodec<RegistryFriendlyByteBuf, LiquefierRecipe> STREAM_CODEC =
+                StreamCodec.of(Serializer::write, Serializer::read);
 
-        @Override
-        public @Nullable LiquefierRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
-            Ingredient ingredient   = Ingredient.fromNetwork(buf);
+        @Override public MapCodec<LiquefierRecipe> codec() { return CODEC; }
+        @Override public StreamCodec<RegistryFriendlyByteBuf, LiquefierRecipe> streamCodec() { return STREAM_CODEC; }
+
+        private static LiquefierRecipe read(RegistryFriendlyByteBuf buf) {
+            Ingredient ingredient   = RecipeCodecs.readIngredient(buf);
             int ingredientCount     = buf.readInt();
-            Ingredient ingredient2  = Ingredient.fromNetwork(buf);
+            Ingredient ingredient2  = RecipeCodecs.readIngredient(buf);
             int ingredientCount2    = buf.readInt();
             int requiredHeat        = buf.readInt();
             ResourceLocation fluidOut = buf.readResourceLocation();
             int fluidAmount         = buf.readInt();
             int processingTime      = buf.readInt();
             int energyCostPerTick   = buf.readInt();
-            return new LiquefierRecipe(id, ingredient, ingredientCount, ingredient2, ingredientCount2,
+            return new LiquefierRecipe(ingredient, ingredientCount, ingredient2, ingredientCount2,
                     requiredHeat, fluidOut, fluidAmount, processingTime, energyCostPerTick);
         }
 
-        @Override
-        public void toNetwork(FriendlyByteBuf buf, LiquefierRecipe r) {
-            r.ingredient.toNetwork(buf);
+        private static void write(RegistryFriendlyByteBuf buf, LiquefierRecipe r) {
+            RecipeCodecs.writeIngredient(buf, r.ingredient);
             buf.writeInt(r.ingredientCount);
-            r.ingredient2.toNetwork(buf);
+            RecipeCodecs.writeIngredient(buf, r.ingredient2);
             buf.writeInt(r.ingredientCount2);
             buf.writeInt(r.requiredHeat);
             buf.writeResourceLocation(r.fluidOutputId);

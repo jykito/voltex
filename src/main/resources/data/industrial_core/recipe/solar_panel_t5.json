@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "EBE"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:emerald_flux_cable"
+    },
+    "B": {
+      "item": "industrial_core:crystal_plate"
+    },
+    "C": {
+      "item": "industrial_core:data_transfer_matrix"
+    },
+    "D": {
+      "item": "industrial_core:solar_panel_t4"
+    },
+    "E": {
+      "type": "neoforge:components",
+      "items": "industrial_core:capsule",
+      "components": {
+        "industrial_core:fluid_content": {
+          "id": "industrial_core:coolant",
+          "amount": 1000
+        }
+      }
+    }
+  },
+  "result": {
+    "id": "industrial_core:solar_panel_t5",
+    "count": 1
+  }
+}

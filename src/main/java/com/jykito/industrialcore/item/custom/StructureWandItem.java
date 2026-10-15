@@ -8,7 +8,7 @@ import com.jykito.industrialcore.block.entity.ElectromagnetCoreBlockEntity;
 import com.jykito.industrialcore.multiblock.WandBuild;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
+import com.jykito.industrialcore.item.ModDataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.InteractionHand;
@@ -23,8 +23,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.fml.loading.FMLPaths;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -36,33 +36,28 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * DEV-жезл. Две функции, обе на правый клик:
+ * DEV wand. Two functions, both on right click:
  * <ul>
- *   <li>по ядру мультиблока (магнит, криокамера, лейт-машины, промышленный шахтёр) — достраивает структуру;
- *       в творческом бесплатно, в выживании блоки берутся из инвентаря;</li>
- *   <li>по любому другому блоку — отмечает угол области. Два угла подряд задают коробку,
- *       которую клиент рисует каркасом сквозь стены ({@code StructureSelectionRenderer}).
- *       Нужно, чтобы прикидывать габариты мультиблока прямо в мире.</li>
+ *   <li>on a multiblock core (magnet, cryo chamber, late machines, industrial miner): completes the structure;
+ *       free in creative, in survival the blocks come from the inventory;</li>
+ *   <li>on any other block: marks a corner of an area. Two corners in a row set a box
+ *       that the client draws as a frame through walls ({@code StructureSelectionRenderer}).
+ *       Useful for estimating multiblock dimensions right in the world.</li>
  * </ul>
- * Присед плюс правый клик — сброс выделения.
+ * Sneak plus right click clears the selection.
  */
 public class StructureWandItem extends Item {
-
-    private static final String KEY_A = "SelA", KEY_B = "SelB";
 
     public StructureWandItem(Properties props) { super(props); }
 
     @Nullable
     public static BlockPos getCorner(ItemStack stack, boolean first) {
-        CompoundTag tag = stack.getTag();
-        String key = first ? KEY_A : KEY_B;
-        return tag != null && tag.contains(key) ? BlockPos.of(tag.getLong(key)) : null;
+        return stack.get(first ? ModDataComponents.WAND_CORNER_A.get() : ModDataComponents.WAND_CORNER_B.get());
     }
 
     private static void clear(ItemStack stack) {
-        CompoundTag tag = stack.getOrCreateTag();
-        tag.remove(KEY_A);
-        tag.remove(KEY_B);
+        stack.remove(ModDataComponents.WAND_CORNER_A.get());
+        stack.remove(ModDataComponents.WAND_CORNER_B.get());
     }
 
     @Override
@@ -73,8 +68,8 @@ public class StructureWandItem extends Item {
         Player player = ctx.getPlayer();
         ItemStack stack = ctx.getItemInHand();
 
-        // клик по ядру мультиблока: достройка структуры. В творческом блоки бесплатны,
-        // в выживании берутся из инвентаря (WandBuild); раскладку строит сам мультиблок, по ней же и проверяет
+        // click on a multiblock core: complete the structure. In creative the blocks are free,
+        // in survival they come from the inventory (WandBuild); the multiblock builds the layout itself and checks against the same one
         boolean magnet = state.getBlock() instanceof ElectromagnetCoreBlock;
         boolean cryo = state.getBlock() instanceof CryoCoreBlock;
         boolean late = state.getBlock() instanceof LateMachineCoreBlock;
@@ -104,17 +99,16 @@ public class StructureWandItem extends Item {
             return InteractionResult.sidedSuccess(level.isClientSide());
         }
 
-        CompoundTag tag = stack.getOrCreateTag();
-        // первый клик задаёт угол А, второй — Б, третий начинает заново
-        if (!tag.contains(KEY_A) || tag.contains(KEY_B)) {
-            tag.remove(KEY_B);
-            tag.putLong(KEY_A, pos.asLong());
+        // the first click sets corner A, the second B, the third starts over
+        if (!stack.has(ModDataComponents.WAND_CORNER_A.get()) || stack.has(ModDataComponents.WAND_CORNER_B.get())) {
+            stack.remove(ModDataComponents.WAND_CORNER_B.get());
+            stack.set(ModDataComponents.WAND_CORNER_A.get(), pos.immutable());
             if (!level.isClientSide && player != null)
                 player.displayClientMessage(Component.translatable("msg.industrial_core.wand.corner_a",
                         pos.getX(), pos.getY(), pos.getZ()).withStyle(ChatFormatting.AQUA), true);
         } else {
-            tag.putLong(KEY_B, pos.asLong());
-            BlockPos a = BlockPos.of(tag.getLong(KEY_A));
+            stack.set(ModDataComponents.WAND_CORNER_B.get(), pos.immutable());
+            BlockPos a = stack.get(ModDataComponents.WAND_CORNER_A.get());
             int dx = Math.abs(a.getX() - pos.getX()) + 1;
             int dy = Math.abs(a.getY() - pos.getY()) + 1;
             int dz = Math.abs(a.getZ() - pos.getZ()) + 1;
@@ -151,9 +145,9 @@ public class StructureWandItem extends Item {
     }
 
     /**
-     * Клик по воздуху: с приседом — сброс, без приседа — ВЫГРУЗКА выделенного в файл.
-     * Файл ложится в корень инстанса как {@code voltex_structure.txt} — послойная схема
-     * с легендой, чтобы структуру можно было прочитать снаружи и завести в код.
+     * Click on air: sneaking clears, not sneaking EXPORTS the selection to a file.
+     * The file goes to the instance root as {@code voltex_structure.txt}: a layer-by-layer schema
+     * with a legend, so the structure can be read outside and put into code.
      */
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
@@ -178,13 +172,13 @@ public class StructureWandItem extends Item {
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
     }
 
-    /** Пишет схему послойно снизу вверх. Возвращает имя файла. */
+    /** Writes the schema layer by layer from bottom to top. Returns the file name. */
     private static String dump(Level level, BlockPos a, BlockPos b) {
         int x0 = Math.min(a.getX(), b.getX()), x1 = Math.max(a.getX(), b.getX());
         int y0 = Math.min(a.getY(), b.getY()), y1 = Math.max(a.getY(), b.getY());
         int z0 = Math.min(a.getZ(), b.getZ()), z1 = Math.max(a.getZ(), b.getZ());
 
-        // символ на КАЖДОЕ уникальное состояние: у направленных блоков поворот важен
+        // a symbol for EACH unique state: rotation matters for directional blocks
         Map<String, Character> legend = new LinkedHashMap<>();
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         StringBuilder out = new StringBuilder();
@@ -229,14 +223,14 @@ public class StructureWandItem extends Item {
         try {
             Files.writeString(path, out.toString(), StandardCharsets.UTF_8);
         } catch (IOException ex) {
-            return "ошибка записи: " + ex.getMessage();
+            return "write error: " + ex.getMessage();
         }
         return path.getFileName().toString();
     }
 
-    /** id блока плюс отличающиеся от дефолта свойства — иначе поворот потеряется. */
+    /** block id plus properties that differ from the default, otherwise the rotation would be lost. */
     private static String describe(BlockState st) {
-        StringBuilder sb = new StringBuilder(ForgeRegistries.BLOCKS.getKey(st.getBlock()).toString());
+        StringBuilder sb = new StringBuilder(BuiltInRegistries.BLOCK.getKey(st.getBlock()).toString());
         BlockState def = st.getBlock().defaultBlockState();
         StringBuilder props = new StringBuilder();
         for (Property<?> prop : st.getProperties()) {
@@ -249,7 +243,7 @@ public class StructureWandItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("tooltip.industrial_core.structure_wand").withStyle(ChatFormatting.GRAY));
         BlockPos a = getCorner(stack, true), b = getCorner(stack, false);
         if (a != null && b != null) {

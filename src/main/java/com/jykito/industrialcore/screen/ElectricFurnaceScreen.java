@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Inventory;
 public class ElectricFurnaceScreen extends MachineScreen<ElectricFurnaceMenu> {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/electric_furnace_gui.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/electric_furnace_gui.png");
 
     private static final int BAR_X = 72, BAR_Y = 97, BAR_W = 110, BAR_H = 6;
 

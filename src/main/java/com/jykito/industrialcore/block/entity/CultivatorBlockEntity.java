@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.block.custom.CultivatorBlock;
 import com.jykito.industrialcore.energy.MachineEnergy;
@@ -34,41 +38,38 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
 /**
- * Взраститель. T1 — одна линия «вход → выход», T2 — три независимые линии на общих воде, энергии,
- * модуле и апгрейдах (модули параллели действуют на каждую линию).
+ * Cultivator. T1 is one line "input -> output", T2 is three independent lines sharing water, energy,
+ * module and upgrades (parallel modules apply to each line).
  */
-public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
+public class CultivatorBlockEntity extends BlockEntity implements Caps.Provider, MenuProvider {
 
     public static final TagKey<Item> GROWABLE_PLANTS =
-            ItemTags.create(new ResourceLocation("industrial_core", "growable_plants"));
+            ItemTags.create(ResourceLocation.fromNamespaceAndPath("industrial_core", "growable_plants"));
 
-    // База под работу без модуля: 8 циклов на линию. Под параллели бак растёт сам, см. AdaptiveTank.
+    // Base for running without a module: 8 cycles per line. With parallel the tank grows by itself, see AdaptiveTank.
     private static final int TANK_CAP = 8000;
     private static final int WATER_PER_RECIPE = 1000;
     private static final int ENERGY_CAP = 50_000;
 
     public static final int T2_LANES = 3;
 
-    /** Модуль взрастителя и апгрейды — слоты T1. */
+    /** Cultivator module and upgrades: the T1 slots. */
     public static final int SLOT_MODULE = 2, SLOT_UPG_FIRST = 3, SLOT_UPG_LAST = 6;
 
-    /** Вход линии: первая на слотах T1 (0 → 1), остальные после апгрейдов (7 → 8, 9 → 10). Сейвы T1 не сдвигаются. */
+    /** Line input: the first uses the T1 slots (0 -> 1), the others come after the upgrades (7 -> 8, 9 -> 10). T1 saves do not shift. */
     public static int inSlot(int lane)  { return lane == 0 ? 0 : SLOT_UPG_LAST - 1 + 2 * lane; }
     public static int outSlot(int lane) { return lane == 0 ? 1 : inSlot(lane) + 1; }
     private static boolean isInput(int slot)  { return slot == 0 || slot > SLOT_UPG_LAST && (slot - SLOT_UPG_LAST) % 2 == 1; }
@@ -90,7 +91,6 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
                 || dir.getMode() == DirectionalUpgradeItem.Mode.ITEM_PUSH;
         return false;
     }
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
     private final IItemHandlerModifiable automationHandler = new IItemHandlerModifiable() {
         @Override public void setStackInSlot(int slot, @NotNull ItemStack stack) { itemHandler.setStackInSlot(slot, stack); }
         @Override public int getSlots() { return itemHandler.getSlots(); }
@@ -108,8 +108,7 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
     };
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
-    private final MachineEnergy energyStorage; // приём = буфер, без потолка на вход
-    private LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.empty();
+    private final MachineEnergy energyStorage; // intake = buffer, no input cap
 
     public final FluidTank waterTank;
 
@@ -122,7 +121,6 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
         @Override public @NotNull FluidStack drain(FluidStack resource, FluidAction action) { return FluidStack.EMPTY; }
         @Override public @NotNull FluidStack drain(int maxDrain, FluidAction action) { return FluidStack.EMPTY; }
     };
-    private LazyOptional<IFluidHandler> lazyFluid = LazyOptional.empty();
 
     private final int[] progress;
     private final int[] maxProgress;
@@ -132,7 +130,7 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
         this(ModBlockEntities.CULTIVATOR_BE.get(), pos, state, 1);
     }
 
-    /** T2: три линии; бак и буфер втрое больше, чтобы на линию приходилось как у T1. */
+    /** T2: three lines; the tank and buffer are three times larger, so each line gets as much as T1. */
     public static CultivatorBlockEntity t2(BlockPos pos, BlockState state) {
         return new CultivatorBlockEntity(ModBlockEntities.CULTIVATOR_T2_BE.get(), pos, state, T2_LANES);
     }
@@ -156,7 +154,7 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
                     level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
             }
         };
-        this.itemHandler = new ItemStackHandler(Math.max(SLOT_UPG_LAST + 1, outSlot(lanes - 1) + 1)) {   // у T1 все 7 слотов
+        this.itemHandler = new ItemStackHandler(Math.max(SLOT_UPG_LAST + 1, outSlot(lanes - 1) + 1)) {   // T1 has all 7 slots
             @Override protected void onContentsChanged(int slot) {
                 for (CachedRecipe<GrowingRecipe> c : recipeCache) c.markDirty();
                 setChanged();
@@ -168,7 +166,7 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
                 return false;
             }
         };
-        // 0, 1 — прогресс первой линии, 2..5 — энергия (как у T1), дальше по паре «прогресс, максимум» на линию
+        // 0, 1: progress of the first line, 2..5: energy (as on T1), then a "progress, max" pair per line
         this.data = new ContainerData() {
             @Override public int get(int index) {
                 return switch (index) {
@@ -199,7 +197,7 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
         MachineUpgrades upg = MachineUpgrades.scan(itemHandler, SLOT_UPG_FIRST, SLOT_UPG_LAST);
 
         if (AdaptiveTank.resize(waterTank, tankBase, upg.parallel()))
-            level.sendBlockUpdated(pos, state, state, 3); // шкала бака считается от ёмкости, клиенту нужна новая
+            level.sendBlockUpdated(pos, state, state, 3); // the tank gauge is computed from capacity, the client needs the new one
 
         boolean working = false;
         ItemStack cultUp = itemHandler.getStackInSlot(SLOT_MODULE);
@@ -220,7 +218,7 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
             level.sendBlockUpdated(pos, state, state, 3);
     }
 
-    /** Один тик линии; вода и энергия общие, поэтому линии берут их по очереди. */
+    /** One tick of a line; water and energy are shared, so the lines take them in turn. */
     private boolean tickLane(Level level, int lane, GrowingRecipe.Category category, MachineUpgrades upg) {
         int in = inSlot(lane), out = outSlot(lane);
         ItemStack input = itemHandler.getStackInSlot(in);
@@ -248,7 +246,7 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
         ItemStack output = itemHandler.getStackInSlot(out);
         int outRoom = output.isEmpty()
                 ? result.getMaxStackSize() / result.getCount()
-                : (ItemStack.isSameItemSameTags(output, result)
+                : (ItemStack.isSameItemSameComponents(output, result)
                     ? (output.getMaxStackSize() - output.getCount()) / result.getCount() : 0);
         int inputAvail = keepInput ? upg.parallel() : input.getCount() / Math.max(1, inputCount);
         int waterAvail = waterTank.getFluidAmount() / WATER_PER_RECIPE;
@@ -278,14 +276,14 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
             if (input.isEmpty()) return null;
             SimpleContainer c = new SimpleContainer(1);
             c.setItem(0, input);
-            for (GrowingRecipe r : level.getRecipeManager().getAllRecipesFor(ModRecipes.GROWING_TYPE.get())) {
-                if (r.getCategory() == category && r.matches(c, level)) return r;
+            for (GrowingRecipe r : com.jykito.industrialcore.recipe.RecipeLookup.all(level, ModRecipes.GROWING_TYPE.get())) {
+                if (r.getCategory() == category && r.matches(new com.jykito.industrialcore.recipe.ContainerInput(c), level)) return r;
             }
             return null;
         });
     }
 
-    @Override public CompoundTag getUpdateTag() { return saveWithoutMetadata(); }
+    @Override public CompoundTag getUpdateTag(HolderLookup.Provider registries) { return saveWithoutMetadata(registries); }
     @Nullable @Override public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
@@ -298,48 +296,40 @@ public class CultivatorBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY)        return lazyEnergy.cast();
-        if (cap == ForgeCapabilities.ITEM_HANDLER)  return lazyItemHandler.cast();
-        if (cap == ForgeCapabilities.FLUID_HANDLER) return lazyFluid.cast();
-        return super.getCapability(cap, side);
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.EnergyStorage.BLOCK)        return (T) energyStorage;
+        if (cap == Capabilities.ItemHandler.BLOCK)  return (T) automationHandler;
+        if (cap == Capabilities.FluidHandler.BLOCK) return (T) fillOnlyHandler;
+        return null;
     }
 
     @Override public void onLoad() {
         super.onLoad();
-        lazyEnergy = LazyOptional.of(() -> energyStorage);
-        lazyItemHandler = LazyOptional.of(() -> automationHandler);
-        lazyFluid = LazyOptional.of(() -> fillOnlyHandler);
     }
 
-    @Override public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyEnergy.invalidate();
-        lazyItemHandler.invalidate();
-        lazyFluid.invalidate();
-    }
-
-    /** Ключ прогресса линии: у первой как у T1. */
+    /** Progress key of a line: the first one matches T1. */
     private static String progressKey(int lane) { return lane == 0 ? "progress" : "progress" + lane; }
 
-    @Override protected void saveAdditional(CompoundTag tag) {
-        tag.put("inventory", itemHandler.serializeNBT());
+    @Override protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.put("inventory", itemHandler.serializeNBT(registries));
         tag.putInt("energy", energyStorage.getEnergyStored());
-        tag.put("waterTank", waterTank.writeToNBT(new CompoundTag()));
+        tag.put("waterTank", waterTank.writeToNBT(registries, new CompoundTag()));
         AdaptiveTank.save(tag, "waterTankCapacity", waterTank);
         for (int i = 0; i < lanes; i++) tag.putInt(progressKey(i), progress[i]);
-        super.saveAdditional(tag);
+        super.saveAdditional(tag, registries);
     }
 
-    @Override public void load(CompoundTag tag) {
-        super.load(tag);
-        // сейв меньшего размера (с jar 10-08, где у T1 было 2 слота) поднимается до полного, иначе размер прочитается из NBT
+    @Override public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        // a smaller save (from the 10-08 jar, where T1 had 2 slots) is raised to the full size, otherwise the size is read from NBT
         CompoundTag inv = tag.getCompound("inventory");
         if (inv.getInt("Size") < itemHandler.getSlots()) inv.putInt("Size", itemHandler.getSlots());
-        itemHandler.deserializeNBT(inv);
+        itemHandler.deserializeNBT(registries, inv);
         energyStorage.setEnergy(tag.getInt("energy"));
         AdaptiveTank.load(tag, "waterTankCapacity", waterTank, tankBase);
-        waterTank.readFromNBT(tag.getCompound("waterTank"));
+        waterTank.readFromNBT(registries, tag.getCompound("waterTank"));
         for (int i = 0; i < lanes; i++) progress[i] = tag.getInt(progressKey(i));
     }
 

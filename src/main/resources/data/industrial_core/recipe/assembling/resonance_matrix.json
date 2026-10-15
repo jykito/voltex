@@ -1,0 +1,54 @@
+{
+  "type": "industrial_core:assembling",
+  "inputs": [
+    {
+      "item": "industrial_core:crystal_cluster",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:emerald_cluster",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:quantum_capacitor",
+      "count": 8
+    },
+    {
+      "item": "industrial_core:control_unit",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:photonic_lens",
+      "count": 8
+    },
+    {
+      "item": "industrial_core:crystal_plate",
+      "count": 32
+    },
+    {
+      "item": "industrial_core:amethyst_crystal",
+      "count": 8
+    },
+    {
+      "item": "industrial_core:superconducting_wire",
+      "count": 32
+    },
+    {
+      "item": "minecraft:quartz",
+      "count": 64
+    },
+    {
+      "item": "industrial_core:data_card_crystallography"
+    }
+  ],
+  "fluid": {
+    "id": "industrial_core:photonic_melt",
+    "amount": 8000
+  },
+  "result": {
+    "id": "industrial_core:resonance_matrix",
+    "count": 1
+  },
+  "processingTime": 1200,
+  "energyCostPerTick": 16000
+}

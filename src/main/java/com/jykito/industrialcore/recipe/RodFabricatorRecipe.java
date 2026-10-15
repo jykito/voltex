@@ -1,5 +1,11 @@
 package com.jykito.industrialcore.recipe;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.Codec;
 
+import net.minecraft.core.HolderLookup;
 import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
@@ -12,9 +18,8 @@ import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-public class RodFabricatorRecipe implements Recipe<SimpleContainer> {
+public class RodFabricatorRecipe implements Recipe<ContainerInput> {
 
-    private final ResourceLocation id;
     private final Ingredient ingredient1;
     private final int count1;
     private final Ingredient ingredient2;
@@ -23,11 +28,9 @@ public class RodFabricatorRecipe implements Recipe<SimpleContainer> {
     private final int processingTime;
     private final int energyCostPerTick;
 
-    public RodFabricatorRecipe(ResourceLocation id,
-                         Ingredient ingredient1, int count1,
+    public RodFabricatorRecipe(Ingredient ingredient1, int count1,
                          Ingredient ingredient2, int count2,
                          ItemStack result, int processingTime, int energyCostPerTick) {
-        this.id               = id;
         this.ingredient1      = ingredient1;
         this.count1           = count1;
         this.ingredient2      = ingredient2;
@@ -38,16 +41,16 @@ public class RodFabricatorRecipe implements Recipe<SimpleContainer> {
     }
 
     @Override
-    public boolean matches(SimpleContainer container, Level level) {
+    public boolean matches(ContainerInput container, Level level) {
         if (level.isClientSide()) return false;
         return ingredient1.test(container.getItem(0)) && container.getItem(0).getCount() >= count1
             && ingredient2.test(container.getItem(1)) && container.getItem(1).getCount() >= count2;
     }
 
-    @Override public ItemStack assemble(SimpleContainer c, RegistryAccess a) { return result.copy(); }
+    @Override public ItemStack assemble(ContainerInput c, HolderLookup.Provider a) { return result.copy(); }
     @Override public boolean canCraftInDimensions(int w, int h) { return true; }
     @Override public boolean isSpecial() { return true; }
-    @Override public ItemStack getResultItem(RegistryAccess a) { return result.copy(); }
+    @Override public ItemStack getResultItem(HolderLookup.Provider a) { return result.copy(); }
 
     public Ingredient getIngredient1()    { return ingredient1; }
     public int        getCount1()         { return count1; }
@@ -64,44 +67,45 @@ public class RodFabricatorRecipe implements Recipe<SimpleContainer> {
         return list;
     }
 
-    @Override public ResourceLocation getId()           { return id; }
     @Override public RecipeSerializer<?> getSerializer() { return ModRecipes.ROD_FABRICATION_SERIALIZER.get(); }
     @Override public RecipeType<?> getType()            { return ModRecipes.ROD_FABRICATION_TYPE.get(); }
 
     public static class Serializer implements RecipeSerializer<RodFabricatorRecipe> {
         public static final Serializer INSTANCE = new Serializer();
 
-        @Override
-        public RodFabricatorRecipe fromJson(ResourceLocation id, JsonObject json) {
-            Ingredient ingredient1    = Ingredient.fromJson(GsonHelper.getAsJsonObject(json, "ingredient1"));
-            int        count1         = GsonHelper.getAsInt(json, "count1", 1);
-            Ingredient ingredient2    = Ingredient.fromJson(GsonHelper.getAsJsonObject(json, "ingredient2"));
-            int        count2         = GsonHelper.getAsInt(json, "count2", 1);
-            ItemStack  result         = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
-            int        processingTime = GsonHelper.getAsInt(json, "processingTime", 200);
-            int        energyCostPerTick = GsonHelper.getAsInt(json, "energyCostPerTick", 500);
-            return new RodFabricatorRecipe(id, ingredient1, count1, ingredient2, count2, result, processingTime, energyCostPerTick);
-        }
+        private static final MapCodec<RodFabricatorRecipe> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                Ingredient.CODEC_NONEMPTY.fieldOf("ingredient1").forGetter(r -> r.ingredient1),
+                Codec.INT.optionalFieldOf("count1", 1).forGetter(r -> r.count1),
+                Ingredient.CODEC_NONEMPTY.fieldOf("ingredient2").forGetter(r -> r.ingredient2),
+                Codec.INT.optionalFieldOf("count2", 1).forGetter(r -> r.count2),
+                ItemStack.CODEC.fieldOf("result").forGetter(r -> r.result),
+                Codec.INT.optionalFieldOf("processingTime", 200).forGetter(r -> r.processingTime),
+                Codec.INT.optionalFieldOf("energyCostPerTick", 500).forGetter(r -> r.energyCostPerTick)
+        ).apply(i, RodFabricatorRecipe::new));
 
-        @Override
-        public @Nullable RodFabricatorRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
-            Ingredient ingredient1    = Ingredient.fromNetwork(buf);
+        private static final StreamCodec<RegistryFriendlyByteBuf, RodFabricatorRecipe> STREAM_CODEC =
+                StreamCodec.of(Serializer::write, Serializer::read);
+
+        @Override public MapCodec<RodFabricatorRecipe> codec() { return CODEC; }
+        @Override public StreamCodec<RegistryFriendlyByteBuf, RodFabricatorRecipe> streamCodec() { return STREAM_CODEC; }
+
+        private static RodFabricatorRecipe read(RegistryFriendlyByteBuf buf) {
+            Ingredient ingredient1    = RecipeCodecs.readIngredient(buf);
             int        count1         = buf.readInt();
-            Ingredient ingredient2    = Ingredient.fromNetwork(buf);
+            Ingredient ingredient2    = RecipeCodecs.readIngredient(buf);
             int        count2         = buf.readInt();
-            ItemStack  result         = buf.readItem();
+            ItemStack  result         = RecipeCodecs.readItem(buf);
             int        processingTime = buf.readInt();
             int        energyCostPerTick = buf.readInt();
-            return new RodFabricatorRecipe(id, ingredient1, count1, ingredient2, count2, result, processingTime, energyCostPerTick);
+            return new RodFabricatorRecipe(ingredient1, count1, ingredient2, count2, result, processingTime, energyCostPerTick);
         }
 
-        @Override
-        public void toNetwork(FriendlyByteBuf buf, RodFabricatorRecipe r) {
-            r.ingredient1.toNetwork(buf);
+        private static void write(RegistryFriendlyByteBuf buf, RodFabricatorRecipe r) {
+            RecipeCodecs.writeIngredient(buf, r.ingredient1);
             buf.writeInt(r.count1);
-            r.ingredient2.toNetwork(buf);
+            RecipeCodecs.writeIngredient(buf, r.ingredient2);
             buf.writeInt(r.count2);
-            buf.writeItem(r.result);
+            RecipeCodecs.writeItem(buf, r.result);
             buf.writeInt(r.processingTime);
             buf.writeInt(r.energyCostPerTick);
         }

@@ -1,15 +1,27 @@
 package com.jykito.industrialcore.networking;
 
+import com.jykito.industrialcore.IndustrialCore;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+
 import com.jykito.industrialcore.menu.ElectromagnetMenu;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
 
-import java.util.function.Supplier;
 
-/** Клиент → сервер: игрок двигает троттл раскрутки магнита (0..1). */
-public class MagnetThrottlePacket {
+/** Client -> server: the player moves the magnet spin-up throttle (0..1). */
+public class MagnetThrottlePacket implements CustomPacketPayload {
+    public static final Type<MagnetThrottlePacket> TYPE =
+            new Type<>(ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "magnet_throttle"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, MagnetThrottlePacket> STREAM_CODEC =
+            StreamCodec.ofMember(MagnetThrottlePacket::toBytes, MagnetThrottlePacket::new);
+
+    @Override
+    public Type<MagnetThrottlePacket> type() { return TYPE; }
+
     private final BlockPos pos;
     private final float throttle;
 
@@ -17,25 +29,23 @@ public class MagnetThrottlePacket {
         this.pos = pos;
         this.throttle = throttle;
     }
-    public MagnetThrottlePacket(FriendlyByteBuf buf) {
+    public MagnetThrottlePacket(RegistryFriendlyByteBuf buf) {
         this.pos = buf.readBlockPos();
         this.throttle = buf.readFloat();
     }
-    public void toBytes(FriendlyByteBuf buf) {
+    public void toBytes(RegistryFriendlyByteBuf buf) {
         buf.writeBlockPos(pos);
         buf.writeFloat(throttle);
     }
 
-    public boolean handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context ctx = supplier.get();
+    public void handle(IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
-            ServerPlayer player = ctx.getSender();
+            ServerPlayer player = (ServerPlayer) ctx.player();
             if (player == null) return;
-            // безопасность: игрок должен держать открытым ЭТО же меню магнита
+            // safety: the player must have THIS same magnet menu open
             if (!(player.containerMenu instanceof ElectromagnetMenu menu)) return;
             if (menu.blockEntity == null || !menu.blockEntity.getBlockPos().equals(pos)) return;
             menu.blockEntity.setThrottle(throttle);
-        });
-        return true;
+        });
     }
 }

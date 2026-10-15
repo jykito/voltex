@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.compat.ae2;
+import net.minecraft.core.HolderLookup;
 
 import appeng.api.networking.IGrid;
 import appeng.api.stacks.AEFluidKey;
@@ -10,18 +11,18 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 /**
- * МЭ-вход: как интерфейс AE2. В каждой клетке настройки — что держать и сколько (число в стопке призрака);
- * порт дозапрашивает из сети до этого количества, лишнее и чужое возвращает в сеть.
- * Жидкости так же: у каждого открытого бака своя настройка «какая и сколько mB».
+ * ME input: like an AE2 interface. Each config cell says what to keep and how many (the count in the ghost stack);
+ * the port requests from the network up to that amount and returns the excess and anything foreign to the network.
+ * Fluids the same way: each open tank has its own "which fluid and how many mB" setting.
  */
 class MeInputPortBlockEntity extends MePortBlockEntity {
 
@@ -43,7 +44,7 @@ class MeInputPortBlockEntity extends MePortBlockEntity {
     @Override
     public void setMeFluidConfig(int tank, @NotNull FluidStack fluid) {
         if (tank < 0 || tank >= TANKS) return;
-        fluidConfig[tank] = fluid.isEmpty() ? FluidStack.EMPTY : new FluidStack(fluid, Math.max(1, fluid.getAmount()));
+        fluidConfig[tank] = fluid.isEmpty() ? FluidStack.EMPTY : fluid.copyWithAmount(Math.max(1, fluid.getAmount()));
         setChanged();
         sync();
     }
@@ -53,14 +54,14 @@ class MeInputPortBlockEntity extends MePortBlockEntity {
         ItemStackHandler items = getItems();
         for (int i = 0; i < activeSlots(); i++) {
             ItemStack want = config.getStackInSlot(i), cur = items.getStackInSlot(i);
-            if (!cur.isEmpty() && (want.isEmpty() || !ItemStack.isSameItemSameTags(cur, want))) {
+            if (!cur.isEmpty() && (want.isEmpty() || !ItemStack.isSameItemSameComponents(cur, want))) {
                 long back = insert(grid, AEItemKey.of(cur), cur.getCount());
                 if (back > 0) items.setStackInSlot(i, cur.copyWithCount(cur.getCount() - (int) back));
                 continue;
             }
             if (want.isEmpty()) continue;
             int keep = Math.min(want.getCount(), Math.min(want.getMaxStackSize(), items.getSlotLimit(i)));
-            if (cur.getCount() > keep) {   // настройку уменьшили — лишнее в сеть
+            if (cur.getCount() > keep) {   // the setting was lowered: the excess goes to the network
                 long back = insert(grid, AEItemKey.of(cur), cur.getCount() - keep);
                 if (back > 0) items.setStackInSlot(i, cur.copyWithCount(cur.getCount() - (int) back));
             } else {
@@ -68,12 +69,12 @@ class MeInputPortBlockEntity extends MePortBlockEntity {
                 if (got > 0) items.setStackInSlot(i, want.copyWithCount(cur.getCount() + (int) got));
             }
         }
-        // слоты и баки, закрытые снятием улучшения, порт не трогает: снять улучшение можно только с пустыми
+        // the port does not touch slots and tanks closed by removing the upgrade: the upgrade can only be removed when they are empty
         List<FluidTank> tanks = tanks();
         for (int t = 0; t < tanks.size(); t++) {
             FluidTank tank = tanks.get(t);
             FluidStack want = fluidConfig[t], cur = tank.getFluid();
-            if (!cur.isEmpty() && (want.isEmpty() || !cur.isFluidEqual(want))) {
+            if (!cur.isEmpty() && (want.isEmpty() || !FluidStack.isSameFluidSameComponents(cur, want))) {
                 long back = insert(grid, AEFluidKey.of(cur), cur.getAmount());
                 if (back > 0) tank.drain((int) back, IFluidHandler.FluidAction.EXECUTE);
                 continue;
@@ -85,39 +86,39 @@ class MeInputPortBlockEntity extends MePortBlockEntity {
                 if (back > 0) tank.drain((int) back, IFluidHandler.FluidAction.EXECUTE);
             } else {
                 long got = extract(grid, AEFluidKey.of(want), keep - cur.getAmount());
-                if (got > 0) tank.fill(new FluidStack(want, (int) got), IFluidHandler.FluidAction.EXECUTE);
+                if (got > 0) tank.fill(want.copyWithAmount((int) got), IFluidHandler.FluidAction.EXECUTE);
             }
         }
     }
 
-    // ── сохранение; настройка жидкостей идёт и в синк блока: окно рисует её на клиенте ──
+    // ── saving; the fluid config also goes into the block sync: the window draws it on the client ──
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put("meConfig", config.serializeNBT());
-        tag.put("meFluidConfig", writeFluids());
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        tag.put("meConfig", config.serializeNBT(registries));
+        tag.put("meFluidConfig", writeFluids(registries));
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        if (tag.contains("meConfig")) config.deserializeNBT(tag.getCompound("meConfig"));
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        if (tag.contains("meConfig")) config.deserializeNBT(registries, tag.getCompound("meConfig"));
         ListTag list = tag.getList("meFluidConfig", Tag.TAG_COMPOUND);
         for (int t = 0; t < TANKS; t++)
-            fluidConfig[t] = t < list.size() ? FluidStack.loadFluidStackFromNBT(list.getCompound(t)) : FluidStack.EMPTY;
+            fluidConfig[t] = t < list.size() ? FluidStack.parseOptional(registries, list.getCompound(t)) : FluidStack.EMPTY;
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        CompoundTag t = super.getUpdateTag();
-        t.put("meFluidConfig", writeFluids());
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        CompoundTag t = super.getUpdateTag(registries);
+        t.put("meFluidConfig", writeFluids(registries));
         return t;
     }
 
-    private ListTag writeFluids() {
+    private ListTag writeFluids(HolderLookup.Provider registries) {
         ListTag list = new ListTag();
-        for (FluidStack f : fluidConfig) list.add(f.writeToNBT(new CompoundTag()));
+        for (FluidStack f : fluidConfig) list.add(f.saveOptional(registries));
         return list;
     }
 }

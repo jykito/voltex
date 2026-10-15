@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:hardened_steel_ingot"
+    },
+    "B": {
+      "tag": "c:plates/iron"
+    },
+    "C": {
+      "item": "industrial_core:hardened_steel_rod"
+    },
+    "D": {
+      "tag": "c:components/machine_casing"
+    }
+  },
+  "result": {
+    "id": "industrial_core:miner_casing",
+    "count": 2
+  }
+}

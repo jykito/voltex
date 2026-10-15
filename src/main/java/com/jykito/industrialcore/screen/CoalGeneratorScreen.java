@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class CoalGeneratorScreen extends MachineScreen<CoalGeneratorMenu> {
 
-    private static final ResourceLocation TEXTURE    = new ResourceLocation(IndustrialCore.MODID, "textures/gui/coal_generator_gui.png");
+    private static final ResourceLocation TEXTURE    = ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/coal_generator_gui.png");
 
     private static final int BAR_X = 119, BAR_Y = 50, BAR_W = 42, BAR_H = 6;
     private static final int INFO_X = 93, INFO_Y = 74;

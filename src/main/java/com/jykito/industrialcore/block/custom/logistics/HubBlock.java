@@ -1,4 +1,7 @@
 package com.jykito.industrialcore.block.custom.logistics;
+import com.mojang.serialization.MapCodec;
+import com.jykito.industrialcore.block.BlockUse;
+import net.minecraft.world.ItemInteractionResult;
 
 import com.jykito.industrialcore.block.custom.ConnectedShapes;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -32,12 +35,15 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
 public class HubBlock extends BaseEntityBlock {
+
+    /** 1.21: block codec. Vanilla does not call it for mod blocks; there is one block instance, so unit is exact. */
+    @Override
+    protected MapCodec<? extends HubBlock> codec() { return MapCodec.unit(this); }
     public static final BooleanProperty NORTH = BlockStateProperties.NORTH;
     public static final BooleanProperty SOUTH = BlockStateProperties.SOUTH;
     public static final BooleanProperty EAST  = BlockStateProperties.EAST;
@@ -47,7 +53,7 @@ public class HubBlock extends BaseEntityBlock {
 
     public static final Map<Direction, BooleanProperty> PROPERTY_BY_DIRECTION = PipeBlock.PROPERTY_BY_DIRECTION;
 
-    // коробка 12×12 с уголками, подключения 6×6 глубиной 2 (модели item_hub / *_hub_port)
+    // 12x12 box with corners, connections 6x6, 2 deep (models item_hub / *_hub_port)
     private static final ConnectedShapes SHAPES = new ConnectedShapes(2, 14, 5, 11, 2);
 
     public HubBlock(Properties props) {
@@ -84,11 +90,16 @@ public class HubBlock extends BaseEntityBlock {
     }
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        return BlockUse.toItemResult(use(state, level, pos, player, hand, hit));
+    }
+
+    /** Formerly Block.use (1.20.1); called from useItemOn for both hands, as before. */
     public InteractionResult use(BlockState state, Level level, BlockPos pos,
                                   Player player, InteractionHand hand, BlockHitResult hit) {
         if (player.getItemInHand(hand).getItem() instanceof LogisticsLinkerItem) return InteractionResult.PASS;
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof HubBlockEntity be)
-            NetworkHooks.openScreen((ServerPlayer) player, be, pos);
+            ((ServerPlayer) player).openMenu(be, pos);
         return InteractionResult.sidedSuccess(level.isClientSide());
     }
 

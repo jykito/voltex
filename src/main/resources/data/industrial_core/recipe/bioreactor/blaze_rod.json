@@ -1,0 +1,26 @@
+{
+  "type": "industrial_core:bioreactor_recipe",
+  "ingredient": {
+    "item": "industrial_core:biomass"
+  },
+  "inputCount": 3,
+  "additive": {
+    "type": "neoforge:components",
+    "items": "industrial_core:capsule",
+    "components": {
+      "industrial_core:fluid_content": {
+        "id": "minecraft:lava",
+        "amount": 1000
+      }
+    }
+  },
+  "additiveCount": 1,
+  "waterAmount": 250,
+  "result": {
+    "id": "minecraft:blaze_rod",
+    "count": 1
+  },
+  "processingTime": 400,
+  "energyCostPerTick": 60,
+  "requiredHeat": 800
+}

@@ -1,0 +1,37 @@
+{
+  "parent": "industrial_core:voltex/assembler",
+  "display": {
+    "icon": {
+      "id": "industrial_core:heart_of_voltex"
+    },
+    "title": {
+      "translate": "advancements.industrial_core.heart.title"
+    },
+    "description": {
+      "translate": "advancements.industrial_core.heart.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_heart_of_voltex": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "industrial_core:heart_of_voltex"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_heart_of_voltex"
+    ]
+  ]
+}

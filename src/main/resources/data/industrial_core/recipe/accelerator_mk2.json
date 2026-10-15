@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "BCB",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:plasma_core"
+    },
+    "B": {
+      "item": "industrial_core:kronium_alloy"
+    },
+    "C": {
+      "item": "industrial_core:accelerator_mk1"
+    }
+  },
+  "result": {
+    "id": "industrial_core:accelerator_mk2",
+    "count": 1
+  }
+}

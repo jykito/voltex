@@ -1,0 +1,40 @@
+{
+  "parent": "industrial_core:voltex/nanites",
+  "display": {
+    "icon": {
+      "id": "industrial_core:data_card_cryophysics"
+    },
+    "title": {
+      "translate": "advancements.industrial_core.data_card.title"
+    },
+    "description": {
+      "translate": "advancements.industrial_core.data_card.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_any": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "industrial_core:data_card_crystallography",
+              "industrial_core:data_card_cryophysics",
+              "industrial_core:data_card_matter",
+              "industrial_core:data_card_stellar"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_any"
+    ]
+  ]
+}

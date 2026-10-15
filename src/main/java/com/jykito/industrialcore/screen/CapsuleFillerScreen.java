@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Inventory;
 public class CapsuleFillerScreen extends MachineScreen<CapsuleFillerMenu> {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/capsule_filler_gui.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/capsule_filler_gui.png");
 
     private static final int ENERGY_X = 72, ENERGY_Y = 97, BAR_H = 6;
 

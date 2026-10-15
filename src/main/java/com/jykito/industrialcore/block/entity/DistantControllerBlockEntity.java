@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -15,12 +16,12 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-/** BlockEntity пульта: хранит позицию привязанного ядра магнита; открывает его GUI на расстоянии. */
+/** Console BlockEntity: stores the position of the linked magnet core; opens its GUI from a distance. */
 public class DistantControllerBlockEntity extends BlockEntity implements MenuProvider {
 
     @Nullable private BlockPos linkedCore;
 
-    // клиент-кэш для BER экрана (троттл поиска рецепта): что варится + тик последнего обновления
+    // client cache for the screen BER (recipe lookup throttle): what is being processed + tick of the last update
     public ItemStack clientDisplayItem = ItemStack.EMPTY;
     public long clientDisplayTick = -100L;
 
@@ -32,11 +33,11 @@ public class DistantControllerBlockEntity extends BlockEntity implements MenuPro
         this.linkedCore = core;
         setChanged();
         if (level != null && !level.isClientSide())
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);  // синк привязки на клиент (для BER)
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);  // sync the link to the client (for the BER)
     }
     @Nullable public BlockPos getLinkedCore() { return linkedCore; }
 
-    /** Привязанное ядро (BE), либо null если не привязано / ядра больше нет. */
+    /** The linked core (BE), or null if not linked or the core is gone. */
     @Nullable public ElectromagnetCoreBlockEntity resolveCore() {
         if (linkedCore == null || level == null) return null;
         return level.getBlockEntity(linkedCore) instanceof ElectromagnetCoreBlockEntity c ? c : null;
@@ -52,18 +53,18 @@ public class DistantControllerBlockEntity extends BlockEntity implements MenuPro
         return core == null ? null : core.remoteMenu(id, inv, this.worldPosition);
     }
 
-    @Override protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    @Override protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         if (linkedCore != null) tag.putLong("linkedCore", linkedCore.asLong());
     }
 
-    @Override public void load(CompoundTag tag) {
-        super.load(tag);
+    @Override public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         linkedCore = tag.contains("linkedCore") ? BlockPos.of(tag.getLong("linkedCore")) : null;
     }
 
-    // синк на клиент: BER экрана резолвит ядро по linkedCore на клиенте
-    @Override public CompoundTag getUpdateTag() { return saveWithoutMetadata(); }
+    // sync to the client: the screen BER resolves the core by linkedCore on the client
+    @Override public CompoundTag getUpdateTag(HolderLookup.Provider registries) { return saveWithoutMetadata(registries); }
     @Nullable @Override public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }

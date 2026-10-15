@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "FEF"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/aluminum"
+    },
+    "B": {
+      "item": "industrial_core:fluid_valve"
+    },
+    "C": {
+      "item": "industrial_core:cryolite"
+    },
+    "D": {
+      "item": "industrial_core:electric_motor"
+    },
+    "E": {
+      "item": "industrial_core:heat_exchanger"
+    },
+    "F": {
+      "item": "industrial_core:lithium"
+    }
+  },
+  "result": {
+    "id": "industrial_core:refrigeration_chamber",
+    "count": 1
+  }
+}

@@ -13,16 +13,16 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.event.TagsUpdatedEvent;
-import net.minecraftforge.event.server.ServerStartingEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.TagsUpdatedEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.ModContainer;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -32,8 +32,7 @@ public class IndustrialCore {
     public static final String MODID = "industrial_core";
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public IndustrialCore() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public IndustrialCore(IEventBus modEventBus, ModContainer container) {
 
         ModFluids.register(modEventBus);
         com.jykito.industrialcore.sound.ModSounds.register(modEventBus);
@@ -41,26 +40,29 @@ public class IndustrialCore {
         com.jykito.industrialcore.particle.ModParticles.register(modEventBus);
         ModBlocks.register(modEventBus);
         ModItems.register(modEventBus);
+        com.jykito.industrialcore.event.ItemRemaps.register();   // aliases must be in before the registries fire
+        com.jykito.industrialcore.item.ModDataComponents.register(modEventBus);
+        com.jykito.industrialcore.item.ModArmorMaterials.register(modEventBus);
         ModFeatures.register(modEventBus);
         ModBlockEntities.register(modEventBus);
         ModMenuTypes.register(modEventBus);
         ModRecipes.register(modEventBus);
         ModCreativeTab.CREATIVE_MODE_TABS.register(modEventBus);
+        com.jykito.industrialcore.advancement.VoltexEventTrigger.TRIGGERS.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
-        MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.register(new com.jykito.industrialcore.item.custom.NexiteArmorEventHandler());
-        MinecraftForge.EVENT_BUS.register(new com.jykito.industrialcore.item.custom.PlasmaArmorEventHandler());
-        MinecraftForge.EVENT_BUS.register(new com.jykito.industrialcore.item.custom.weapon.WeaponEventHandler());
-        net.minecraftforge.fml.ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
-        net.minecraftforge.fml.ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_SPEC);
+        modEventBus.addListener(ModMessages::register);
+        NeoForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(new com.jykito.industrialcore.item.custom.NexiteArmorEventHandler());
+        NeoForge.EVENT_BUS.register(new com.jykito.industrialcore.item.custom.PlasmaArmorEventHandler());
+        NeoForge.EVENT_BUS.register(new com.jykito.industrialcore.item.custom.weapon.WeaponEventHandler());
+        NeoForge.EVENT_BUS.register(new com.jykito.industrialcore.item.custom.PreArmorDamage());
+        container.registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
+        container.registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_SPEC);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-        event.enqueueWork(ModMessages::register);
-        // своё условие достижений «событие» (data/industrial_core/advancements/voltex) — до загрузки датапаков мира
-        event.enqueueWork(() -> net.minecraft.advancements.CriteriaTriggers.register(
-                com.jykito.industrialcore.advancement.VoltexEventTrigger.INSTANCE));
+        // packets and the advancement criterion are registered on the mod bus in the constructor (1.21)
     }
 
 @SubscribeEvent

@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.item.upgrade;
+import net.minecraft.world.item.Item;
 
 import com.jykito.industrialcore.block.ModBlocks;
 import net.minecraft.ChatFormatting;
@@ -12,8 +13,8 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Улучшение портов мультиблока: одно и то же на все порты, растит их ёмкость.
- * Тир 0 = порт без улучшения, 1 = базовое, 2 = продвинутое. Все цифры портов живут здесь.
+ * Multiblock port upgrade: the same one for all ports, it raises their capacity.
+ * Tier 0 = port without an upgrade, 1 = basic, 2 = advanced. All port numbers live here.
  */
 public class PortUpgradeItem extends MachineUpgradeItem {
 
@@ -39,7 +40,7 @@ public class PortUpgradeItem extends MachineUpgradeItem {
     public static int energy(int tier) { return ENERGY[tier]; }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("tooltip.industrial_core.port_upgrade.slots", slots(tier)).withStyle(ChatFormatting.GRAY));
         tooltip.add(Component.translatable("tooltip.industrial_core.port_upgrade.fluid", num(fluid(tier))).withStyle(ChatFormatting.GRAY));
         tooltip.add(Component.translatable("tooltip.industrial_core.port_upgrade.energy", num(energy(tier))).withStyle(ChatFormatting.GRAY));

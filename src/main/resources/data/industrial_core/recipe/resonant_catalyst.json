@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:cryo_crystal"
+    },
+    "B": {
+      "item": "industrial_core:amethyst_crystal"
+    },
+    "C": {
+      "item": "industrial_core:superconducting_wire"
+    },
+    "D": {
+      "item": "industrial_core:activated_catalyst"
+    },
+    "E": {
+      "type": "neoforge:components",
+      "items": "industrial_core:capsule",
+      "components": {
+        "industrial_core:fluid_content": {
+          "id": "industrial_core:superfluid_condensate",
+          "amount": 1000
+        }
+      }
+    }
+  },
+  "result": {
+    "id": "industrial_core:resonant_catalyst",
+    "count": 1
+  }
+}

@@ -13,7 +13,7 @@ import net.minecraft.world.entity.player.Inventory;
 import org.joml.Matrix4f;
 
 public class FluidEnricherScreen extends MachineScreen<FluidEnricherMenu> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(IndustrialCore.MODID + ":textures/gui/fluid_enricher_gui.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.parse(IndustrialCore.MODID + ":textures/gui/fluid_enricher_gui.png");
 
     private static final int BAR_X = 74, BAR_Y = 97, BAR_W = 110, BAR_H = 6;
 

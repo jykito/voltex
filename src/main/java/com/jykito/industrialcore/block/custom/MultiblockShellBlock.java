@@ -1,4 +1,7 @@
 package com.jykito.industrialcore.block.custom;
+import com.mojang.serialization.MapCodec;
+import com.jykito.industrialcore.block.BlockUse;
+import net.minecraft.world.ItemInteractionResult;
 
 import com.jykito.industrialcore.block.ModBlocks;
 import com.jykito.industrialcore.block.entity.ElectromagnetCoreBlockEntity;
@@ -22,11 +25,15 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Скелет-блок мультиблока (структурный / держатель). При FORMED становится НЕВИДИМЫМ,
- * чтобы корпус-OBJ занял его место без z-fighting. Коллизия/выделение/дроп сохраняются.
- * Держатель катушки при FORMED обрабатывает вставку/снятие катушки (делегирует ядру).
+ * Multiblock skeleton block (structural / holder). When FORMED it becomes INVISIBLE
+ * so the OBJ body takes its place without z-fighting. Collision, selection and drops stay.
+ * When FORMED, the coil holder handles inserting and removing the coil (delegates to the core).
  */
 public class MultiblockShellBlock extends BaseEntityBlock {
+
+    /** 1.21: block codec. Vanilla does not call it for mod blocks; there is one block instance, so unit is exact. */
+    @Override
+    protected MapCodec<? extends MultiblockShellBlock> codec() { return MapCodec.unit(this); }
 
     public static final BooleanProperty FORMED = BooleanProperty.create("formed");
 
@@ -48,12 +55,17 @@ public class MultiblockShellBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new MagnetPortBlockEntity(pos, state); // порт: коннект логистики к платформе → ядро (non-tick)
+        return new MagnetPortBlockEntity(pos, state); // port: logistics connection to the platform -> core (non-tick)
     }
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        return BlockUse.toItemResult(use(state, level, pos, player, hand, hit));
+    }
+
+    /** Formerly Block.use (1.20.1); called from useItemOn for both hands, as before. */
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        // катушку обрабатывает только держатель при собранном мультиблоке; структурные — мимо
+        // only the holder of a formed multiblock handles the coil; structural blocks pass
         if (!state.getValue(FORMED) || !state.is(ModBlocks.COIL_HOLDER.get())) return InteractionResult.PASS;
         if (level.isClientSide()) return InteractionResult.SUCCESS;
 
@@ -61,14 +73,14 @@ public class MultiblockShellBlock extends BaseEntityBlock {
         if (corePos == null || !(level.getBlockEntity(corePos) instanceof ElectromagnetCoreBlockEntity core))
             return InteractionResult.PASS;
 
-        if (player.isShiftKeyDown()) {                      // Shift+ПКМ → снять катушку в инвентарь
+        if (player.isShiftKeyDown()) {                      // Shift+RMB -> take the coil into the inventory
             ItemStack removed = core.removeCoil();
             if (removed.isEmpty()) return InteractionResult.CONSUME;
             if (!player.getInventory().add(removed)) player.drop(removed, false);
             return InteractionResult.SUCCESS;
         }
 
-        ItemStack held = player.getItemInHand(hand);        // ПКМ катушкой → поставить
+        ItemStack held = player.getItemInHand(hand);        // RMB with a coil -> insert it
         if (held.getItem() instanceof MagnetCoilItem && core.getCoilTier() == 0 && core.installCoil(held)) {
             if (!player.getAbilities().instabuild) held.shrink(1);
             return InteractionResult.SUCCESS;
@@ -76,7 +88,7 @@ public class MultiblockShellBlock extends BaseEntityBlock {
         return InteractionResult.CONSUME;
     }
 
-    /** Ядро от держателя: держатели на оси катушки — ядро + rot(0,3,facing) + (0, dy, 0), dy=1(низ)/5(верх). */
+    /** Core from a holder: holders sit on the coil axis, core + rot(0,3,facing) + (0, dy, 0), dy=1 (bottom) / 5 (top). */
     private static BlockPos findCore(Level level, BlockPos holder) {
         for (Direction f : Direction.Plane.HORIZONTAL) {
             int[] r = ElectromagnetCoreBlockEntity.rot(0, 3, f);

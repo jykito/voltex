@@ -1,0 +1,23 @@
+{
+  "type": "industrial_core:accelerating",
+  "inputs": [
+    {
+      "item": "industrial_core:cryo_crystal",
+      "count": 4
+    },
+    {
+      "item": "minecraft:glass",
+      "count": 4
+    }
+  ],
+  "result": {
+    "id": "industrial_core:condensate_ampoule",
+    "count": 4
+  },
+  "minTier": 1,
+  "processingTime": 200,
+  "energyCostPerTick": 2000,
+  "minInstab": 15,
+  "bandLo": 18,
+  "bandHi": 22
+}

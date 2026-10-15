@@ -12,7 +12,7 @@ import net.minecraft.world.entity.player.Inventory;
 public class ResinCollectorScreen extends AbstractContainerScreen<ResinCollectorMenu> {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/resin_collector_gui.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/resin_collector_gui.png");
     private static final int TEX_W = 256, TEX_H = 315;
 
     public ResinCollectorScreen(ResinCollectorMenu menu, Inventory inv, Component title) {
@@ -30,7 +30,6 @@ public class ResinCollectorScreen extends AbstractContainerScreen<ResinCollector
 
     @Override
     public void render(GuiGraphics g, int mx, int my, float pt) {
-        this.renderBackground(g);
         super.render(g, mx, my, pt);
         this.renderTooltip(g, mx, my);
     }

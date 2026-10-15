@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "BCB",
+    "AAA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:hardened_steel_ingot"
+    },
+    "B": {
+      "tag": "c:plates/invar"
+    },
+    "C": {
+      "tag": "c:components/machine_casing"
+    }
+  },
+  "result": {
+    "id": "industrial_core:structural_block",
+    "count": 8
+  }
+}

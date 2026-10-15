@@ -2,22 +2,22 @@ package com.jykito.industrialcore.item.upgrade;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Что дают апгрейды, лежащие в слотах машины. Снимок на один тик.
+ * What the upgrades in the machine slots give. A snapshot for one tick.
  * <p>
- * Правила одни на все машины: ускорители перемножаются по каждой штуке в стаке, из модулей
- * параллели берётся самый сильный, направленный апгрейд задаёт сторону для своего режима
- * (при двух одинаковых побеждает нижний слот). Машина читает только то, что умеет, остальное
- * игнорирует, например печь не смотрит на жидкостные стороны.
+ * The rules are the same for all machines: accelerators multiply per item in the stack, of the
+ * parallel modules the strongest one is taken, a directional upgrade sets the side for its mode
+ * (with two of the same kind the lower slot wins). A machine reads only what it can use and ignores
+ * the rest, for example the furnace does not look at fluid sides.
  */
 public record MachineUpgrades(float timeMultiplier, float energyMultiplier, int parallel,
                               @Nullable Direction itemPush, @Nullable Direction itemPull,
                               @Nullable Direction fluidPush, @Nullable Direction fluidPull) {
 
-    /** Слоты апгрейдов {@code first..last} включительно. */
+    /** Upgrade slots {@code first..last} inclusive. */
     public static MachineUpgrades scan(IItemHandler handler, int first, int last) {
         float time = 1.0f, energy = 1.0f;
         int parallel = 1;
@@ -47,12 +47,12 @@ public record MachineUpgrades(float timeMultiplier, float energyMultiplier, int 
         return new MachineUpgrades(time, energy, parallel, itemPush, itemPull, fluidPush, fluidPull);
     }
 
-    /** Время цикла с ускорителями, не меньше 1 тика. */
+    /** Cycle time with accelerators, at least 1 tick. */
     public int scaleTime(int baseTicks) {
         return Math.max(1, (int) (baseTicks * timeMultiplier));
     }
 
-    /** Расход за тик с ускорителями, не меньше 1 FE. */
+    /** Usage per tick with accelerators, at least 1 FE. */
     public int scaleEnergy(int baseFe) {
         return Math.max(1, (int) (baseFe * energyMultiplier));
     }

@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.client;
+import com.jykito.industrialcore.capability.Caps;
 
 import com.jykito.industrialcore.item.custom.EnergyBackpackItem;
 import com.jykito.industrialcore.item.custom.NexiteArmorItem;
@@ -8,9 +9,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraft.client.gui.LayeredDraw;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,8 @@ public class ArmorEnergyHudOverlay {
 
     private static final int ROW_H = 22;
 
-    public static final IGuiOverlay OVERLAY = (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
+    public static final LayeredDraw.Layer OVERLAY = (guiGraphics, deltaTracker) -> {
+        int screenWidth = guiGraphics.guiWidth(), screenHeight = guiGraphics.guiHeight();
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
         if (player == null || mc.options.hideGui) return;
@@ -34,7 +35,7 @@ public class ArmorEnergyHudOverlay {
         List<ItemStack> energyItems = new ArrayList<>();
         for (EquipmentSlot slot : SLOTS) {
             ItemStack stack = player.getItemBySlot(slot);
-            if (!stack.isEmpty() && stack.getCapability(ForgeCapabilities.ENERGY).isPresent()) {
+            if (!stack.isEmpty() && Caps.get(stack, Caps.ENERGY).isPresent()) {
                 energyItems.add(stack);
             }
         }
@@ -45,7 +46,7 @@ public class ArmorEnergyHudOverlay {
 
         for (int i = 0; i < energyItems.size(); i++) {
             ItemStack stack = energyItems.get(i);
-            IEnergyStorage energy = stack.getCapability(ForgeCapabilities.ENERGY).orElse(null);
+            IEnergyStorage energy = Caps.get(stack, Caps.ENERGY).orElse(null);
             if (energy == null) continue;
 
             int stored = energy.getEnergyStored();

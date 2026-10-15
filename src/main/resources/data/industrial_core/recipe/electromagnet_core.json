@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:kronium_alloy"
+    },
+    "B": {
+      "item": "industrial_core:coil_winding"
+    },
+    "C": {
+      "item": "industrial_core:superconductor_coil"
+    },
+    "D": {
+      "item": "industrial_core:data_transfer_matrix"
+    }
+  },
+  "result": {
+    "id": "industrial_core:electromagnet_core",
+    "count": 1
+  }
+}

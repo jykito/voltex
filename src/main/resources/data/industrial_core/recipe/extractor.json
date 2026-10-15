@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/iron"
+    },
+    "B": {
+      "item": "minecraft:glass"
+    },
+    "C": {
+      "item": "industrial_core:rubber"
+    },
+    "D": {
+      "tag": "c:components/machine_casing"
+    },
+    "E": {
+      "item": "industrial_core:electric_motor"
+    }
+  },
+  "result": {
+    "id": "industrial_core:extractor",
+    "count": 1
+  }
+}

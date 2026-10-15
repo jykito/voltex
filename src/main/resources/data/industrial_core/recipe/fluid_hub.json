@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/iron"
+    },
+    "B": {
+      "item": "industrial_core:rubber"
+    },
+    "C": {
+      "item": "industrial_core:copper_cable"
+    },
+    "D": {
+      "item": "industrial_core:machine_casing"
+    },
+    "E": {
+      "item": "minecraft:bucket"
+    }
+  },
+  "result": {
+    "id": "industrial_core:fluid_hub",
+    "count": 1
+  }
+}

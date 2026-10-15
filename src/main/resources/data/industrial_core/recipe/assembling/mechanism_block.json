@@ -1,0 +1,43 @@
+{
+  "type": "industrial_core:assembling",
+  "inputs": [
+    {
+      "item": "industrial_core:servo_drive",
+      "count": 8
+    },
+    {
+      "item": "industrial_core:armor_sheet",
+      "count": 16
+    },
+    {
+      "item": "industrial_core:hardened_steel_ingot",
+      "count": 32
+    },
+    {
+      "item": "industrial_core:manipulator",
+      "count": 8
+    },
+    {
+      "item": "industrial_core:hardened_steel_rod",
+      "count": 32
+    },
+    {
+      "item": "industrial_core:machine_casing",
+      "count": 8
+    },
+    {
+      "item": "industrial_core:bronze_plate",
+      "count": 32
+    }
+  ],
+  "fluid": {
+    "id": "industrial_core:mechanical_alloy",
+    "amount": 8000
+  },
+  "result": {
+    "id": "industrial_core:mechanism_block",
+    "count": 8
+  },
+  "processingTime": 1200,
+  "energyCostPerTick": 16000
+}

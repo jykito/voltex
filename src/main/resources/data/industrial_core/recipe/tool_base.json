@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "EFE"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/copper"
+    },
+    "B": {
+      "item": "industrial_core:electric_motor"
+    },
+    "C": {
+      "item": "industrial_core:gold_conductor"
+    },
+    "D": {
+      "item": "industrial_core:battery"
+    },
+    "E": {
+      "item": "industrial_core:rubber"
+    },
+    "F": {
+      "tag": "c:plates/iron"
+    }
+  },
+  "result": {
+    "id": "industrial_core:tool_base",
+    "count": 1
+  }
+}

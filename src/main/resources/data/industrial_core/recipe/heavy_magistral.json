@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "BCB",
+    "   "
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:bare_heavy_wire"
+    },
+    "B": {
+      "tag": "c:plates/lead"
+    },
+    "C": {
+      "item": "industrial_core:rubber"
+    }
+  },
+  "result": {
+    "id": "industrial_core:heavy_magistral",
+    "count": 3
+  }
+}

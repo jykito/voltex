@@ -29,8 +29,7 @@ public class HubUpgradeItem extends Item {
     public int getMaxMb()    { return maxMb; }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level,
-                                List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("tooltip.industrial_core.connector_interval", interval)
                 .withStyle(ChatFormatting.GRAY));
         tooltip.add(Component.translatable("tooltip.industrial_core.connector_items", maxItems)

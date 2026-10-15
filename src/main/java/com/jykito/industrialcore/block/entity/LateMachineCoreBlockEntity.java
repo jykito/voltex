@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
 
 import com.jykito.industrialcore.block.custom.LateMachineCoreBlock;
 import com.jykito.industrialcore.block.custom.MechanismUpgradeBlock;
@@ -9,7 +10,7 @@ import com.jykito.industrialcore.block.ModBlocks;
 import com.jykito.industrialcore.item.custom.NaniteStrainItem;
 import com.jykito.industrialcore.nanite.NaniteGenome;
 import com.jykito.industrialcore.nanite.NaniteProcessing;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -25,46 +26,48 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Ядро лейт-мультиблока. Своих слотов нет: сырьё берёт из входных портов (предметы и жидкость
- * по режиму порта), результат (предметы и/или жидкость) кладёт в выходные, энергию тянет из разъёмов (модель GregTech).
- * Форму и рецепты задаёт блок ядра.
+ * Late multiblock core. It has no slots of its own: it takes input from input ports (items and fluid
+ * by port mode), puts the result (items and/or fluid) into output ports, pulls energy from connectors (GregTech model).
+ * The shape and recipes come from the core block.
  * <p>
- * Партия: первый рецепт, на который хватает сырья, до {@link #parallel()} операций за цикл,
- * сколько хватает входов и места на выходе. Время — из рецепта, энергия — расход рецепта на число операций;
- * блоки скорости внутри структуры укорачивают цикл и поднимают расход, блоки энергоэффективности его снижают.
+ * Batch: the first recipe the inputs are enough for, up to {@link #parallel()} operations per cycle,
+ * as many as the inputs and output room allow. Time comes from the recipe, energy is the recipe usage times the number of operations;
+ * speed blocks inside the structure shorten the cycle and raise usage, energy efficiency blocks lower it.
  * <p>
- * Тепло (сжижитель): рецепт с порогом идёт, только пока сумма тепла в тепловых портах не ниже порога.
- * Тепло не тратится, порты сами остывают без притока.
+ * Heat (liquefier): a recipe with a threshold runs only while the total heat in the heat ports is not below the threshold.
+ * Heat is not spent, the ports cool down by themselves without inflow.
  */
 public class LateMachineCoreBlockEntity extends BlockEntity implements MenuProvider {
 
-    /** Параллель без блоков улучшений; блоки параллели добавляют к ней свою прибавку. */
+    /** Parallel without upgrade blocks; parallel blocks add their bonus to it. */
     public static final int BASE_PARALLEL = 64;
     private static final int CHECK_INTERVAL = 20, IDLE_INTERVAL = 10;
-    /** Число слотов ContainerData; меню на клиенте заводит столько же. */
+    /** Number of ContainerData slots; the menu on the client creates the same number. */
     public static final int DATA_COUNT = 29;
 
     private LateMultiblockPattern.Result structure;
     private int checkTimer, idleTimer;
 
-    // текущая партия; рецепт хранится по id и находится заново после загрузки мира
+    // current batch; the recipe is stored by id and looked up again after the world loads
     @Nullable private ResourceLocation jobId;
     @Nullable private LateRecipe job;
     private int jobOps, progress, maxProgress, energyPerTick;
 
-    // снимок для GUI
+    // snapshot for the GUI
     private int energyStored, energyCap, heat;
+    /** Heat the first recipe that has input and output room is still waiting for (0 = none), for the GUI. */
+    private int heatWanted;
 
-    /** Номер режима ядра (у ядер без режимов всегда 0). */
+    /** Core mode index (always 0 for cores without modes). */
     private int mode;
 
     private final ContainerData data = new ContainerData() {
@@ -99,7 +102,7 @@ public class LateMachineCoreBlockEntity extends BlockEntity implements MenuProvi
                 case 23 -> ((LateMachineCoreBlock) getBlockState().getBlock()).modes().size();
                 case 24 -> heat & 0xFFFF;
                 case 25 -> (heat >>> 16) & 0xFFFF;
-                case 26 -> job == null ? 0 : job.heat();
+                case 26 -> job == null ? heatWanted : job.heat();
                 case 27 -> ((LateMachineCoreBlock) getBlockState().getBlock()).pattern().needsHeat() ? 1 : 0;
                 case 28 -> r == null ? 0 : r.heat().size();
                 default -> 0;
@@ -109,7 +112,7 @@ public class LateMachineCoreBlockEntity extends BlockEntity implements MenuProvi
         @Override public int getCount() { return DATA_COUNT; }
     };
 
-    /** Штамм-переработчик: слот есть только у мультиблочного промывщика ({@link #acceptsNanites}). */
+    /** Processor strain: only the multiblock ore washer has a slot for it ({@link #acceptsNanites}). */
     private final ItemStackHandler nanites = new ItemStackHandler(1) {
         @Override protected void onContentsChanged(int slot) { setChanged(); }
         @Override public boolean isItemValid(int slot, ItemStack stack) {
@@ -130,12 +133,12 @@ public class LateMachineCoreBlockEntity extends BlockEntity implements MenuProvi
     private int speedBlocks()      { return structure == null ? 0 : structure.speedBlocks(); }
     private int efficiencyBlocks() { return structure == null ? 0 : structure.efficiencyBlocks(); }
 
-    /** Доля исходного времени цикла в процентах: каждый блок скорости снимает свою часть, до потолка. */
+    /** Fraction of the base cycle time in percent: each speed block removes its share, down to the cap. */
     private int timePercent() {
         return Math.max(MechanismUpgradeBlock.MIN_TIME_PERCENT, 100 - MechanismUpgradeBlock.SPEED_TIME_PERCENT * speedBlocks());
     }
 
-    /** Доля исходного расхода FE/т в процентах: скорость добавляет, энергоэффективность снимает, суммой, до пола. */
+    /** Fraction of the base FE/t usage in percent: speed adds, energy efficiency removes, as a sum, down to the floor. */
     private int energyPercent() {
         return Math.max(MechanismUpgradeBlock.MIN_ENERGY_PERCENT, 100
                 + MechanismUpgradeBlock.SPEED_ENERGY_PERCENT * speedBlocks()
@@ -167,25 +170,25 @@ public class LateMachineCoreBlockEntity extends BlockEntity implements MenuProvi
         if (!structure.formed()) { resetJob(); setLit(level, pos, state, false); return; }
 
         Ports ports = ports(level);
-        if (job == null && jobId != null) job = find(block.recipes(mode).all(level), jobId);   // после загрузки мира
+        if (job == null && jobId != null) job = find(block.recipes(mode).all(level), jobId);   // after the world loads
         if (job == null) {
             jobId = null; jobOps = 0;
             if (++idleTimer < IDLE_INTERVAL || !startJob(level, block, ports)) { setLit(level, pos, state, false); return; }
         }
 
         if (progress < maxProgress) {
-            // остыло ниже порога — цикл стоит, энергия не тратится
+            // cooled below the threshold: the cycle stands, energy is not spent
             boolean powered = heat >= job.heat() && drawEnergy(energy, energyPerTick);
             if (powered) progress++;
             setLit(level, pos, state, powered);
             setChanged();
             return;
         }
-        // цикл досчитан: сдаём, если сырьё ещё на месте и выход влезает; иначе ждём
+        // cycle done: deliver if the input is still there and the output fits; otherwise wait
         if (available(ports, job) < jobOps) { resetJob(); setChanged(); return; }
         if (outputRoom(ports, job) < jobOps) { setLit(level, pos, state, false); return; }
         consume(ports, job, jobOps);
-        // шанс бросается на каждую операцию отдельно, как у одиночной машины; место зарезервировано под худший случай
+        // the chance is rolled for each operation separately, like a single machine; room is reserved for the worst case
         if (!job.result().isEmpty()) {
             int made = rolls(level, jobOps, job.resultChance());
             insert(ports.outputs, job.result(), job.result().getCount() * made);
@@ -200,23 +203,29 @@ public class LateMachineCoreBlockEntity extends BlockEntity implements MenuProvi
 
     private boolean startJob(Level level, LateMachineCoreBlock block, Ports ports) {
         idleTimer = 0;
+        int wanted = 0;
         for (LateRecipe r : block.recipes(mode).all(level)) {
             if (r.result().isEmpty() && r.fluidResult().isEmpty()) continue;
-            if (r.heat() > heat) continue;
+            if (r.heat() > heat) {
+                if (available(ports, r) > 0 && outputRoom(ports, r) > 0) wanted = wanted == 0 ? r.heat() : Math.min(wanted, r.heat());
+                continue;
+            }
             int ops = Math.min(parallel(), Math.min(available(ports, r), outputRoom(ports, r)));
             if (ops <= 0) continue;
             job = r; jobId = r.id(); jobOps = ops;
+            heatWanted = 0;
             progress = 0;
             maxProgress = Math.max(1, (int) Math.ceil(r.time() * timePercent() / 100.0));
             energyPerTick = (int) Math.min(Integer.MAX_VALUE, (long) r.energyPerTick() * ops * energyPercent() / 100);
             return true;
         }
+        heatWanted = wanted;
         return false;
     }
 
     /**
-     * Переработчик: из {@code made} выпавших продуктов часть выходит второй раз, сколько влезет в выходные порты.
-     * Материал — со входа рецепта; износ штамма считается на все операции партии.
+     * Processor: of the {@code made} products that dropped, part comes out a second time, as much as fits into the output ports.
+     * The material comes from the recipe input; strain wear is counted over all operations of the batch.
      */
     private void naniteBonus(Level level, Ports ports, int made) {
         ItemStack strain = nanites.getStackInSlot(0);
@@ -230,13 +239,13 @@ public class LateMachineCoreBlockEntity extends BlockEntity implements MenuProvi
         nanites.setStackInSlot(0, NaniteProcessing.wear(level, strain, jobOps));
     }
 
-    /** Следующий режим по кругу. Текущая партия сбрасывается: сырьё списывается только в конце цикла, оно не теряется. */
+    /** Next mode, cycling. The current batch is reset: input is only consumed at the end of a cycle, so nothing is lost. */
     public boolean cycleMode() {
         int count = ((LateMachineCoreBlock) getBlockState().getBlock()).modes().size();
         if (count < 2) return false;
         mode = (mode + 1) % count;
         resetJob();
-        idleTimer = IDLE_INTERVAL;     // новый рецепт ищется сразу, без паузы
+        idleTimer = IDLE_INTERVAL;     // a new recipe is looked up right away, without a pause
         setChanged();
         return true;
     }
@@ -252,7 +261,7 @@ public class LateMachineCoreBlockEntity extends BlockEntity implements MenuProvi
         return null;
     }
 
-    // ── порты ──
+    // ── ports ──
 
     private record Ports(List<ItemFluidPortBlockEntity> items, List<ItemFluidPortBlockEntity> fluids,
                          List<ItemFluidPortBlockEntity> outputs, List<ItemFluidPortBlockEntity> fluidOutputs) {}
@@ -262,20 +271,20 @@ public class LateMachineCoreBlockEntity extends BlockEntity implements MenuProvi
         List<ItemFluidPortBlockEntity> outputs = new ArrayList<>(), fluidOutputs = new ArrayList<>();
         for (BlockPos p : structure.inputs())
             if (level.getBlockEntity(p) instanceof ItemFluidPortBlockEntity port) {
-                port.linkCore(worldPosition);   // порт шаблонов подписывается в терминале AE2 именем этой машины
+                port.linkCore(worldPosition);   // the pattern port is labelled in the AE2 terminal with this machine's name
                 if (port.acceptsItems()) items.add(port);
-                if (port.acceptsFluids()) fluids.add(port);   // вход «предметы + жидкость» попадает в оба списка
+                if (port.acceptsFluids()) fluids.add(port);   // an "items + fluid" input goes into both lists
             }
         for (BlockPos p : structure.outputs())
             if (level.getBlockEntity(p) instanceof ItemFluidPortBlockEntity port) {
                 port.linkCore(worldPosition);
                 if (port.acceptsItems()) outputs.add(port);
-                if (port.acceptsFluids()) fluidOutputs.add(port);   // выход «предметы + жидкость» тоже в оба
+                if (port.acceptsFluids()) fluidOutputs.add(port);   // an "items + fluid" output into both as well
             }
         return new Ports(items, fluids, outputs, fluidOutputs);
     }
 
-    /** Сумма тепла во всех тепловых портах структуры. */
+    /** Total heat in all heat ports of the structure. */
     private int heat(Level level) {
         long sum = 0;
         if (structure != null)
@@ -292,7 +301,7 @@ public class LateMachineCoreBlockEntity extends BlockEntity implements MenuProvi
         return out;
     }
 
-    /** Сколько операций рецепта можно сделать из того, что лежит во входах. */
+    /** How many recipe operations can be made from what is in the inputs. */
     private static int available(Ports ports, LateRecipe r) {
         long ops = Integer.MAX_VALUE;
         for (int i = 0; i < r.items().length; i++)
@@ -315,8 +324,8 @@ public class LateMachineCoreBlockEntity extends BlockEntity implements MenuProvi
     private static long fluidAmount(List<ItemFluidPortBlockEntity> ports, FluidStack like) {
         long n = 0;
         for (ItemFluidPortBlockEntity port : ports)
-            for (FluidTank tank : port.tanks())   // у МЭ-входа и порта шаблонов до трёх баков
-                if (tank.getFluid().isFluidEqual(like)) n += tank.getFluidAmount();
+            for (FluidTank tank : port.tanks())   // an ME input and a pattern port have up to three tanks
+                if (FluidStack.isSameFluidSameComponents(tank.getFluid(), like)) n += tank.getFluidAmount();
         return n;
     }
 
@@ -335,13 +344,13 @@ public class LateMachineCoreBlockEntity extends BlockEntity implements MenuProvi
             for (ItemFluidPortBlockEntity port : ports.fluids)
                 for (FluidTank tank : port.tanks()) {
                     if (left <= 0) break;
-                    if (!tank.getFluid().isFluidEqual(r.fluid())) continue;
+                    if (!FluidStack.isSameFluidSameComponents(tank.getFluid(), r.fluid())) continue;
                     left -= tank.drain(Math.min(left, tank.getFluidAmount()), IFluidHandler.FluidAction.EXECUTE).getAmount();
                 }
         }
     }
 
-    /** Сколько операций из {@code ops} выпало с шансом {@code chance}. */
+    /** How many of {@code ops} operations rolled true with chance {@code chance}. */
     private static int rolls(Level level, int ops, float chance) {
         if (chance >= 1f) return ops;
         if (chance <= 0f) return 0;
@@ -350,7 +359,7 @@ public class LateMachineCoreBlockEntity extends BlockEntity implements MenuProvi
         return n;
     }
 
-    /** Сколько операций рецепта поместится на выходе: по предметам и по жидкости, что теснее. */
+    /** How many recipe operations fit into the output: by items and by fluid, whichever is tighter. */
     private static int outputRoom(Ports ports, LateRecipe r) {
         long ops = Integer.MAX_VALUE;
         if (!r.result().isEmpty() && !r.byproduct().isEmpty())
@@ -364,12 +373,12 @@ public class LateMachineCoreBlockEntity extends BlockEntity implements MenuProvi
         return (int) ops;
     }
 
-    /** Сколько mB жидкости {@code like} влезет в баки выходов: пустые и с той же жидкостью. */
+    /** How many mB of fluid {@code like} fit into the output tanks: empty ones and those with the same fluid. */
     private static long fluidRoom(List<ItemFluidPortBlockEntity> ports, FluidStack like) {
         long n = 0;
         for (ItemFluidPortBlockEntity port : ports)
             for (FluidTank tank : port.tanks())
-                if (tank.isEmpty() || tank.getFluid().isFluidEqual(like)) n += tank.getCapacity() - tank.getFluidAmount();
+                if (tank.isEmpty() || FluidStack.isSameFluidSameComponents(tank.getFluid(), like)) n += tank.getCapacity() - tank.getFluidAmount();
         return n;
     }
 
@@ -377,18 +386,18 @@ public class LateMachineCoreBlockEntity extends BlockEntity implements MenuProvi
         for (ItemFluidPortBlockEntity port : ports)
             for (FluidTank tank : port.tanks()) {
                 if (amount <= 0) return;
-                if (!tank.isEmpty() && !tank.getFluid().isFluidEqual(like)) continue;
-                amount -= tank.fill(new FluidStack(like, amount), IFluidHandler.FluidAction.EXECUTE);
+                if (!tank.isEmpty() && !FluidStack.isSameFluidSameComponents(tank.getFluid(), like)) continue;
+                amount -= tank.fill(like.copyWithAmount(amount), IFluidHandler.FluidAction.EXECUTE);
             }
     }
 
     /**
-     * Сколько операций с двумя продуктами влезет в выходы, если оба выпадут на каждой операции.
-     * Пустые слоты у продуктов общие, поэтому считать их по отдельности нельзя: доливаем совпадающие
-     * стопки каждого продукта, а остаток делим пустыми слотами. Число операций ищется двоичным поиском.
+     * How many operations with two products fit into the outputs if both drop on every operation.
+     * Empty slots are shared between the products, so they cannot be counted separately: we top up matching
+     * stacks of each product and split the rest by empty slots. The number of operations is found by binary search.
      */
     private static int pairRoom(List<ItemFluidPortBlockEntity> ports, ItemStack a, ItemStack b) {
-        if (ItemStack.isSameItemSameTags(a, b))
+        if (ItemStack.isSameItemSameComponents(a, b))
             return capacity(ports, a) / Math.max(1, a.getCount() + b.getCount());
         long partialA = 0, partialB = 0;
         int empty = 0;
@@ -396,8 +405,8 @@ public class LateMachineCoreBlockEntity extends BlockEntity implements MenuProvi
             for (int i = 0; i < port.activeSlots(); i++) {
                 ItemStack s = port.getItems().getStackInSlot(i);
                 if (s.isEmpty()) empty++;
-                else if (ItemStack.isSameItemSameTags(s, a)) partialA += Math.max(0, a.getMaxStackSize() - s.getCount());
-                else if (ItemStack.isSameItemSameTags(s, b)) partialB += Math.max(0, b.getMaxStackSize() - s.getCount());
+                else if (ItemStack.isSameItemSameComponents(s, a)) partialA += Math.max(0, a.getMaxStackSize() - s.getCount());
+                else if (ItemStack.isSameItemSameComponents(s, b)) partialB += Math.max(0, b.getMaxStackSize() - s.getCount());
             }
         int maxA = a.getMaxStackSize(), maxB = b.getMaxStackSize(), perA = Math.max(1, a.getCount()), perB = Math.max(1, b.getCount());
         int lo = 0, hi = (int) Math.min(Integer.MAX_VALUE, (partialA + partialB + (long) empty * Math.max(maxA, maxB)));
@@ -410,7 +419,7 @@ public class LateMachineCoreBlockEntity extends BlockEntity implements MenuProvi
         return lo;
     }
 
-    /** Сколько штук {@code like} влезет во все выходы: пустые и совпадающие открытые слоты. */
+    /** How many {@code like} fit into all outputs: empty and matching open slots. */
     private static int capacity(List<ItemFluidPortBlockEntity> ports, ItemStack like) {
         long n = 0;
         int max = like.getMaxStackSize();
@@ -418,7 +427,7 @@ public class LateMachineCoreBlockEntity extends BlockEntity implements MenuProvi
             for (int i = 0; i < port.activeSlots(); i++) {
                 ItemStack s = port.getItems().getStackInSlot(i);
                 if (s.isEmpty()) n += max;
-                else if (ItemStack.isSameItemSameTags(s, like)) n += Math.max(0, max - s.getCount());
+                else if (ItemStack.isSameItemSameComponents(s, like)) n += Math.max(0, max - s.getCount());
             }
         return (int) Math.min(Integer.MAX_VALUE, n);
     }
@@ -431,7 +440,7 @@ public class LateMachineCoreBlockEntity extends BlockEntity implements MenuProvi
                 ItemStack rest = port.insertOutput(like.copyWithCount(chunk), false);
                 int placed = chunk - rest.getCount();
                 amount -= placed;
-                if (placed == 0) break;     // этот порт полон, к следующему
+                if (placed == 0) break;     // this port is full, move to the next
             }
             if (amount <= 0) return;
         }
@@ -464,23 +473,23 @@ public class LateMachineCoreBlockEntity extends BlockEntity implements MenuProvi
         return new LateMachineCoreMenu(id, inv, this, data);
     }
 
-    // ── сохранение ──
+    // ── saving ──
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         if (jobId != null) tag.putString("job", jobId.toString());
         tag.putInt("jobOps", jobOps);
         tag.putInt("progress", progress);
         tag.putInt("maxProgress", maxProgress);
         tag.putInt("energyPerTick", energyPerTick);
         tag.putInt("mode", mode);
-        if (!nanites.getStackInSlot(0).isEmpty()) tag.put("nanites", nanites.serializeNBT());
+        if (!nanites.getStackInSlot(0).isEmpty()) tag.put("nanites", nanites.serializeNBT(registries));
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         jobId = tag.contains("job") ? ResourceLocation.tryParse(tag.getString("job")) : null;
         job = null;
         jobOps = tag.getInt("jobOps");
@@ -488,6 +497,6 @@ public class LateMachineCoreBlockEntity extends BlockEntity implements MenuProvi
         maxProgress = tag.getInt("maxProgress");
         energyPerTick = tag.getInt("energyPerTick");
         mode = tag.getInt("mode");
-        if (tag.contains("nanites")) nanites.deserializeNBT(tag.getCompound("nanites"));
+        if (tag.contains("nanites")) nanites.deserializeNBT(registries, tag.getCompound("nanites"));
     }
 }

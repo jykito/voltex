@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.item.custom;
+import com.jykito.industrialcore.item.EnergyItem;
+import com.jykito.industrialcore.item.ModDataComponents;
+import java.util.Optional;
+import com.jykito.industrialcore.capability.Caps;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
@@ -10,17 +14,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class EnergyBackpackItem extends Item {
+public class EnergyBackpackItem extends Item implements EnergyItem {
 
     public static final int MODE_HAND   = 0;
     public static final int MODE_HOTBAR = 1;
@@ -64,8 +64,8 @@ public class EnergyBackpackItem extends Item {
             }
         }
 
-        // «Всё» — как и обещают название и гайд: вторая рука, надетая броня и остальной инвентарь
-        // (раньше только вторая рука: броня и рюкзак игрока не заряжались ни в каком режиме — 10-10, 3.0.1)
+        // "All", as the name and the guide promise: the offhand, worn armor and the rest of the inventory
+        // (before, only the offhand: armor and the player's backpack were not charged in any mode; 10-10, 3.0.1)
         if (mode >= MODE_ALL && budget - spent > 0) {
             ItemStack offhand = player.getOffhandItem();
             if (offhand != stack) spent += tryCharge(offhand, budget - spent);
@@ -84,9 +84,9 @@ public class EnergyBackpackItem extends Item {
     }
 
     private int tryCharge(ItemStack target, int budget) {
-        // другие амулеты/аккумуляторы не трогаем: два в режиме «Всё» гоняли бы энергию друг другу
+        // we do not touch other amulets/packs: two of them in "All" mode would pass energy back and forth
         if (target.isEmpty() || budget <= 0 || target.getItem() instanceof EnergyBackpackItem) return 0;
-        return target.getCapability(ForgeCapabilities.ENERGY).map(e -> {
+        return Caps.get(target, Caps.ENERGY).map(e -> {
             if (!e.canReceive()) return 0;
             return e.receiveEnergy(budget, false);
         }).orElse(0);
@@ -108,22 +108,12 @@ public class EnergyBackpackItem extends Item {
     }
 
     @Override
-    public @NotNull ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-        return new ICapabilityProvider() {
-            private final LazyOptional<IEnergyStorage> lazy =
-                LazyOptional.of(() -> new BackpackEnergy(stack, capacity, maxTransfer));
-
-            @Override
-            public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap,
-                                                               @Nullable Direction side) {
-                return cap == ForgeCapabilities.ENERGY ? lazy.cast() : LazyOptional.empty();
-            }
-        };
+    public IEnergyStorage createEnergyStorage(ItemStack stack) {
+        return new BackpackEnergy(stack, capacity, maxTransfer);
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level,
-                                List<Component> lines, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> lines, TooltipFlag flag) {
         int stored = getEnergy(stack);
         lines.add(Component.literal(String.format("%,d / %,d FE", stored, capacity))
             .withStyle(com.jykito.industrialcore.ModStyle.ENERGY_STYLE));
@@ -147,19 +137,19 @@ public class EnergyBackpackItem extends Item {
     public int getBarColor(ItemStack stack) { return com.jykito.industrialcore.ModStyle.ENERGY; }
 
     public static int getEnergy(ItemStack stack) {
-        return stack.hasTag() ? stack.getTag().getInt("Energy") : 0;
+        return stack.getOrDefault(ModDataComponents.ENERGY.get(), 0);
     }
 
     public static void setEnergy(ItemStack stack, int amount) {
-        stack.getOrCreateTag().putInt("Energy", Math.max(0, amount));
+        stack.set(ModDataComponents.ENERGY.get(), Math.max(0, amount));
     }
 
     public static int getMode(ItemStack stack) {
-        return stack.hasTag() ? stack.getTag().getInt("Mode") : MODE_HAND;
+        return stack.getOrDefault(ModDataComponents.MODE.get(), MODE_HAND);
     }
 
     public static void setMode(ItemStack stack, int mode) {
-        stack.getOrCreateTag().putInt("Mode", mode);
+        stack.set(ModDataComponents.MODE.get(), mode);
     }
 
     private static class BackpackEnergy implements IEnergyStorage {

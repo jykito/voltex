@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "industrial_core:raw_aluminum_block"
+    }
+  ],
+  "result": {
+    "id": "industrial_core:raw_aluminum",
+    "count": 9
+  }
+}

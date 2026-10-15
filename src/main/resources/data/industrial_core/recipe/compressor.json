@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:smooth_stone"
+    },
+    "B": {
+      "item": "minecraft:piston"
+    },
+    "C": {
+      "tag": "c:plates/iron"
+    },
+    "D": {
+      "tag": "c:components/machine_casing"
+    },
+    "E": {
+      "item": "industrial_core:electric_motor"
+    }
+  },
+  "result": {
+    "id": "industrial_core:compressor",
+    "count": 1
+  }
+}

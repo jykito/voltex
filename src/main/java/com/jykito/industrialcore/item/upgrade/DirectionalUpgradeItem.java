@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.item.upgrade;
+import net.minecraft.world.item.Item;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
@@ -22,7 +23,7 @@ public class DirectionalUpgradeItem extends MachineUpgradeItem {
 
     private final Mode mode;
 
-    // Серверный детект даблклика по игроку. Метку времени в NBT НЕ пишем — иначе предметы перестанут стакаться.
+    // Server-side double click detection per player. We do NOT write a timestamp into NBT, otherwise the items would stop stacking.
     private static final Map<UUID, Long> LAST_CLICK = new HashMap<>();
 
     public DirectionalUpgradeItem(Mode mode, Properties props) {
@@ -34,10 +35,7 @@ public class DirectionalUpgradeItem extends MachineUpgradeItem {
 
     @Nullable
     public static Direction getStoredDirection(ItemStack stack) {
-        if (!stack.hasTag()) return null;
-        String name = stack.getTag().getString("direction");
-        if (name.isEmpty()) return null;
-        return Direction.byName(name);
+        return stack.get(com.jykito.industrialcore.item.ModDataComponents.DIRECTION.get());
     }
 
     public static float getDirectionPredicate(ItemStack stack) {
@@ -54,7 +52,7 @@ public class DirectionalUpgradeItem extends MachineUpgradeItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         Direction dir = getStoredDirection(stack);
         if (dir == null) {
             tooltip.add(Component.translatable("tooltip.industrial_core.direction_not_set").withStyle(ChatFormatting.GRAY));
@@ -75,16 +73,16 @@ public class DirectionalUpgradeItem extends MachineUpgradeItem {
         long now = level.getGameTime();
         UUID id = player != null ? player.getUUID() : null;
         Long last = id != null ? LAST_CLICK.get(id) : null;
-        boolean doubleClick = last != null && (now - last) <= 7; // два ПКМ подряд (~0.35с) → сброс конфига
+        boolean doubleClick = last != null && (now - last) <= 7; // two RMB in a row (~0.35s) -> reset the config
 
         if (doubleClick) {
-            if (stack.hasTag()) stack.getTag().remove("direction");
+            stack.remove(com.jykito.industrialcore.item.ModDataComponents.DIRECTION.get());
             if (id != null) LAST_CLICK.remove(id);
             if (player != null)
                 player.displayClientMessage(Component.translatable("tooltip.industrial_core.direction_not_set"), true);
         } else {
             Direction face = ctx.getClickedFace();
-            stack.getOrCreateTag().putString("direction", face.getName());
+            stack.set(com.jykito.industrialcore.item.ModDataComponents.DIRECTION.get(), face);
             if (id != null) LAST_CLICK.put(id, now);
             if (player != null) {
                 Component dirName = Component.translatable("tooltip.industrial_core.dir_" + face.getName());

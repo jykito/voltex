@@ -14,21 +14,21 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * МЭ-порт лейт-мультиблока: вход, выход или порт шаблонов. Для структуры это обычный входной или
- * выходной порт (ядро берёт и кладёт так же), а с AE2 у него есть узел сети:
+ * ME port of a late multiblock: input, output or pattern port. For the structure it is a regular input or
+ * output port (the core takes and puts the same way), and with AE2 it has a grid node:
  * <ul>
- *   <li>вход держит в наличии заданные предметы и жидкость, дозапрашивая их из сети (как интерфейс);</li>
- *   <li>выход отдаёт всё, что положило ядро, в сеть;</li>
- *   <li>порт шаблонов — поставщик шаблонов обработки для автокрафта: ингредиенты кладёт прямо во вход машины.</li>
+ *   <li>the input keeps the configured items and fluid in stock, requesting more from the network (like an interface);</li>
+ *   <li>the output sends everything the core put into it to the network;</li>
+ *   <li>the pattern port is a processing pattern provider for autocrafting: it puts ingredients straight into the machine input.</li>
  * </ul>
- * Без AE2 блок работает как обычный порт (см. {@link MePorts}).
+ * Without AE2 the block works as a regular port (see {@link MePorts}).
  */
 public class MePortBlock extends MultiblockPortBlock {
 
     public enum MeKind {
         INPUT("me_input_port_gui"), OUTPUT("me_output_port_gui"), PATTERN("me_pattern_port_gui");
         public final ResourceLocation gui;
-        MeKind(String tex) { this.gui = new ResourceLocation(IndustrialCore.MODID, "textures/gui/" + tex + ".png"); }
+        MeKind(String tex) { this.gui = ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/" + tex + ".png"); }
     }
 
     private final MeKind meKind;

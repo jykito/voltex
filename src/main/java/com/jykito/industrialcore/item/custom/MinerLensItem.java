@@ -14,9 +14,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.tags.ITag;
-import net.minecraftforge.registries.tags.ITagManager;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -42,9 +42,9 @@ public class MinerLensItem extends Item {
     public LensType getLensType() { return lensType; }
 
     private static final TagKey<Item> TAG_ORES =
-            ItemTags.create(new ResourceLocation("forge", "ores"));
+            ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "ores"));
     private static final TagKey<Item> TAG_ORES_NETHERRACK =
-            ItemTags.create(new ResourceLocation("forge", "ores_in_ground/netherrack"));
+            ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "ores_in_ground/netherrack"));
 
     private static final int MODDED_ORE_WEIGHT = 4;
 
@@ -71,18 +71,15 @@ public class MinerLensItem extends Item {
     private static Map<Item, String> materialMap() {
         if (MATERIAL_CACHE != null) return MATERIAL_CACHE;
         Map<Item, String> map = new HashMap<>();
-        ITagManager<Item> tm = ForgeRegistries.ITEMS.tags();
-        if (tm != null) {
-            tm.getTagNames().forEach(tag -> {
-                ResourceLocation id = tag.location();
-                if (!id.getNamespace().equals("forge")) return;
-                String p = id.getPath();
-                if (!p.startsWith("ores/")) return;
-                String material = p.substring(5);
-                if (material.isEmpty() || material.contains("/")) return;
-                for (Item it : tm.getTag(tag)) map.putIfAbsent(it, material);
-            });
-        }
+        BuiltInRegistries.ITEM.getTags().forEach(pair -> {
+            ResourceLocation id = pair.getFirst().location();
+            if (!id.getNamespace().equals("c")) return;
+            String p = id.getPath();
+            if (!p.startsWith("ores/")) return;
+            String material = p.substring(5);
+            if (material.isEmpty() || material.contains("/")) return;
+            for (Holder<Item> h : pair.getSecond()) map.putIfAbsent(h.value(), material);
+        });
         MATERIAL_CACHE = map;
         return map;
     }
@@ -110,7 +107,7 @@ public class MinerLensItem extends Item {
                 l.add(new Candidate(Items.ANCIENT_DEBRIS, 1, "ancient_debris"));
                 l.add(new Candidate(Items.GLOWSTONE, 6, "glowstone"));
             }
-            // Руд в Крае нет, поэтому без своего списка шахтёр с этой линзой ничего не находил. Модовый путь к Краю.
+            // There are no ores in the End, so without its own list the miner found nothing with this lens. The mod's path to the End.
             case END -> {
                 l.add(new Candidate(Items.END_STONE, 12, "end_stone"));
                 l.add(new Candidate(Items.OBSIDIAN, 4, "obsidian"));
@@ -135,12 +132,12 @@ public class MinerLensItem extends Item {
         Set<Item> seen = new HashSet<>();
         for (Candidate c : candidates) seen.add(c.item());
 
-        ITagManager<Item> tm = ForgeRegistries.ITEMS.tags();
-        if (tm != null) {
-            ITag<Item> ores = tm.getTag(TAG_ORES);
-            ITag<Item> netherOres = tm.getTag(TAG_ORES_NETHERRACK);
+        HolderSet.Named<Item> ores = BuiltInRegistries.ITEM.getTag(TAG_ORES).orElse(null);
+        if (ores != null) {
+            HolderSet.Named<Item> netherOres = BuiltInRegistries.ITEM.getTag(TAG_ORES_NETHERRACK).orElse(null);
             Map<Item, String> matMap = materialMap();
-            for (Item it : ores) {
+            for (Holder<Item> h : ores) {
+                Item it = h.value();
                 if (it == null || it == Items.AIR || seen.contains(it)) continue;
                 if (classify(it, netherOres) != type) continue;
                 String m = matMap.getOrDefault(it, "uniq:" + idOf(it));
@@ -187,18 +184,18 @@ public class MinerLensItem extends Item {
     }
 
     private static String namespaceOf(Item it) {
-        ResourceLocation id = ForgeRegistries.ITEMS.getKey(it);
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(it);
         return id != null ? id.getNamespace() : "minecraft";
     }
 
     private static String idOf(Item it) {
-        ResourceLocation id = ForgeRegistries.ITEMS.getKey(it);
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(it);
         return id != null ? id.toString() : "minecraft:air";
     }
 
-    private static LensType classify(Item it, @Nullable ITag<Item> netherOres) {
-        if (netherOres != null && netherOres.contains(it)) return LensType.NETHER;
-        ResourceLocation id = ForgeRegistries.ITEMS.getKey(it);
+    private static LensType classify(Item it, @Nullable HolderSet.Named<Item> netherOres) {
+        if (netherOres != null && netherOres.contains(it.builtInRegistryHolder())) return LensType.NETHER;
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(it);
         String path = id != null ? id.getPath() : "";
         if (path.contains("nether")) return LensType.NETHER;
         if (path.contains("endstone") || path.contains("end_stone")
@@ -232,7 +229,7 @@ public class MinerLensItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         String dimKey = switch (lensType) {
             case OVERWORLD -> "tooltip.industrial_core.lens_overworld";
             case NETHER    -> "tooltip.industrial_core.lens_nether";

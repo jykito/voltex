@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/lead"
+    },
+    "B": {
+      "tag": "c:plates/invar"
+    },
+    "C": {
+      "item": "industrial_core:composite"
+    },
+    "D": {
+      "item": "industrial_core:machine_casing"
+    }
+  },
+  "result": {
+    "id": "industrial_core:rod_fabricator",
+    "count": 1
+  }
+}

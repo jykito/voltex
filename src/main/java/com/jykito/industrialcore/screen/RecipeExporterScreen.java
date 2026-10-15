@@ -42,7 +42,6 @@ public class RecipeExporterScreen extends AbstractContainerScreen<RecipeExporter
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(g);
         super.render(g, mouseX, mouseY, partialTick);
         this.renderTooltip(g, mouseX, mouseY);
     }

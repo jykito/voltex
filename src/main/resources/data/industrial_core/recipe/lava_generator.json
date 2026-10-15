@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "EFE"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/invar"
+    },
+    "B": {
+      "item": "industrial_core:fluid_valve"
+    },
+    "C": {
+      "item": "industrial_core:heat_conductor"
+    },
+    "D": {
+      "tag": "c:components/machine_casing"
+    },
+    "E": {
+      "item": "minecraft:obsidian"
+    },
+    "F": {
+      "item": "industrial_core:heat_vent"
+    }
+  },
+  "result": {
+    "id": "industrial_core:lava_generator",
+    "count": 1
+  }
+}

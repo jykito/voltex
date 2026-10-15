@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:obsidian"
+    },
+    "B": {
+      "tag": "c:gems/diamond"
+    },
+    "C": {
+      "type": "neoforge:components",
+      "items": "industrial_core:capsule",
+      "components": {
+        "industrial_core:fluid_content": {
+          "id": "minecraft:lava",
+          "amount": 1000
+        }
+      }
+    },
+    "D": {
+      "item": "industrial_core:photonic_lens"
+    }
+  },
+  "result": {
+    "id": "industrial_core:miner_lens_2",
+    "count": 1
+  }
+}

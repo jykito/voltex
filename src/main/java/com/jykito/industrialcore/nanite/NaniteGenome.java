@@ -5,60 +5,61 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Геном штамма нанитов, хранится в NBT предмета ({@link #TAG}).
+ * Nanite strain genome, stored in the item NBT ({@link #TAG}).
  * <ul>
- * <li>класс ({@link Kind}): закрепляется с первого поколения по тому, на чём выводят ({@link NaniteFeed});</li>
- * <li>сродство к целям: у добытчика и переработчика — к материалам руды, у учёного — к темам исследований.
- *     Добытчик в шахтёре даёт прибавку руды (0.84 = +84%), переработчик в промывщике — шанс второго выхода
- *     ({@link #secondOutputChance}), учёный в нанолаборатории — изученность темы (допуск к теме и скорость записи);
- *     сумма сродств не больше потолка класса ({@link #cap}: {@link #BUDGET} у добытчика и учёного, {@link #PROCESSOR_CAP}
- *     у переработчика, {@link #SCIENTIST_CAP} у учёного), поэтому штамм либо узкий специалист, либо понемногу ко всему;</li>
- * <li>расход буровой жижи: множитель {@link #FLUID_MIN}..{@link #FLUID_MAX};</li>
- * <li>стабильность 0..1: нестабильный штамм в шахтёре понемногу теряет сродство;</li>
- * <li>редкие черты ({@link NaniteTrait}) и счётчики условий, по которым они появляются ({@link NaniteTraits}).</li>
+ * <li>class ({@link Kind}): fixed from the first generation by what it is bred on ({@link NaniteFeed});</li>
+ * <li>affinity to targets: for miners and processors to ore materials, for scientists to research topics.
+ *     A miner in the miner gives an ore bonus (0.84 = +84%), a processor in the ore washer a second output chance
+ *     ({@link #secondOutputChance}), a scientist in the nanite lab topic knowledge (topic admission and writing speed);
+ *     the sum of affinities is not above the class cap ({@link #cap}: {@link #BUDGET} for miner and scientist, {@link #PROCESSOR_CAP}
+ *     for the processor, {@link #SCIENTIST_CAP} for the scientist), so a strain is either a narrow specialist or a bit of everything;</li>
+ * <li>drill fluid usage: multiplier {@link #FLUID_MIN}..{@link #FLUID_MAX};</li>
+ * <li>stability 0..1: an unstable strain in the miner slowly loses affinity;</li>
+ * <li>rare traits ({@link NaniteTrait}) and the counters of the conditions they appear under ({@link NaniteTraits}).</li>
  * </ul>
- * Числа предварительные, баланс позже.
+ * Numbers are preliminary, balance comes later.
  */
 public final class NaniteGenome {
 
     public static final String TAG = "Genome";
     public static final float BUDGET = 3.0f;
-    /** Потолок переработчика: сродство и есть шанс второго выхода, не больше 30% (юзер 2026-10-07: «+300% слишком много»). */
+    /** Processor cap: affinity is the second output chance, at most 30% (author, 2026-10-07: "+300% is too much"). */
     public static final float PROCESSOR_CAP = 0.30f;
-    /** Потолок учёного: сродство к теме — это изученность 0..100%. */
+    /** Scientist cap: affinity to a topic is knowledge 0..100%. */
     public static final float SCIENTIST_CAP = 1.0f;
     public static final float FLUID_MIN = 0.5f, FLUID_MAX = 1.5f;
     public static final float STABILITY_MIN = 0.1f;
 
-    /** Класс штамма: куда он ставится и под что идёт отбор. */
+    /** Strain class: where it goes and what the selection aims for. */
     public enum Kind {
         MINER, PROCESSOR, SCIENTIST;
         public String key() { return name().toLowerCase(java.util.Locale.ROOT); }
         public static @Nullable Kind byKey(String k) { for (Kind v : values()) if (v.key().equals(k)) return v; return null; }
     }
 
-    /** Материал → сродство. Порядок — как материалы появлялись в отборе. */
+    /** Material -> affinity. Order is the order the materials appeared in the selection. */
     private final Map<String, Float> affinity = new LinkedHashMap<>();
-    /** Материал → предмет, на котором его выводили: им материал подписан в подсказках и окнах. */
+    /** Material -> the item it was bred on: the material is labelled with it in tooltips and windows. */
     private final Map<String, ResourceLocation> icon = new LinkedHashMap<>();
     private float fluid = 1f, stability = 1f;
     private int generation;
     private @Nullable Kind kind;
     private final java.util.EnumSet<NaniteTrait> traits = java.util.EnumSet.noneOf(NaniteTrait.class);
-    /** Поколений в холоде, в поле магнита, на тепле и подряд на полной стабильности — к редким чертам. */
+    /** Generations in the cold, in a magnet field, in heat and in a row at full stability, towards rare traits. */
     int coldGens, fieldGens, hotGens, stableStreak;
 
     public static NaniteGenome read(ItemStack stack) {
         NaniteGenome g = new NaniteGenome();
-        CompoundTag t = stack.getTagElement(TAG);
-        if (t == null) return g;
+        net.minecraft.world.item.component.CustomData data = stack.get(com.jykito.industrialcore.item.ModDataComponents.NANITE_GENOME.get());
+        if (data == null) return g;
+        CompoundTag t = data.copyTag();
         CompoundTag aff = t.getCompound("Aff"), ic = t.getCompound("Icon");
         for (String k : aff.getAllKeys()) g.affinity.put(k, Math.max(0f, aff.getFloat(k)));
         for (String k : ic.getAllKeys()) {
@@ -71,7 +72,7 @@ public final class NaniteGenome {
         g.kind = Kind.byKey(t.getString("Kind"));
         for (net.minecraft.nbt.Tag e : t.getList("Traits", net.minecraft.nbt.Tag.TAG_STRING)) { NaniteTrait tr = NaniteTrait.byKey(e.getAsString()); if (tr != null) g.traits.add(tr); }
         g.coldGens = t.getInt("Cold"); g.fieldGens = t.getInt("Field"); g.hotGens = t.getInt("Hot"); g.stableStreak = t.getInt("Stable");
-        if (g.kind == null && !g.affinity.isEmpty()) g.kind = Kind.MINER;   // штаммы первой версии, до классов
+        if (g.kind == null && !g.affinity.isEmpty()) g.kind = Kind.MINER;   // first version strains, before classes
         return g;
     }
 
@@ -90,7 +91,7 @@ public final class NaniteGenome {
         if (fieldGens > 0) t.putInt("Field", fieldGens);
         if (hotGens > 0) t.putInt("Hot", hotGens);
         if (stableStreak > 0) t.putInt("Stable", stableStreak);
-        stack.addTagElement(TAG, t);
+        stack.set(com.jykito.industrialcore.item.ModDataComponents.NANITE_GENOME.get(), net.minecraft.world.item.component.CustomData.of(t));
     }
 
     public NaniteGenome copy() {
@@ -110,8 +111,8 @@ public final class NaniteGenome {
     void addTrait(NaniteTrait t) { traits.add(t); }
 
     /**
-     * Сродство к цели в работе (шахтёр, промыватель, лаборатория): с химерой не ниже половины лучшего сродства,
-     * с пиронитом ×1.2. Отбор в камере смотрит на чистое {@link #bonus}.
+     * Affinity to the target at work (miner, washer, lab): with chimera not below half of the best affinity,
+     * with pyronite x1.2. Selection in the chamber looks at the plain {@link #bonus}.
      */
     public float effect(@Nullable String target) {
         float b = bonus(target);
@@ -122,16 +123,16 @@ public final class NaniteGenome {
         return has(NaniteTrait.PYRONITE) ? b * NaniteTrait.PYRONITE_POWER : b;
     }
 
-    /** Изнашивается ли штамм в работе: самосборщик — нет. */
+    /** Whether the strain wears out at work: a self-assembler does not. */
     public boolean wears() { return !has(NaniteTrait.SELF_ASSEMBLER) && !affinity.isEmpty(); }
 
-    /** Класс штамма в предмете без разбора всего генома: для проверок слотов. */
+    /** Strain class in the item without parsing the whole genome: for slot checks. */
     public static @Nullable Kind kindOf(ItemStack stack) { return read(stack).kind; }
 
-    /** Потолок суммы сродств для класса. */
+    /** Cap on the sum of affinities for a class. */
     public static float cap(@Nullable Kind k) { return k == Kind.PROCESSOR ? PROCESSOR_CAP : k == Kind.SCIENTIST ? SCIENTIST_CAP : BUDGET; }
 
-    /** Шанс второго выхода у переработчика: сродство в работе, до {@link #PROCESSOR_CAP} (у пиронита потолок ×1.2). */
+    /** Processor second output chance: affinity at work, up to {@link #PROCESSOR_CAP} (pyronite has a x1.2 cap). */
     public float secondOutputChance(@Nullable String material) {
         return Math.min(PROCESSOR_CAP * (has(NaniteTrait.PYRONITE) ? NaniteTrait.PYRONITE_POWER : 1f), effect(material));
     }
@@ -150,7 +151,7 @@ public final class NaniteGenome {
         return s;
     }
 
-    /** Материал с наибольшим сродством (им красится предмет) или null у пустого штамма. */
+    /** The material with the highest affinity (the item is tinted with it), or null for an empty strain. */
     public @Nullable String dominant() {
         String best = null;
         float max = 0;
@@ -158,18 +159,18 @@ public final class NaniteGenome {
         return best;
     }
 
-    /** Предмет, которым подписан материал; если неизвестен — null. */
+    /** The item the material is labelled with; null if unknown. */
     public @Nullable Item icon(String material) {
         ResourceLocation id = icon.get(material);
-        Item item = id == null ? null : ForgeRegistries.ITEMS.getValue(id);
+        Item item = id == null ? null : BuiltInRegistries.ITEM.get(id);
         return item == null || item == net.minecraft.world.item.Items.AIR ? null : item;
     }
 
-    // ───────── правка (только из отбора и шахтёра) ─────────
+    // ───────── edits (only from selection and the miner) ─────────
 
     void setAffinity(String material, float v) { affinity.put(material, Math.max(0f, v)); }
     void rememberIcon(String material, Item item) {
-        ResourceLocation id = ForgeRegistries.ITEMS.getKey(item);
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
         if (id != null) icon.putIfAbsent(material, id);
     }
     void setFluid(float v) { fluid = Mth.clamp(v, FLUID_MIN, FLUID_MAX); }
@@ -177,7 +178,7 @@ public final class NaniteGenome {
     void nextGeneration() { generation++; }
     void setKind(Kind k) { kind = k; }
 
-    /** Сумма сродств не выше бюджета: сначала сжимаются чужие материалы, потом, если нужно, и целевой. */
+    /** The sum of affinities stays within the budget: other materials shrink first, then, if needed, the target too. */
     void fitBudget(String keep, float budget) {
         float own = bonus(keep), others = total() - own;
         if (own + others <= budget) return;
@@ -188,7 +189,7 @@ public final class NaniteGenome {
         if (!affinity.containsKey(keep) && own > 0) affinity.put(keep, Math.min(own, budget));
     }
 
-    /** Износ в шахтёре: все сродства теряют долю. */
+    /** Wear in the miner: all affinities lose a share. */
     public void decay(float factor) {
         affinity.replaceAll((m, v) -> v * factor);
         affinity.values().removeIf(v -> v < 0.005f);

@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.block.custom.CrystallizerBlock;
 import com.jykito.industrialcore.energy.MachineEnergy;
@@ -25,30 +29,27 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.energy.EnergyStorage;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Кристаллизатор: жидкость на вход, предмет на выход.
+ * Crystallizer: liquid in, item out.
  * <p>
- * Капсульных слотов нет намеренно — бак наполняется напрямую. Чтобы для этого не приходилось
- * ставить апгрейд в чужую машину, кристаллизатор умеет тянуть жидкость сам: направленный
- * апгрейд {@code FLUID_PULL} в его собственных слотах качает из соседа, и вся настройка
- * остаётся в одном GUI.
+ * There are no capsule slots on purpose: the tank fills directly. So that this does not require
+ * putting an upgrade into another machine, the crystallizer can pull fluid by itself: a directional
+ * {@code FLUID_PULL} upgrade in its own slots pumps from a neighbour, and all the setup
+ * stays in one GUI.
  */
-public class CrystallizerBlockEntity extends BlockEntity implements MenuProvider {
+public class CrystallizerBlockEntity extends BlockEntity implements Caps.Provider, MenuProvider {
 
-    /** 0 — затравка, 1 — выход, 2..5 — апгрейды. */
+    /** 0 seed, 1 output, 2..5 upgrades. */
     private static final int SLOT_SEED = 0, SLOT_OUTPUT = 1, SLOT_UPGRADE_FIRST = 2, SLOT_UPGRADE_LAST = 5;
     private static final int TANK_BASE = 8000;
     private static final int ENERGY_CAPACITY = 50000;
@@ -65,9 +66,8 @@ public class CrystallizerBlockEntity extends BlockEntity implements MenuProvider
             };
         }
     };
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
-    /** Наружу: класть можно только затравку, забирать только готовое. */
+    /** From outside: only the seed can be inserted, only the result extracted. */
     private final IItemHandlerModifiable automationHandler = new IItemHandlerModifiable() {
         @Override public void setStackInSlot(int slot, @NotNull ItemStack stack) { itemHandler.setStackInSlot(slot, stack); }
         @Override public int getSlots() { return itemHandler.getSlots(); }
@@ -87,7 +87,6 @@ public class CrystallizerBlockEntity extends BlockEntity implements MenuProvider
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
     private final MachineEnergy energyStorage = MachineEnergy.consumer(ENERGY_CAPACITY, ENERGY_CAPACITY);
-    private LazyOptional<EnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
     public final FluidTank inputTank = new FluidTank(TANK_BASE) {
         @Override protected void onContentsChanged() {
@@ -97,7 +96,6 @@ public class CrystallizerBlockEntity extends BlockEntity implements MenuProvider
                 level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
         }
     };
-    private LazyOptional<IFluidHandler> lazyFluidHandler = LazyOptional.empty();
 
     protected final ContainerData data;
     private int progress = 0;
@@ -132,11 +130,11 @@ public class CrystallizerBlockEntity extends BlockEntity implements MenuProvider
         if (level.isClientSide()) return;
 
         MachineUpgrades upg = MachineUpgrades.scan(itemHandler, SLOT_UPGRADE_FIRST, SLOT_UPGRADE_LAST);
-        // Выталкивателя жидкости нет намеренно: бак только приёмный, выливать из машины нечего.
+        // There is no fluid pusher on purpose: the tank only receives, there is nothing to drain from the machine.
 
         if (AdaptiveTank.resize(inputTank, TANK_BASE, upg.parallel())) {
             setChanged();
-            level.sendBlockUpdated(pos, state, state, 3); // шкала бака считается от ёмкости, клиенту нужна новая
+            level.sendBlockUpdated(pos, state, state, 3); // the tank gauge is computed from capacity, the client needs the new one
         }
 
         if (upg.fluidPull() != null) MachineIO.pullFluid(level, pos, upg.fluidPull(), inputTank);
@@ -173,12 +171,12 @@ public class CrystallizerBlockEntity extends BlockEntity implements MenuProvider
     private CrystallizerRecipe findRecipe(Level level) {
         return recipeCache.get(() -> {
             ItemStack seed = itemHandler.getStackInSlot(SLOT_SEED);
-            for (CrystallizerRecipe r : level.getRecipeManager().getAllRecipesFor(ModRecipes.CRYSTALLIZING_TYPE.get())) {
+            for (CrystallizerRecipe r : com.jykito.industrialcore.recipe.RecipeLookup.all(level, ModRecipes.CRYSTALLIZING_TYPE.get())) {
                 if (!r.seedMatches(seed)) continue;
 
                 FluidStack need = r.makeFluidInput();
                 if (need.isEmpty()) continue;
-                if (!inputTank.getFluid().isFluidEqual(need) || inputTank.getFluidAmount() < need.getAmount()) continue;
+                if (!FluidStack.isSameFluidSameComponents(inputTank.getFluid(), need) || inputTank.getFluidAmount() < need.getAmount()) continue;
 
                 if (!fitsOutput(r.getResult(), 1)) continue;
                 return r;
@@ -187,16 +185,16 @@ public class CrystallizerBlockEntity extends BlockEntity implements MenuProvider
         });
     }
 
-    /** Влезет ли столько выхода в слот. */
+    /** Whether this much output fits into the slot. */
     private boolean fitsOutput(ItemStack result, int parallel) {
         ItemStack out = itemHandler.getStackInSlot(SLOT_OUTPUT);
         int adding = result.getCount() * parallel;
         if (out.isEmpty()) return adding <= result.getMaxStackSize();
-        if (!ItemStack.isSameItemSameTags(out, result)) return false;
+        if (!ItemStack.isSameItemSameComponents(out, result)) return false;
         return out.getCount() + adding <= out.getMaxStackSize();
     }
 
-    /** Сколько раз рецепт можно провернуть разом: по жидкости, по затравке и по месту в выходе. */
+    /** How many times the recipe can run at once: by fluid, by seed and by room in the output. */
     private int maxRuns(CrystallizerRecipe recipe) {
         int runs = inputTank.getFluidAmount() / Math.max(1, recipe.getFluidInputAmount());
         if (recipe.hasSeed())
@@ -218,7 +216,7 @@ public class CrystallizerBlockEntity extends BlockEntity implements MenuProvider
         itemHandler.insertItem(SLOT_OUTPUT, result.copyWithCount(result.getCount() * parallel), false);
     }
 
-    @Override public CompoundTag getUpdateTag() { return saveWithoutMetadata(); }
+    @Override public CompoundTag getUpdateTag(HolderLookup.Provider registries) { return saveWithoutMetadata(registries); }
 
     @Nullable
     @Override
@@ -234,46 +232,37 @@ public class CrystallizerBlockEntity extends BlockEntity implements MenuProvider
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY)        return lazyEnergyHandler.cast();
-        if (cap == ForgeCapabilities.ITEM_HANDLER)  return lazyItemHandler.cast();
-        if (cap == ForgeCapabilities.FLUID_HANDLER) return lazyFluidHandler.cast();
-        return super.getCapability(cap, side);
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.EnergyStorage.BLOCK)        return (T) energyStorage;
+        if (cap == Capabilities.ItemHandler.BLOCK)  return (T) automationHandler;
+        if (cap == Capabilities.FluidHandler.BLOCK) return (T) inputTank;
+        return null;
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
-        lazyEnergyHandler = LazyOptional.of(() -> energyStorage);
-        lazyItemHandler   = LazyOptional.of(() -> automationHandler);
-        lazyFluidHandler  = LazyOptional.of(() -> inputTank);
     }
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyEnergyHandler.invalidate();
-        lazyItemHandler.invalidate();
-        lazyFluidHandler.invalidate();
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag tag) {
-        tag.put("inventory", itemHandler.serializeNBT());
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.put("inventory", itemHandler.serializeNBT(registries));
         tag.putInt("energy", energyStorage.getEnergyStored());
-        tag.put("inputTank", inputTank.writeToNBT(new CompoundTag()));
+        tag.put("inputTank", inputTank.writeToNBT(registries, new CompoundTag()));
         AdaptiveTank.save(tag, "tankCapacity", inputTank);
         tag.putInt("progress", progress);
-        super.saveAdditional(tag);
+        super.saveAdditional(tag, registries);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        itemHandler.deserializeNBT(tag.getCompound("inventory"));
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        itemHandler.deserializeNBT(registries, tag.getCompound("inventory"));
         energyStorage.setEnergy(tag.getInt("energy"));
         AdaptiveTank.load(tag, "tankCapacity", inputTank, TANK_BASE);
-        inputTank.readFromNBT(tag.getCompound("inputTank"));
+        inputTank.readFromNBT(registries, tag.getCompound("inputTank"));
         progress = tag.getInt("progress");
     }
 

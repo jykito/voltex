@@ -1,0 +1,17 @@
+{
+  "type": "industrial_core:blast_furnace_recipe",
+  "ingredient": {
+    "tag": "c:ingots/gold"
+  },
+  "ingredientCount": 1,
+  "fuel": {
+    "tag": "c:ingots/silver"
+  },
+  "fuelCount": 1,
+  "result": {
+    "id": "industrial_core:electrum_ingot",
+    "count": 2
+  },
+  "processingTime": 300,
+  "requiredHeat": 1200
+}

@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/electrum"
+    },
+    "B": {
+      "item": "industrial_core:amethyst_crystal"
+    },
+    "C": {
+      "tag": "c:plates/diamond"
+    },
+    "D": {
+      "tag": "c:components/machine_casing"
+    },
+    "E": {
+      "item": "industrial_core:logic_board"
+    }
+  },
+  "result": {
+    "id": "industrial_core:restructor",
+    "count": 1
+  }
+}

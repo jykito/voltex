@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CBC",
+    "ADA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:crystal_plate"
+    },
+    "B": {
+      "item": "industrial_core:parallel_module"
+    },
+    "C": {
+      "item": "industrial_core:data_transfer_matrix"
+    },
+    "D": {
+      "item": "industrial_core:superconductor_coil"
+    }
+  },
+  "result": {
+    "id": "industrial_core:advanced_parallel_module",
+    "count": 1
+  }
+}

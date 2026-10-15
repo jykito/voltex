@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.api.RestructorRecipeRegistry;
 import com.jykito.industrialcore.block.custom.RestructorBlock;
@@ -27,35 +31,32 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
 /**
- * Реструктор. T1 — одна линия, T2 — три линии на общем катализаторе, и каждая тратит вдвое меньше входа
- * (энергия на крафт та же).
+ * Restructor. T1 is one line, T2 is three lines on a shared catalyst, each spending half the input
+ * (energy per craft is the same).
  */
-public class RestructorBlockEntity extends BlockEntity implements MenuProvider {
+public class RestructorBlockEntity extends BlockEntity implements Caps.Provider, MenuProvider {
 
     public static final int MAX_RECEIVE = 10_000_000;
 
     public static final int SLOT_COUNT  = 5;
     public static final int T2_LANES = 3;
 
-    /** Катализатор и логистика — слоты T1. */
+    /** Catalyst and logistics: the T1 slots. */
     public static final int SLOT_CATALYST = 2, SLOT_UPG_FIRST = 3, SLOT_UPG_LAST = 4;
 
-    /** Вход линии: первая на слотах T1 (0 → 1), остальные после логистики (5 → 6, 7 → 8). Сейвы T1 не сдвигаются. */
+    /** Line input: the first uses the T1 slots (0 -> 1), the others come after logistics (5 -> 6, 7 -> 8). T1 saves do not shift. */
     public static int inSlot(int lane)  { return lane == 0 ? 0 : SLOT_UPG_LAST - 1 + 2 * lane; }
     public static int outSlot(int lane) { return lane == 0 ? 1 : inSlot(lane) + 1; }
     private static boolean isInput(int slot)  { return slot == 0 || slot > SLOT_UPG_LAST && (slot - SLOT_UPG_LAST) % 2 == 1; }
@@ -63,17 +64,17 @@ public class RestructorBlockEntity extends BlockEntity implements MenuProvider {
 
     private final int lanes;
     private final int slotCount;
-    /** T2: вход вдвое дешевле. */
+    /** T2: input costs half. */
     private final boolean halfInput;
 
-    // Времени у реструктора нет: предмет + накопленная стоимость рецепта = результат в тот же тик.
+    // The restructor has no time: item + accumulated recipe cost = result in the same tick.
     private final int[] currentRecipeCost;
     private final int[] energyAccumulated;
-    /** Тиков с последнего крафта (до секунды). Пока > 0 и накопление пустое, в GUI заряд показывается полным:
-     *  при мощной подаче стоимость набирается и тратится за один тик, и честное накопление всегда 0. */
+    /** Ticks since the last craft (up to a second). While > 0 and the accumulation is empty, the GUI shows the charge as full:
+     *  with a strong supply the cost is gathered and spent within one tick, and the honest accumulation is always 0. */
     private final int[] craftedRecently;
-    /** T2: оплаченная половинка входа (0 или 1) и предмет, за который она оплачена. Половинка от другого
-     *  предмета сгорает, иначе дешёвым блоком можно было бы оплачивать каждый второй дорогой. */
+    /** T2: paid half of the input (0 or 1) and the item it was paid for. A half paid for another
+     *  item burns, otherwise a cheap block could pay for every second expensive one. */
     private final int[] halfCredit;
     private final Item[] creditItem;
 
@@ -99,7 +100,7 @@ public class RestructorBlockEntity extends BlockEntity implements MenuProvider {
 
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
-    /** Энергия идёт в линии по очереди: первая с предметом и недобранной стоимостью забирает своё, остаток дальше. */
+    /** Energy goes to the lines in turn: the first one with an item and unpaid cost takes its share, the rest goes on. */
     private final IEnergyStorage energyStorage = new IEnergyStorage() {
         @Override
         public int receiveEnergy(int maxReceive, boolean simulate) {
@@ -127,10 +128,8 @@ public class RestructorBlockEntity extends BlockEntity implements MenuProvider {
         return energyAccumulated[lane] < currentRecipeCost[lane] && !itemHandler.getStackInSlot(inSlot(lane)).isEmpty();
     }
 
-    private LazyOptional<IItemHandler>   lazyItemHandler   = LazyOptional.empty();
-    private LazyOptional<IEnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
-    /** По 4 ячейки на линию: показываемый заряд и стоимость, каждое двумя половинами. У первой линии — как у T1. */
+    /** 4 cells per line: displayed charge and cost, each in two halves. The first line matches T1. */
     protected final ContainerData data = new ContainerData() {
         @Override
         public int get(int index) {
@@ -160,7 +159,7 @@ public class RestructorBlockEntity extends BlockEntity implements MenuProvider {
         super(type, pos, state);
         this.lanes = lanes;
         this.halfInput = halfInput;
-        this.slotCount = Math.max(SLOT_COUNT, outSlot(lanes - 1) + 1);   // у T1 все 5 слотов: вход, выход, катализатор, логистика
+        this.slotCount = Math.max(SLOT_COUNT, outSlot(lanes - 1) + 1);   // T1 has all 5 slots: input, output, catalyst, logistics
         this.currentRecipeCost = new int[lanes];
         java.util.Arrays.fill(currentRecipeCost, 10_000_000);
         this.energyAccumulated = new int[lanes];
@@ -197,12 +196,12 @@ public class RestructorBlockEntity extends BlockEntity implements MenuProvider {
         return lanes == 1 ? new RestructorMenu(id, inventory, this, this.data) : RestructorMenu.t2(id, inventory, this, this.data);
     }
 
-    /** Заряд для GUI: сразу после крафта при пустом накоплении — полный, см. {@link #craftedRecently}. */
+    /** Charge for the GUI: right after a craft with an empty accumulation it is full, see {@link #craftedRecently}. */
     private int shownEnergy(int lane) {
         return craftedRecently[lane] > 0 && energyAccumulated[lane] == 0 ? currentRecipeCost[lane] : energyAccumulated[lane];
     }
 
-    /** Оплаченная половинка линии, если она за этот же предмет. */
+    /** The line's paid half, if it was paid for this same item. */
     private int credit(int lane, ItemStack input) {
         return halfCredit[lane] > 0 && input.is(creditItem[lane]) ? halfCredit[lane] : 0;
     }
@@ -210,14 +209,13 @@ public class RestructorBlockEntity extends BlockEntity implements MenuProvider {
     private Optional<RestructorRecipeRegistry.RestructorRecipeData> getRecipe(Level level, int lane) {
         return Optional.ofNullable(recipeCache[lane].get(() -> {
             ItemStack input = itemHandler.getStackInSlot(inSlot(lane));
-            // T2 считает вход в половинках: рецепту на N предметов хватает N половинок, и проверка рецепта та же
+            // T2 counts input in halves: a recipe for N items needs N halves, and the recipe check is the same
             if (halfInput && !input.isEmpty()) input = input.copyWithCount(input.getCount() * 2 + credit(lane, input));
 
             SimpleContainer c = new SimpleContainer(2);
             c.setItem(0, input);
             c.setItem(1, itemHandler.getStackInSlot(SLOT_CATALYST));
-            Optional<MachineRecipe> mcRecipe = level.getRecipeManager()
-                    .getRecipeFor(ModRecipes.MOLECULAR_TRANSFORMING_TYPE.get(), c, level);
+            Optional<MachineRecipe> mcRecipe = com.jykito.industrialcore.recipe.RecipeLookup.find(level.getRecipeManager(), ModRecipes.MOLECULAR_TRANSFORMING_TYPE.get(), c, level);
             if (mcRecipe.isPresent()) {
                 MachineRecipe r = mcRecipe.get();
                 return new RestructorRecipeRegistry.RestructorRecipeData(
@@ -231,10 +229,10 @@ public class RestructorBlockEntity extends BlockEntity implements MenuProvider {
         }));
     }
 
-    /** Сколько предметов списать за крафт. T2 платит половину: рецепт на 1 предмет берёт его раз в два крафта, на 2 и 4 — 1 и 2. */
+    /** How many items to consume per craft. T2 pays half: a 1-item recipe takes it every second craft, 2 and 4 items take 1 and 2. */
     private int inputToTake(int lane, ItemStack input, int count) {
         if (!halfInput) return count;
-        int owed = count - credit(lane, input);                // в половинках предмета
+        int owed = count - credit(lane, input);                // in halves of an item
         int take = (owed + 1) / 2;
         halfCredit[lane] = take * 2 - owed;
         creditItem[lane] = input.getItem();
@@ -254,7 +252,7 @@ public class RestructorBlockEntity extends BlockEntity implements MenuProvider {
                     ItemStack result = recipe.get().result();
                     int out = outSlot(lane);
                     ItemStack output = itemHandler.getStackInSlot(out);
-                    if (output.isEmpty() || (ItemStack.isSameItemSameTags(output, result)
+                    if (output.isEmpty() || (ItemStack.isSameItemSameComponents(output, result)
                             && output.getCount() + result.getCount() <= output.getMaxStackSize())) {
                         int in = inSlot(lane);
                         itemHandler.extractItem(in, inputToTake(lane, itemHandler.getStackInSlot(in), recipe.get().inputCount()), false);
@@ -269,8 +267,8 @@ public class RestructorBlockEntity extends BlockEntity implements MenuProvider {
                     }
                 }
             }
-            // «работает» и в тик крафта: при мощной подаче вся стоимость набирается за тик и сразу
-            // обнуляется крафтом, накопление к этой проверке уже 0 — без crafted машина не загоралась вовсе
+            // "working" in the craft tick too: with a strong supply the whole cost is gathered within a tick and immediately
+            // reset by the craft, so the accumulation is already 0 at this check; without crafted the machine never lit up
             working |= recipe.isPresent() && (energyAccumulated[lane] > 0 || crafted);
             if (!crafted && craftedRecently[lane] > 0) craftedRecently[lane]--;
         }
@@ -299,9 +297,9 @@ public class RestructorBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     private void doItemPush(BlockEntity target, Direction dir) {
-        var cap = target.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite());
+        var cap = Caps.get(target, Caps.ITEM_HANDLER, dir.getOpposite());
         if (!cap.isPresent()) return;
-        IItemHandler dst = cap.resolve().get();
+        IItemHandler dst = cap.get();
         for (int lane = 0; lane < lanes; lane++) {
             int out = outSlot(lane);
             ItemStack stack = itemHandler.getStackInSlot(out);
@@ -312,11 +310,11 @@ public class RestructorBlockEntity extends BlockEntity implements MenuProvider {
         }
     }
 
-    /** Затягивает один стак за раз; у T2 — во вход, где этого предмета меньше всего, чтобы линии шли вровень. */
+    /** Pulls one stack at a time; on T2 into the input that has the least of this item, so the lines stay even. */
     private void doItemPull(BlockEntity target, Direction dir) {
-        var cap = target.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite());
+        var cap = Caps.get(target, Caps.ITEM_HANDLER, dir.getOpposite());
         if (!cap.isPresent()) return;
-        IItemHandler src = cap.resolve().get();
+        IItemHandler src = cap.get();
         for (int si = 0; si < src.getSlots(); si++) {
             ItemStack avail = src.extractItem(si, 64, true);
             if (avail.isEmpty()) continue;
@@ -332,7 +330,7 @@ public class RestructorBlockEntity extends BlockEntity implements MenuProvider {
         }
     }
 
-    /** Вход с наименьшим числом этого предмета из тех, что его примут; -1, если некуда. */
+    /** The input with the fewest of this item among those that accept it; -1 if there is nowhere. */
     private int pullTarget(ItemStack stack) {
         int best = -1, bestCount = Integer.MAX_VALUE;
         for (int lane = 0; lane < lanes; lane++) {
@@ -345,58 +343,51 @@ public class RestructorBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) return lazyItemHandler.cast();
-        if (cap == ForgeCapabilities.ENERGY)       return lazyEnergyHandler.cast();
-        return super.getCapability(cap, side);
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.ItemHandler.BLOCK) return (T) automationHandler;
+        if (cap == Capabilities.EnergyStorage.BLOCK)       return (T) energyStorage;
+        return null;
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
-        lazyItemHandler   = LazyOptional.of(() -> automationHandler);
-        lazyEnergyHandler = LazyOptional.of(() -> energyStorage);
     }
 
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyItemHandler.invalidate();
-        lazyEnergyHandler.invalidate();
-    }
-
-    /** Ключ линии в NBT: у первой как у T1. */
+        /** Line key in NBT: the first one matches T1. */
     private static String key(String base, int lane) { return lane == 0 ? base : base + lane; }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        tag.put("inventory", itemHandler.serializeNBT());
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.put("inventory", itemHandler.serializeNBT(registries));
         for (int i = 0; i < lanes; i++) {
             tag.putInt(key("energyAccumulated", i), energyAccumulated[i]);
             tag.putInt(key("recipeCost", i), currentRecipeCost[i]);
             if (halfCredit[i] > 0 && creditItem[i] != null) {
                 tag.putInt(key("halfCredit", i), halfCredit[i]);
-                tag.putString(key("creditItem", i), String.valueOf(ForgeRegistries.ITEMS.getKey(creditItem[i])));
+                tag.putString(key("creditItem", i), String.valueOf(BuiltInRegistries.ITEM.getKey(creditItem[i])));
             }
         }
-        super.saveAdditional(tag);
+        super.saveAdditional(tag, registries);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         CompoundTag inv = tag.getCompound("inventory");
 
         if (inv.contains("Size") && inv.getInt("Size") < slotCount) {
             inv.putInt("Size", slotCount);
         }
-        itemHandler.deserializeNBT(inv);
+        itemHandler.deserializeNBT(registries, inv);
         for (int i = 0; i < lanes; i++) {
             energyAccumulated[i] = tag.getInt(key("energyAccumulated", i));
             if (tag.contains(key("recipeCost", i))) currentRecipeCost[i] = tag.getInt(key("recipeCost", i));
             halfCredit[i] = tag.getInt(key("halfCredit", i));
             creditItem[i] = halfCredit[i] > 0
-                    ? ForgeRegistries.ITEMS.getValue(ResourceLocation.tryParse(tag.getString(key("creditItem", i)))) : null;
+                    ? BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(tag.getString(key("creditItem", i)))) : null;
         }
     }
 

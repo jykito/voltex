@@ -1,14 +1,14 @@
 package com.jykito.industrialcore.item.custom;
+import net.minecraft.world.entity.LivingEntity;
 
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingFallEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,39 +25,38 @@ public class NexiteArmorEventHandler {
         };
     }
 
-    @SubscribeEvent
-    public void onLivingHurt(LivingHurtEvent event) {
-        if (!(event.getEntity() instanceof Player player)) return;
-        if (player.level().isClientSide()) return;
+    /** Whether this suit takes part in the hit at all (see {@link PreArmorDamage}). */
+    static boolean applies(LivingEntity target) {
+        return target instanceof Player p && !getNexitePieces(p).isEmpty();
+    }
+
+    /** Pre-armor step, see {@link PreArmorDamage}: returns the damage left after the suit, ≤ 0 means nothing gets through. */
+    static float absorb(LivingEntity target, float damage) {
+        if (!(target instanceof Player player)) return damage;
+        if (player.level().isClientSide()) return damage;
 
         List<ItemStack> pieces = getNexitePieces(player);
-        if (pieces.isEmpty()) return;
+        if (pieces.isEmpty()) return damage;
 
-        float damage         = event.getAmount();
         float absorptionRate = getAbsorptionRate(pieces.size());
         float wantAbsorb     = damage * absorptionRate;
         int   feCost         = (int) (wantAbsorb * NexiteArmorItem.FE_PER_DMG);
 
         int totalAvailable = pieces.stream().mapToInt(NexiteArmorItem::getEnergy).sum();
-        if (totalAvailable <= 0) return;
+        if (totalAvailable <= 0) return damage;
 
         int   actualCost    = Math.min(feCost, totalAvailable);
         float actualAbsorb  = actualCost / (float) NexiteArmorItem.FE_PER_DMG;
 
         drainEvenly(pieces, actualCost);
         player.getInventory().setChanged();
-        // контрудар энергоклинка: погашенный бронёй урон копится и уходит в следующий удар клинком
+        // energy blade counter-strike: damage absorbed by the armor accumulates and goes into the next blade hit
         com.jykito.industrialcore.item.custom.weapon.EnergyBladeItem.addCounter(player, actualAbsorb);
         if (actualAbsorb > 0 && player.getMainHandItem().getItem() instanceof com.jykito.industrialcore.item.custom.weapon.EnergyBladeItem)
             player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.industrial_core.energy_blade.counter_ready",
                     String.format(java.util.Locale.ROOT, "%.1f", com.jykito.industrialcore.item.custom.weapon.EnergyBladeItem.counter(player))), true);
 
-        float remaining = damage - actualAbsorb;
-        if (remaining <= 0.0f) {
-            event.setCanceled(true);
-        } else {
-            event.setAmount(remaining);
-        }
+        return damage - actualAbsorb;   // ≤ 0: nothing gets through (the old cancel)
     }
 
     @SubscribeEvent
@@ -88,13 +87,13 @@ public class NexiteArmorEventHandler {
     }
 
     @SubscribeEvent
-    public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) return;
-        if (event.player.level().isClientSide()) return;
-        if (event.player.tickCount % 20 != 0) return;
+    public void onPlayerTick(PlayerTickEvent.Post event) {
+        Player player = event.getEntity();
+        if (player.level().isClientSide()) return;
+        if (player.tickCount % 20 != 0) return;
 
-        if (hasFullChargedSet(event.player)) {
-            event.player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 30, 0, false, false));
+        if (hasFullChargedSet(player)) {
+            player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 30, 0, false, false));
         }
     }
 

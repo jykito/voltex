@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "BCB",
+    "AAA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:cryo_glass"
+    },
+    "B": {
+      "item": "industrial_core:armor_sheet"
+    },
+    "C": {
+      "item": "minecraft:quartz"
+    }
+  },
+  "result": {
+    "id": "industrial_core:structural_glass",
+    "count": 4
+  }
+}

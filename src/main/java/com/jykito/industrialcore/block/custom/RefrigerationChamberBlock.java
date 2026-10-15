@@ -7,10 +7,10 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 /**
- * Холодильная камера криокомплекса.
+ * Refrigeration chamber of the cryo complex.
  * <p>
- * Все четыре бока одинаковые, поэтому поворот не нужен — есть только флаг работы,
- * по которому бока меняются на анимированные. Механика подключится вместе с ядром.
+ * All four sides are the same, so no rotation is needed; there is only a working flag
+ * that swaps the sides to animated ones. The mechanics hook up together with the core.
  */
 public class RefrigerationChamberBlock extends Block {
 

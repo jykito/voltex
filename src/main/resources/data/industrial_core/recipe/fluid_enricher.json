@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:glass"
+    },
+    "B": {
+      "item": "industrial_core:fluid_valve"
+    },
+    "C": {
+      "item": "minecraft:bucket"
+    },
+    "D": {
+      "tag": "c:components/machine_casing"
+    },
+    "E": {
+      "item": "industrial_core:electric_motor_advanced"
+    }
+  },
+  "result": {
+    "id": "industrial_core:fluid_enricher",
+    "count": 1
+  }
+}

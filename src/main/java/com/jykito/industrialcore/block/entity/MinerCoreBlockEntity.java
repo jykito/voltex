@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.block.custom.MinerCasingBlock;
 import com.jykito.industrialcore.block.custom.MinerCoreBlock;
@@ -24,27 +28,24 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
+public class MinerCoreBlockEntity extends BlockEntity implements Caps.Provider, MenuProvider {
 
     public static final int BASE_PROGRESS   = 200;
     public static final int ENERGY_PER_TICK = 1000;
     public static final int FLUID_PER_ORE   = 1000;
     public static final int ENERGY_CAPACITY = 100_000;
-    // База под работу без модуля: 8 руд. Под параллели бак растёт сам, см. AdaptiveTank.
+    // Base for running without a module: 8 ores. With parallel the tank grows by itself, see AdaptiveTank.
     public static final int FLUID_CAPACITY  = 8_000;
 
     private final ItemStackHandler itemHandler = new ItemStackHandler(5) {
@@ -91,9 +92,6 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
         }
     };
 
-    private LazyOptional<IItemHandler>   lazyItemHandler = LazyOptional.empty();
-    private LazyOptional<IEnergyStorage> lazyEnergy      = LazyOptional.empty();
-    private LazyOptional<IFluidHandler>  lazyFluid       = LazyOptional.empty();
 
     private int progress            = 0;
     private int maxProgress         = BASE_PROGRESS;
@@ -172,7 +170,7 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
 
         MachineUpgrades upg = MachineUpgrades.scan(itemHandler, 1, 4);
         if (AdaptiveTank.resize(fluidTank, FLUID_CAPACITY, upg.parallel()))
-            level.sendBlockUpdated(pos, state, state, 3); // шкала бака считается от ёмкости, клиенту нужна новая
+            level.sendBlockUpdated(pos, state, state, 3); // the tank gauge is computed from capacity, the client needs the new one
 
         int effectiveMax = upg.scaleTime(BASE_PROGRESS);
         this.maxProgress = effectiveMax;
@@ -189,7 +187,7 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
         boolean hasChanges = false;
         boolean working = false;
         if (canWork) {
-            // параллель, которую тянет энергия в этот тик (не больше модуля, не больше запаса)
+            // parallel the energy covers this tick (not more than the module, not more than the stock)
             int energyParallel = Math.max(1, Math.min(upg.parallel(), energyStorage.getEnergyStored() / ENERGY_PER_TICK));
             energyStorage.consumeEnergy(energyParallel * ENERGY_PER_TICK);
             progress++;
@@ -197,7 +195,7 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
             hasChanges = true;
 
             if (progress >= effectiveMax) {
-                // на завершении параллель ограничена ещё и запасом жижи; сколько реально влезло в вывод — столько и списываем
+                // at completion parallel is also limited by the fluid stock; we consume exactly what fit into the output
                 int p = Math.min(energyParallel, fluidTank.getFluidAmount() / FLUID_PER_ORE);
                 int produced = p >= 1 ? generateOre(level, (MinerLensItem) lensStack.getItem(), p) : 0;
                 if (produced > 0) {
@@ -264,7 +262,7 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
                 ore = outputHandler.insertItem(i, ore, false);
             }
             if (ore.isEmpty()) produced++;
-            else break;  // вывод забит — дальше не мельчим
+            else break;  // output is full, stop splitting further
         }
         return produced;
     }
@@ -278,7 +276,7 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     private void pushToAdjacentInventories(Level level, BlockPos center) {
-        // выход пуст → нечего толкать, не сканируем 26×6 соседей (поведение идентично)
+        // output is empty -> nothing to push, do not scan 26x6 neighbours (behaviour identical)
         boolean anyOut = false;
         for (int s = 0; s < outputHandler.getSlots(); s++)
             if (!outputHandler.getStackInSlot(s).isEmpty()) { anyOut = true; break; }
@@ -298,7 +296,7 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
                         if (Math.abs(nx) <= 1 && Math.abs(ny) <= 1 && Math.abs(nz) <= 1) continue;
                         BlockEntity neighbor = level.getBlockEntity(neighborPos);
                         if (neighbor == null) continue;
-                        var optInv = neighbor.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite()).resolve();
+                        var optInv = Caps.get(neighbor, Caps.ITEM_HANDLER, dir.getOpposite());
                         if (optInv.isEmpty()) continue;
                         IItemHandler inv = optInv.get();
                         for (int outSlot = 0; outSlot < outputHandler.getSlots(); outSlot++) {
@@ -336,59 +334,69 @@ public class MinerCoreBlockEntity extends BlockEntity implements MenuProvider {
     public ItemStackHandler getOutputHandler() { return outputHandler; }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY)        return lazyEnergy.cast();
-        if (cap == ForgeCapabilities.FLUID_HANDLER) return lazyFluid.cast();
-        if (cap == ForgeCapabilities.ITEM_HANDLER)  return lazyItemHandler.cast();
-        return super.getCapability(cap, side);
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.EnergyStorage.BLOCK)        return (T) energyStorage;
+        if (cap == Capabilities.FluidHandler.BLOCK) return (T) fluidTank;
+        if (cap == Capabilities.ItemHandler.BLOCK)  return (T) outputHandlerExternal;
+        return null;
     }
 
-    @Override
-    public net.minecraft.world.phys.AABB getRenderBoundingBox() {
-        if (!getBlockState().getValue(MinerCoreBlock.FORMED)) return super.getRenderBoundingBox();
+    /** Render bounds of the renderer (see its getRenderBoundingBox). */
+    public net.minecraft.world.phys.AABB renderBounds() {
+        if (!getBlockState().getValue(MinerCoreBlock.FORMED)) return new net.minecraft.world.phys.AABB(worldPosition);
         BlockPos p = getBlockPos();
         return new net.minecraft.world.phys.AABB(
                 p.getX() - 2, p.getY() - 2, p.getZ() - 2,
                 p.getX() + 3, p.getY() + 3, p.getZ() + 3);
     }
 
+    /** Casings around forward this core's handlers (MinerCasingBlockEntity): their neighbours' caches must see the core come and go. */
+    private void invalidateCasings() {
+        if (level == null) return;
+        for (BlockPos p : BlockPos.betweenClosed(worldPosition.offset(-1, -1, -1), worldPosition.offset(1, 1, 1)))
+            if (!p.equals(worldPosition)) level.invalidateCapabilities(p);
+    }
+
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        invalidateCasings();
+    }
+
+    @Override
+    public void clearRemoved() {
+        super.clearRemoved();
+        invalidateCasings();
+    }
+
     @Override
     public void onLoad() {
         super.onLoad();
-        lazyItemHandler = LazyOptional.of(() -> outputHandlerExternal);
-        lazyEnergy      = LazyOptional.of(() -> energyStorage);
-        lazyFluid       = LazyOptional.of(() -> fluidTank);
     }
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyItemHandler.invalidate();
-        lazyEnergy.invalidate();
-        lazyFluid.invalidate();
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag tag) {
-        tag.put("inventory", itemHandler.serializeNBT());
-        tag.put("output", outputHandler.serializeNBT());
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.put("inventory", itemHandler.serializeNBT(registries));
+        tag.put("output", outputHandler.serializeNBT(registries));
         tag.putInt("progress", progress);
         tag.putInt("energy", energyStorage.getEnergyStored());
-        tag.put("fluidTank", fluidTank.writeToNBT(new CompoundTag()));
+        tag.put("fluidTank", fluidTank.writeToNBT(registries, new CompoundTag()));
         AdaptiveTank.save(tag, "fluidTankCapacity", fluidTank);
         tag.putBoolean("isStructureValid", isStructureValid);
-        super.saveAdditional(tag);
+        super.saveAdditional(tag, registries);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        itemHandler.deserializeNBT(tag.getCompound("inventory"));
-        outputHandler.deserializeNBT(tag.getCompound("output"));
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        itemHandler.deserializeNBT(registries, tag.getCompound("inventory"));
+        outputHandler.deserializeNBT(registries, tag.getCompound("output"));
         progress = tag.getInt("progress");
         energyStorage.setEnergy(tag.getInt("energy"));
         AdaptiveTank.load(tag, "fluidTankCapacity", fluidTank, FLUID_CAPACITY);
-        fluidTank.readFromNBT(tag.getCompound("fluidTank"));
+        fluidTank.readFromNBT(registries, tag.getCompound("fluidTank"));
         isStructureValid = tag.getBoolean("isStructureValid");
         if (isStructureValid) {
             structureValid = 1;

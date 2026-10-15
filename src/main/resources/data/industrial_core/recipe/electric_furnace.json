@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:brick"
+    },
+    "B": {
+      "tag": "c:dusts/redstone"
+    },
+    "C": {
+      "item": "industrial_core:copper_solenoid"
+    },
+    "D": {
+      "item": "minecraft:furnace"
+    },
+    "E": {
+      "tag": "c:components/machine_casing"
+    }
+  },
+  "result": {
+    "id": "industrial_core:electric_furnace",
+    "count": 1
+  }
+}

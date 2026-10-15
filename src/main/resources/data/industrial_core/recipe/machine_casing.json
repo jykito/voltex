@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/iron"
+    },
+    "B": {
+      "tag": "c:ingots/iron"
+    },
+    "C": {
+      "item": "industrial_core:bare_copper_wire"
+    },
+    "D": {
+      "tag": "c:dusts/redstone"
+    }
+  },
+  "result": {
+    "id": "industrial_core:machine_casing",
+    "count": 1
+  }
+}

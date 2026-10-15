@@ -1,18 +1,19 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/** Блок каркаса помнит своё ядро (его ставит ядро при сборке) и отдаёт его энергию, жидкость и выход. */
-public class IndustrialMinerFrameBlockEntity extends BlockEntity {
+/** A frame block remembers its core (the core sets it when forming) and exposes the core's energy, fluid and output. */
+public class IndustrialMinerFrameBlockEntity extends BlockEntity implements Caps.Provider  {
 
     private @Nullable BlockPos corePos;
 
@@ -23,6 +24,7 @@ public class IndustrialMinerFrameBlockEntity extends BlockEntity {
     public void setCore(@Nullable BlockPos core) {
         if (java.util.Objects.equals(core, corePos)) return;
         corePos = core;
+        invalidateCapabilities();
         setChanged();
     }
 
@@ -32,23 +34,25 @@ public class IndustrialMinerFrameBlockEntity extends BlockEntity {
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY || cap == ForgeCapabilities.FLUID_HANDLER || cap == ForgeCapabilities.ITEM_HANDLER) {
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.EnergyStorage.BLOCK || cap == Capabilities.FluidHandler.BLOCK || cap == Capabilities.ItemHandler.BLOCK) {
             IndustrialMinerCoreBlockEntity c = core();
-            if (c != null) return c.getCapability(cap, side);
+            if (c != null) return c.getCap(cap, side);
         }
-        return super.getCapability(cap, side);
+        return null;
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         if (corePos != null) tag.putLong("core", corePos.asLong());
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         corePos = tag.contains("core") ? BlockPos.of(tag.getLong("core")) : null;
     }
 }

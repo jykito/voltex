@@ -16,8 +16,8 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 /**
- * Буровой маяк: тренога и мачта, сверху кристалл (крутится и чуть покачивается; без подходящей линзы гаснет),
- * пока идёт скан — от маяка по земле расходятся три квадратные волны.
+ * Drill beacon: tripod and mast with a crystal on top (spins and sways a little; goes dark without a suitable lens),
+ * while scanning, three square waves spread from the beacon over the ground.
  */
 public class DrillBeaconBER implements BlockEntityRenderer<DrillBeaconBlockEntity> {
 
@@ -46,7 +46,7 @@ public class DrillBeaconBER implements BlockEntityRenderer<DrillBeaconBlockEntit
         VertexConsumer vc = buf.getBuffer(RenderType.entityTranslucentEmissive(IndustrialMinerModel.TEX));
         float[] uv = IndustrialMinerModel.tileCenter("crystal");
         Matrix4f pose = ps.last().pose();
-        Matrix3f normal = ps.last().normal();
+        PoseStack.Pose normal = ps.last();
         for (int k = 0; k < 3; k++) {
             float f = (time * 0.0225f + k / 3f) % 1f, r = 0.6f + 5.4f * f, a = 0.85f * (1 - f), w = 0.06f, y = 0.02f;
             strip(vc, pose, normal, -r - w, -r - w, r + w, -r + w, y, a, uv);
@@ -56,13 +56,18 @@ public class DrillBeaconBER implements BlockEntityRenderer<DrillBeaconBlockEntit
         }
     }
 
-    private static void strip(VertexConsumer vc, Matrix4f pose, Matrix3f normal, float x1, float z1, float x2, float z2, float y, float a, float[] uv) {
+    private static void strip(VertexConsumer vc, Matrix4f pose, PoseStack.Pose normal, float x1, float z1, float x2, float z2, float y, float a, float[] uv) {
         float[][] p = {{x1, z1}, {x1, z2}, {x2, z2}, {x2, z1}};
         for (float[] c : p)
-            vc.vertex(pose, c[0], y, c[1]).color(1f, 1f, 1f, a).uv(uv[0], uv[1]).overlayCoords(OverlayTexture.NO_OVERLAY)
-                    .uv2(LightTexture.FULL_BRIGHT).normal(normal, 0, 1, 0).endVertex();
+            vc.addVertex(pose, c[0], y, c[1]).setColor(1f, 1f, 1f, a).setUv(uv[0], uv[1]).setOverlay(OverlayTexture.NO_OVERLAY)
+                    .setLight(LightTexture.FULL_BRIGHT).setNormal(normal, 0, 1, 0);
     }
 
     @Override
     public boolean shouldRenderOffScreen(DrillBeaconBlockEntity be) { return be.getState() == DrillBeaconBlockEntity.State.SCANNING; }
+
+    @Override
+    public net.minecraft.world.phys.AABB getRenderBoundingBox(DrillBeaconBlockEntity be) {
+        return be.renderBounds();
+    }
 }

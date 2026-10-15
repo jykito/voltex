@@ -1,4 +1,6 @@
 package com.jykito.industrialcore.block.custom;
+import com.mojang.serialization.MapCodec;
+import com.jykito.industrialcore.capability.Caps;
 
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.PipeBlock;
@@ -29,17 +31,21 @@ import java.util.Map;
 
 public class HeatPipeBlock extends BaseEntityBlock {
 
+    /** 1.21: block codec. Vanilla does not call it for mod blocks; there is one block instance, so unit is exact. */
+    @Override
+    protected MapCodec<? extends HeatPipeBlock> codec() { return MapCodec.unit(this); }
+
     public static final BooleanProperty NORTH = BlockStateProperties.NORTH;
     public static final BooleanProperty SOUTH = BlockStateProperties.SOUTH;
     public static final BooleanProperty EAST  = BlockStateProperties.EAST;
     public static final BooleanProperty WEST  = BlockStateProperties.WEST;
     public static final BooleanProperty UP    = BlockStateProperties.UP;
     public static final BooleanProperty DOWN  = BlockStateProperties.DOWN;
-    public static final BooleanProperty HOT   = BooleanProperty.create("hot"); // статик-свечение по нагреву (blockstate)
+    public static final BooleanProperty HOT   = BooleanProperty.create("hot"); // static glow by heat (blockstate)
 
     public static final Map<Direction, BooleanProperty> PROPERTY_BY_DIRECTION = PipeBlock.PROPERTY_BY_DIRECTION;
 
-    // ядро 8×8, отростки 6×6 длиной 4
+    // core 8x8, arms 6x6, 4 long
     private static final ConnectedShapes SHAPES = new ConnectedShapes(4, 12, 5, 11, 4);
 
     public HeatPipeBlock(Properties props) {
@@ -52,7 +58,7 @@ public class HeatPipeBlock extends BaseEntityBlock {
 
     @Override public RenderShape getRenderShape(BlockState s) { return RenderShape.MODEL; }
 
-    /** Форма от нагрева не зависит, HOT в маску не входит. */
+    /** The shape does not depend on heat, HOT is not part of the mask. */
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
         return SHAPES.get(state, PROPERTY_BY_DIRECTION);
@@ -73,20 +79,20 @@ public class HeatPipeBlock extends BaseEntityBlock {
         return prop == null ? state : state.setValue(prop, connects(level, pos, dir));
     }
 
-    /** Соединяемся с другой теплотрубой или с любым блоком, у которого есть тепло-capability. */
+    /** We connect to another heat pipe or to any block that has the heat capability. */
     private static boolean connects(BlockGetter level, BlockPos pos, Direction dir) {
-        // сторона отключена ключом на этой трубе
+        // this side is disabled with the wrench on this pipe
         if (level.getBlockEntity(pos) instanceof HeatPipeBlockEntity self && self.isDisabled(dir)) return false;
         BlockPos np = pos.relative(dir);
         if (level.getBlockState(np).is(ModBlocks.HEAT_PIPE.get())) {
-            // соседняя труба отключила свою сторону к нам — не соединяемся (симметрично)
+            // the neighbouring pipe disabled its side towards us, so we do not connect (symmetric)
             return !(level.getBlockEntity(np) instanceof HeatPipeBlockEntity npe && npe.isDisabled(dir.getOpposite()));
         }
         BlockEntity be = level.getBlockEntity(np);
-        return be != null && be.getCapability(HeatCapability.HEAT, dir.getOpposite()).isPresent();
+        return be != null && Caps.get(be, Caps.HEAT, dir.getOpposite()).isPresent();
     }
 
-    /** Пересчитать соединения блока (после переключения стороны ключом). */
+    /** Recompute the block's connections (after toggling a side with the wrench). */
     public static void recomputeConnections(Level level, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
         if (!(state.getBlock() instanceof HeatPipeBlock)) return;

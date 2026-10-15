@@ -1,0 +1,19 @@
+{
+  "type": "industrial_core:ore_washing_recipe",
+  "ingredient": {
+    "tag": "c:ores/iron"
+  },
+  "inputCount": 1,
+  "waterAmount": 1000,
+  "result": {
+    "id": "industrial_core:iron_dust",
+    "count": 3
+  },
+  "byproductChance": 0.3,
+  "processingTime": 200,
+  "energyCostPerTick": 40,
+  "byproduct": {
+    "id": "industrial_core:nickel_dust",
+    "count": 1
+  }
+}

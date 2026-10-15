@@ -1,5 +1,7 @@
 package com.jykito.industrialcore.client;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import com.jykito.industrialcore.IndustrialCore;
 import com.jykito.industrialcore.item.custom.IndustrialDrillItem;
 import com.jykito.industrialcore.item.custom.LogisticsLinkerItem;
@@ -16,22 +18,22 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = IndustrialCore.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+@EventBusSubscriber(modid = IndustrialCore.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public final class ClientForgeEvents {
 
     /**
-     * Под шлемом Nexite или Plasma голова и второй слой скина не рисуются: шлем скруглённый и меньше куба головы,
-     * иначе сквозь срезанные углы торчал бы скин. Видимость сама вернётся на следующем кадре
-     * (PlayerRenderer заново включает части модели перед этим событием).
+     * Under a Nexite or Plasma helmet the head and the second skin layer are not drawn: the helmet is rounded and smaller than the head cube,
+     * otherwise the skin would poke through the cut corners. Visibility comes back by itself on the next frame
+     * (PlayerRenderer re-enables the model parts before this event).
      */
     @SubscribeEvent
-    public static void onRenderPlayerPre(net.minecraftforge.client.event.RenderPlayerEvent.Pre event) {
+    public static void onRenderPlayerPre(net.neoforged.neoforge.client.event.RenderPlayerEvent.Pre event) {
         var helmet = event.getEntity().getItemBySlot(EquipmentSlot.HEAD).getItem();
         if (helmet instanceof com.jykito.industrialcore.item.custom.NexiteArmorItem || helmet instanceof PlasmaArmorItem) {
             event.getRenderer().getModel().head.visible = false;
@@ -40,17 +42,17 @@ public final class ClientForgeEvents {
     }
 
     /**
-     * Рука от первого лица в нагруднике Nexite или Plasma. Ваниль броню на руке не рисует вообще, поэтому рисуем сами:
-     * сначала обычную руку (она же выставляет позу под широкую или тонкую модель скина), потом поверх неё кость руки
-     * силовой модели в той же позе. Ванильный вызов отменяется, чтобы рука не рисовалась дважды.
-     * ⚠ Событие шлёт сам PlayerRenderer.renderRightHand/renderLeftHand, поэтому наш вызов руки снова попадает сюда:
-     * без флага это бесконечная рекурсия и краш (переполнение стека, в отчёте маскируется под LinkageError log4j).
+     * First-person arm in a Nexite or Plasma chestplate. Vanilla does not draw armor on the arm at all, so we draw it ourselves:
+     * first the normal arm (it also sets the pose for the wide or slim skin model), then on top of it the arm bone
+     * of the power suit model in the same pose. The vanilla call is cancelled so the arm is not drawn twice.
+     * ⚠ The event is fired by PlayerRenderer.renderRightHand/renderLeftHand itself, so our arm call lands here again:
+     * without the flag that is infinite recursion and a crash (stack overflow, which the report disguises as a log4j LinkageError).
      */
     private static boolean renderingArm;
 
     @SubscribeEvent
-    public static void onRenderArm(net.minecraftforge.client.event.RenderArmEvent event) {
-        if (renderingArm) return;   // вложенный вызов из renderRightHand: обычная рука
+    public static void onRenderArm(net.neoforged.neoforge.client.event.RenderArmEvent event) {
+        if (renderingArm) return;   // nested call from renderRightHand: the normal arm
         var player = event.getPlayer();
         ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
         if (!(chest.getItem() instanceof com.jykito.industrialcore.item.custom.NexiteArmorItem) && !(chest.getItem() instanceof PlasmaArmorItem)) return;
@@ -66,19 +68,18 @@ public final class ClientForgeEvents {
         } finally {
             renderingArm = false;
         }
-        var tex = new net.minecraft.resources.ResourceLocation(chest.getItem().getArmorTexture(chest, player, EquipmentSlot.CHEST, null));
-        var vc = net.minecraft.client.renderer.entity.ItemRenderer.getArmorFoilBuffer(buf, net.minecraft.client.renderer.RenderType.armorCutoutNoCull(tex), false, chest.hasFoil());
+        var tex = chest.getItem().getArmorTexture(chest, player, EquipmentSlot.CHEST, null, false);
+        var vc = net.minecraft.client.renderer.entity.ItemRenderer.getArmorFoilBuffer(buf, net.minecraft.client.renderer.RenderType.armorCutoutNoCull(tex), chest.hasFoil());
         com.jykito.industrialcore.client.armor.PowerSuitModel.forSlot(EquipmentSlot.CHEST)
                 .renderArm(ps, vc, light, right ? renderer.getModel().rightArm : renderer.getModel().leftArm, right);
         event.setCanceled(true);
     }
 
-@SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) return;
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
-        com.jykito.industrialcore.client.drill.DrillSound.clientTick(mc);   // звук бура, пока копаешь
+        com.jykito.industrialcore.client.drill.DrillSound.clientTick(mc);   // drill sound while digging
 
         if (mc.screen == null) {
             while (ModKeyBindings.DRILL_MODE.consumeClick()) {
@@ -104,7 +105,7 @@ public final class ClientForgeEvents {
                         event.getPoseStack(),
                         mc.renderBuffers().bufferSource(),
                         event.getCamera().getPosition(),
-                        event.getPartialTick());
+                        event.getPartialTick().getGameTimeDeltaPartialTick(false));
             }
             return;
         }

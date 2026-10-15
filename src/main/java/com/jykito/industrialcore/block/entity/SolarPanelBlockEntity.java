@@ -1,4 +1,9 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import java.util.Optional;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.block.custom.BaseSolarPanel;
 import com.jykito.industrialcore.block.custom.SolarPanelBlock;
@@ -18,17 +23,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class SolarPanelBlockEntity extends BlockEntity implements MenuProvider {
+public class SolarPanelBlockEntity extends BlockEntity implements Caps.Provider, MenuProvider {
 
     private final MachineEnergy buffer;
-    private LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.empty();
     private int currentGeneration = 0;
 
     protected final ContainerData data = new ContainerData() {
@@ -38,7 +39,7 @@ public class SolarPanelBlockEntity extends BlockEntity implements MenuProvider {
                 case 1 -> (buffer.getEnergyStored()    >> 16) & 0xFFFF;
                 case 2 ->  buffer.getMaxEnergyStored() & 0xFFFF;
                 case 3 -> (buffer.getMaxEnergyStored() >> 16) & 0xFFFF;
-                // ячейка ContainerData 16-битная, а T5+ даёт больше 32767 → двумя половинами
+                // a ContainerData cell is 16-bit, and T5+ gives more than 32767 -> two halves
                 case 4 ->  currentGeneration           & 0xFFFF;
                 case 5 -> (currentGeneration           >> 16) & 0xFFFF;
                 case 6 ->  currentGeneration > 0 ? 1 : 0;
@@ -81,9 +82,9 @@ public class SolarPanelBlockEntity extends BlockEntity implements MenuProvider {
                 if (toGive <= 0) break;
                 BlockEntity neighbor = level.getBlockEntity(pos.relative(dir));
                 if (neighbor == null) continue;
-                var cap = neighbor.getCapability(ForgeCapabilities.ENERGY, dir.getOpposite());
+                var cap = Caps.get(neighbor, Caps.ENERGY, dir.getOpposite());
                 if (!cap.isPresent()) continue;
-                IEnergyStorage target = cap.resolve().get();
+                IEnergyStorage target = cap.get();
                 if (!target.canReceive()) continue;
                 int accepted = target.receiveEnergy(toGive, false);
                 if (accepted > 0) {
@@ -113,23 +114,23 @@ public class SolarPanelBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY) return lazyEnergy.cast();
-        return super.getCapability(cap, side);
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.EnergyStorage.BLOCK) return (T) buffer;
+        return null;
     }
 
-    @Override public void onLoad()         { super.onLoad();        lazyEnergy = LazyOptional.of(() -> buffer); }
-    @Override public void invalidateCaps() { super.invalidateCaps(); lazyEnergy.invalidate(); }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         tag.putInt("energy", buffer.getEnergyStored());
-        super.saveAdditional(tag);
+        super.saveAdditional(tag, registries);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         buffer.setEnergy(tag.getInt("energy"));
     }
 }

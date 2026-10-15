@@ -1,4 +1,6 @@
 package com.jykito.industrialcore.item.custom;
+import net.minecraft.world.item.Item;
+import com.jykito.industrialcore.item.ModDataComponents;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -28,11 +30,11 @@ public class IndustrialDrillItem extends EnergyDrillItem {
     }
 
     public static int getMode(ItemStack stack) {
-        return stack.hasTag() ? stack.getTag().getInt("drill_mode") : 0;
+        return stack.getOrDefault(ModDataComponents.MODE.get(), 0);
     }
 
     public static void cycleMode(ItemStack stack) {
-        stack.getOrCreateTag().putInt("drill_mode", (getMode(stack) + 1) % 2);
+        stack.set(ModDataComponents.MODE.get(), (getMode(stack) + 1) % 2);
     }
 
     @Override
@@ -91,9 +93,9 @@ public class IndustrialDrillItem extends EnergyDrillItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level,
-                                List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, level, tooltip, flag);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+        @Nullable Level level = context.level();
+        super.appendHoverText(stack, context, tooltip, flag);
         String modeKey = getMode(stack) == 1
                 ? "tooltip.industrial_core.drill_mode_3x3"
                 : "tooltip.industrial_core.drill_mode_normal";

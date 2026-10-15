@@ -14,19 +14,19 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Тепловой щуп: показывает картину ВСЕЙ теплосети, а не одного блока.
+ * Heat probe: shows the picture of the WHOLE heat network, not one block.
  * <p>
- * Появился из конкретной боли. Jade умеет читать блок под прицелом, но когда в машину приходит
- * 482 вместо ожидаемых 820, виноват не блок, а трасса — и увидеть это было нечем. Щуп отвечает
- * на три вопроса разом: сколько тепла в сети, сколько она раздаёт и <b>что именно её держит</b>.
+ * It came from a specific pain. Jade can read the block under the crosshair, but when a machine gets
+ * 482 instead of the expected 820, the culprit is not the block but the route, and there was no way to see it. The probe answers
+ * three questions at once: how much heat is in the network, how much it hands out and <b>what exactly limits it</b>.
  * <p>
- * Диагноз ставится по соотношению котла, раздачи и пропускной способности соединений:
+ * The diagnosis comes from the ratio of the pool, the delivery and the connection throughput:
  * <ul>
- *   <li>котёл пуст, раздача меньше возможной — не хватает <b>выработки</b>;</li>
- *   <li>котёл полон, раздача упёрлась в пропуск — мало <b>подключений</b> к потребителям;</li>
- *   <li>котёл полон, а раздача ниже пропуска — <b>потребители сыты</b>, сеть ни при чём.</li>
+ *   <li>the pool is empty, delivery is below what is possible: not enough <b>generation</b>;</li>
+ *   <li>the pool is full, delivery hit the throughput: too few <b>connections</b> to consumers;</li>
+ *   <li>the pool is full and delivery is below throughput: <b>consumers are satisfied</b>, the network is fine.</li>
  * </ul>
- * Читает готовую сводку, которую сеть складывает по ходу своего тика, поэтому сам ничего не обходит.
+ * It reads the ready summary the network builds during its tick, so it walks nothing itself.
  */
 public class HeatProbeItem extends Item {
 
@@ -56,19 +56,19 @@ public class HeatProbeItem extends Item {
         return InteractionResult.SUCCESS;
     }
 
-    /** Главная строка: не числа, а вывод из них. */
+    /** The main line: not numbers but the conclusion from them. */
     private static Component diagnosis(HeatPipeBlockEntity.Survey s) {
         if (s.sinks() == 0)
             return Component.translatable("msg.industrial_core.probe.no_sinks").withStyle(ChatFormatting.RED);
         if (s.capacity() > 0 && s.delivered() >= s.capacity())
             return Component.translatable("msg.industrial_core.probe.limit_links").withStyle(ChatFormatting.GOLD);
-        // Котёл почти пуст — значит всё, что пришло, тут же ушло: упор в выработку.
+        // The pool is almost empty, so everything that came in went right out: limited by generation.
         if (s.pool() <= s.delivered())
             return Component.translatable("msg.industrial_core.probe.limit_supply").withStyle(ChatFormatting.GOLD);
         return Component.translatable("msg.industrial_core.probe.limit_demand").withStyle(ChatFormatting.GREEN);
     }
 
-    /** Щуп работает и по трубе, и по машине рядом с трубой — целиться в тонкую трубу неудобно. */
+    /** The probe works both on a pipe and on a machine next to a pipe: aiming at a thin pipe is awkward. */
     @Nullable
     private static HeatPipeBlockEntity findPipe(Level level, BlockPos pos) {
         if (level.getBlockEntity(pos) instanceof HeatPipeBlockEntity p) return p;

@@ -1,5 +1,7 @@
 package com.jykito.industrialcore.client;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -15,11 +17,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RegisterClientCommandsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.joml.Matrix4f;
 
 import java.io.File;
@@ -28,7 +30,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = "industrial_core", bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+@EventBusSubscriber(modid = "industrial_core", bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public final class IconExporter {
 
     private static final int ICON_SIZE = 64;
@@ -62,8 +64,8 @@ public final class IconExporter {
         target.setClearColor(0f, 0f, 0f, 0f);
 
         try {
-            for (Item item : ForgeRegistries.ITEMS) {
-                ResourceLocation id = ForgeRegistries.ITEMS.getKey(item);
+            for (Item item : BuiltInRegistries.ITEM) {
+                ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
                 if (id == null) continue;
                 if (!"all".equals(namespace) && !id.getNamespace().equals(namespace)) continue;
 
@@ -111,16 +113,16 @@ public final class IconExporter {
         Matrix4f proj = new Matrix4f().setOrtho(0.0f, 16.0f, 16.0f, 0.0f, -10000.0f, 10000.0f);
         RenderSystem.setProjectionMatrix(proj, VertexSorting.ORTHOGRAPHIC_Z);
 
-        PoseStack modelView = RenderSystem.getModelViewStack();
-        modelView.pushPose();
-        modelView.setIdentity();
+        org.joml.Matrix4fStack modelView = RenderSystem.getModelViewStack();
+        modelView.pushMatrix();
+        modelView.identity();
         RenderSystem.applyModelViewMatrix();
 
         GuiGraphics gg = new GuiGraphics(mc, mc.renderBuffers().bufferSource());
         gg.renderItem(stack, 0, 0);
         gg.flush();
 
-        modelView.popPose();
+        modelView.popMatrix();
         RenderSystem.applyModelViewMatrix();
     }
 

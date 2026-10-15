@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "HSH",
+    "SPS",
+    "KQK"
+  ],
+  "key": {
+    "H": {
+      "item": "industrial_core:heat_resistant_plating"
+    },
+    "S": {
+      "item": "industrial_core:superconductor_coil"
+    },
+    "P": {
+      "item": "industrial_core:plasma_core"
+    },
+    "K": {
+      "item": "industrial_core:kronium_alloy"
+    },
+    "Q": {
+      "item": "industrial_core:quantum_capacitor"
+    }
+  },
+  "result": {
+    "id": "industrial_core:gauss_rifle",
+    "count": 1
+  }
+}

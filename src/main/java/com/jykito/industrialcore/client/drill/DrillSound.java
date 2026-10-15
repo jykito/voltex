@@ -9,13 +9,13 @@ import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 /**
- * Звук работы бура (юзер 2026-10-10: «бур — добавить звук»): петля drill_run, пока свой игрок копает буром.
- * Нарастает за пару тиков с лёгким разгоном тона и так же затихает, когда копать перестал; у промышленного бура тон ниже.
- * Запускается из ClientForgeEvents.onClientTick.
+ * Drill working sound (author, 2026-10-10: "drill: add a sound"): the drill_run loop while your player digs with a drill.
+ * Fades in over a couple of ticks with a slight pitch rise and fades out the same way when you stop digging; the industrial drill has a lower pitch.
+ * Started from ClientForgeEvents.onClientTick.
  */
 @OnlyIn(Dist.CLIENT)
 public class DrillSound extends AbstractTickableSoundInstance {
@@ -42,7 +42,7 @@ public class DrillSound extends AbstractTickableSoundInstance {
                 && mc.player.getMainHandItem().getItem() instanceof EnergyDrillItem;
     }
 
-    /** Из клиентского тика: копаешь буром, а звука нет — запустить (один на игрока). */
+    /** From the client tick: digging with a drill but no sound, so start it (one per player). */
     public static void clientTick(Minecraft mc) {
         if (current != null && !current.isStopped()) return;
         if (!drilling(mc)) return;

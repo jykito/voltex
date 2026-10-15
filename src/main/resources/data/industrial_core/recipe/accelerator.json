@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CCC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/invar"
+    },
+    "B": {
+      "item": "industrial_core:electric_motor"
+    },
+    "C": {
+      "type": "neoforge:components",
+      "items": "industrial_core:capsule",
+      "components": {
+        "industrial_core:fluid_content": {
+          "id": "industrial_core:coolant",
+          "amount": 1000
+        }
+      }
+    }
+  },
+  "result": {
+    "id": "industrial_core:accelerator",
+    "count": 1
+  }
+}

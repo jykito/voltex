@@ -3,7 +3,7 @@ package com.jykito.industrialcore.jei;
 import com.jykito.industrialcore.IndustrialCore;
 import com.jykito.industrialcore.recipe.LiquefierRecipe;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -21,7 +21,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,11 +29,11 @@ import java.util.List;
 public class LiquefierJeiCategory implements IRecipeCategory<LiquefierRecipe> {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/jei/jei_liquefier.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/jei/jei_liquefier.png");
     private static final ResourceLocation HEAT_FILL =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/heat_fill_6x_anim.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/heat_fill_6x_anim.png");
     private static final ResourceLocation ENERGY_FILL =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/energy_fill_6x_anim.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/energy_fill_6x_anim.png");
     private static final int TEX_W = 154, TEX_H = 160, VIS_W = 154, VIS_H = 95;
 
     private static final int FILL_TEX_W = 96, FILL_TEX_H = 36, FILL_FRAMES = 6, FILL_H = 6, FILL_FRAME_TICKS = 16;
@@ -91,7 +91,7 @@ public class LiquefierJeiCategory implements IRecipeCategory<LiquefierRecipe> {
         FluidStack out = recipe.makeFluidOutput();
         IRecipeSlotBuilder tank = builder.addSlot(RecipeIngredientRole.OUTPUT, TANK_X, TANK_Y);
         if (!out.isEmpty()) {
-            tank.setCustomRenderer(ForgeTypes.FLUID_STACK,
+            tank.setCustomRenderer(NeoForgeTypes.FLUID_STACK,
                         new FluidTankRenderer(TANK_W, TANK_H, TEXTURE, GLASS_U, GLASS_V, TEX_W, TEX_H))
                 .addFluidStack(out.getFluid(), out.getAmount());
         }

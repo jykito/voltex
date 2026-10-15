@@ -1,0 +1,70 @@
+{
+  "type": "industrial_core:assembling",
+  "inputs": [
+    {
+      "item": "industrial_core:fluid_enricher",
+      "count": 8
+    },
+    {
+      "item": "industrial_core:fluid_valve",
+      "count": 16
+    },
+    {
+      "item": "industrial_core:barrel_t3",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:capsule_filler",
+      "count": 2
+    },
+    {
+      "item": "minecraft:bucket",
+      "count": 16
+    },
+    {
+      "item": "industrial_core:liquefier"
+    },
+    {
+      "item": "minecraft:glass",
+      "count": 32
+    },
+    {
+      "item": "industrial_core:emerald_flux_cable",
+      "count": 8
+    },
+    {
+      "item": "industrial_core:electric_motor_advanced",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:mechanism_block",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:control_unit",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:servo_drive",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:armor_sheet",
+      "count": 32
+    },
+    {
+      "item": "industrial_core:quantum_capacitor",
+      "count": 2
+    }
+  ],
+  "fluid": {
+    "id": "industrial_core:molten_lead",
+    "amount": 16000
+  },
+  "result": {
+    "id": "industrial_core:multiblock_fluid_enricher",
+    "count": 1
+  },
+  "processingTime": 1200,
+  "energyCostPerTick": 16000
+}

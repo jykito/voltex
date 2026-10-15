@@ -1,4 +1,6 @@
 package com.jykito.industrialcore.block.custom;
+import com.mojang.serialization.MapCodec;
+import com.jykito.industrialcore.capability.Caps;
 
 import com.jykito.industrialcore.block.entity.ModBlockEntities;
 import com.jykito.industrialcore.block.entity.ThermogeneratorBlockEntity;
@@ -17,10 +19,13 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import org.jetbrains.annotations.Nullable;
 
 public class ThermogeneratorBlock extends BaseEntityBlock {
+
+    /** 1.21: block codec. Vanilla does not call it for mod blocks; there is one block instance, so unit is exact. */
+    @Override
+    protected MapCodec<? extends ThermogeneratorBlock> codec() { return MapCodec.unit(this); }
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
@@ -30,13 +35,13 @@ public class ThermogeneratorBlock extends BaseEntityBlock {
     }
 
     /**
-     * Лицо само разворачивается к соседу, который умеет принимать тепло, — тепло уходит только
-     * вперёд, и подгадывать сторону при установке больше не нужно. Цель ищется по капабилити,
-     * а не по конкретному блоку: под правило одинаково подходят термостанция, теплотруба и
-     * машины вроде сжижителя, и новые потребители подхватятся сами.
+     * The face turns by itself to a neighbour that can accept heat: heat only goes
+     * forward, and you no longer need to aim the side when placing. The target is found by capability,
+     * not by a specific block: the thermal station, heat pipe and machines like the liquefier
+     * all fit the rule, and new consumers are picked up automatically.
      * <p>
-     * Взгляд игрока имеет приоритет: если потребитель есть и там, куда смотришь, и сбоку,
-     * выиграет твой выбор. Если потребителей рядом нет, работает прежнее правило по взгляду.
+     * The player's view has priority: if there is a consumer both where you look and to the side,
+     * your choice wins. With no consumers nearby the old rule by view applies.
      */
     @Nullable
     @Override
@@ -51,11 +56,11 @@ public class ThermogeneratorBlock extends BaseEntityBlock {
         return this.defaultBlockState().setValue(FACING, target != null ? target : look);
     }
 
-    /** Есть ли за этой стороной то, что примет тепло. */
+    /** Whether something behind this side accepts heat. */
     private static boolean acceptsHeat(BlockPlaceContext context, Direction side) {
         BlockEntity be = context.getLevel().getBlockEntity(context.getClickedPos().relative(side));
         return be != null
-                && be.getCapability(com.jykito.industrialcore.heat.HeatCapability.HEAT, side.getOpposite()).isPresent();
+                && Caps.get(be, Caps.HEAT, side.getOpposite()).isPresent();
     }
 
     @Override
@@ -86,7 +91,7 @@ public class ThermogeneratorBlock extends BaseEntityBlock {
         if (state.getBlock() != newState.getBlock()) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof ThermogeneratorBlockEntity) {
-                blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
+                Caps.get(blockEntity, Caps.ITEM_HANDLER).ifPresent(handler -> {
                     for (int i = 0; i < handler.getSlots(); i++) {
                         net.minecraft.world.Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), handler.getStackInSlot(i));
                     }
@@ -97,11 +102,16 @@ public class ThermogeneratorBlock extends BaseEntityBlock {
 
     }
     @Override
+    protected net.minecraft.world.ItemInteractionResult useItemOn(net.minecraft.world.item.ItemStack heldItem, BlockState state, Level level, BlockPos pos, net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand, net.minecraft.world.phys.BlockHitResult hit) {
+        return com.jykito.industrialcore.block.BlockUse.toItemResult(use(state, level, pos, player, hand, hit));
+    }
+
+    /** Formerly Block.use (1.20.1); called from useItemOn for both hands, as before. */
     public net.minecraft.world.InteractionResult use(BlockState state, Level level, BlockPos pos, net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand, net.minecraft.world.phys.BlockHitResult hit) {
         if (!level.isClientSide()) {
             BlockEntity entity = level.getBlockEntity(pos);
             if (entity instanceof com.jykito.industrialcore.block.entity.ThermogeneratorBlockEntity) {
-                net.minecraftforge.network.NetworkHooks.openScreen(((net.minecraft.server.level.ServerPlayer) player), (com.jykito.industrialcore.block.entity.ThermogeneratorBlockEntity) entity, pos);
+                (((net.minecraft.server.level.ServerPlayer) player)).openMenu((com.jykito.industrialcore.block.entity.ThermogeneratorBlockEntity) entity, pos);
             }
         }
         return net.minecraft.world.InteractionResult.sidedSuccess(level.isClientSide());

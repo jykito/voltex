@@ -1,12 +1,12 @@
 package com.jykito.industrialcore.compat.kubejs;
 
 import com.jykito.industrialcore.api.solar.SolarPanelRegistry;
-import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.event.KubeStartupEvent;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Map;
 
-public class SolarPanelEventJS extends EventJS {
+public class SolarPanelEventJS implements KubeStartupEvent {
 
     public void register(String id, Object params) {
         if (!(params instanceof Map<?, ?> map)) {
@@ -20,7 +20,7 @@ public class SolarPanelEventJS extends EventJS {
         boolean sky     = toBool(map, "requiresSky", true);
 
         SolarPanelRegistry.register(
-                new ResourceLocation(id),
+                ResourceLocation.parse(id),
                 new SolarPanelRegistry.SolarPanelDefinition(dayOutput, nightOutput, bufferSize, sky)
         );
     }

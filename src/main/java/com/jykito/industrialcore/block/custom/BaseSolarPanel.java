@@ -1,4 +1,6 @@
 package com.jykito.industrialcore.block.custom;
+import com.jykito.industrialcore.block.BlockUse;
+import net.minecraft.world.ItemInteractionResult;
 
 import com.jykito.industrialcore.block.entity.SolarPanelBlockEntity;
 import net.minecraft.ChatFormatting;
@@ -23,7 +25,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -54,11 +55,16 @@ public abstract class BaseSolarPanel extends BaseEntityBlock {
     public RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        return BlockUse.toItemResult(use(state, level, pos, player, hand, hit));
+    }
+
+    /** Formerly Block.use (1.20.1); called from useItemOn for both hands, as before. */
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
                                  InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide && player instanceof net.minecraft.server.level.ServerPlayer sp
                 && level.getBlockEntity(pos) instanceof MenuProvider mp) {
-            NetworkHooks.openScreen(sp, mp, buf -> buf.writeBlockPos(pos));
+            sp.openMenu(mp, buf -> buf.writeBlockPos(pos));
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
     }
@@ -72,7 +78,7 @@ public abstract class BaseSolarPanel extends BaseEntityBlock {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter level,
+    public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext context,
                                 List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("tooltip.industrial_core.solar_day", formatFE(getDayOutput()))
                 .withStyle(ChatFormatting.YELLOW));

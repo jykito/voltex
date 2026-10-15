@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.block.custom.SolarPanelBlock;
 import com.jykito.industrialcore.block.custom.SolarPanelTier;
@@ -18,21 +22,18 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class PanelCombinerBlockEntity extends BlockEntity implements MenuProvider {
+public class PanelCombinerBlockEntity extends BlockEntity implements Caps.Provider, MenuProvider {
 
     public static final int PANEL_SLOTS = 18;
-    // Потолок int: энергия Forge целочисленная, больше за раз не принять и не отдать.
-    // Раньше буфер был 1 млрд, и всё, что панели давали сверх него за тик, сгорало.
+    // int cap: Forge energy is an integer, no more can be accepted or given at once.
+    // Before, the buffer was 1 billion, and everything the panels made above it per tick was burned.
     public static final int BUFFER_SIZE = Integer.MAX_VALUE;
     public static final int MAX_OUTPUT  = Integer.MAX_VALUE;
 
@@ -60,10 +61,8 @@ public class PanelCombinerBlockEntity extends BlockEntity implements MenuProvide
     };
 
     private final MachineEnergy buffer = MachineEnergy.generator(BUFFER_SIZE, MAX_OUTPUT);
-    private LazyOptional<IItemHandler>   lazyItems  = LazyOptional.empty();
-    private LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.empty();
 
-    private long currentGeneration = 0;   // сумма панелей может быть больше int (T10: до ~57 млрд/тик)
+    private long currentGeneration = 0;   // the sum of panels can exceed int (T10: up to ~57 billion/tick)
     private int  currentOutput     = 0;
 
     protected final ContainerData data = new ContainerData() {
@@ -73,7 +72,7 @@ public class PanelCombinerBlockEntity extends BlockEntity implements MenuProvide
                 case 1 -> (buffer.getEnergyStored()    >> 16) & 0xFFFF;
                 case 2 ->  buffer.getMaxEnergyStored() & 0xFFFF;
                 case 3 -> (buffer.getMaxEnergyStored() >> 16) & 0xFFFF;
-                case 4 -> (int) ( currentGeneration         & 0xFFFF);   // генерация — long, 4 ячейки
+                case 4 -> (int) ( currentGeneration         & 0xFFFF);   // generation is a long, 4 cells
                 case 5 -> (int) ((currentGeneration >> 16) & 0xFFFF);
                 case 6 -> (int) ((currentGeneration >> 32) & 0xFFFF);
                 case 7 -> (int) ((currentGeneration >> 48) & 0xFFFF);
@@ -98,7 +97,7 @@ public class PanelCombinerBlockEntity extends BlockEntity implements MenuProvide
 
         boolean canSee = level.canSeeSky(pos.above());
         boolean isDay  = level.isDay();
-        long total = 0;   // в int переполнялось после ~2,1 млрд и уходило в минус → генерация 0
+        long total = 0;   // an int overflowed after ~2.1 billion and went negative -> generation 0
 
         if (canSee) {
             for (int i = 0; i < PANEL_SLOTS; i++) {
@@ -114,7 +113,7 @@ public class PanelCombinerBlockEntity extends BlockEntity implements MenuProvide
 
         currentGeneration = total;
         if (total > 0) {
-            buffer.addEnergy((int) Math.min(total, Integer.MAX_VALUE)); // излишек сверх буфера теряется
+            buffer.addEnergy((int) Math.min(total, Integer.MAX_VALUE)); // surplus above the buffer is lost
             changed = true;
         }
 
@@ -125,9 +124,9 @@ public class PanelCombinerBlockEntity extends BlockEntity implements MenuProvide
                 if (toGive <= 0) break;
                 BlockEntity neighbor = level.getBlockEntity(pos.relative(dir));
                 if (neighbor == null) continue;
-                var cap = neighbor.getCapability(ForgeCapabilities.ENERGY, dir.getOpposite());
+                var cap = Caps.get(neighbor, Caps.ENERGY, dir.getOpposite());
                 if (!cap.isPresent()) continue;
-                IEnergyStorage target = cap.resolve().get();
+                IEnergyStorage target = cap.get();
                 if (!target.canReceive()) continue;
                 int accepted = target.receiveEnergy(toGive, false);
                 if (accepted > 0) {
@@ -154,37 +153,30 @@ public class PanelCombinerBlockEntity extends BlockEntity implements MenuProvide
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) return lazyItems.cast();
-        if (cap == ForgeCapabilities.ENERGY)       return lazyEnergy.cast();
-        return super.getCapability(cap, side);
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.ItemHandler.BLOCK) return (T) automationHandler;
+        if (cap == Capabilities.EnergyStorage.BLOCK)       return (T) buffer;
+        return null;
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
-        lazyItems  = LazyOptional.of(() -> automationHandler);
-        lazyEnergy = LazyOptional.of(() -> buffer);
     }
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyItems.invalidate();
-        lazyEnergy.invalidate();
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag tag) {
-        tag.put("inventory", itemHandler.serializeNBT());
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.put("inventory", itemHandler.serializeNBT(registries));
         tag.putInt("energy", buffer.getEnergyStored());
-        super.saveAdditional(tag);
+        super.saveAdditional(tag, registries);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        itemHandler.deserializeNBT(tag.getCompound("inventory"));
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        itemHandler.deserializeNBT(registries, tag.getCompound("inventory"));
         buffer.setEnergy(tag.getInt("energy"));
     }
 

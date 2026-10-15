@@ -2,7 +2,7 @@ package com.jykito.industrialcore.jei;
 
 import com.jykito.industrialcore.block.entity.FluidGeneratorType;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -47,7 +47,7 @@ public class FluidGenJeiCategory implements IRecipeCategory<FluidGeneratorType> 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, FluidGeneratorType type, IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.OUTPUT, TANK_X, TANK_Y)
-               .setCustomRenderer(ForgeTypes.FLUID_STACK, new FluidTankRenderer(TANK_W, TANK_H, texture, GLASS_U, GLASS_V, TEX_W, TEX_H))
+               .setCustomRenderer(NeoForgeTypes.FLUID_STACK, new FluidTankRenderer(TANK_W, TANK_H, texture, GLASS_U, GLASS_V, TEX_W, TEX_H))
                .addFluidStack(type.fluid, type.mbPerCycle);
     }
 

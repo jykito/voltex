@@ -1,4 +1,9 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import java.util.Optional;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.energy.MachineEnergy;
 import com.jykito.industrialcore.item.upgrade.PortUpgradeItem;
@@ -15,21 +20,18 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Энергетический разъём мультиблока: только вход FE, наружу не отдаёт. Ёмкость задаёт
- * улучшение порта. Ядро забирает энергию напрямую через {@link #getEnergy()}.
+ * Multiblock energy connector: FE input only, gives nothing outside. Capacity is set by
+ * the port upgrade. The core takes energy directly through {@link #getEnergy()}.
  */
-public class EnergyPortBlockEntity extends BlockEntity implements MenuProvider {
+public class EnergyPortBlockEntity extends BlockEntity implements Caps.Provider, MenuProvider {
 
-    /** Буфер с изменяемой ёмкостью: приём без лимита за вызов, отдачи наружу нет. */
+    /** Buffer with variable capacity: no per-call intake limit, nothing goes outside. */
     public static class PortEnergy extends MachineEnergy {
         PortEnergy() { super(PortUpgradeItem.energy(0), Integer.MAX_VALUE, 0); }
         void setCapacity(int cap) { capacity = cap; energy = Math.min(energy, cap); }
@@ -42,13 +44,12 @@ public class EnergyPortBlockEntity extends BlockEntity implements MenuProvider {
             return r;
         }
     };
-    private LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.empty();
     private int tier;
 
     private final ItemStackHandler upgrade = new ItemStackHandler(1) {
         @Override public int getSlotLimit(int slot) { return 1; }
         @Override public boolean isItemValid(int slot, @NotNull ItemStack stack) { return stack.getItem() instanceof PortUpgradeItem; }
-        /** Снять улучшение можно, только если заряд влезет в буфер без него. */
+        /** The upgrade can be removed only if the charge fits into the buffer without it. */
         @Override public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
             return energy.getEnergyStored() <= PortUpgradeItem.energy(0) ? super.extractItem(slot, amount, simulate) : ItemStack.EMPTY;
         }
@@ -81,13 +82,13 @@ public class EnergyPortBlockEntity extends BlockEntity implements MenuProvider {
         energy.setCapacity(PortUpgradeItem.energy(tier));
     }
 
-    @Override public void onLoad() { super.onLoad(); lazyEnergy = LazyOptional.of(() -> energy); }
-    @Override public void invalidateCaps() { super.invalidateCaps(); lazyEnergy.invalidate(); }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY) return lazyEnergy.cast();
-        return super.getCapability(cap, side);
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.EnergyStorage.BLOCK) return (T) energy;
+        return null;
     }
 
     @Override public Component getDisplayName() { return Component.translatable(getBlockState().getBlock().getDescriptionId()); }
@@ -98,16 +99,16 @@ public class EnergyPortBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put("upgrade", upgrade.serializeNBT());
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        tag.put("upgrade", upgrade.serializeNBT(registries));
         tag.putInt("energy", energy.getEnergyStored());
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        upgrade.deserializeNBT(tag.getCompound("upgrade"));
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        upgrade.deserializeNBT(registries, tag.getCompound("upgrade"));
         applyTier();
         energy.setEnergy(tag.getInt("energy"));
     }

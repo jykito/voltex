@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.block.custom.CapsuleFillerBlock;
 import com.jykito.industrialcore.energy.MachineEnergy;
@@ -21,25 +25,22 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fluids.FluidActionResult;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.fluids.FluidActionResult;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvider {
+public class CapsuleFillerBlockEntity extends BlockEntity implements Caps.Provider, MenuProvider {
 
-    // База под работу без модуля: 8 капсул. Под параллели бак растёт сам, см. AdaptiveTank.
+    // Base for running without a module: 8 capsules. With parallel the tank grows by itself, see AdaptiveTank.
     private static final int TANK_CAP = 8000;
     private static final int FLUID_PER_CAPSULE = 1000;
     private static final int BASE_TIME = 40;
@@ -50,7 +51,7 @@ public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvide
         @Override public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             return switch (slot) {
 
-                case 0 -> stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).map(h -> {
+                case 0 -> Caps.get(stack, Caps.FLUID_HANDLER_ITEM).map(h -> {
                     for (int t = 0; t < h.getTanks(); t++)
                         if (h.getFluidInTank(t).getAmount() < h.getTankCapacity(t)) return true;
                     return false;
@@ -61,7 +62,6 @@ public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvide
             };
         }
     };
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
     private final IItemHandlerModifiable automationHandler = new IItemHandlerModifiable() {
         @Override public void setStackInSlot(int slot, @NotNull ItemStack stack) { itemHandler.setStackInSlot(slot, stack); }
         @Override public int getSlots() { return itemHandler.getSlots(); }
@@ -79,8 +79,7 @@ public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvide
     };
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
-    private final MachineEnergy energyStorage = MachineEnergy.consumer(50_000, 50_000); // приём = буфер, без потолка на вход
-    private LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.empty();
+    private final MachineEnergy energyStorage = MachineEnergy.consumer(50_000, 50_000); // intake = buffer, no input cap
 
     public final FluidTank inputTank = new FluidTank(TANK_CAP) {
         @Override protected void onContentsChanged() {
@@ -100,7 +99,6 @@ public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvide
         @Override public @NotNull FluidStack drain(FluidStack resource, FluidAction action) { return FluidStack.EMPTY; }
         @Override public @NotNull FluidStack drain(int maxDrain, FluidAction action) { return FluidStack.EMPTY; }
     };
-    private LazyOptional<IFluidHandler> lazyFluid = LazyOptional.empty();
 
     private int progress = 0;
     private int maxProgress = BASE_TIME;
@@ -133,7 +131,7 @@ public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvide
 
         MachineUpgrades upg = MachineUpgrades.scan(itemHandler, 2, 5);
         if (AdaptiveTank.resize(inputTank, TANK_CAP, upg.parallel()))
-            level.sendBlockUpdated(pos, state, state, 3); // шкала бака считается от ёмкости, клиенту нужна новая
+            level.sendBlockUpdated(pos, state, state, 3); // the tank gauge is computed from capacity, the client needs the new one
 
         maxProgress = upg.scaleTime(BASE_TIME);
         int fePerTick = upg.scaleEnergy(BASE_FE_PER_TICK);
@@ -146,7 +144,7 @@ public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvide
         if (fr != null) {
             int outRoom = output.isEmpty()
                     ? fr.result().getMaxStackSize()
-                    : (ItemStack.isSameItemSameTags(output, fr.result()) ? output.getMaxStackSize() - output.getCount() : 0);
+                    : (ItemStack.isSameItemSameComponents(output, fr.result()) ? output.getMaxStackSize() - output.getCount() : 0);
             int actualParallel = Math.min(upg.parallel(), Math.min(input.getCount(),
                     Math.min(inputTank.getFluidAmount() / fr.consumed(), outRoom)));
 
@@ -186,9 +184,9 @@ public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvide
     private FillResult simulateFill(ItemStack containerStack) {
         if (containerStack.isEmpty()) return null;
         if (inputTank.getFluidAmount() < FLUID_PER_CAPSULE) return null;
-        if (!containerStack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).isPresent()) return null;
+        if (!Caps.get(containerStack, Caps.FLUID_HANDLER_ITEM).isPresent()) return null;
 
-        ItemStack single = ItemHandlerHelper.copyStackWithSize(containerStack, 1);
+        ItemStack single = containerStack.copyWithCount(1);
         FluidActionResult sim = FluidUtil.tryFillContainer(single, inputTank, FLUID_PER_CAPSULE, null, false);
         if (!sim.isSuccess()) return null;
 
@@ -199,14 +197,14 @@ public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvide
     }
 
     private static int fluidContent(ItemStack stack) {
-        return stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).map(h -> {
+        return Caps.get(stack, Caps.FLUID_HANDLER_ITEM).map(h -> {
             int total = 0;
             for (int t = 0; t < h.getTanks(); t++) total += h.getFluidInTank(t).getAmount();
             return total;
         }).orElse(0);
     }
 
-    @Override public CompoundTag getUpdateTag() { return saveWithoutMetadata(); }
+    @Override public CompoundTag getUpdateTag(HolderLookup.Provider registries) { return saveWithoutMetadata(registries); }
     @Nullable @Override public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
@@ -219,42 +217,34 @@ public class CapsuleFillerBlockEntity extends BlockEntity implements MenuProvide
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY)        return lazyEnergy.cast();
-        if (cap == ForgeCapabilities.ITEM_HANDLER)  return lazyItemHandler.cast();
-        if (cap == ForgeCapabilities.FLUID_HANDLER) return lazyFluid.cast();
-        return super.getCapability(cap, side);
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.EnergyStorage.BLOCK)        return (T) energyStorage;
+        if (cap == Capabilities.ItemHandler.BLOCK)  return (T) automationHandler;
+        if (cap == Capabilities.FluidHandler.BLOCK) return (T) fillOnlyHandler;
+        return null;
     }
 
     @Override public void onLoad() {
         super.onLoad();
-        lazyEnergy = LazyOptional.of(() -> energyStorage);
-        lazyItemHandler = LazyOptional.of(() -> automationHandler);
-        lazyFluid = LazyOptional.of(() -> fillOnlyHandler);
     }
 
-    @Override public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyEnergy.invalidate();
-        lazyItemHandler.invalidate();
-        lazyFluid.invalidate();
-    }
-
-    @Override protected void saveAdditional(CompoundTag tag) {
-        tag.put("inventory", itemHandler.serializeNBT());
+    @Override protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.put("inventory", itemHandler.serializeNBT(registries));
         tag.putInt("energy", energyStorage.getEnergyStored());
-        tag.put("inputTank", inputTank.writeToNBT(new CompoundTag()));
+        tag.put("inputTank", inputTank.writeToNBT(registries, new CompoundTag()));
         AdaptiveTank.save(tag, "inputTankCapacity", inputTank);
         tag.putInt("progress", progress);
-        super.saveAdditional(tag);
+        super.saveAdditional(tag, registries);
     }
 
-    @Override public void load(CompoundTag tag) {
-        super.load(tag);
-        itemHandler.deserializeNBT(tag.getCompound("inventory"));
+    @Override public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        itemHandler.deserializeNBT(registries, tag.getCompound("inventory"));
         energyStorage.setEnergy(tag.getInt("energy"));
         AdaptiveTank.load(tag, "inputTankCapacity", inputTank, TANK_CAP);
-        inputTank.readFromNBT(tag.getCompound("inputTank"));
+        inputTank.readFromNBT(registries, tag.getCompound("inputTank"));
         progress = tag.getInt("progress");
     }
 

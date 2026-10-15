@@ -1,0 +1,53 @@
+{
+  "keys": [
+    {
+      "name": "result",
+      "role": "output",
+      "type": "item_stack"
+    },
+    {
+      "name": "ingredient",
+      "role": "input",
+      "type": "ingredient"
+    },
+    {
+      "name": "additive",
+      "role": "input",
+      "type": "ingredient",
+      "default_optional": true
+    },
+    {
+      "name": "inputCount",
+      "type": "int",
+      "optional": 1
+    },
+    {
+      "name": "additiveCount",
+      "type": "int",
+      "optional": 1
+    },
+    {
+      "name": "waterAmount",
+      "type": "int",
+      "optional": 250
+    },
+    {
+      "name": "requiredHeat",
+      "type": "int",
+      "optional": 800
+    },
+    {
+      "name": "processingTime",
+      "type": "int",
+      "optional": 400
+    },
+    {
+      "name": "energyCostPerTick",
+      "type": "int",
+      "optional": 60
+    }
+  ],
+  "unique": [
+    "result"
+  ]
+}

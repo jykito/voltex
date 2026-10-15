@@ -6,14 +6,14 @@ import appeng.api.stacks.AEItemKey;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 /**
- * МЭ-выход: всё, что ядро положило в слоты и бак, уходит в сеть. Заказ автокрафта AE2 ловит свои
- * результаты при вставке в сеть, поэтому пара «порт шаблонов + МЭ-выход» закрывает цикл крафта.
- * Если сеть не принимает (нет места или энергии), продукт ждёт в порте.
+ * ME output: everything the core put into the slots and tank goes to the network. An AE2 autocraft job catches its
+ * results when they are inserted into the network, so the "pattern port + ME output" pair closes the crafting loop.
+ * If the network does not accept (no room or energy), the product waits in the port.
  */
 class MeOutputPortBlockEntity extends MePortBlockEntity {
 
@@ -21,7 +21,7 @@ class MeOutputPortBlockEntity extends MePortBlockEntity {
         super(pos, state);
     }
 
-    /** Продукт сразу уходит в сеть, одного бака под очередь хватает. */
+    /** The product goes to the network right away, one tank is enough for the queue. */
     @Override public int maxTanks() { return 1; }
 
     @Override

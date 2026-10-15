@@ -1,4 +1,9 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import java.util.Optional;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.block.custom.BarrelBlock;
 import net.minecraft.core.BlockPos;
@@ -9,20 +14,16 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class BarrelBlockEntity extends BlockEntity {
+public class BarrelBlockEntity extends BlockEntity implements Caps.Provider  {
 
     private final int capacity;
     private final FluidTank tank;
-    private LazyOptional<IFluidHandler> lazyTank = LazyOptional.empty();
 
     public BarrelBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.BARREL_BE.get(), pos, state);
@@ -40,26 +41,46 @@ public class BarrelBlockEntity extends BlockEntity {
     public FluidStack getFluidView() { return tank.getFluid(); }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.FLUID_HANDLER) return lazyTank.cast();
-        return super.getCapability(cap, side);
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.FluidHandler.BLOCK) return (T) tank;
+        return null;
     }
 
-    @Override public void onLoad()         { super.onLoad();         lazyTank = LazyOptional.of(() -> tank); }
-    @Override public void invalidateCaps() { super.invalidateCaps(); lazyTank.invalidate(); }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        tag.put("fluid", tank.writeToNBT(new CompoundTag()));
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.put("fluid", tank.writeToNBT(registries, new CompoundTag()));
+        super.saveAdditional(tag, registries);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        if (tag.contains("fluid")) tank.readFromNBT(tag.getCompound("fluid"));
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        if (tag.contains("fluid")) tank.readFromNBT(registries, tag.getCompound("fluid"));
     }
 
-    @Override public CompoundTag getUpdateTag() { return saveWithoutMetadata(); }
+    /** The fluid travels with the dropped barrel item (loot table copy_components) and comes back on placement. */
+    @Override
+    protected void collectImplicitComponents(net.minecraft.core.component.DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+        if (!tank.isEmpty())
+            components.set(com.jykito.industrialcore.item.ModDataComponents.FLUID_CONTENT.get(), net.neoforged.neoforge.fluids.SimpleFluidContent.copyOf(tank.getFluid()));
+    }
+
+    @Override
+    protected void applyImplicitComponents(BlockEntity.DataComponentInput input) {
+        super.applyImplicitComponents(input);
+        var content = input.get(com.jykito.industrialcore.item.ModDataComponents.FLUID_CONTENT.get());
+        if (content != null) tank.setFluid(content.copy());
+    }
+
+    @Override
+    public void removeComponentsFromTag(CompoundTag tag) {
+        tag.remove("fluid");
+    }
+
+    @Override public CompoundTag getUpdateTag(HolderLookup.Provider registries) { return saveWithoutMetadata(registries); }
     @Nullable @Override public Packet<ClientGamePacketListener> getUpdatePacket() { return ClientboundBlockEntityDataPacket.create(this); }
 }

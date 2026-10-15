@@ -1,5 +1,11 @@
 package com.jykito.industrialcore.recipe;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.Codec;
 
+import net.minecraft.core.HolderLookup;
 import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
@@ -12,10 +18,9 @@ import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-public class BlastFurnaceRecipe implements Recipe<SimpleContainer> {
+public class BlastFurnaceRecipe implements Recipe<ContainerInput> {
 
-    private final ResourceLocation id;
-    /** Рецепт только для лейт-машины (её промышленный режим); малая машина его не видит. */
+    /** Recipe for the late machine only (its industrial mode); the small machine does not see it. */
     private boolean lateOnly;
     private final Ingredient ingredient;
     private final int ingredientCount;
@@ -25,11 +30,9 @@ public class BlastFurnaceRecipe implements Recipe<SimpleContainer> {
     private final int processingTime;
     private final int requiredHeat;
 
-    public BlastFurnaceRecipe(ResourceLocation id,
-                               Ingredient ingredient, int ingredientCount,
+    public BlastFurnaceRecipe(Ingredient ingredient, int ingredientCount,
                                Ingredient fuel, int fuelCount,
                                ItemStack result, int processingTime, int requiredHeat) {
-        this.id              = id;
         this.ingredient      = ingredient;
         this.ingredientCount = ingredientCount;
         this.fuel            = fuel;
@@ -42,7 +45,7 @@ public class BlastFurnaceRecipe implements Recipe<SimpleContainer> {
     public boolean isLateOnly() { return lateOnly; }
 
     @Override
-    public boolean matches(SimpleContainer container, Level level) {
+    public boolean matches(ContainerInput container, Level level) {
         if (lateOnly) return false;
         if (level.isClientSide()) return false;
         return ingredientSlot(container.getItem(0), container.getItem(1)) >= 0;
@@ -56,10 +59,10 @@ public class BlastFurnaceRecipe implements Recipe<SimpleContainer> {
         return -1;
     }
 
-    @Override public ItemStack assemble(SimpleContainer c, RegistryAccess a) { return result.copy(); }
+    @Override public ItemStack assemble(ContainerInput c, HolderLookup.Provider a) { return result.copy(); }
     @Override public boolean canCraftInDimensions(int w, int h) { return true; }
     @Override public boolean isSpecial() { return true; }
-    @Override public ItemStack getResultItem(RegistryAccess a) { return result.copy(); }
+    @Override public ItemStack getResultItem(HolderLookup.Provider a) { return result.copy(); }
 
     public Ingredient getIngredient()     { return ingredient; }
     public int        getIngredientCount(){ return ingredientCount; }
@@ -76,48 +79,52 @@ public class BlastFurnaceRecipe implements Recipe<SimpleContainer> {
         return list;
     }
 
-    @Override public ResourceLocation getId()           { return id; }
     @Override public RecipeSerializer<?> getSerializer() { return ModRecipes.BLAST_FURNACE_SERIALIZER.get(); }
     @Override public RecipeType<?> getType()            { return ModRecipes.BLAST_FURNACE_TYPE.get(); }
 
     public static class Serializer implements RecipeSerializer<BlastFurnaceRecipe> {
         public static final Serializer INSTANCE = new Serializer();
 
-        @Override
-        public BlastFurnaceRecipe fromJson(ResourceLocation id, JsonObject json) {
-            Ingredient ingredient     = Ingredient.fromJson(GsonHelper.getAsJsonObject(json, "ingredient"));
-            int        ingredientCount = GsonHelper.getAsInt(json, "ingredientCount", 1);
-            Ingredient fuel           = Ingredient.fromJson(GsonHelper.getAsJsonObject(json, "fuel"));
-            int        fuelCount      = GsonHelper.getAsInt(json, "fuelCount", 1);
-            ItemStack  result         = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
-            int        processingTime = GsonHelper.getAsInt(json, "processingTime", 300);
-            int        requiredHeat   = GsonHelper.getAsInt(json, "requiredHeat", 2400);
-            BlastFurnaceRecipe recipe__ = new BlastFurnaceRecipe(id, ingredient, ingredientCount, fuel, fuelCount, result, processingTime, requiredHeat);
-            recipe__.lateOnly = GsonHelper.getAsBoolean(json, "lateOnly", false);
-            return recipe__;
-        }
+        private static final MapCodec<BlastFurnaceRecipe> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(r -> r.ingredient),
+                Codec.INT.optionalFieldOf("ingredientCount", 1).forGetter(r -> r.ingredientCount),
+                Ingredient.CODEC_NONEMPTY.fieldOf("fuel").forGetter(r -> r.fuel),
+                Codec.INT.optionalFieldOf("fuelCount", 1).forGetter(r -> r.fuelCount),
+                ItemStack.CODEC.fieldOf("result").forGetter(r -> r.result),
+                Codec.INT.optionalFieldOf("processingTime", 300).forGetter(r -> r.processingTime),
+                Codec.INT.optionalFieldOf("requiredHeat", 2400).forGetter(r -> r.requiredHeat),
+                Codec.BOOL.optionalFieldOf("lateOnly", false).forGetter(r -> r.lateOnly)
+        ).apply(i, (ingredient, ingredientCount, fuel, fuelCount, result, time, heat, lateOnly) -> {
+            BlastFurnaceRecipe r = new BlastFurnaceRecipe(ingredient, ingredientCount, fuel, fuelCount, result, time, heat);
+            r.lateOnly = lateOnly;
+            return r;
+        }));
 
-        @Override
-        public @Nullable BlastFurnaceRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
-            Ingredient ingredient     = Ingredient.fromNetwork(buf);
+        private static final StreamCodec<RegistryFriendlyByteBuf, BlastFurnaceRecipe> STREAM_CODEC =
+                StreamCodec.of(Serializer::write, Serializer::read);
+
+        @Override public MapCodec<BlastFurnaceRecipe> codec() { return CODEC; }
+        @Override public StreamCodec<RegistryFriendlyByteBuf, BlastFurnaceRecipe> streamCodec() { return STREAM_CODEC; }
+
+        private static BlastFurnaceRecipe read(RegistryFriendlyByteBuf buf) {
+            Ingredient ingredient      = RecipeCodecs.readIngredient(buf);
             int        ingredientCount = buf.readInt();
-            Ingredient fuel           = Ingredient.fromNetwork(buf);
-            int        fuelCount      = buf.readInt();
-            ItemStack  result         = buf.readItem();
-            int        processingTime = buf.readInt();
-            int        requiredHeat   = buf.readInt();
-            BlastFurnaceRecipe recipe__ = new BlastFurnaceRecipe(id, ingredient, ingredientCount, fuel, fuelCount, result, processingTime, requiredHeat);
-            recipe__.lateOnly = buf.readBoolean();
-            return recipe__;
+            Ingredient fuel            = RecipeCodecs.readIngredient(buf);
+            int        fuelCount       = buf.readInt();
+            ItemStack  result          = RecipeCodecs.readItem(buf);
+            int        processingTime  = buf.readInt();
+            int        requiredHeat    = buf.readInt();
+            BlastFurnaceRecipe recipe = new BlastFurnaceRecipe(ingredient, ingredientCount, fuel, fuelCount, result, processingTime, requiredHeat);
+            recipe.lateOnly = buf.readBoolean();
+            return recipe;
         }
 
-        @Override
-        public void toNetwork(FriendlyByteBuf buf, BlastFurnaceRecipe r) {
-            r.ingredient.toNetwork(buf);
+        private static void write(RegistryFriendlyByteBuf buf, BlastFurnaceRecipe r) {
+            RecipeCodecs.writeIngredient(buf, r.ingredient);
             buf.writeInt(r.ingredientCount);
-            r.fuel.toNetwork(buf);
+            RecipeCodecs.writeIngredient(buf, r.fuel);
             buf.writeInt(r.fuelCount);
-            buf.writeItem(r.result);
+            RecipeCodecs.writeItem(buf, r.result);
             buf.writeInt(r.processingTime);
             buf.writeInt(r.requiredHeat);
             buf.writeBoolean(r.lateOnly);

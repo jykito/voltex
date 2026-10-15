@@ -3,7 +3,7 @@ package com.jykito.industrialcore.jei;
 import com.jykito.industrialcore.IndustrialCore;
 import com.jykito.industrialcore.recipe.FluidEnricherRecipe;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -21,7 +21,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +29,7 @@ import java.util.List;
 public class FluidEnricherJeiCategory implements IRecipeCategory<FluidEnricherRecipe> {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/jei/jei_fluid_enricher.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/jei/jei_fluid_enricher.png");
     private static final int TEX_W = 154, TEX_H = 160, VIS_W = 154, VIS_H = 84;
 
     private static final int INTANK_X = 13, INTANK_Y = 10, OUTTANK_X = 125, OUTTANK_Y = 10;
@@ -65,7 +65,7 @@ public class FluidEnricherJeiCategory implements IRecipeCategory<FluidEnricherRe
         FluidStack in = recipe.makeFluidInput();
         IRecipeSlotBuilder inTank = builder.addSlot(RecipeIngredientRole.INPUT, INTANK_X, INTANK_Y);
         if (!in.isEmpty())
-            inTank.setCustomRenderer(ForgeTypes.FLUID_STACK,
+            inTank.setCustomRenderer(NeoForgeTypes.FLUID_STACK,
                        new FluidTankRenderer(TANK_W, TANK_H, TEXTURE, GLASS_U, GLASS_V, TEX_W, TEX_H))
                   .addFluidStack(in.getFluid(), in.getAmount());
 
@@ -78,7 +78,7 @@ public class FluidEnricherJeiCategory implements IRecipeCategory<FluidEnricherRe
         FluidStack out = recipe.makeFluidOutput();
         IRecipeSlotBuilder outTank = builder.addSlot(RecipeIngredientRole.OUTPUT, OUTTANK_X, OUTTANK_Y);
         if (!out.isEmpty())
-            outTank.setCustomRenderer(ForgeTypes.FLUID_STACK,
+            outTank.setCustomRenderer(NeoForgeTypes.FLUID_STACK,
                        new FluidTankRenderer(TANK_W, TANK_H, TEXTURE, GLASS_U, GLASS_V, TEX_W, TEX_H))
                    .addFluidStack(out.getFluid(), out.getAmount());
     }

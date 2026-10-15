@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " A ",
+    "BCB",
+    " D "
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:rubber"
+    },
+    "B": {
+      "tag": "c:plates/aluminum"
+    },
+    "C": {
+      "tag": "c:plates/lapis"
+    },
+    "D": {
+      "item": "industrial_core:bare_copper_wire"
+    }
+  },
+  "result": {
+    "id": "industrial_core:condensator",
+    "count": 1
+  }
+}

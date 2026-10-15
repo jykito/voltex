@@ -1,0 +1,47 @@
+{
+  "keys": [
+    {
+      "name": "result",
+      "role": "output",
+      "type": "item_stack"
+    },
+    {
+      "name": "ingredient",
+      "role": "input",
+      "type": "ingredient"
+    },
+    {
+      "name": "fuel",
+      "role": "input",
+      "type": "ingredient"
+    },
+    {
+      "name": "ingredientCount",
+      "type": "int",
+      "optional": 1
+    },
+    {
+      "name": "fuelCount",
+      "type": "int",
+      "optional": 1
+    },
+    {
+      "name": "processingTime",
+      "type": "int",
+      "optional": 300
+    },
+    {
+      "name": "requiredHeat",
+      "type": "int",
+      "optional": 2400
+    },
+    {
+      "name": "lateOnly",
+      "type": "boolean",
+      "optional": false
+    }
+  ],
+  "unique": [
+    "result"
+  ]
+}

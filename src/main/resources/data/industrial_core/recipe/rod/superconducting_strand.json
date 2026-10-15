@@ -1,0 +1,17 @@
+{
+  "type": "industrial_core:rod_fabrication_recipe",
+  "result": {
+    "id": "industrial_core:superconducting_strand",
+    "count": 1
+  },
+  "ingredient1": {
+    "item": "industrial_core:superconducting_wire"
+  },
+  "ingredient2": {
+    "item": "industrial_core:cryolite"
+  },
+  "count1": 4,
+  "count2": 1,
+  "processingTime": 200,
+  "energyCostPerTick": 400
+}

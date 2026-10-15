@@ -1,0 +1,19 @@
+{
+  "type": "industrial_core:ore_washing_recipe",
+  "ingredient": {
+    "item": "minecraft:sand"
+  },
+  "inputCount": 2,
+  "waterAmount": 1000,
+  "result": {
+    "id": "industrial_core:silicon_dust",
+    "count": 1
+  },
+  "byproduct": {
+    "id": "industrial_core:mineral_dust",
+    "count": 1
+  },
+  "byproductChance": 0.4,
+  "processingTime": 200,
+  "energyCostPerTick": 40
+}

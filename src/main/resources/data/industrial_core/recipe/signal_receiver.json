@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:gold_conductor"
+    },
+    "B": {
+      "item": "minecraft:ender_pearl"
+    },
+    "C": {
+      "tag": "c:dusts/redstone"
+    },
+    "D": {
+      "item": "industrial_core:textolite_board"
+    },
+    "E": {
+      "item": "industrial_core:crystal_plate"
+    }
+  },
+  "result": {
+    "id": "industrial_core:signal_receiver",
+    "count": 1
+  }
+}

@@ -1,15 +1,27 @@
 package com.jykito.industrialcore.networking;
 
+import com.jykito.industrialcore.IndustrialCore;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+
 import com.jykito.industrialcore.block.entity.RecipeExporterBlockEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.network.NetworkEvent;
 
-import java.util.function.Supplier;
 
-public class ExportRecipePacket {
+public class ExportRecipePacket implements CustomPacketPayload {
+    public static final Type<ExportRecipePacket> TYPE =
+            new Type<>(ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "export_recipe"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ExportRecipePacket> STREAM_CODEC =
+            StreamCodec.ofMember(ExportRecipePacket::toBytes, ExportRecipePacket::new);
+
+    @Override
+    public Type<ExportRecipePacket> type() { return TYPE; }
+
     private final BlockPos pos;
     private final boolean shapeless;
 
@@ -18,20 +30,19 @@ public class ExportRecipePacket {
         this.shapeless = shapeless;
     }
 
-    public ExportRecipePacket(FriendlyByteBuf buf) {
+    public ExportRecipePacket(RegistryFriendlyByteBuf buf) {
         this.pos = buf.readBlockPos();
         this.shapeless = buf.readBoolean();
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
+    public void toBytes(RegistryFriendlyByteBuf buf) {
         buf.writeBlockPos(pos);
         buf.writeBoolean(shapeless);
     }
 
-    public boolean handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
+    public void handle(IPayloadContext context) {
         context.enqueueWork(() -> {
-            ServerPlayer player = context.getSender();
+            ServerPlayer player = (ServerPlayer) context.player();
             if (player == null) return;
 
             if (!player.level().isLoaded(pos)) return;
@@ -40,7 +51,6 @@ public class ExportRecipePacket {
             if (be instanceof RecipeExporterBlockEntity exporter) {
                 exporter.exportRecipe(player, shapeless);
             }
-        });
-        return true;
+        });
     }
 }

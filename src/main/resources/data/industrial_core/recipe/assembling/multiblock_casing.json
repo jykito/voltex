@@ -1,0 +1,35 @@
+{
+  "type": "industrial_core:assembling",
+  "inputs": [
+    {
+      "item": "industrial_core:armor_sheet",
+      "count": 16
+    },
+    {
+      "item": "industrial_core:structural_block",
+      "count": 32
+    },
+    {
+      "item": "industrial_core:kronit",
+      "count": 16
+    },
+    {
+      "item": "industrial_core:hardened_steel_ingot",
+      "count": 64
+    },
+    {
+      "item": "industrial_core:composite",
+      "count": 16
+    }
+  ],
+  "fluid": {
+    "id": "industrial_core:mechanical_alloy",
+    "amount": 8000
+  },
+  "result": {
+    "id": "industrial_core:multiblock_casing",
+    "count": 64
+  },
+  "processingTime": 1200,
+  "energyCostPerTick": 16000
+}

@@ -12,7 +12,12 @@ import com.jykito.industrialcore.block.entity.HubBlockEntity;
 import com.jykito.industrialcore.block.entity.LogisticsNodeBlockEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
+import com.jykito.industrialcore.item.ModDataComponents;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -28,13 +33,25 @@ import java.util.List;
 
 public class LogisticsLinkerItem extends Item {
 
-    private static final String KEY_SOURCE = "source";
-    /** Измерение и род источника: связка «буровой маяк → промышленный шахтёр» работает между измерениями. */
-    private static final String KEY_SOURCE_DIM = "source_dim", KEY_SOURCE_KIND = "source_kind";
+    /**
+     * The selected source of a link. Dimension and kind are kept because the "drill beacon -> industrial miner" link
+     * works across dimensions. Kind: "beacon", "miner" or "other".
+     */
+    public record LinkSource(BlockPos pos, ResourceLocation dim, String kind) {
+        public static final Codec<LinkSource> CODEC = RecordCodecBuilder.create(i -> i.group(
+                BlockPos.CODEC.fieldOf("pos").forGetter(LinkSource::pos),
+                ResourceLocation.CODEC.fieldOf("dim").forGetter(LinkSource::dim),
+                Codec.STRING.fieldOf("kind").forGetter(LinkSource::kind)).apply(i, LinkSource::new));
+        public static final StreamCodec<ByteBuf, LinkSource> STREAM_CODEC = StreamCodec.composite(
+                BlockPos.STREAM_CODEC, LinkSource::pos,
+                ResourceLocation.STREAM_CODEC, LinkSource::dim,
+                ByteBufCodecs.STRING_UTF8, LinkSource::kind,
+                LinkSource::new);
+    }
 
     public LogisticsLinkerItem(Properties props) { super(props); }
 
-    // onItemUseFirst — вызывается ДО block.use(), иначе GUI-блоки (ядро/нода/хаб) открывали бы окно раньше бинда
+    // onItemUseFirst is called BEFORE block.use(), otherwise GUI blocks (core/node/hub) would open their window before the bind
     @Override
     public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext ctx) {
         Level level = ctx.getLevel();
@@ -43,12 +60,12 @@ public class LogisticsLinkerItem extends Item {
         if (player == null) return InteractionResult.PASS;
 
         ItemStack linker = ctx.getItemInHand();
-        CompoundTag tag = linker.getOrCreateTag();
+        LinkSource src = linker.get(ModDataComponents.LINK_SOURCE.get());
 
         if (player.isShiftKeyDown()) {
             if (!level.isClientSide()) {
-                if (tag.contains(KEY_SOURCE)) {
-                    clearSource(tag);
+                if (src != null) {
+                    clearSource(linker);
                     player.displayClientMessage(msg("msg.industrial_core.linker.cancelled", ChatFormatting.YELLOW), true);
                 } else {
                     BlockEntity be = level.getBlockEntity(pos);
@@ -62,34 +79,32 @@ public class LogisticsLinkerItem extends Item {
         }
 
         BlockEntity be = level.getBlockEntity(pos);
-        if (be instanceof IndustrialMinerFrameBlockEntity frame && frame.core() != null) { be = frame.core(); pos = be.getBlockPos(); }   // каркас = его ядро
+        if (be instanceof IndustrialMinerFrameBlockEntity frame && frame.core() != null) { be = frame.core(); pos = be.getBlockPos(); }   // frame = its core
         if (!isLinkable(be)) return InteractionResult.PASS;
 
-        if (!tag.contains(KEY_SOURCE)) {
+        if (src == null) {
 
             if (!level.isClientSide()) {
-                tag.putLong(KEY_SOURCE, pos.asLong());
-                tag.putString(KEY_SOURCE_DIM, level.dimension().location().toString());
-                tag.putString(KEY_SOURCE_KIND, be instanceof DrillBeaconBlockEntity ? "beacon" : be instanceof IndustrialMinerCoreBlockEntity ? "miner" : "other");
+                linker.set(ModDataComponents.LINK_SOURCE.get(), new LinkSource(pos.immutable(), level.dimension().location(),
+                        be instanceof DrillBeaconBlockEntity ? "beacon" : be instanceof IndustrialMinerCoreBlockEntity ? "miner" : "other"));
                 player.displayClientMessage(msg("msg.industrial_core.linker.source_selected", ChatFormatting.AQUA), true);
             }
             return InteractionResult.sidedSuccess(level.isClientSide());
         }
 
         if (!level.isClientSide()) {
-            BlockPos srcPos = BlockPos.of(tag.getLong(KEY_SOURCE));
-            ResourceKey<Level> srcDim = tag.contains(KEY_SOURCE_DIM)
-                    ? ResourceKey.create(Registries.DIMENSION, new ResourceLocation(tag.getString(KEY_SOURCE_DIM))) : level.dimension();
+            BlockPos srcPos = src.pos();
+            ResourceKey<Level> srcDim = ResourceKey.create(Registries.DIMENSION, src.dim());
 
-            if (linkSite(level, player, tag, be, srcPos, srcDim)) return InteractionResult.sidedSuccess(level.isClientSide());
+            if (linkSite(level, player, linker, src.kind(), be, srcPos, srcDim)) return InteractionResult.sidedSuccess(level.isClientSide());
             if (!srcDim.equals(level.dimension())) {
-                clearSource(tag);
+                clearSource(linker);
                 player.displayClientMessage(msg("msg.industrial_core.linker.source_invalid", ChatFormatting.RED), true);
                 return InteractionResult.FAIL;
             }
 
             if (srcPos.equals(pos)) {
-                clearSource(tag);
+                clearSource(linker);
                 player.displayClientMessage(msg("msg.industrial_core.linker.selection_reset", ChatFormatting.GRAY), true);
                 return InteractionResult.sidedSuccess(level.isClientSide());
             }
@@ -101,12 +116,12 @@ public class LogisticsLinkerItem extends Item {
 
             BlockEntity srcBe = level.getBlockEntity(srcPos);
             if (!isLinkable(srcBe)) {
-                clearSource(tag);
+                clearSource(linker);
                 player.displayClientMessage(msg("msg.industrial_core.linker.source_invalid", ChatFormatting.RED), true);
                 return InteractionResult.FAIL;
             }
 
-            // Контроллер ↔ ядро: привязка пульта (одностороннее хранение позиции ядра в контроллере)
+            // Controller <-> core: linking the console (the core position is stored one way, in the controller)
             DistantControllerBlockEntity ctrl =
                     srcBe instanceof DistantControllerBlockEntity cs ? cs
                   : be    instanceof DistantControllerBlockEntity ct ? ct : null;
@@ -115,7 +130,7 @@ public class LogisticsLinkerItem extends Item {
                   : be    instanceof ElectromagnetCoreBlockEntity kt ? kt : null;
             if (ctrl != null && linkCore != null) {
                 ctrl.setLinkedCore(linkCore.getBlockPos());
-                clearSource(tag);
+                clearSource(linker);
                 player.displayClientMessage(msg("msg.industrial_core.linker.connected", ChatFormatting.GREEN), true);
                 return InteractionResult.sidedSuccess(level.isClientSide());
             }
@@ -127,23 +142,22 @@ public class LogisticsLinkerItem extends Item {
 
             addLink(srcBe, pos);
             addLink(be, srcPos);
-            clearSource(tag);
+            clearSource(linker);
             player.displayClientMessage(msg("msg.industrial_core.linker.connected", ChatFormatting.GREEN), true);
         }
         return InteractionResult.sidedSuccess(level.isClientSide());
     }
 
-    private static void clearSource(CompoundTag tag) {
-        tag.remove(KEY_SOURCE); tag.remove(KEY_SOURCE_DIM); tag.remove(KEY_SOURCE_KIND);
+    private static void clearSource(ItemStack linker) {
+        linker.remove(ModDataComponents.LINK_SOURCE.get());
     }
 
     /**
-     * Буровой маяк ↔ промышленный шахтёр. В одном измерении — в любом порядке; маяк в другом измерении выбирают
-     * первым, потом кликают по шахтёру (его позицию нельзя проверить в чужом измерении). Дальность не ограничена.
-     * Возвращает true, если клик относился к этой связке и уже обработан.
+     * Drill beacon <-> industrial miner. In the same dimension in any order; a beacon in another dimension is selected
+     * first, then you click the miner (its position cannot be checked in another dimension). Range is unlimited.
+     * Returns true if the click belonged to this link and has been handled.
      */
-    private static boolean linkSite(Level level, Player player, CompoundTag tag, BlockEntity be, BlockPos srcPos, ResourceKey<Level> srcDim) {
-        String kind = tag.getString(KEY_SOURCE_KIND);
+    private static boolean linkSite(Level level, Player player, ItemStack linker, String kind, BlockEntity be, BlockPos srcPos, ResourceKey<Level> srcDim) {
         IndustrialMinerCoreBlockEntity miner;
         ResourceKey<Level> siteDim;
         BlockPos sitePos;
@@ -151,13 +165,13 @@ public class LogisticsLinkerItem extends Item {
             miner = m; siteDim = srcDim; sitePos = srcPos;
         } else if (be instanceof DrillBeaconBlockEntity && kind.equals("miner")) {
             if (!srcDim.equals(level.dimension()) || !(level.getBlockEntity(srcPos) instanceof IndustrialMinerCoreBlockEntity m)) {
-                clearSource(tag);
+                clearSource(linker);
                 player.displayClientMessage(msg("msg.industrial_core.linker.site_order", ChatFormatting.YELLOW), true);
                 return true;
             }
             miner = m; siteDim = level.dimension(); sitePos = be.getBlockPos();
         } else return false;
-        clearSource(tag);
+        clearSource(linker);
         switch (miner.addSite(siteDim, sitePos)) {
             case ADDED -> player.displayClientMessage(Component.translatable("msg.industrial_core.linker.site_added",
                     sitePos.getX(), sitePos.getY(), sitePos.getZ()).withStyle(ChatFormatting.GREEN), true);
@@ -168,13 +182,12 @@ public class LogisticsLinkerItem extends Item {
     }
 
     public static boolean hasSource(ItemStack stack) {
-        CompoundTag t = stack.getTag();
-        return t != null && t.contains(KEY_SOURCE);
+        return stack.has(ModDataComponents.LINK_SOURCE.get());
     }
 
     public static @Nullable BlockPos getSource(ItemStack stack) {
-        CompoundTag t = stack.getTag();
-        return (t != null && t.contains(KEY_SOURCE)) ? BlockPos.of(t.getLong(KEY_SOURCE)) : null;
+        LinkSource src = stack.get(ModDataComponents.LINK_SOURCE.get());
+        return src != null ? src.pos() : null;
     }
 
     private static boolean isLogistics(BlockEntity be) {
@@ -182,7 +195,7 @@ public class LogisticsLinkerItem extends Item {
                 || be instanceof HubBlockEntity;
     }
 
-    // Линкер соединяет всё: логистику (нода/хаб) + пульт ↔ ядро магнита
+    // The Linker connects everything: logistics (node/hub) + console <-> magnet core
     private static boolean isLinkable(BlockEntity be) {
         return isLogistics(be)
                 || be instanceof DistantControllerBlockEntity
@@ -219,13 +232,13 @@ public class LogisticsLinkerItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tip, TooltipFlag flag) {
         tip.add(Component.translatable("tooltip.industrial_core.linker.hint1").withStyle(ChatFormatting.GRAY));
         tip.add(Component.translatable("tooltip.industrial_core.linker.hint2").withStyle(ChatFormatting.GRAY));
         tip.add(Component.translatable("tooltip.industrial_core.linker.hint3").withStyle(ChatFormatting.DARK_GRAY));
-        CompoundTag tag = stack.getTag();
-        if (tag != null && tag.contains(KEY_SOURCE)) {
-            BlockPos p = BlockPos.of(tag.getLong(KEY_SOURCE));
+        LinkSource src = stack.get(ModDataComponents.LINK_SOURCE.get());
+        if (src != null) {
+            BlockPos p = src.pos();
             tip.add(Component.translatable("tooltip.industrial_core.linker.source", p.toShortString()).withStyle(ChatFormatting.AQUA));
         }
     }

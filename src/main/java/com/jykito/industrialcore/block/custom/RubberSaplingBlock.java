@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.block.custom;
+import com.mojang.serialization.MapCodec;
 
 import com.jykito.industrialcore.block.ModBlocks;
 import net.minecraft.core.BlockPos;
@@ -21,6 +22,10 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class RubberSaplingBlock extends BushBlock implements BonemealableBlock {
+
+    /** 1.21: block codec. Vanilla does not call it for mod blocks; there is one block instance, so unit is exact. */
+    @Override
+    protected MapCodec<? extends RubberSaplingBlock> codec() { return MapCodec.unit(this); }
 
     public static final IntegerProperty STAGE = BlockStateProperties.STAGE;
     protected static final VoxelShape SHAPE = Block.box(2.0D, 0.0D, 2.0D, 14.0D, 12.0D, 14.0D);
@@ -103,7 +108,7 @@ public class RubberSaplingBlock extends BushBlock implements BonemealableBlock {
     }
 
     @Override
-    public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state, boolean isClient) { return true; }
+    public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) { return true; }
 
     @Override
     public boolean isBonemealSuccess(Level level, RandomSource random, BlockPos pos, BlockState state) { return (double)level.random.nextFloat() < 0.45D; }

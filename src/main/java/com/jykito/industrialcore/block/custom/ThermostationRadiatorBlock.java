@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.block.custom;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -13,20 +14,24 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-/** Радиатор термостанции: ставится на зад расширителя; авто-ориентация рёбрами НАРУЖУ от башни, задником к ней. */
+/** Thermal station radiator: goes on the back of an expander; auto-orients with the fins facing AWAY from the tower, back towards it. */
 public class ThermostationRadiatorBlock extends HorizontalDirectionalBlock {
-    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING; // куда смотрят рёбра
+
+    /** 1.21: block codec. Vanilla does not call it for mod blocks; there is one block instance, so unit is exact. */
+    @Override
+    protected MapCodec<? extends ThermostationRadiatorBlock> codec() { return MapCodec.unit(this); }
+    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING; // where the fins face
 
     public ThermostationRadiatorBlock(Properties p) {
         super(p);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
 
-    // форма-панель по FACING: тело радиатора у стенки-крепления, рёбра смотрят наружу (глубина ~6px)
-    private static final VoxelShape S_NORTH = Block.box(0, 0, 10, 16, 16, 16); // тело у южной стены
-    private static final VoxelShape S_SOUTH = Block.box(0, 0, 0, 16, 16, 6);   // у северной
-    private static final VoxelShape S_EAST  = Block.box(0, 0, 0, 6, 16, 16);   // у западной
-    private static final VoxelShape S_WEST  = Block.box(10, 0, 0, 16, 16, 16); // у восточной
+    // panel shape by FACING: the radiator body sits against the mounting wall, fins face outwards (depth ~6px)
+    private static final VoxelShape S_NORTH = Block.box(0, 0, 10, 16, 16, 16); // body at the south wall
+    private static final VoxelShape S_SOUTH = Block.box(0, 0, 0, 16, 16, 6);   // at the north
+    private static final VoxelShape S_EAST  = Block.box(0, 0, 0, 6, 16, 16);   // at the west
+    private static final VoxelShape S_WEST  = Block.box(10, 0, 0, 16, 16, 16); // at the east
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
@@ -45,7 +50,7 @@ public class ThermostationRadiatorBlock extends HorizontalDirectionalBlock {
 
     @Nullable @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
-        // если рядом башня — рёбра смотрят ОТ неё (задник к башне); иначе по игроку
+        // if a tower is next to it, the fins face AWAY from it (back to the tower); otherwise from the player
         for (Direction d : Direction.Plane.HORIZONTAL) {
             if (ThermostationCoreBlock.isTower(ctx.getLevel().getBlockState(ctx.getClickedPos().relative(d))))
                 return defaultBlockState().setValue(FACING, d.getOpposite());

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "BCB"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:bare_copper_wire"
+    },
+    "B": {
+      "item": "industrial_core:glass_fiber"
+    },
+    "C": {
+      "item": "industrial_core:tree_resin"
+    }
+  },
+  "result": {
+    "id": "industrial_core:textolite_board",
+    "count": 1
+  }
+}

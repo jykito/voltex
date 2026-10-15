@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " A ",
+    "BCD",
+    " A "
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:superconducting_winding"
+    },
+    "B": {
+      "item": "industrial_core:microcontroller"
+    },
+    "C": {
+      "type": "neoforge:components",
+      "items": "industrial_core:capsule",
+      "components": {
+        "industrial_core:fluid_content": {
+          "id": "industrial_core:superfluid_condensate",
+          "amount": 1000
+        }
+      }
+    },
+    "D": {
+      "item": "industrial_core:data_card_cryophysics"
+    }
+  },
+  "result": {
+    "id": "industrial_core:superconductor_coil",
+    "count": 1
+  }
+}

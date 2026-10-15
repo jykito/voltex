@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.custom;
+import com.mojang.serialization.MapCodec;
+import com.jykito.industrialcore.block.BlockUse;
+import net.minecraft.world.ItemInteractionResult;
+import com.jykito.industrialcore.capability.Caps;
 
 import com.jykito.industrialcore.block.entity.ModBlockEntities;
 import com.jykito.industrialcore.block.entity.BioreactorBlockEntity;
@@ -25,12 +29,14 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
-/** Биореактор (Э3): органика без мобов из биомассы, в тепле от теплосети. Ведро воды ПКМ доливает бак, как у промывателя. */
+/** Bioreactor (E3): organics without mobs, from biomass, heated by the heat network. A water bucket on RMB tops up the tank, like the ore washer. */
 public class BioreactorBlock extends BaseEntityBlock {
+
+    /** 1.21: block codec. Vanilla does not call it for mod blocks; there is one block instance, so unit is exact. */
+    @Override
+    protected MapCodec<? extends BioreactorBlock> codec() { return MapCodec.unit(this); }
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
@@ -55,6 +61,11 @@ public class BioreactorBlock extends BaseEntityBlock {
     }
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+        return BlockUse.toItemResult(use(pState, pLevel, pPos, pPlayer, pHand, pHit));
+    }
+
+    /** Formerly Block.use (1.20.1); called from useItemOn for both hands, as before. */
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         BlockEntity entity = pLevel.getBlockEntity(pPos);
         if (!(entity instanceof BioreactorBlockEntity reactor)) return InteractionResult.PASS;
@@ -64,8 +75,8 @@ public class BioreactorBlock extends BaseEntityBlock {
         if (held.is(net.minecraft.world.item.Items.WATER_BUCKET)) {
             if (!pLevel.isClientSide()) {
                 int filled = reactor.waterTank.fill(
-                        new net.minecraftforge.fluids.FluidStack(net.minecraft.world.level.material.Fluids.WATER, 1000),
-                        net.minecraftforge.fluids.capability.IFluidHandler.FluidAction.EXECUTE);
+                        new net.neoforged.neoforge.fluids.FluidStack(net.minecraft.world.level.material.Fluids.WATER, 1000),
+                        net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction.EXECUTE);
                 if (filled > 0 && !pPlayer.getAbilities().instabuild) {
                     held.shrink(1);
                     ItemStack empty = new ItemStack(net.minecraft.world.item.Items.BUCKET);
@@ -76,7 +87,7 @@ public class BioreactorBlock extends BaseEntityBlock {
         }
 
         if (!pLevel.isClientSide()) {
-            NetworkHooks.openScreen((ServerPlayer) pPlayer, reactor, pPos);
+            ((ServerPlayer) pPlayer).openMenu(reactor, pPos);
         }
         return InteractionResult.sidedSuccess(pLevel.isClientSide());
     }
@@ -99,7 +110,7 @@ public class BioreactorBlock extends BaseEntityBlock {
         if (pState.getBlock() != pNewState.getBlock()) {
             BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
             if (blockEntity != null) {
-                blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
+                Caps.get(blockEntity, Caps.ITEM_HANDLER).ifPresent(handler -> {
                     for (int i = 0; i < handler.getSlots(); i++) {
                         ItemStack stack = handler.getStackInSlot(i);
                         if (!stack.isEmpty()) Containers.dropItemStack(pLevel, pPos.getX(), pPos.getY(), pPos.getZ(), stack);

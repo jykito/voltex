@@ -1,5 +1,11 @@
 package com.jykito.industrialcore.recipe;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.Codec;
 
+import net.minecraft.core.HolderLookup;
 import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
@@ -12,9 +18,8 @@ import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-public class PhaseSplitterRecipe implements Recipe<SimpleContainer> {
+public class PhaseSplitterRecipe implements Recipe<ContainerInput> {
 
-    private final ResourceLocation id;
     private final Ingredient input;
     private final int inputCount;
     private final ItemStack output1;
@@ -23,10 +28,9 @@ public class PhaseSplitterRecipe implements Recipe<SimpleContainer> {
     private final int processingTime;
     private final int energyCost;
 
-    public PhaseSplitterRecipe(ResourceLocation id, Ingredient input, int inputCount,
+    public PhaseSplitterRecipe(Ingredient input, int inputCount,
                                 ItemStack output1, ItemStack output2, ItemStack output3,
                                 int processingTime, int energyCost) {
-        this.id = id;
         this.input = input;
         this.inputCount = inputCount;
         this.output1 = output1;
@@ -37,13 +41,13 @@ public class PhaseSplitterRecipe implements Recipe<SimpleContainer> {
     }
 
     @Override
-    public boolean matches(SimpleContainer container, Level level) {
+    public boolean matches(ContainerInput container, Level level) {
         if (level.isClientSide()) return false;
         return input.test(container.getItem(0)) && container.getItem(0).getCount() >= inputCount;
     }
 
     @Override
-    public ItemStack assemble(SimpleContainer container, RegistryAccess access) { return output1.copy(); }
+    public ItemStack assemble(ContainerInput container, HolderLookup.Provider access) { return output1.copy(); }
 
     @Override
     public boolean canCraftInDimensions(int width, int height) { return true; }
@@ -51,7 +55,7 @@ public class PhaseSplitterRecipe implements Recipe<SimpleContainer> {
     @Override public boolean isSpecial() { return true; }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess access) { return output1.copy(); }
+    public ItemStack getResultItem(HolderLookup.Provider access) { return output1.copy(); }
 
     public ItemStack getOutput1() { return output1.copy(); }
     public ItemStack getOutput2() { return output2.copy(); }
@@ -67,8 +71,6 @@ public class PhaseSplitterRecipe implements Recipe<SimpleContainer> {
         return list;
     }
 
-    @Override
-    public ResourceLocation getId() { return id; }
 
     @Override
     public RecipeSerializer<?> getSerializer() { return ModRecipes.PHASE_SPLITTER_SERIALIZER.get(); }
@@ -79,40 +81,39 @@ public class PhaseSplitterRecipe implements Recipe<SimpleContainer> {
     public static class Serializer implements RecipeSerializer<PhaseSplitterRecipe> {
         public static final Serializer INSTANCE = new Serializer();
 
-        @Override
-        public PhaseSplitterRecipe fromJson(ResourceLocation id, JsonObject json) {
-            Ingredient input = Ingredient.fromJson(GsonHelper.getAsJsonObject(json, "ingredient"));
-            int inputCount = GsonHelper.getAsInt(json, "inputCount", 1);
+        private static final MapCodec<PhaseSplitterRecipe> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(r -> r.input),
+                Codec.INT.optionalFieldOf("inputCount", 1).forGetter(r -> r.inputCount),
+                RecipeCodecs.optionalResult("result").forGetter(r -> r.output1),
+                RecipeCodecs.optionalResult("result2").forGetter(r -> r.output2),
+                RecipeCodecs.optionalResult("result3").forGetter(r -> r.output3),
+                Codec.INT.optionalFieldOf("processingTime", 400).forGetter(r -> r.processingTime),
+                Codec.INT.optionalFieldOf("energyCost", 100).forGetter(r -> r.energyCost)
+        ).apply(i, PhaseSplitterRecipe::new));
 
-            ItemStack out1 = json.has("result")  ? ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"))  : ItemStack.EMPTY;
-            ItemStack out2 = json.has("result2") ? ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result2")) : ItemStack.EMPTY;
-            ItemStack out3 = json.has("result3") ? ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result3")) : ItemStack.EMPTY;
+        private static final StreamCodec<RegistryFriendlyByteBuf, PhaseSplitterRecipe> STREAM_CODEC =
+                StreamCodec.of(Serializer::write, Serializer::read);
 
-            int processingTime = GsonHelper.getAsInt(json, "processingTime", 400);
-            int energyCost     = GsonHelper.getAsInt(json, "energyCost", 100);
+        @Override public MapCodec<PhaseSplitterRecipe> codec() { return CODEC; }
+        @Override public StreamCodec<RegistryFriendlyByteBuf, PhaseSplitterRecipe> streamCodec() { return STREAM_CODEC; }
 
-            return new PhaseSplitterRecipe(id, input, inputCount, out1, out2, out3, processingTime, energyCost);
-        }
-
-        @Override
-        public @Nullable PhaseSplitterRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
-            Ingredient input = Ingredient.fromNetwork(buf);
+        private static PhaseSplitterRecipe read(RegistryFriendlyByteBuf buf) {
+            Ingredient input = RecipeCodecs.readIngredient(buf);
             int inputCount   = buf.readInt();
-            ItemStack out1   = buf.readItem();
-            ItemStack out2   = buf.readItem();
-            ItemStack out3   = buf.readItem();
+            ItemStack out1   = RecipeCodecs.readItem(buf);
+            ItemStack out2   = RecipeCodecs.readItem(buf);
+            ItemStack out3   = RecipeCodecs.readItem(buf);
             int processingTime = buf.readInt();
             int energyCost     = buf.readInt();
-            return new PhaseSplitterRecipe(id, input, inputCount, out1, out2, out3, processingTime, energyCost);
+            return new PhaseSplitterRecipe(input, inputCount, out1, out2, out3, processingTime, energyCost);
         }
 
-        @Override
-        public void toNetwork(FriendlyByteBuf buf, PhaseSplitterRecipe r) {
-            r.input.toNetwork(buf);
+        private static void write(RegistryFriendlyByteBuf buf, PhaseSplitterRecipe r) {
+            RecipeCodecs.writeIngredient(buf, r.input);
             buf.writeInt(r.inputCount);
-            buf.writeItem(r.output1);
-            buf.writeItem(r.output2);
-            buf.writeItem(r.output3);
+            RecipeCodecs.writeItem(buf, r.output1);
+            RecipeCodecs.writeItem(buf, r.output2);
+            RecipeCodecs.writeItem(buf, r.output3);
             buf.writeInt(r.processingTime);
             buf.writeInt(r.energyCost);
         }

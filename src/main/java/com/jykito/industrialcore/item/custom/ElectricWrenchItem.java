@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.item.custom;
+import net.neoforged.neoforge.energy.ComponentEnergyStorage;
+import com.jykito.industrialcore.item.EnergyItem;
+import com.jykito.industrialcore.item.ModDataComponents;
+import com.jykito.industrialcore.capability.Caps;
 
 import com.jykito.industrialcore.IndustrialCore;
 import net.minecraft.ChatFormatting;
@@ -18,19 +22,15 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.energy.EnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class ElectricWrenchItem extends Item {
+public class ElectricWrenchItem extends Item implements EnergyItem {
 
     public static final int CAPACITY = 20_000;
     public static final int COST     = 500;
@@ -40,13 +40,13 @@ public class ElectricWrenchItem extends Item {
     }
 
     public static int getStoredEnergy(ItemStack stack) {
-        return stack.hasTag() ? stack.getTag().getInt("energy") : 0;
+        return stack.getOrDefault(ModDataComponents.ENERGY.get(), 0);
     }
 
     public static boolean drainEnergy(ItemStack stack, int amount) {
         int stored = getStoredEnergy(stack);
         if (stored < amount) return false;
-        stack.getOrCreateTag().putInt("energy", stored - amount);
+        stack.set(ModDataComponents.ENERGY.get(), stored - amount);
         return true;
     }
 
@@ -64,8 +64,7 @@ public class ElectricWrenchItem extends Item {
     public boolean isDamageable(ItemStack stack) { return false; }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level,
-                                List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.literal(getStoredEnergy(stack) + " / " + CAPACITY + " FE")
                 .withStyle(com.jykito.industrialcore.ModStyle.ENERGY_STYLE));
         tooltip.add(Component.translatable("tooltip.industrial_core.electric_wrench")
@@ -74,37 +73,8 @@ public class ElectricWrenchItem extends Item {
 
     @Nullable
     @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-        return new ICapabilityProvider() {
-            private final EnergyStorage storage = new EnergyStorage(CAPACITY, CAPACITY, CAPACITY) {
-
-                @Override
-                public int receiveEnergy(int maxReceive, boolean simulate) {
-                    int stored = getEnergyStored();
-                    int received = Math.min(maxReceive, CAPACITY - stored);
-                    if (!simulate && received > 0) stack.getOrCreateTag().putInt("energy", stored + received);
-                    return received;
-                }
-                @Override
-                public int extractEnergy(int maxExtract, boolean simulate) {
-                    int stored = getEnergyStored();
-                    int extracted = Math.min(maxExtract, stored);
-                    if (!simulate && extracted > 0) stack.getOrCreateTag().putInt("energy", stored - extracted);
-                    return extracted;
-                }
-                @Override
-                public int getEnergyStored() {
-                    return stack.hasTag() ? stack.getTag().getInt("energy") : 0;
-                }
-            };
-            private final LazyOptional<IEnergyStorage> lazy = LazyOptional.of(() -> storage);
-
-            @Override
-            public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap,
-                                                               @Nullable Direction side) {
-                return cap == ForgeCapabilities.ENERGY ? lazy.cast() : LazyOptional.empty();
-            }
-        };
+    public IEnergyStorage createEnergyStorage(ItemStack stack) {
+        return new ComponentEnergyStorage(stack, ModDataComponents.ENERGY.get(), CAPACITY, CAPACITY, CAPACITY);
     }
 
     @Override
@@ -116,7 +86,7 @@ public class ElectricWrenchItem extends Item {
         BlockPos pos = context.getClickedPos();
         BlockState state = level.getBlockState(pos);
 
-        // обычный ПКМ ключом по теплотрубе — переключить сторону вкл/выкл
+        // plain RMB with the wrench on a heat pipe: toggle a side on/off
         if (!player.isShiftKeyDown()) {
             if (state.getBlock() instanceof com.jykito.industrialcore.block.custom.HeatPipeBlock) {
                 if (!level.isClientSide()
@@ -135,9 +105,9 @@ public class ElectricWrenchItem extends Item {
             return InteractionResult.PASS;
         }
 
-        // shift → снять блок
+        // shift -> remove the block
         Block block = state.getBlock();
-        ResourceLocation id = ForgeRegistries.BLOCKS.getKey(block);
+        ResourceLocation id = BuiltInRegistries.BLOCK.getKey(block);
         if (id == null || !IndustrialCore.MODID.equals(id.getNamespace())) return InteractionResult.PASS;
         BlockEntity be = level.getBlockEntity(pos);
         if (be == null) return InteractionResult.PASS;
@@ -155,8 +125,11 @@ public class ElectricWrenchItem extends Item {
         if (!level.isClientSide()) {
             drainEnergy(wrench, COST);
 
-            net.minecraft.world.Containers.dropItemStack(
-                    level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(block));
+            // the item keeps what the block entity carries as components (barrel fluid), as with a pickaxe;
+            // machine inventories drop on their own in onRemove
+            ItemStack drop = new ItemStack(block);
+            drop.applyComponents(be.collectComponents());
+            net.minecraft.world.Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), drop);
 
             level.removeBlock(pos, false);
 
@@ -166,7 +139,7 @@ public class ElectricWrenchItem extends Item {
         return InteractionResult.sidedSuccess(level.isClientSide());
     }
 
-    /** Направление по точке клика: та сторона, куда клик смещён от центра сильнее всего. */
+    /** Direction from the click point: the side the click is shifted furthest towards from the centre. */
     private static Direction pickSide(net.minecraft.world.phys.Vec3 loc, BlockPos pos) {
         double dx = loc.x - pos.getX() - 0.5;
         double dy = loc.y - pos.getY() - 0.5;

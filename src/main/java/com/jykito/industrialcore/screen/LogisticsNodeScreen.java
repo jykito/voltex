@@ -18,20 +18,20 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.List;
 
 /**
- * Окно узла логистики: слева связи списком (порядок = приоритет, перетаскивание за ручку), справа карта сверху вокруг
- * узла (1 пиксель = 1 блок, север вверху, дальние связи прижаты к краю), внизу подробности выбранной связи и подсветка
- * её блока в мире. Текстура logistics_node_gui из tools/gui_gen/build_hub_guis.ps1, в ней только неподвижное.
+ * Logistics node window: links as a list on the left (order = priority, drag by the handle), a top-down map around the
+ * node on the right (1 pixel = 1 block, north up, distant links pinned to the edge), details of the selected link at the bottom and a highlight
+ * of its block in the world. The logistics_node_gui texture from tools/gui_gen/build_hub_guis.ps1 contains only the static parts.
  */
 @OnlyIn(Dist.CLIENT)
 public class LogisticsNodeScreen extends AbstractContainerScreen<LogisticsNodeMenu> {
 
-    private static final ResourceLocation TEX = new ResourceLocation(IndustrialCore.MODID, "textures/gui/logistics_node_gui.png");
+    private static final ResourceLocation TEX = ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/logistics_node_gui.png");
     private static final int TEX_W = 256, TEX_H = 315;
 
     private static final int LIST_X = 15, LIST_Y = 28, ROW_W = 124, ROW_H = 19, ROW_STEP = 20, VISIBLE_ROWS = 6;
@@ -63,7 +63,7 @@ public class LogisticsNodeScreen extends AbstractContainerScreen<LogisticsNodeMe
         return be instanceof LogisticsNodeBlockEntity n ? n : null;
     }
 
-    /** Что стоит на конце связи: цвет метки, иконка, имя, пояснение. */
+    /** What is at the end of a link: marker colour, icon, name, description. */
     private record Link(int color, ItemStack icon, Component name, Component detail, boolean error) {}
 
     private Link link(BlockPos p) {
@@ -89,7 +89,6 @@ public class LogisticsNodeScreen extends AbstractContainerScreen<LogisticsNodeMe
 
     @Override
     public void render(GuiGraphics g, int mx, int my, float partial) {
-        renderBackground(g);
         super.render(g, mx, my, partial);
         LogisticsNodeBlockEntity node = getNode();
         if (node == null || dragging) return;
@@ -118,7 +117,7 @@ public class LogisticsNodeScreen extends AbstractContainerScreen<LogisticsNodeMe
         List<BlockPos> links = node.linkedPositions;
         Component count = Component.translatable("screen.industrial_core.node.links_count", links.size());
         g.drawString(font, count, x + 226 - font.width(count), y + 13, COL_SUB, false);
-        g.fill(x + 229, y + 14, x + 234, y + 19, COL_EDGE);   // в сети, если есть связи
+        g.fill(x + 229, y + 14, x + 234, y + 19, COL_EDGE);   // on the network if there are links
         g.fill(x + 230, y + 15, x + 233, y + 18, links.isEmpty() ? COL_BAD : 0xFF44FF44);
         if (selectedIndex >= links.size()) selectedIndex = -1;
 
@@ -151,7 +150,7 @@ public class LogisticsNodeScreen extends AbstractContainerScreen<LogisticsNodeMe
         for (int k = 0; k < 3; k++) g.fill(leftPos + HANDLE_X, ry + 6 + k * 3, leftPos + HANDLE_X + 7, ry + 7 + k * 3, 0xFF666666);
     }
 
-    /** Точка метки связи на карте; дальние прижаты к краю по направлению. */
+    /** Link marker point on the map; distant ones are pinned to the edge in their direction. */
     private int[] markerPos(BlockPos p) {
         int dx = p.getX() - menu.nodePos.getX(), dz = p.getZ() - menu.nodePos.getZ();
         boolean far = Math.abs(dx) > MAP_RX || Math.abs(dz) > MAP_RZ;
@@ -175,14 +174,14 @@ public class LogisticsNodeScreen extends AbstractContainerScreen<LogisticsNodeMe
             g.fill(m[0] - 2, m[1] - 2, m[0] + 3, m[1] + 3, COL_EDGE);
             g.fill(m[0] - 1, m[1] - 1, m[0] + 2, m[1] + 2, link(links.get(i)).color());
             String n = String.valueOf(i + 1);
-            int lx = m[0] + 4 + font.width(n) > x + MAP_X + MAP_W - 2 ? m[0] - 3 - font.width(n) : m[0] + 4;   // номер не вылезает за карту
+            int lx = m[0] + 4 + font.width(n) > x + MAP_X + MAP_W - 2 ? m[0] - 3 - font.width(n) : m[0] + 4;   // the number does not go outside the map
             g.drawString(font, n, lx, m[1] - 9, m[2] == 1 ? COL_ERR : 0xFFCFCFCF, true);
         }
     }
 
     private void renderDetails(GuiGraphics g, LogisticsNodeBlockEntity node, List<BlockPos> links) {
         int x = leftPos + DET_X, y = topPos + DET_Y;
-        if (selectedIndex < 0) {   // ничего не выбрано — сводка по связям
+        if (selectedIndex < 0) {   // nothing selected: a summary of the links
             int hubs = 0, errors = 0;
             for (BlockPos p : links) { Link l = link(p); if (l.error()) errors++; else if (l.color() != COL_NODE) hubs++; }
             g.drawString(font, Component.translatable("screen.industrial_core.node.hubs", hubs), x, y + 8, hubs > 0 ? 0xFF44FF44 : COL_SUB, false);
@@ -195,7 +194,7 @@ public class LogisticsNodeScreen extends AbstractContainerScreen<LogisticsNodeMe
         g.drawString(font, truncate("#" + (selectedIndex + 1) + " " + l.name().getString(), DET_W - BTN_W - 24), x + 20, y + 4, l.error() ? COL_ERR : COL_TEXT, false);
         g.drawString(font, "X " + p.getX() + "  Y " + p.getY() + "  Z " + p.getZ(), x + 20, y + 14, COL_SUB, false);
         Component d = Component.translatable("screen.industrial_core.node.distance", distance(p));
-        if (!l.detail().getString().isEmpty()) d = d.copy().append("  ·  ").append(l.detail());
+        if (!l.detail().getString().isEmpty()) d = d.copy().append(", ").append(l.detail());
         g.drawString(font, d, x + 20, y + 24, COL_SUB, false);
 
         boolean on = p.equals(LogisticsHighlightRenderer.highlightPos) && System.currentTimeMillis() < LogisticsHighlightRenderer.highlightEndMs;
@@ -228,7 +227,7 @@ public class LogisticsNodeScreen extends AbstractContainerScreen<LogisticsNodeMe
         if (node == null || button != 0) return super.mouseClicked(mx, my, button);
         List<BlockPos> links = node.linkedPositions;
 
-        // подсветка выбранной связи в мире на 5 с, повторный клик гасит
+        // highlight of the selected link in the world for 5 s, a second click turns it off
         if (selectedIndex >= 0 && selectedIndex < links.size()
                 && hit(mx, my, leftPos + DET_X + DET_W - BTN_W, topPos + DET_Y + 6, BTN_W, BTN_H)) {
             BlockPos target = links.get(selectedIndex);
@@ -245,7 +244,7 @@ public class LogisticsNodeScreen extends AbstractContainerScreen<LogisticsNodeMe
             if (idx >= links.size()) break;
             int ry = topPos + LIST_Y + i * ROW_STEP;
             if (!hit(mx, my, leftPos + LIST_X, ry, ROW_W, ROW_H)) continue;
-            if (mx >= leftPos + HANDLE_X - 2) {   // ручка — перетащить (порядок = приоритет)
+            if (mx >= leftPos + HANDLE_X - 2) {   // handle: drag (order = priority)
                 dragging = true;
                 dragFromIndex = idx;
                 dragCurrentY = (int) my;
@@ -290,14 +289,14 @@ public class LogisticsNodeScreen extends AbstractContainerScreen<LogisticsNodeMe
     }
 
     @Override
-    public boolean mouseScrolled(double mx, double my, double delta) {
+    public boolean mouseScrolled(double mx, double my, double scrollX, double delta) {
         LogisticsNodeBlockEntity node = getNode();
         if (node != null) {
             int maxScroll = Math.max(0, node.linkedPositions.size() - VISIBLE_ROWS);
             scrollOffset = Math.max(0, Math.min(maxScroll, scrollOffset - (int) Math.signum(delta)));
             return true;
         }
-        return super.mouseScrolled(mx, my, delta);
+        return super.mouseScrolled(mx, my, scrollX, delta);
     }
 
     @Override

@@ -14,13 +14,13 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
-/** Ядро лейт-мультиблока: статус и инвентарь игрока; у промывщика ещё слот штамма-переработчика в табло. */
+/** Late multiblock core: status and the player inventory; the ore washer also has a processor strain slot in the display. */
 public class LateMachineCoreMenu extends MachineMenu {
 
     public static final int NANITE_X = 222, NANITE_Y = 16;
 
     public final LateMachineCoreBlockEntity blockEntity;
-    /** Есть ли слот штамма (только мультиблочный промывщик); он идёт первым. */
+    /** Whether there is a strain slot (multiblock ore washer only); it comes first. */
     public final boolean nanite;
     private final ContainerData data;
 
@@ -33,15 +33,15 @@ public class LateMachineCoreMenu extends MachineMenu {
         this.blockEntity = be;
         this.data = data;
         nanite = be.acceptsNanites();
-        if (nanite) addSlot(new net.minecraftforge.items.SlotItemHandler(be.getNanites(), 0, NANITE_X, NANITE_Y));
-        addPlayerInventory(inv, 44, 145);   // окно ядра выше стандартного: плашка инвентаря с y=141
+        if (nanite) addSlot(new net.neoforged.neoforge.items.SlotItemHandler(be.getNanites(), 0, NANITE_X, NANITE_Y));
+        addPlayerInventory(inv, 44, 145);   // the core window is taller than standard: the inventory plate starts at y=141
         addDataSlots(data);
     }
 
     public boolean isFormed() { return data.get(0) == 1; }
     public LateMultiblockPattern.Problem problem() { return LateMultiblockPattern.Problem.values()[clamp(data.get(1), LateMultiblockPattern.Problem.values().length)]; }
     public LateMultiblockPattern.Cell expected() { return LateMultiblockPattern.Cell.values()[clamp(data.get(2), LateMultiblockPattern.Cell.values().length)]; }
-    /** Где не тот блок, в мировых координатах. ContainerData везёт short, смещение от ядра в него влезает. */
+    /** Where the wrong block is, in world coordinates. ContainerData carries a short, and the offset from the core fits. */
     public BlockPos problemPos() { return blockEntity.getBlockPos().offset((short) data.get(3), (short) data.get(4), (short) data.get(5)); }
     public int progress()      { return data.get(6); }
     public int maxProgress()   { return data.get(7); }
@@ -61,13 +61,13 @@ public class LateMachineCoreMenu extends MachineMenu {
     public boolean usesHeat()  { return data.get(27) == 1; }
     public int heatPorts()     { return data.get(28); }
 
-    /** Ключ имени текущего режима; блок ядра есть и на клиенте, список режимов берём у него. */
+    /** Name key of the current mode; the core block exists on the client too, so the mode list comes from it. */
     public String modeKey() {
         var modes = ((com.jykito.industrialcore.block.custom.LateMachineCoreBlock) blockEntity.getBlockState().getBlock()).modes();
         return modes.get(clamp(mode(), modes.size())).key();
     }
 
-    /** Кнопка 0: следующий режим ядра. */
+    /** Button 0: next core mode. */
     @Override
     public boolean clickMenuButton(Player player, int id) {
         return id == 0 && blockEntity.cycleMode();

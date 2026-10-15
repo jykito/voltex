@@ -1,0 +1,45 @@
+{
+  "type": "industrial_core:assembling",
+  "inputs": [
+    {
+      "item": "industrial_core:mechanism_block"
+    },
+    {
+      "item": "industrial_core:accelerator_mk2",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:control_unit"
+    },
+    {
+      "item": "industrial_core:servo_drive",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:electric_motor_advanced",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:cryogenic_heat_exchanger",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:advanced_heat_vent",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:heat_pipe_t2",
+      "count": 8
+    }
+  ],
+  "fluid": {
+    "id": "industrial_core:coolant",
+    "amount": 8000
+  },
+  "result": {
+    "id": "industrial_core:mechanism_speed",
+    "count": 1
+  },
+  "processingTime": 1200,
+  "energyCostPerTick": 16000
+}

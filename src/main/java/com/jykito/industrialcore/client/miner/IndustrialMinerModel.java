@@ -19,33 +19,33 @@ import java.io.Reader;
 import java.util.*;
 
 /**
- * Модель промышленного шахтёра и бурового маяка из {@code models/industrial_miner.json} — его пишет
- * tools/texture_viewer/export_industrial_miner.js из того же описания, что рисует эскиз miner_concept.html.
+ * Model of the industrial miner and drill beacon from {@code models/industrial_miner.json}; it is written by
+ * tools/texture_viewer/export_industrial_miner.js from the same description the miner_concept.html sketch draws.
  * <p>
- * Коробки по группам (static, drill, ring, head, dish, beacon, crystal — движение задают BER). Плотность текстуры
- * 8 текселей на блок, как у модели старого шахтёра: у коробки с {@code uv} каждая грань берёт свой прямоугольник
- * атласа целиком; без него грань режется на клетки по 2 блока (плитка атласа 16×16), у материалов из {@code fit}
- * плитка растягивается на всю грань. Материалы из {@code glow} светятся на полной яркости.
+ * Boxes by group (static, drill, ring, head, dish, beacon, crystal; the BERs set the motion). Texture density
+ * is 8 texels per block, like the old miner model: a box with {@code uv} takes its own whole atlas rectangle per face;
+ * without it a face is cut into 2-block cells (atlas tile 16x16), for materials from {@code fit}
+ * the tile stretches over the whole face. Materials from {@code glow} glow at full brightness.
  */
 public final class IndustrialMinerModel {
 
-    public static final ResourceLocation TEX = new ResourceLocation(IndustrialCore.MODID, "textures/models/industrial_miner.png");
-    /** Только зелёные пиксели атласа (tools/texture_viewer/miner_glow_mask.js): светится зелёное, а не всё ядро. */
-    public static final ResourceLocation TEX_GLOW = new ResourceLocation(IndustrialCore.MODID, "textures/models/industrial_miner_glow.png");
-    private static final ResourceLocation SPEC = new ResourceLocation(IndustrialCore.MODID, "models/industrial_miner.json");
+    public static final ResourceLocation TEX = ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/models/industrial_miner.png");
+    /** Only the green pixels of the atlas (tools/texture_viewer/miner_glow_mask.js): the green glows, not the whole core. */
+    public static final ResourceLocation TEX_GLOW = ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/models/industrial_miner_glow.png");
+    private static final ResourceLocation SPEC = ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "models/industrial_miner.json");
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    /** Четыре вершины (x, y, z), их UV, нормаль и свечение. */
+    /** Four vertices (x, y, z), their UVs, normal and glow. */
     private record Quad(float[] pos, float[] uv, float nx, float ny, float nz, boolean glow) {}
 
     private static Map<String, List<Quad>> groups;
 
     private IndustrialMinerModel() {}
 
-    /** Сбросить после перезагрузки ресурсов. */
+    /** Reset after a resource reload. */
     public static void clear() { groups = null; }
 
-    /** UV центра плитки материала (для волн маяка). */
+    /** UV of the centre of a material tile (for the beacon waves). */
     public static float[] tileCenter(String material) {
         int[] t = tiles().getOrDefault(material, new int[]{0, 0});
         return new float[]{(t[0] + 8) / (float) atlas, (t[1] + 8) / (float) atlas};
@@ -107,21 +107,21 @@ public final class IndustrialMinerModel {
     }
 
     /**
-     * Грани коробки: левый верхний угол (если смотреть снаружи), направления «вправо» и «вниз», размеры.
-     * Порядок вершин TL, BL, BR, TR — против часовой снаружи.
-     * uv — если задан, у каждой грани свой прямоугольник атласа {u, v, ширина, высота} на всю грань
-     * (порядок граней как в faces ниже); иначе плитка материала повтором по клеткам в 2 блока.
+     * Box faces: top-left corner (looking from outside), "right" and "down" directions, sizes.
+     * Vertex order TL, BL, BR, TR: counter-clockwise from outside.
+     * uv: if set, each face has its own atlas rectangle {u, v, width, height} over the whole face
+     * (face order as in faces below); otherwise the material tile repeats over 2-block cells.
      */
     private static void addBox(List<Quad> to, float[] f, float[] t, float ry, int[] tile, float[][] faceUv, boolean glow, boolean fit, float texels) {
         float x1 = f[0], y1 = f[1], z1 = f[2], x2 = t[0], y2 = t[1], z2 = t[2];
         float[][] faces = {
-                // TL               вправо       вниз         нормаль   ширина   высота
-                {x2, y2, z2,        0, 0, -1,    0, -1, 0,    1, 0, 0,  z2 - z1, y2 - y1},   // восток
-                {x1, y2, z1,        0, 0, 1,     0, -1, 0,    -1, 0, 0, z2 - z1, y2 - y1},   // запад
-                {x1, y2, z2,        1, 0, 0,     0, -1, 0,    0, 0, 1,  x2 - x1, y2 - y1},   // юг
-                {x2, y2, z1,        -1, 0, 0,    0, -1, 0,    0, 0, -1, x2 - x1, y2 - y1},   // север
-                {x1, y2, z1,        1, 0, 0,     0, 0, 1,     0, 1, 0,  x2 - x1, z2 - z1},   // верх
-                {x1, y1, z2,        1, 0, 0,     0, 0, -1,    0, -1, 0, x2 - x1, z2 - z1}};  // низ
+                // TL               right        down         normal    width    height
+                {x2, y2, z2,        0, 0, -1,    0, -1, 0,    1, 0, 0,  z2 - z1, y2 - y1},   // east
+                {x1, y2, z1,        0, 0, 1,     0, -1, 0,    -1, 0, 0, z2 - z1, y2 - y1},   // west
+                {x1, y2, z2,        1, 0, 0,     0, -1, 0,    0, 0, 1,  x2 - x1, y2 - y1},   // south
+                {x2, y2, z1,        -1, 0, 0,    0, -1, 0,    0, 0, -1, x2 - x1, y2 - y1},   // north
+                {x1, y2, z1,        1, 0, 0,     0, 0, 1,     0, 1, 0,  x2 - x1, z2 - z1},   // up
+                {x1, y1, z2,        1, 0, 0,     0, 0, -1,    0, -1, 0, x2 - x1, z2 - z1}};  // down
         float step = 16f / texels, cos = (float) Math.cos(Math.toRadians(ry)), sin = (float) Math.sin(Math.toRadians(ry));
         for (int fi = 0; fi < faces.length; fi++) {
             float[] fc = faces[fi], rect = faceUv == null ? null : faceUv[fi];
@@ -139,7 +139,7 @@ public final class IndustrialMinerModel {
                         float px = fc[0] + fc[3] * ab[i][0] + fc[6] * ab[i][1];
                         float py = fc[1] + fc[4] * ab[i][0] + fc[7] * ab[i][1];
                         float pz = fc[2] + fc[5] * ab[i][0] + fc[8] * ab[i][1];
-                        pos[i * 3] = px * cos + pz * sin;      // поворот вокруг Y как у three.js: (0,0,1) -> (sin, 0, cos)
+                        pos[i * 3] = px * cos + pz * sin;      // rotation around Y as in three.js: (0,0,1) -> (sin, 0, cos)
                         pos[i * 3 + 1] = py;
                         pos[i * 3 + 2] = -px * sin + pz * cos;
                     }
@@ -151,39 +151,39 @@ public final class IndustrialMinerModel {
         }
     }
 
-    /** Нарисовать группу в текущей позе. lit = false гасит свечение (маяк без линзы). */
+    /** Draw a group in the current pose. lit = false turns the glow off (a beacon without a lens). */
     public static void render(String group, PoseStack ps, VertexConsumer vc, int light, int overlay, boolean lit) {
         List<Quad> qs = groups().get(group);
         if (qs == null) return;
         Matrix4f pose = ps.last().pose();
-        Matrix3f normal = ps.last().normal();
+        PoseStack.Pose normal = ps.last();
         for (Quad q : qs) quad(q, pose, normal, vc, q.glow() && lit ? LightTexture.FULL_BRIGHT : light, overlay);
     }
 
-    /** На сколько светящийся слой вынесен из грани наружу: без зазора он мерцает с обычным и проигрывает ему при смене порядка проходов. */
+    /** How far the glowing layer is pushed out of the face: without a gap it flickers with the normal one and loses to it when the pass order changes. */
     private static final float GLOW_LIFT = 0.002f;
 
     /**
-     * Второй проход по светящимся материалам текстурой {@link #TEX_GLOW} (только зелёное), в буфер {@code RenderType.eyes}:
-     * свет мира его не гасит, а шейдеры (Oculus) рисуют его как светящееся. Первый проход делается с {@code lit = false}.
+     * Second pass over the glowing materials with the {@link #TEX_GLOW} texture (green only), into the {@code RenderType.eyes} buffer:
+     * world light does not dim it, and shaders (Oculus) render it as glowing. The first pass is done with {@code lit = false}.
      */
     public static void renderGlow(String group, PoseStack ps, VertexConsumer vc, int overlay) {
         List<Quad> qs = groups().get(group);
         if (qs == null) return;
         Matrix4f pose = ps.last().pose();
-        Matrix3f normal = ps.last().normal();
+        PoseStack.Pose normal = ps.last();
         for (Quad q : qs) if (q.glow()) quad(q, pose, normal, vc, LightTexture.FULL_BRIGHT, overlay, GLOW_LIFT);
     }
 
-    private static void quad(Quad q, Matrix4f pose, Matrix3f normal, VertexConsumer vc, int lt, int overlay) {
+    private static void quad(Quad q, Matrix4f pose, PoseStack.Pose normal, VertexConsumer vc, int lt, int overlay) {
         quad(q, pose, normal, vc, lt, overlay, 0);
     }
 
-    private static void quad(Quad q, Matrix4f pose, Matrix3f normal, VertexConsumer vc, int lt, int overlay, float lift) {
+    private static void quad(Quad q, Matrix4f pose, PoseStack.Pose normal, VertexConsumer vc, int lt, int overlay, float lift) {
         float ox = q.nx() * lift, oy = q.ny() * lift, oz = q.nz() * lift;
         for (int i = 0; i < 4; i++)
-            vc.vertex(pose, q.pos()[i * 3] + ox, q.pos()[i * 3 + 1] + oy, q.pos()[i * 3 + 2] + oz).color(1f, 1f, 1f, 1f)
-                    .uv(q.uv()[i * 2], q.uv()[i * 2 + 1]).overlayCoords(overlay).uv2(lt)
-                    .normal(normal, q.nx(), q.ny(), q.nz()).endVertex();
+            vc.addVertex(pose, q.pos()[i * 3] + ox, q.pos()[i * 3 + 1] + oy, q.pos()[i * 3 + 2] + oz).setColor(1f, 1f, 1f, 1f)
+                    .setUv(q.uv()[i * 2], q.uv()[i * 2 + 1]).setOverlay(overlay).setLight(lt)
+                    .setNormal(normal, q.nx(), q.ny(), q.nz());
     }
 }

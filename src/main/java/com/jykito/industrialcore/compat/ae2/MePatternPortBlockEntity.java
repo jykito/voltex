@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.compat.ae2;
+import net.minecraft.core.HolderLookup;
 
 import appeng.api.crafting.IPatternDetails;
 import appeng.api.crafting.PatternDetailsHelper;
@@ -20,11 +21,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,13 +33,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Порт шаблонов: поставщик шаблонов AE2, встроенный в мультиблок. Держит шаблоны обработки (сколько слотов —
- * задаёт улучшение порта); по заказу автокрафта кладёт ингредиенты прямо в свой буфер, а ядро берёт их как из
- * обычного входа. Результат возвращается в сеть через МЭ-выход той же структуры.
+ * Pattern port: an AE2 pattern provider built into the multiblock. Holds processing patterns (the number of slots
+ * comes from the port upgrade); on an autocraft request it puts the ingredients straight into its buffer, and the core takes them as from
+ * a regular input. The result returns to the network through the ME output of the same structure.
  * <p>
- * Ингредиенты кладутся целиком или никак: если весь шаблон не влезает, заказ откладывается. Жидкостей в шаблоне
- * может быть столько, сколько открыто баков. Блокировка: новый заказ не принимается, пока в буфере что-то лежит.
- * Порт виден в терминале доступа к шаблонам (можно скрыть кнопкой), там он подписан именем своей машины.
+ * Ingredients are placed all or nothing: if the whole pattern does not fit, the request is postponed. A pattern can have
+ * as many fluids as there are open tanks. Blocking: a new request is not accepted while anything is in the buffer.
+ * The port is visible in the pattern access terminal (it can be hidden with a button), labelled there with its machine's name.
  */
 class MePatternPortBlockEntity extends MePortBlockEntity implements ICraftingProvider, PatternContainer {
 
@@ -51,7 +52,7 @@ class MePatternPortBlockEntity extends MePortBlockEntity implements ICraftingPro
         }
         @Override protected void onContentsChanged(int slot) { patternsChanged(); }
     };
-    /** Те же слоты для терминала доступа к шаблонам: кладёт он через isItemValid, закрытые слоты не займёт. */
+    /** The same slots for the pattern access terminal: it inserts through isItemValid, so it will not use closed slots. */
     private final InternalInventory terminalInv = new InternalInventory() {
         @Override public int size() { return patterns.getSlots(); }
         @Override public ItemStack getStackInSlot(int slot) { return patterns.getStackInSlot(slot); }
@@ -90,13 +91,13 @@ class MePatternPortBlockEntity extends MePortBlockEntity implements ICraftingPro
         ICraftingProvider.requestUpdate(node);
     }
 
-    /** Улучшение открыло или закрыло слоты шаблонов — сети нужен новый список. */
+    /** The upgrade opened or closed pattern slots: the network needs a new list. */
     @Override
     protected void meWork(IGrid grid) {
         if (activeSlots() != lastSlots) { lastSlots = activeSlots(); patternsChanged(); }
     }
 
-    /** Снять улучшение можно, только если шаблоны в закрываемых слотах вынуты. */
+    /** The upgrade can be removed only if the patterns in the slots being closed have been taken out. */
     @Override
     protected boolean extraFits(int t) {
         for (int i = PortUpgradeItem.slots(t); i < patterns.getSlots(); i++)
@@ -104,7 +105,7 @@ class MePatternPortBlockEntity extends MePortBlockEntity implements ICraftingPro
         return super.extraFits(t);
     }
 
-    // ── поставщик шаблонов ──
+    // ── pattern provider ──
 
     @Override
     public List<IPatternDetails> getAvailablePatterns() {
@@ -115,7 +116,7 @@ class MePatternPortBlockEntity extends MePortBlockEntity implements ICraftingPro
                 ItemStack s = patterns.getStackInSlot(i);
                 if (s.isEmpty()) continue;
                 IPatternDetails d = PatternDetailsHelper.decodePattern(s, level);
-                // только обработка: шаблоны верстака собирает молекулярный сборщик, не машина
+                // processing only: crafting table patterns are made by the molecular assembler, not a machine
                 if (d != null && d.supportsPushInputsToExternalInventory()) out.add(d);
             }
             cache = List.copyOf(out);
@@ -136,11 +137,11 @@ class MePatternPortBlockEntity extends MePortBlockEntity implements ICraftingPro
                 AEKey key = e.getKey();
                 long amount = e.getLongValue();
                 if (key instanceof AEItemKey item) {
-                    int max = item.getItem().getMaxStackSize();
+                    int max = item.getItem().getDefaultMaxStackSize();
                     for (long left = amount; left > 0; left -= max) stacks.add(item.toStack((int) Math.min(left, max)));
                 } else if (key instanceof AEFluidKey fk) {
                     FluidStack f = fk.toStack((int) Math.min(Integer.MAX_VALUE, amount));
-                    FluidStack same = fluids.stream().filter(x -> x.isFluidEqual(f)).findFirst().orElse(null);
+                    FluidStack same = fluids.stream().filter(x -> FluidStack.isSameFluidSameComponents(x, f)).findFirst().orElse(null);
                     if (same != null) same.grow(f.getAmount()); else fluids.add(f);
                 } else return false;
             }
@@ -153,8 +154,8 @@ class MePatternPortBlockEntity extends MePortBlockEntity implements ICraftingPro
     }
 
     /**
-     * Каждой жидкости шаблона — свой открытый бак: с той же жидкостью или пустой, и чтобы влезла целиком.
-     * Вернёт номера баков по порядку жидкостей или null, если места нет.
+     * Each fluid of the pattern gets its own open tank: with the same fluid or empty, and it must fit entirely.
+     * Returns the tank indices in fluid order, or null if there is no room.
      */
     @Nullable
     private int[] placeFluids(List<FluidStack> fluids) {
@@ -164,8 +165,8 @@ class MePatternPortBlockEntity extends MePortBlockEntity implements ICraftingPro
         for (int k = 0; k < fluids.size(); k++) {
             FluidStack f = fluids.get(k);
             int pick = -1;
-            for (int t = 0; t < tanks.size() && pick < 0; t++)   // сначала бак, где эта жидкость уже есть
-                if (!taken[t] && tanks.get(t).getFluid().isFluidEqual(f)) pick = t;
+            for (int t = 0; t < tanks.size() && pick < 0; t++)   // first the tank that already has this fluid
+                if (!taken[t] && FluidStack.isSameFluidSameComponents(tanks.get(t).getFluid(), f)) pick = t;
             for (int t = 0; t < tanks.size() && pick < 0; t++)
                 if (!taken[t] && tanks.get(t).isEmpty()) pick = t;
             if (pick < 0 || tanks.get(pick).fill(f, IFluidHandler.FluidAction.SIMULATE) < f.getAmount()) return null;
@@ -175,7 +176,7 @@ class MePatternPortBlockEntity extends MePortBlockEntity implements ICraftingPro
         return into;
     }
 
-    /** Влезут ли все стаки в открытые слоты буфера: пробуем на копии. */
+    /** Whether all stacks fit into the open buffer slots: try on a copy. */
     private boolean fits(List<ItemStack> stacks) {
         ItemStackHandler copy = new ItemStackHandler(activeSlots());
         for (int i = 0; i < activeSlots(); i++) copy.setStackInSlot(i, getItems().getStackInSlot(i).copy());
@@ -185,13 +186,13 @@ class MePatternPortBlockEntity extends MePortBlockEntity implements ICraftingPro
 
     @Override public boolean isBusy() { return blocking && !isEmpty(); }
 
-    // ── терминал доступа к шаблонам ──
+    // ── pattern access terminal ──
 
     @Nullable @Override public IGrid getGrid() { return node.getGrid(); }
     @Override public boolean isVisibleInTerminal() { return showInTerminal; }
     @Override public InternalInventory getTerminalPatternInventory() { return terminalInv; }
 
-    /** Группа в терминале — машина, в которую входит порт (её ядро), иначе сам порт. */
+    /** Group in the terminal: the machine the port belongs to (its core), otherwise the port itself. */
     @Override
     public PatternContainerGroup getTerminalGroup() {
         Level level = getLevel();
@@ -200,7 +201,7 @@ class MePatternPortBlockEntity extends MePortBlockEntity implements ICraftingPro
         return new PatternContainerGroup(AEItemKey.of(block.asItem()), block.getName(), List.of());
     }
 
-    // ── сохранение и снятие ──
+    // ── saving and removal ──
 
     @Override
     public void dropContents(Level level, BlockPos pos) {
@@ -210,18 +211,18 @@ class MePatternPortBlockEntity extends MePortBlockEntity implements ICraftingPro
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put("mePatterns", patterns.serializeNBT());
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        tag.put("mePatterns", patterns.serializeNBT(registries));
         tag.putBoolean("meBlocking", blocking);
         tag.putBoolean("meHidden", !showInTerminal);
         tag.putInt("mePriority", priority);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        if (tag.contains("mePatterns")) patterns.deserializeNBT(tag.getCompound("mePatterns"));
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        if (tag.contains("mePatterns")) patterns.deserializeNBT(registries, tag.getCompound("mePatterns"));
         blocking = tag.getBoolean("meBlocking");
         showInTerminal = !tag.getBoolean("meHidden");
         priority = tag.getInt("mePriority");

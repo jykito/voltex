@@ -17,12 +17,12 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Окно нанолаборатории 256×228: табло (статус и порог темы, тема и изученность, стабильность), слева учёный и образец,
- * справа пустая карта, полоса записи и записанная карта, внизу энергия.
+ * Nanite lab window 256x228: display (status and topic threshold, topic and knowledge, stability), scientist and sample on the left,
+ * blank card, writing bar and written card on the right, energy at the bottom.
  */
 public class NaniteLabScreen extends MachineScreen<NaniteLabMenu> {
 
-    private static final ResourceLocation TEXTURE = new ResourceLocation(IndustrialCore.MODID, "textures/gui/nanite_lab_gui.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/nanite_lab_gui.png");
 
     private static final int WINDOW_H = 228;
     private static final int TEXT_X = 20, LINE1_Y = 16, LINE2_Y = 27, RIGHT_X = 236;
@@ -57,11 +57,11 @@ public class NaniteLabScreen extends MachineScreen<NaniteLabMenu> {
         NaniteGenome genome = NaniteGenome.read(strain);
         String stab = tr("stability", NaniteStrainItem.percent(genome.stability()));
         right(g, stab, x + RIGHT_X, y + LINE2_Y, C_LABEL);
-        int room = RIGHT_X - TEXT_X - Math.round(font.width(stab) * 0.9f) - 6;   // левый текст не заходит на стабильность
+        int room = RIGHT_X - TEXT_X - Math.round(font.width(stab) * 0.9f) - 6;   // the left text does not run into the stability
         String theme = sample.isEmpty() ? genome.dominant() : NaniteFeed.theme(sample.getItem());
         if (theme == null) return;
         text(g, clip(NaniteStrainItem.targetName(genome, theme, null).getString() + "  " + NaniteStrainItem.effectShort(genome, theme).getString(), room), x + TEXT_X, y + LINE2_Y, C_ACCENT);
-        if (!sample.isEmpty())   // порог темы: зелёный, если учёный его прошёл
+        if (!sample.isEmpty())   // topic threshold: green if the scientist has passed it
             right(g, tr("threshold", NaniteStrainItem.percent(menu.threshold())), x + RIGHT_X, y + LINE1_Y,
                     genome.bonus(theme) >= menu.threshold() ? C_OK : C_BAD);
     }
@@ -81,7 +81,7 @@ public class NaniteLabScreen extends MachineScreen<NaniteLabMenu> {
         return mx >= leftPos + rx && mx < leftPos + rx + w && my >= topPos + ry && my < topPos + ry + h;
     }
 
-    /** Обрезать строку под ширину {@code px} при масштабе текста 0.9. */
+    /** Trim the line to width {@code px} at text scale 0.9. */
     private String clip(String s, int px) {
         int w = Math.round(px / 0.9f);
         return font.width(s) <= w ? s : font.plainSubstrByWidth(s, w - font.width("…")) + "…";

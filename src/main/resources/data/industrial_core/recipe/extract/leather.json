@@ -1,0 +1,14 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:extracting",
+  "ingredient": {
+    "item": "minecraft:rotten_flesh"
+  },
+  "inputCount": 4,
+  "result": {
+    "id": "minecraft:leather",
+    "count": 1
+  },
+  "processingTime": 105,
+  "energyCost": 30
+}

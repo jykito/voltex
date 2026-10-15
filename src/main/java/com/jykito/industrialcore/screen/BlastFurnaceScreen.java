@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Inventory;
 public class BlastFurnaceScreen extends MachineScreen<BlastFurnaceMenu> {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/blast_furnace_gui.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/blast_furnace_gui.png");
 
     private static final int HEAT_X = 88,  HEAT_Y = 97, HEAT_W = 73, HEAT_H = 6;
 

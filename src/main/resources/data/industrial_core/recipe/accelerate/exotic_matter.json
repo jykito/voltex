@@ -1,0 +1,34 @@
+{
+  "type": "industrial_core:accelerating",
+  "inputs": [
+    {
+      "tag": "c:ingots/netherite",
+      "count": 1
+    },
+    {
+      "type": "neoforge:components",
+      "items": "industrial_core:capsule",
+      "components": {
+        "industrial_core:fluid_content": {
+          "id": "industrial_core:superfluid_condensate",
+          "amount": 1000
+        }
+      },
+      "count": 1
+    },
+    {
+      "item": "industrial_core:kronium_alloy",
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "industrial_core:exotic_matter",
+    "count": 1
+  },
+  "minTier": 1,
+  "processingTime": 200,
+  "energyCostPerTick": 2000,
+  "minInstab": 35,
+  "bandLo": 38,
+  "bandHi": 42
+}

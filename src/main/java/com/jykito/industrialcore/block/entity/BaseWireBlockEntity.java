@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.entity;
+import java.util.Optional;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.block.custom.wire.BaseWireBlock;
 import com.jykito.industrialcore.block.custom.wire.WireTier;
@@ -7,10 +11,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,26 +20,27 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-public class BaseWireBlockEntity extends BlockEntity {
+public class BaseWireBlockEntity extends BlockEntity implements Caps.Provider  {
     private WireTier tier = WireTier.COPPER;
-    private final LazyOptional<IEnergyStorage> energyProxy;
+    private final IEnergyStorage energyProxy = new TransitEnergyStorage();
 
     /**
-     * Снимок приёмников сети, живущий ОДИН тик.
+     * A snapshot of the network's receivers that lives for ONE tick.
      * <p>
-     * Раньше обход сети шёл на каждую вставку энергии, поэтому цена за тик была
-     * «число толкающих × размер сети» — на большой базе это квадратичный рост.
-     * Теперь первый же толчок за тик обходит сеть один раз и раскладывает этот
-     * снимок на ВСЕ пройденные кабели, а остальные генераторы находят свежую
-     * метку и берут готовое.
+     * Before, the network was walked on every energy insert, so the cost per tick was
+     * "number of pushers x network size", which grows quadratically on a large base.
+     * Now the first push in a tick walks the network once and hands this
+     * snapshot to ALL cables it passed, and the other generators find a fresh
+     * stamp and take the ready result.
      * <p>
-     * Снимок протухает сам со сменой тика, поэтому инвалидация не нужна вообще:
-     * ни на постановку кабеля, ни на слом машины, ни на выгрузку чанка. Это снимает
-     * весь класс багов «кэш устарел, энергия течёт в снесённую машину» — максимум
-     * один тик расхождения, и он самовосстанавливается.
+     * The snapshot expires by itself when the tick changes, so no invalidation is needed at all:
+     * not when a cable is placed, not when a machine is broken, not when a chunk unloads. This removes
+     * the whole class of "stale cache, energy flows into a removed machine" bugs: at most
+     * one tick of mismatch, and it heals itself.
      */
-    /** @param receivers держим именно LazyOptional: если машину снесли внутри тика, капабилити протухнет и мы это увидим. */
-    private record NetworkSnapshot(long tick, List<LazyOptional<IEnergyStorage>> receivers) {}
+    /** We keep the receiver together with its BE: if the machine is removed within the tick, isRemoved() shows it and energy does not go there. */
+    private record Receiver(BlockEntity be, IEnergyStorage storage) {}
+    private record NetworkSnapshot(long tick, List<Receiver> receivers) {}
 
     private NetworkSnapshot snapshot;
 
@@ -51,22 +53,18 @@ public class BaseWireBlockEntity extends BlockEntity {
             this.tier = wire.getTier();
         }
 
-        this.energyProxy = LazyOptional.of(TransitEnergyStorage::new);
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY) {
-            return energyProxy.cast();
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.EnergyStorage.BLOCK) {
+            return (T) energyProxy;
         }
-        return super.getCapability(cap, side);
+        return null;
     }
 
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        energyProxy.invalidate();
-    }
 
     private class TransitEnergyStorage implements IEnergyStorage {
         @Override
@@ -91,12 +89,12 @@ public class BaseWireBlockEntity extends BlockEntity {
         public boolean canReceive() { return true; }
     }
 
-    /** Снимок за текущий тик: берём готовый или считаем один раз на всю сеть. */
-    private List<LazyOptional<IEnergyStorage>> receiversThisTick() {
+    /** Snapshot for the current tick: take the ready one or compute it once for the whole network. */
+    private List<Receiver> receiversThisTick() {
         long now = level.getGameTime();
         if (snapshot != null && snapshot.tick() == now) return snapshot.receivers();
 
-        List<LazyOptional<IEnergyStorage>> receivers = new ArrayList<>();
+        List<Receiver> receivers = new ArrayList<>();
         List<BaseWireBlockEntity> wires = new ArrayList<>();
 
         Deque<BlockPos> queue = new ArrayDeque<>();
@@ -123,11 +121,11 @@ public class BaseWireBlockEntity extends BlockEntity {
                     queue.add(scratch.immutable());
                     wires.add(wire);
                 } else {
-                    var cap = be.getCapability(ForgeCapabilities.ENERGY, dir.getOpposite());
+                    var cap = Caps.get(be, Caps.ENERGY, dir.getOpposite());
                     if (cap.isPresent()) {
-                        IEnergyStorage storage = cap.resolve().get();
+                        IEnergyStorage storage = cap.get();
                         if (storage.canReceive()) {
-                            receivers.add(cap);
+                            receivers.add(new Receiver(be, storage));
                             visited.add(key);
                         }
                     }
@@ -137,20 +135,18 @@ public class BaseWireBlockEntity extends BlockEntity {
 
         NetworkSnapshot snap = new NetworkSnapshot(now, receivers);
         this.snapshot = snap;
-        for (BaseWireBlockEntity w : wires) w.snapshot = snap;  // вся сеть разом — вот здесь и уходит множитель
+        for (BaseWireBlockEntity w : wires) w.snapshot = snap;  // the whole network at once: this is where the multiplier goes away
         return receivers;
     }
 
     private int distributeEnergy(int maxAmount, boolean simulate) {
 
-        List<LazyOptional<IEnergyStorage>> cached = receiversThisTick();
+        List<Receiver> cached = receiversThisTick();
 
-        // разворачиваем снимок: приёмник мог исчезнуть внутри тика — тогда капабилити уже протухла
+        // unpack the snapshot: a receiver may have vanished within the tick, removed ones are skipped
         List<IEnergyStorage> receivers = new ArrayList<>(cached.size());
-        for (LazyOptional<IEnergyStorage> cap : cached) {
-            IEnergyStorage storage = cap.resolve().orElse(null);
-            if (storage != null) receivers.add(storage);
-        }
+        for (Receiver r : cached)
+            if (!r.be().isRemoved()) receivers.add(r.storage());
 
         int amountLeft = maxAmount;
         int remaining  = receivers.size();

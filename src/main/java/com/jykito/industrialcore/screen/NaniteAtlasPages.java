@@ -1,5 +1,7 @@
 package com.jykito.industrialcore.screen;
 
+
+import net.minecraft.core.registries.Registries;
 import com.jykito.industrialcore.item.ModItems;
 import com.jykito.industrialcore.nanite.NaniteAtlas;
 import com.jykito.industrialcore.nanite.NaniteAtlasClient;
@@ -22,10 +24,10 @@ import java.util.Locale;
 import java.util.TreeSet;
 
 /**
- * Атлас видов нанитов как ещё одна глава панели (юзер 2026-10-07): обзор, затем виды по классам и редкие виды.
- * Список видов собирается из того, что есть в игре: материалы добытчика — теги {@code forge:ores/*}, переработчика —
- * материалы, у которых есть и руда, и пыль, учёного — темы лаборатории. Открытия и рекорды — из {@link NaniteAtlasClient}.
- * Не открытый вид — «???» с подсказкой, как его получить; у редких подсказка туманная.
+ * The nanite species atlas as one more chapter of the panel (author, 2026-10-07): an overview, then species by class and rare species.
+ * The species list is built from what exists in the game: miner materials from the {@code forge:ores/*} tags, processor ones from
+ * materials that have both ore and dust, scientist ones from the lab topics. Unlocks and records come from {@link NaniteAtlasClient}.
+ * A species not yet unlocked shows "???" with a hint on how to get it; rare ones get a vague hint.
  */
 final class NaniteAtlasPages {
 
@@ -57,9 +59,9 @@ final class NaniteAtlasPages {
         return new GuideContent.Category(tr("gui.industrial_core.atlas.title"), entries, new ItemStack(ModItems.NANITE_STRAIN.get()));
     }
 
-    // ── что бывает ──
+    // ── what exists ──
 
-    /** Цели класса в этой игре: материалы по тегам или темы лаборатории. */
+    /** Class targets in this game: materials by tags or lab topics. */
     private static List<String> targets(NaniteGenome.Kind kind) {
         if (kind == NaniteGenome.Kind.SCIENTIST) return new ArrayList<>(NaniteLab.THRESHOLDS.keySet());
         TreeSet<String> ores = materials("ores/"), out = new TreeSet<>();
@@ -72,22 +74,22 @@ final class NaniteAtlasPages {
         TreeSet<String> out = new TreeSet<>();
         BuiltInRegistries.ITEM.getTags().forEach(p -> {
             ResourceLocation l = p.getFirst().location();
-            if (l.getNamespace().equals("forge") && l.getPath().startsWith(prefix) && l.getPath().length() > prefix.length()
+            if (l.getNamespace().equals("c") && l.getPath().startsWith(prefix) && l.getPath().length() > prefix.length()
                     && p.getSecond().size() > 0) out.add(l.getPath().substring(prefix.length()));
         });
         return out;
     }
 
-    /** Предмет, которым подписан материал: тот, на котором открыли, иначе первый из тега руды/пыли. */
+    /** The item the material is labelled with: the one it was unlocked on, otherwise the first from the ore/dust tag. */
     private static @Nullable Item sample(NaniteGenome.Kind kind, String target, String key) {
         String id = NaniteAtlasClient.icon(key);
-        if (!id.isEmpty()) { Item it = BuiltInRegistries.ITEM.get(new ResourceLocation(id)); if (it != null) return it; }
+        if (!id.isEmpty()) { Item it = BuiltInRegistries.ITEM.get(ResourceLocation.parse(id)); if (it != null) return it; }
         String prefix = kind == NaniteGenome.Kind.PROCESSOR ? "dusts/" : "ores/";
-        TagKey<Item> tag = TagKey.create(net.minecraft.core.registries.Registries.ITEM, new ResourceLocation("forge", prefix + target));
+        TagKey<Item> tag = TagKey.create(net.minecraft.core.registries.Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", prefix + target));
         return BuiltInRegistries.ITEM.getTag(tag).map(HolderSet.Named::stream).flatMap(s -> s.findFirst()).map(h -> h.value()).orElse(null);
     }
 
-    // ── страницы ──
+    // ── pages ──
 
     private static GuideContent.Entry overview(int open, int total, int golds) {
         List<GuideContent.Element> els = new ArrayList<>();

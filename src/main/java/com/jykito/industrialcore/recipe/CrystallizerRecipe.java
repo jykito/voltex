@@ -1,5 +1,11 @@
 package com.jykito.industrialcore.recipe;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.Codec;
 
+import net.minecraft.core.HolderLookup;
 import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
@@ -10,22 +16,21 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Кристаллизация: жидкость плюс предмет-затравка дают предмет.
+ * Crystallization: a fluid plus a seed item give an item.
  * <p>
- * Это единственный в моде путь «жидкость → предмет»: сжижитель работает предмет→жидкость,
- * обогатитель предмет+жидкость→жидкость, промывщик предмет+жидкость→предметы. Обратного
- * не умел никто, поэтому тип заведён отдельно, а не через {@code machine_recipe}.
+ * This is the mod's only "fluid -> item" path: the liquefier does item -> fluid,
+ * the enricher item + fluid -> fluid, the ore washer item + fluid -> items. Nothing did the reverse,
+ * so the type is separate rather than going through {@code machine_recipe}.
  * <p>
- * Затравка необязательна: без неё машина кристаллизует из одной жидкости.
+ * The seed is optional: without it the machine crystallizes from the fluid alone.
  */
-public class CrystallizerRecipe implements Recipe<SimpleContainer> {
+public class CrystallizerRecipe implements Recipe<ContainerInput> {
 
-    private final ResourceLocation id;
     private final ResourceLocation fluidInputId;
     private final int fluidInputAmount;
     private final Ingredient ingredient;
@@ -34,11 +39,9 @@ public class CrystallizerRecipe implements Recipe<SimpleContainer> {
     private final int processingTime;
     private final int energyCostPerTick;
 
-    public CrystallizerRecipe(ResourceLocation id,
-                              ResourceLocation fluidInputId, int fluidInputAmount,
+    public CrystallizerRecipe(ResourceLocation fluidInputId, int fluidInputAmount,
                               Ingredient ingredient, int ingredientCount,
                               ItemStack result, int processingTime, int energyCostPerTick) {
-        this.id                = id;
         this.fluidInputId      = fluidInputId;
         this.fluidInputAmount  = fluidInputAmount;
         this.ingredient        = ingredient;
@@ -48,13 +51,13 @@ public class CrystallizerRecipe implements Recipe<SimpleContainer> {
         this.energyCostPerTick = energyCostPerTick;
     }
 
-    /** Подходит ли содержимое слота затравки. Рецепт без затравки принимает пустой слот. */
+    /** Whether the seed slot contents fit. A recipe without a seed accepts an empty slot. */
     public boolean seedMatches(ItemStack seed) {
         if (!hasSeed()) return true;
         return ingredient.test(seed) && seed.getCount() >= ingredientCount;
     }
 
-    /** Результат как есть, без копии — для проверок в тике. Менять его нельзя. */
+    /** The result as is, without a copy, for checks in the tick. Do not modify it. */
     public ItemStack        getResult()         { return result; }
     public boolean          hasSeed()           { return !ingredient.isEmpty(); }
     public Ingredient       getIngredient()     { return ingredient; }
@@ -65,15 +68,15 @@ public class CrystallizerRecipe implements Recipe<SimpleContainer> {
     public ResourceLocation getFluidInputId()   { return fluidInputId; }
 
     public FluidStack makeFluidInput() {
-        var fluid = ForgeRegistries.FLUIDS.getValue(fluidInputId);
+        var fluid = BuiltInRegistries.FLUID.get(fluidInputId);
         return fluid == null ? FluidStack.EMPTY : new FluidStack(fluid, fluidInputAmount);
     }
 
-    @Override public boolean matches(SimpleContainer c, Level level) { return !level.isClientSide() && seedMatches(c.getItem(0)); }
-    @Override public ItemStack assemble(SimpleContainer c, RegistryAccess a) { return result.copy(); }
+    @Override public boolean matches(ContainerInput c, Level level) { return !level.isClientSide() && seedMatches(c.getItem(0)); }
+    @Override public ItemStack assemble(ContainerInput c, HolderLookup.Provider a) { return result.copy(); }
     @Override public boolean canCraftInDimensions(int w, int h) { return true; }
     @Override public boolean isSpecial() { return true; }
-    @Override public ItemStack getResultItem(RegistryAccess a) { return result.copy(); }
+    @Override public ItemStack getResultItem(HolderLookup.Provider a) { return result.copy(); }
 
     @Override
     public NonNullList<Ingredient> getIngredients() {
@@ -82,50 +85,47 @@ public class CrystallizerRecipe implements Recipe<SimpleContainer> {
         return list;
     }
 
-    @Override public ResourceLocation getId()            { return id; }
     @Override public RecipeSerializer<?> getSerializer() { return ModRecipes.CRYSTALLIZER_SERIALIZER.get(); }
     @Override public RecipeType<?> getType()             { return ModRecipes.CRYSTALLIZING_TYPE.get(); }
 
     public static class Serializer implements RecipeSerializer<CrystallizerRecipe> {
         public static final Serializer INSTANCE = new Serializer();
 
-        @Override
-        public CrystallizerRecipe fromJson(ResourceLocation id, JsonObject json) {
-            ResourceLocation fluidIn = new ResourceLocation(GsonHelper.getAsString(json, "fluidInput"));
-            int fluidInAmt           = GsonHelper.getAsInt(json, "fluidInputAmount", 1000);
+        /** No "ingredient" means no seed, and then the count is 0 whatever "ingredientCount" says. */
+        private static final MapCodec<CrystallizerRecipe> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                ResourceLocation.CODEC.fieldOf("fluidInput").forGetter(r -> r.fluidInputId),
+                Codec.INT.optionalFieldOf("fluidInputAmount", 1000).forGetter(r -> r.fluidInputAmount),
+                Ingredient.CODEC_NONEMPTY.optionalFieldOf("ingredient", Ingredient.EMPTY).forGetter(r -> r.ingredient),
+                Codec.INT.optionalFieldOf("ingredientCount", 1).forGetter(r -> r.ingredientCount),
+                ItemStack.CODEC.fieldOf("result").forGetter(r -> r.result),
+                Codec.INT.optionalFieldOf("processingTime", 200).forGetter(r -> r.processingTime),
+                Codec.INT.optionalFieldOf("energyCostPerTick", 40).forGetter(r -> r.energyCostPerTick)
+        ).apply(i, (fluidIn, fluidInAmt, ingredient, count, result, time, energy) ->
+                new CrystallizerRecipe(fluidIn, fluidInAmt, ingredient, ingredient.isEmpty() ? 0 : count, result, time, energy)));
 
-            Ingredient ingredient = Ingredient.EMPTY;
-            int        count      = 0;
-            if (json.has("ingredient")) {
-                ingredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(json, "ingredient"));
-                count      = GsonHelper.getAsInt(json, "ingredientCount", 1);
-            }
+        private static final StreamCodec<RegistryFriendlyByteBuf, CrystallizerRecipe> STREAM_CODEC =
+                StreamCodec.of(Serializer::write, Serializer::read);
 
-            ItemStack result   = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
-            int processingTime = GsonHelper.getAsInt(json, "processingTime", 200);
-            int energyCost     = GsonHelper.getAsInt(json, "energyCostPerTick", 40);
-            return new CrystallizerRecipe(id, fluidIn, fluidInAmt, ingredient, count, result, processingTime, energyCost);
-        }
+        @Override public MapCodec<CrystallizerRecipe> codec() { return CODEC; }
+        @Override public StreamCodec<RegistryFriendlyByteBuf, CrystallizerRecipe> streamCodec() { return STREAM_CODEC; }
 
-        @Override
-        public @Nullable CrystallizerRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
+        private static CrystallizerRecipe read(RegistryFriendlyByteBuf buf) {
             ResourceLocation fluidIn = buf.readResourceLocation();
             int        fluidInAmt    = buf.readInt();
-            Ingredient ingredient    = Ingredient.fromNetwork(buf);
+            Ingredient ingredient    = RecipeCodecs.readIngredient(buf);
             int        count         = buf.readInt();
-            ItemStack  result        = buf.readItem();
+            ItemStack  result        = RecipeCodecs.readItem(buf);
             int        processingTime = buf.readInt();
             int        energyCost     = buf.readInt();
-            return new CrystallizerRecipe(id, fluidIn, fluidInAmt, ingredient, count, result, processingTime, energyCost);
+            return new CrystallizerRecipe(fluidIn, fluidInAmt, ingredient, count, result, processingTime, energyCost);
         }
 
-        @Override
-        public void toNetwork(FriendlyByteBuf buf, CrystallizerRecipe r) {
+        private static void write(RegistryFriendlyByteBuf buf, CrystallizerRecipe r) {
             buf.writeResourceLocation(r.fluidInputId);
             buf.writeInt(r.fluidInputAmount);
-            r.ingredient.toNetwork(buf);
+            RecipeCodecs.writeIngredient(buf, r.ingredient);
             buf.writeInt(r.ingredientCount);
-            buf.writeItem(r.result);
+            RecipeCodecs.writeItem(buf, r.result);
             buf.writeInt(r.processingTime);
             buf.writeInt(r.energyCostPerTick);
         }

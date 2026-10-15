@@ -6,18 +6,17 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
 
-/** Гайд-мануал: ПКМ открывает нативный экран-справочник (клиентски). */
+/** Guide manual: RMB opens the native reference screen (client side). */
 public class ManualItem extends Item {
     public ManualItem(Properties p) { super(p); }
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
+        // client only: on a dedicated server this branch never runs, so the client class is never loaded there
         if (level.isClientSide)
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> com.jykito.industrialcore.client.GuideClient::open);
+            com.jykito.industrialcore.client.GuideClient.open();
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
     }
 }

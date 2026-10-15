@@ -1,0 +1,37 @@
+{
+  "parent": "industrial_core:voltex/crusher",
+  "display": {
+    "icon": {
+      "id": "industrial_core:industrial_miner_core"
+    },
+    "title": {
+      "translate": "advancements.industrial_core.industrial_miner.title"
+    },
+    "description": {
+      "translate": "advancements.industrial_core.industrial_miner.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_industrial_miner_core": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "industrial_core:industrial_miner_core"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_industrial_miner_core"
+    ]
+  ]
+}

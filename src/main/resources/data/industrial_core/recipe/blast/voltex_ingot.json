@@ -1,0 +1,18 @@
+{
+  "type": "industrial_core:blast_furnace_recipe",
+  "ingredient": {
+    "item": "industrial_core:iron_cluster"
+  },
+  "ingredientCount": 1,
+  "fuel": {
+    "item": "industrial_core:kronium_alloy"
+  },
+  "fuelCount": 8,
+  "result": {
+    "id": "industrial_core:voltex_ingot",
+    "count": 2
+  },
+  "processingTime": 1200,
+  "requiredHeat": 3600,
+  "lateOnly": true
+}

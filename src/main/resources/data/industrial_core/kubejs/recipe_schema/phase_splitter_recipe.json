@@ -1,0 +1,44 @@
+{
+  "keys": [
+    {
+      "name": "result",
+      "role": "output",
+      "type": "item_stack"
+    },
+    {
+      "name": "ingredient",
+      "role": "input",
+      "type": "ingredient"
+    },
+    {
+      "name": "result2",
+      "role": "output",
+      "type": "item_stack",
+      "default_optional": true
+    },
+    {
+      "name": "result3",
+      "role": "output",
+      "type": "item_stack",
+      "default_optional": true
+    },
+    {
+      "name": "inputCount",
+      "type": "int",
+      "optional": 1
+    },
+    {
+      "name": "processingTime",
+      "type": "int",
+      "optional": 400
+    },
+    {
+      "name": "energyCost",
+      "type": "int",
+      "optional": 100
+    }
+  ],
+  "unique": [
+    "result"
+  ]
+}

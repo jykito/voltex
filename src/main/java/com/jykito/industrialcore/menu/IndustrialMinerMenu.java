@@ -10,15 +10,15 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
-/** Окно промышленного шахтёра: три ряда выхода, слот штамма нанитов, инвентарь игрока; участки читаются из клиентской копии ядра. */
+/** Industrial miner window: three output rows, a nanite strain slot, the player inventory; sites are read from the client copy of the core. */
 public class IndustrialMinerMenu extends MachineMenu {
 
     public static final int OUT_X = 43, OUT_Y = 140, INV_X = 44, INV_Y = 217, NANITE_X = 222, NANITE_Y = 16;
     private static final int OUT = IndustrialMinerCoreBlockEntity.OUTPUT_SLOTS;
-    /** Слот штамма идёт сразу за выходом. */
+    /** The strain slot comes right after the output. */
     public static final int NANITE_SLOT = OUT;
 
     public final IndustrialMinerCoreBlockEntity core;
@@ -58,7 +58,7 @@ public class IndustrialMinerMenu extends MachineMenu {
     public int scaledFluid(int px)    { return scale(fluid(), fluidCap(), px); }
     public int scaledProgress(int px) { return scaleProgress(progress(), cycle(), px); }
 
-    /** 0..3 — включить/выключить участок, 4..7 — отвязать (обрабатывает ядро на сервере). */
+    /** 0..3 enable/disable a site, 4..7 unlink (handled by the core on the server). */
     @Override
     public boolean clickMenuButton(Player player, int id) {
         if (id < 0 || id >= 2 * IndustrialMinerCoreBlockEntity.MAX_SITES) return false;
@@ -74,7 +74,7 @@ public class IndustrialMinerMenu extends MachineMenu {
         if (index <= NANITE_SLOT) {
             if (!moveItemStackTo(stack, NANITE_SLOT + 1, slots.size(), true)) return ItemStack.EMPTY;
         } else if (!(stack.getItem() instanceof NaniteStrainItem) || !moveItemStackTo(stack, NANITE_SLOT, NANITE_SLOT + 1, false)) {
-            return ItemStack.EMPTY;   // в выход ничего не кладут, из инвентаря — только штамм в его слот
+            return ItemStack.EMPTY;   // nothing goes into the output; from the inventory only a strain into its slot
         }
         if (stack.isEmpty()) slot.set(ItemStack.EMPTY); else slot.setChanged();
         slot.onTake(player, stack);

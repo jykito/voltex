@@ -68,11 +68,11 @@
         },
         {
           "type": "text",
-          "text": "**Bronze** smelts in the regular electric furnace. **Invar**, **electrum** and **hardened steel** need more: the blast furnace, which in turn needs heat."
+          "text": "**Bronze dust** is mixed on the crafting table from three copper dust and one tin dust, then smelted in the regular electric furnace. **Invar**, **electrum** and **hardened steel** need more: the blast furnace, which in turn needs heat."
         },
         {
           "type": "text",
-          "text": "**Kronium alloy** comes later, through the restructor."
+          "text": "**Kronium alloy** is crafted on the crafting table from kronit, crystal plates and a capsule of superfluid condensate, so it only comes once you have the cryo chamber."
         },
         {
           "type": "items",
@@ -151,7 +151,7 @@
         },
         {
           "type": "text",
-          "text": "Everything starts with the **textolite board**. It becomes a logic board, and the logic board goes into the data transfer matrix and the microcontroller."
+          "text": "Everything starts with the **textolite board**. It becomes a logic board, the logic board goes into the data transfer matrix, and the matrix into the microcontroller."
         },
         {
           "type": "text",
@@ -178,7 +178,7 @@
         },
         {
           "type": "text",
-          "text": "Plant a **resin tree** and collect **tree resin** from it, by hand or with a **resin collector** that does it for you."
+          "text": "Plant a **resin tree**. The **resin collector** taps **tree resin** from it, you cannot gather it by hand. The extractor also makes resin from resin leaves, and the cultivator grows it from a sapling."
         },
         {
           "type": "text",
@@ -205,7 +205,7 @@
         },
         {
           "type": "text",
-          "text": "Melt amethyst in the liquefier while heat flows into it, then cast the melt with silicon in the crystallizer to get a **crystal ingot**. The restructor makes it from quartz without amethyst, but it eats a lot of power. That ingot gives the crystal plate, crystal fiber and the amethyst crystal."
+          "text": "Melt amethyst in the liquefier while heat flows into it, then cast the melt with silicon in the crystallizer to get a **crystal ingot**. The restructor makes it from quartz without amethyst, but it eats a lot of power. The metal former draws crystal fiber from the ingot, the compressor presses the fiber into a crystal plate and four ingots into an amethyst crystal."
         },
         {
           "type": "text",
@@ -232,7 +232,7 @@
         },
         {
           "type": "text",
-          "text": "**Coal dust** becomes carbon fiber, the fiber becomes carbon mesh, and the mesh becomes a carbon plate. **Composite** is pressed in the compressor from metal plates."
+          "text": "**Coal dust** becomes carbon fiber, the fiber becomes carbon mesh, and the mesh becomes a carbon plate. **Composite** is pressed in the compressor from a composite ingot, which is crafted from iron, bronze and tin plates."
         },
         {
           "type": "text",
@@ -263,7 +263,7 @@
         },
         {
           "type": "text",
-          "text": "Kronit goes into kronium alloy, Nexite armor, the casing of late machines and the energy blade, and it is also what you repair power armor with. The metal former rolls kronium alloy into an **armor sheet**, which late machine casings and ports are built from."
+          "text": "Kronit goes into kronium alloy, Nexite armor, the casing of late machines and the energy blade. Kronium alloy also needs a capsule of superfluid condensate, which comes from the cryo chamber at its third stage or from the magnet as condensate ampoules. The metal former rolls kronium alloy into an **armor sheet**, which late machine casings and ports are built from."
         },
         {
           "type": "items",
@@ -289,7 +289,7 @@
         },
         {
           "type": "text",
-          "text": "There is no lithium ore. **Lithium dust** only drops when you wash copper ore, 15% of the time. **Lithium** goes into lithium batteries, the cryo chamber's refrigeration chambers and the basic port upgrade, so set up a washer for copper early."
+          "text": "There is no lithium ore. **Lithium dust** only drops when you wash copper: 15% from copper ore, 10% from raw copper and 40% in the industrial washer. **Lithium** goes into lithium batteries, the cryo chamber's refrigeration chambers and the basic port upgrade, so set up a washer for copper early."
         },
         {
           "type": "items",

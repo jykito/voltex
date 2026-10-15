@@ -1,5 +1,5 @@
 {
-    "loader": "forge:obj",
+    "loader": "neoforge:obj",
     "model": "industrial_core:models/block/electromagnet_pilons.obj",
     "flip_v": true,
     "textures": {

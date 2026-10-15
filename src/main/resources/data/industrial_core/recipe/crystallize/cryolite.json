@@ -1,0 +1,15 @@
+{
+  "type": "industrial_core:crystallizer_recipe",
+  "fluidInput": "industrial_core:coolant",
+  "fluidInputAmount": 500,
+  "ingredient": {
+    "item": "industrial_core:aluminum_dust"
+  },
+  "ingredientCount": 1,
+  "result": {
+    "id": "industrial_core:cryolite",
+    "count": 1
+  },
+  "processingTime": 200,
+  "energyCostPerTick": 60
+}

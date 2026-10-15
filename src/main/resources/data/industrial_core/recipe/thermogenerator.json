@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/copper"
+    },
+    "B": {
+      "item": "industrial_core:heat_conductor"
+    },
+    "C": {
+      "item": "minecraft:brick"
+    },
+    "D": {
+      "tag": "c:components/machine_casing"
+    },
+    "E": {
+      "item": "industrial_core:logic_board"
+    }
+  },
+  "result": {
+    "id": "industrial_core:thermogenerator",
+    "count": 1
+  }
+}

@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.energy.MachineEnergy;
 import com.jykito.industrialcore.item.upgrade.*;
@@ -22,19 +26,16 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class PhaseSplitterBlockEntity extends BlockEntity implements MenuProvider {
+public class PhaseSplitterBlockEntity extends BlockEntity implements Caps.Provider, MenuProvider {
 
     private final com.jykito.industrialcore.recipe.CachedRecipe<PhaseSplitterRecipe> recipeCache =
             new com.jykito.industrialcore.recipe.CachedRecipe<>();
@@ -76,15 +77,12 @@ public class PhaseSplitterBlockEntity extends BlockEntity implements MenuProvide
             SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
             for (int i = 0; i < itemHandler.getSlots(); i++)
                 inventory.setItem(i, itemHandler.getStackInSlot(i));
-            return level.getRecipeManager()
-                    .getRecipeFor(ModRecipes.PHASE_SPLITTING_TYPE.get(), inventory, level).orElse(null);
+            return com.jykito.industrialcore.recipe.RecipeLookup.find(level.getRecipeManager(), ModRecipes.PHASE_SPLITTING_TYPE.get(), inventory, level).orElse(null);
         }));
     }
 
     protected final MachineEnergy energyStorage =
-            MachineEnergy.consumer(200_000, 200_000); // приём = буфер, без потолка на вход
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
-    private LazyOptional<IEnergyStorage> lazyEnergyHandler = LazyOptional.empty();
+            MachineEnergy.consumer(200_000, 200_000); // intake = buffer, no input cap
 
     protected int progress = 0;
     protected int maxProgress = 400;
@@ -248,38 +246,31 @@ public class PhaseSplitterBlockEntity extends BlockEntity implements MenuProvide
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY)       return lazyEnergyHandler.cast();
-        if (cap == ForgeCapabilities.ITEM_HANDLER) return lazyItemHandler.cast();
-        return super.getCapability(cap, side);
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.EnergyStorage.BLOCK)       return (T) energyStorage;
+        if (cap == Capabilities.ItemHandler.BLOCK) return (T) automationHandler;
+        return null;
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
-        lazyItemHandler   = LazyOptional.of(() -> automationHandler);
-        lazyEnergyHandler = LazyOptional.of(() -> energyStorage);
     }
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyItemHandler.invalidate();
-        lazyEnergyHandler.invalidate();
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag tag) {
-        tag.put("inventory", itemHandler.serializeNBT());
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.put("inventory", itemHandler.serializeNBT(registries));
         tag.putInt("energy", energyStorage.getEnergyStored());
         tag.putInt("progress", progress);
-        super.saveAdditional(tag);
+        super.saveAdditional(tag, registries);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        itemHandler.deserializeNBT(tag.getCompound("inventory"));
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        itemHandler.deserializeNBT(registries, tag.getCompound("inventory"));
         energyStorage.setEnergy(tag.getInt("energy"));
         progress = tag.getInt("progress");
     }

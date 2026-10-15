@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:rubber"
+    },
+    "B": {
+      "item": "industrial_core:crystalline_channel"
+    },
+    "C": {
+      "item": "industrial_core:gold_conductor"
+    },
+    "D": {
+      "item": "industrial_core:superconductor_coil"
+    }
+  },
+  "result": {
+    "id": "industrial_core:coil_winding",
+    "count": 2
+  }
+}

@@ -1,4 +1,6 @@
 package com.jykito.industrialcore.block.custom;
+import com.mojang.serialization.MapCodec;
+import com.jykito.industrialcore.capability.Caps;
 
 import com.jykito.industrialcore.block.entity.BlastFurnaceBlockEntity;
 import com.jykito.industrialcore.block.entity.ModBlockEntities;
@@ -20,6 +22,10 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import org.jetbrains.annotations.Nullable;
 
 public class BlastFurnaceBlock extends BaseEntityBlock {
+
+    /** 1.21: block codec. Vanilla does not call it for mod blocks; there is one block instance, so unit is exact. */
+    @Override
+    protected MapCodec<? extends BlastFurnaceBlock> codec() { return MapCodec.unit(this); }
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
@@ -58,11 +64,16 @@ public class BlastFurnaceBlock extends BaseEntityBlock {
     }
 
     @Override
+    protected net.minecraft.world.ItemInteractionResult useItemOn(net.minecraft.world.item.ItemStack heldItem, BlockState state, Level level, BlockPos pos, net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand, net.minecraft.world.phys.BlockHitResult hit) {
+        return com.jykito.industrialcore.block.BlockUse.toItemResult(use(state, level, pos, player, hand, hit));
+    }
+
+    /** Formerly Block.use (1.20.1); called from useItemOn for both hands, as before. */
     public net.minecraft.world.InteractionResult use(BlockState state, Level level, BlockPos pos, net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand, net.minecraft.world.phys.BlockHitResult hit) {
         if (!level.isClientSide()) {
             BlockEntity entity = level.getBlockEntity(pos);
             if (entity instanceof BlastFurnaceBlockEntity) {
-                net.minecraftforge.network.NetworkHooks.openScreen(((net.minecraft.server.level.ServerPlayer) player), (BlastFurnaceBlockEntity) entity, pos);
+                (((net.minecraft.server.level.ServerPlayer) player)).openMenu((BlastFurnaceBlockEntity) entity, pos);
             }
         }
         return net.minecraft.world.InteractionResult.sidedSuccess(level.isClientSide());
@@ -73,7 +84,7 @@ public class BlastFurnaceBlock extends BaseEntityBlock {
         if (state.getBlock() != newState.getBlock()) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof BlastFurnaceBlockEntity) {
-                blockEntity.getCapability(net.minecraftforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
+                Caps.get(blockEntity, Caps.ITEM_HANDLER).ifPresent(handler -> {
                     for (int i = 0; i < handler.getSlots(); i++) {
                         net.minecraft.world.Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), handler.getStackInSlot(i));
                     }

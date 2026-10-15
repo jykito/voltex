@@ -1,4 +1,9 @@
 package com.jykito.industrialcore.block;
+import com.mojang.serialization.MapCodec;
+import com.jykito.industrialcore.block.BlockUse;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.ItemInteractionResult;
+import com.jykito.industrialcore.capability.Caps;
 
 import com.jykito.industrialcore.block.entity.ModBlockEntities;
 import com.jykito.industrialcore.block.entity.PhaseSplitterBlockEntity;
@@ -22,11 +27,13 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 public class PhaseSplitterBlock extends BaseEntityBlock {
+
+    /** 1.21: block codec. Vanilla does not call it for mod blocks; there is one block instance, so unit is exact. */
+    @Override
+    protected MapCodec<? extends PhaseSplitterBlock> codec() { return MapCodec.unit(this); }
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
@@ -50,11 +57,16 @@ public class PhaseSplitterBlock extends BaseEntityBlock {
     public RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        return BlockUse.toItemResult(use(state, level, pos, player, hand, hit));
+    }
+
+    /** Formerly Block.use (1.20.1); called from useItemOn for both hands, as before. */
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide()) {
             BlockEntity entity = level.getBlockEntity(pos);
             if (entity instanceof PhaseSplitterBlockEntity be) {
-                NetworkHooks.openScreen((ServerPlayer) player, be, pos);
+                ((ServerPlayer) player).openMenu(be, pos);
             }
         }
         return InteractionResult.sidedSuccess(level.isClientSide());
@@ -78,7 +90,7 @@ public class PhaseSplitterBlock extends BaseEntityBlock {
         if (state.getBlock() != newState.getBlock()) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be != null) {
-                be.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
+                Caps.get(be, Caps.ITEM_HANDLER).ifPresent(handler -> {
                     for (int i = 0; i < handler.getSlots(); i++) {
                         net.minecraft.world.item.ItemStack stack = handler.getStackInSlot(i);
                         if (!stack.isEmpty())

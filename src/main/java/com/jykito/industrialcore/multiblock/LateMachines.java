@@ -1,14 +1,14 @@
 package com.jykito.industrialcore.multiblock;
 
 /**
- * Формы лейт-мультиблоков. Источник — постройки юзера, снятые структурным жезлом.
- * Слои снизу вверх, строки от лица вглубь, символы слева направо (см. {@link LateMultiblockPattern}).
+ * Late multiblock shapes. The source is the author's builds, captured with the structure wand.
+ * Layers bottom to top, rows from the face inwards, symbols left to right (see {@link LateMultiblockPattern}).
  */
 public final class LateMachines {
 
     private LateMachines() {}
 
-    /** Промышленный мацератор 5×5×4: 9 механизмов, стекло у ядра и по центрам боков, сверху кольцо-воронка. */
+    /** Industrial macerator 5x5x4: 9 mechanisms, glass at the core and in the middle of the sides, a funnel ring on top. */
     public static final LateMultiblockPattern MACERATOR = new LateMultiblockPattern(1,
             new String[]{"CCCCC", "CCCCC", "CCCCC", "CCCCC", "CCCCC"},
             new String[]{"CGKGC", "CMMMC", "GMMMG", "CMMMC", "CCCCC"},
@@ -16,8 +16,8 @@ public final class LateMachines {
             new String[]{".....", ".CCC.", ".C.C.", ".CCC.", "....."});
 
     /**
-     * Промышленная печь 5×3×5: высокий монолит, 9 механизмов колонной 3×3 в глубине,
-     * над ядром окно 3×3 из стекла. Форма утверждена по рендеру, жезлом пока не снята.
+     * Industrial furnace 5x3x5: a tall monolith, 9 mechanisms in a 3x3 column at the back,
+     * a 3x3 glass window above the core. Shape approved from the render, not captured with the wand yet.
      */
     public static final LateMultiblockPattern FURNACE = new LateMultiblockPattern(1,
             new String[]{"CCCCC", "CCCCC", "CCCCC"},
@@ -27,8 +27,8 @@ public final class LateMachines {
             new String[]{"CCCCC", "CCCCC", "CCCCC"});
 
     /**
-     * Промышленный компрессор 3×5×5: узкий фасад, 9 механизмов столбом 1×3×3 в глубине,
-     * длинное боковое окно на одном боку. Форма утверждена по рендеру, жезлом пока не снята.
+     * Industrial compressor 3x5x5: a narrow front, 9 mechanisms in a 1x3x3 column at the back,
+     * a long side window on one side. Shape approved from the render, not captured with the wand yet.
      */
     public static final LateMultiblockPattern COMPRESSOR = new LateMultiblockPattern(1,
             new String[]{"CCC", "CCC", "CCC", "CCC", "CCC"},
@@ -38,8 +38,8 @@ public final class LateMachines {
             new String[]{"CCC", "CCC", "CCC", "CCC", "CCC"});
 
     /**
-     * Промышленный прокатный стан 7×4×3: длинная низкая линия, 10 механизмов в два ряда,
-     * стекло у ядра и полосой по крыше. Два режима — прокатка и волочение. Форма по рендеру.
+     * Industrial rolling mill 7x4x3: a long low line, 10 mechanisms in two rows,
+     * glass at the core and a strip along the roof. Two modes: rolling and drawing. Shape from the render.
      */
     public static final LateMultiblockPattern ROLLING_MILL = new LateMultiblockPattern(1,
             new String[]{"CCCCCCC", "CCCCCCC", "CCCCCCC", "CCCCCCC"},
@@ -47,9 +47,9 @@ public final class LateMachines {
             new String[]{"CCCCCCC", "CGGGGGC", "CGGGGGC", "CCCCCCC"});
 
     /**
-     * Промышленный промыватель «Ванна» 5×5×4: 9 механизмов, стекло у ядра, полоса стекла сверху,
-     * окно на одном боку; верхний ярус — бортик, внутри открыто (клетки не проверяются).
-     * Форма утверждена по рендеру, жезлом пока не снята.
+     * Industrial ore washer "Bath" 5x5x4: 9 mechanisms, glass at the core, a glass strip on top,
+     * a window on one side; the top tier is a rim, open inside (cells not checked).
+     * Shape approved from the render, not captured with the wand yet.
      */
     public static final LateMultiblockPattern WASHER = new LateMultiblockPattern(1,
             new String[]{"CCCCC", "CCCCC", "CCCCC", "CCCCC", "CCCCC"},
@@ -58,8 +58,8 @@ public final class LateMachines {
             new String[]{"CCCCC", "C...C", "C...C", "C...C", "CCCCC"});
 
     /**
-     * Промышленный сборщик «Кольцо» 7×7×3: 16 механизмов кольцом вокруг сплошного центра,
-     * стекло по фасаду у ядра и кольцом по крыше. Форма утверждена по рендеру, жезлом пока не снята.
+     * Industrial assembler "Ring" 7x7x3: 16 mechanisms in a ring around a solid centre,
+     * glass along the front at the core and in a ring on the roof. Shape approved from the render, not captured with the wand yet.
      */
     public static final LateMultiblockPattern CRAFTER = new LateMultiblockPattern(1,
             new String[]{"CCCCCCC", "CCCCCCC", "CCCCCCC", "CCCCCCC", "CCCCCCC", "CCCCCCC", "CCCCCCC"},
@@ -67,9 +67,9 @@ public final class LateMachines {
             new String[]{"CCCCCCC", "CGGGGGC", "CGCCCGC", "CGCCCGC", "CGCCCGC", "CGGGGGC", "CCCCCCC"});
 
     /**
-     * Промышленный сжижитель «Башня и ванна» 6×3×6, второй тир: продвинутая обшивка и стекло,
-     * нужен тепловой порт. Ядро в фасаде башни (слева, если смотреть на машину), справа низкая ванна
-     * со стеклянной крышкой. 6 механизмов. Форма утверждена по рендеру, жезлом пока не снята.
+     * Industrial liquefier "Tower and bath" 6x3x6, tier two: advanced casing and glass,
+     * needs a heat port. The core is in the tower front (on the left when looking at the machine), on the right a low bath
+     * with a glass lid. 6 mechanisms. Shape approved from the render, not captured with the wand yet.
      */
     public static final LateMultiblockPattern LIQUEFIER = new LateMultiblockPattern(1,
             new String[]{"CCCCCC", "CCCCCC", "CCCCCC"},
@@ -80,9 +80,9 @@ public final class LateMachines {
             new String[]{"...CCC", "...CCC", "...CCC"}).advancedTier().requiresHeat();
 
     /**
-     * Доменная печь 2-го тира «Тоннель» 7×5×4: длинная печь, крыша сходится к стеклянному коньку,
-     * ядро в фасаде между двумя стёклами. 20 механизмов, продвинутая обшивка и стекло, нужен тепловой порт.
-     * Форма выбрана юзером 2026-10-06 по рендеру (вариант G), жезлом не снята.
+     * Tier 2 blast furnace "Tunnel" 7x5x4: a long furnace, the roof meets at a glass ridge,
+     * the core in the front between two glass blocks. 20 mechanisms, advanced casing and glass, needs a heat port.
+     * Shape chosen by the author 2026-10-06 from the render (variant G), not captured with the wand.
      */
     public static final LateMultiblockPattern BLAST_FURNACE = new LateMultiblockPattern(1,
             new String[]{"CCCCCCC", "CCCCCCC", "CCCCCCC", "CCCCCCC", "CCCCCCC"},
@@ -91,8 +91,8 @@ public final class LateMachines {
             new String[]{".......", ".......", "CGGGGGC", ".......", "......."}).advancedTier().requiresHeat();
 
     /**
-     * Промышленный обогатитель жидкостей «Два бака и смеситель» 9×5×3: по бокам круглые стеклянные баки
-     * (углы не проверяются), между ними низкий смеситель с ядром. 9 механизмов. Форма утверждена по рендеру.
+     * Industrial fluid enricher "Two tanks and a mixer" 9x5x3: round glass tanks on the sides
+     * (corners not checked), a low mixer with the core between them. 9 mechanisms. Shape approved from the render.
      */
     public static final LateMultiblockPattern FLUID_ENRICHER = new LateMultiblockPattern(1,
             new String[]{".C.CCC.C.", "CCCCCCCCC", ".C.CCC.C."},
@@ -102,10 +102,10 @@ public final class LateMachines {
             new String[]{".C.....C.", "CCC...CCC", ".C.....C."});
 
     /**
-     * Поздний магнит 7×9×7, второй тир: плита со срезанными углами, на ней постамент с ядром и четыре стойки
-     * по углам, тонкий ствол со стеклом и хребтом механизмов, крестовина, голова 3×3 механизмов под стеклянным
-     * куполом, корона из зубцов. Плита выступает перед ядром на два блока. 13 механизмов.
-     * Форма — постройка юзера, снятая жезлом (2026-10-04), со стойками из варианта V3.
+     * Late magnet 7x9x7, tier two: a slab with cut corners, on it a plinth with the core and four posts
+     * at the corners, a thin trunk with glass and a spine of mechanisms, a crosspiece, a 3x3 head of mechanisms under a glass
+     * dome, a crown of teeth. The slab sticks out two blocks in front of the core. 13 mechanisms.
+     * The shape is the author's build captured with the wand (2026-10-04), with posts from variant V3.
      */
     public static final LateMultiblockPattern MAGNET = new LateMultiblockPattern(1,
             new String[]{".CCCCC.", "CCCCCCC", "CCCCCCC", "CCCCCCC", "CCCCCCC", "CCCCCCC", ".CCCCC."},

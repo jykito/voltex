@@ -22,22 +22,22 @@ import net.minecraft.world.item.ItemStack;
 import java.util.Arrays;
 import java.util.List;
 
-/** JEI-категория магнита-ускорителя: 8 входов кольцом → выход, + параметры (катушка/энергия/время/гейт/×2). */
+/** JEI category of the magnet-accelerator: 8 inputs in a ring -> output, + parameters (coil/energy/time/gate/x2). */
 public class MagnetJeiCategory implements IRecipeCategory<AcceleratorRecipe> {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/jei/jei_magnet.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/jei/jei_magnet.png");
     private static final ResourceLocation PROG_ANIM =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/progress_bar_magnet_anim.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/progress_bar_magnet_anim.png");
     private static final int TEX_W = 154, TEX_H = 220, VIS_W = 154, VIS_H = 146;
 
-    // 8 входов кольцом (синие 0-3, красные 4-7) + выход в центре
+    // 8 inputs in a ring (blue 0-3, red 4-7) + the output in the centre
     private static final int[][] IN = {
             {69,18},{46,27},{33,48},{46,69},
             {92,27},{105,48},{92,69},{69,78} };
     private static final int OUT_X = 69, OUT_Y = 48;
     private static final int EBAR_X = 22, EBAR_Y = 104, EBAR_W = 110;
-    private static final int PROG_X = 46, PROG_Y = 25, PROG_FRAME = 64, PROG_FRAMES = 18; // 64×64 форма, центр на выходе (+1,+1)
+    private static final int PROG_X = 46, PROG_Y = 25, PROG_FRAME = 64, PROG_FRAMES = 18; // 64x64 shape, centred on the output (+1,+1)
     private static final int INFO_X = 27, INFO_Y = 113;
 
     private final RecipeType<AcceleratorRecipe> recipeType;
@@ -73,13 +73,13 @@ public class MagnetJeiCategory implements IRecipeCategory<AcceleratorRecipe> {
 
     @Override
     public void draw(AcceleratorRecipe recipe, IRecipeSlotsView slots, GuiGraphics g, double mx, double my) {
-        if (++pTick >= 4) { pTick = 0; pFrame = (pFrame + 1) % PROG_FRAMES; }           // прогресс-форма (аним-кадры)
+        if (++pTick >= 4) { pTick = 0; pFrame = (pFrame + 1) % PROG_FRAMES; }           // progress shape (animation frames)
         g.blit(PROG_ANIM, PROG_X, PROG_Y, 0, pFrame * PROG_FRAME, PROG_FRAME, PROG_FRAME, PROG_FRAME, PROG_FRAME * PROG_FRAMES);
 
-        eAnim.advance();                                                                // энергобар (аним-заливка)
+        eAnim.advance();                                                                // energy bar (animated fill)
         JeiGui.tileFill(g, JeiGui.ENERGY_FILL, EBAR_X, EBAR_Y, EBAR_W, eAnim.frame());
 
-        var font = Minecraft.getInstance().font;                                        // параметры (3 строки)
+        var font = Minecraft.getInstance().font;                                        // parameters (3 lines)
         int tier = Math.max(1, Math.min(3, recipe.getMinTier()));
         JeiGui.smallText(g, font, Component.translatable("jei.industrial_core.magnet.coil." + tier), INFO_X, INFO_Y, 0xC0C0C0);
         if (recipe.getBandHi() > recipe.getBandLo())

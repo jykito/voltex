@@ -13,8 +13,8 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Соединяющаяся обшивка без начинки: рамка рисуется только по внешнему контуру кладки,
- * как у {@link CryoCasingBlock}, но без блок-сущности и тепла. Сшивается только с тем же блоком.
+ * Connected casing without contents: the frame is drawn only along the outer outline of the masonry,
+ * like {@link CryoCasingBlock}, but without a block entity or heat. Connects only to the same block.
  */
 public class ConnectedCasingBlock extends Block {
 

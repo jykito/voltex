@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "BBB",
+    "CDC"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:glass"
+    },
+    "B": {
+      "item": "industrial_core:silicon"
+    },
+    "C": {
+      "tag": "c:plates/aluminum"
+    },
+    "D": {
+      "tag": "c:components/machine_casing"
+    }
+  },
+  "result": {
+    "id": "industrial_core:solar_panel_t1",
+    "count": 1
+  }
+}

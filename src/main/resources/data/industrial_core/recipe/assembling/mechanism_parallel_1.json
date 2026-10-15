@@ -1,0 +1,44 @@
+{
+  "type": "industrial_core:assembling",
+  "inputs": [
+    {
+      "item": "industrial_core:mechanism_block"
+    },
+    {
+      "item": "industrial_core:parallel_module"
+    },
+    {
+      "item": "industrial_core:control_unit"
+    },
+    {
+      "item": "minecraft:quartz",
+      "count": 32
+    },
+    {
+      "item": "industrial_core:crystal_fiber",
+      "count": 32
+    },
+    {
+      "item": "industrial_core:superconducting_wire",
+      "count": 16
+    },
+    {
+      "item": "industrial_core:data_transfer_matrix",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:logic_board",
+      "count": 4
+    }
+  ],
+  "fluid": {
+    "id": "industrial_core:molten_amethyst",
+    "amount": 4000
+  },
+  "result": {
+    "id": "industrial_core:mechanism_parallel_1",
+    "count": 1
+  },
+  "processingTime": 1200,
+  "energyCostPerTick": 16000
+}

@@ -9,7 +9,7 @@ import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class PanelCombinerMenu extends MachineMenu {
 
@@ -55,7 +55,7 @@ public class PanelCombinerMenu extends MachineMenu {
 
     public int getEnergyStored()   { return unpack(data.get(0), data.get(1)); }
     public int getMaxEnergy()      { return unpack(data.get(2), data.get(3)); }
-    /** Генерация может быть больше int, поэтому идёт четырьмя ячейками. */
+    /** Generation can exceed int, so it goes in four cells. */
     public long getCurrentGen() {
         long lo = unpack(data.get(4), data.get(5)) & 0xFFFFFFFFL;
         long hi = unpack(data.get(6), data.get(7));

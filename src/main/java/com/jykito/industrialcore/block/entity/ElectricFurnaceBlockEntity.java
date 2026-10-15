@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.block.ElectricFurnaceBlock;
 import com.jykito.industrialcore.energy.MachineEnergy;
@@ -21,21 +25,17 @@ import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvider {
+public class ElectricFurnaceBlockEntity extends BlockEntity implements Caps.Provider, MenuProvider {
 
     private final MachineEnergy energyStorage = MachineEnergy.consumer(64000, 64000);
-    private LazyOptional<IEnergyStorage> energyOptional = LazyOptional.empty();
 
     private final com.jykito.industrialcore.recipe.CachedRecipe<SmeltingRecipe> recipeCache =
             new com.jykito.industrialcore.recipe.CachedRecipe<>();
@@ -54,9 +54,8 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
             return false;
         }
     };
-    private LazyOptional<IItemHandler> itemOptional = LazyOptional.empty();
 
-    private final net.minecraftforge.items.IItemHandlerModifiable automationHandler = new net.minecraftforge.items.IItemHandlerModifiable() {
+    private final net.neoforged.neoforge.items.IItemHandlerModifiable automationHandler = new net.neoforged.neoforge.items.IItemHandlerModifiable() {
         @Override public void setStackInSlot(int slot, @NotNull ItemStack stack) { itemHandler.setStackInSlot(slot, stack); }
         @Override public int getSlots() { return itemHandler.getSlots(); }
         @Override public @NotNull ItemStack getStackInSlot(int slot) { return itemHandler.getStackInSlot(slot); }
@@ -74,7 +73,7 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
 
     public int progress = 0;
     public int maxProgress = 100;
-    // ванильный cookingtime не используется: время и расход у электропечи свои (их же берёт промышленная печь)
+    // the vanilla cookingtime is not used: the electric furnace has its own time and usage (the industrial furnace uses them too)
     public static final int BASE_MAX_PROGRESS = 100;
     public static final int BASE_ENERGY_PER_TICK = 20;
 
@@ -125,7 +124,7 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
 
         MachineUpgrades upg = MachineUpgrades.scan(entity.itemHandler, 2, 5);
 
-        // Затягиватель: тянем предметы из соседа во входной слот (0)
+        // Puller: pull items from a neighbour into the input slot (0)
         if (upg.itemPull() != null && MachineIO.pullItems(level, pos, upg.itemPull(), entity.itemHandler, 0)) entity.setChanged();
 
         entity.maxProgress = upg.scaleTime(BASE_MAX_PROGRESS);
@@ -147,7 +146,7 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
             setLit(entity, level, pos, state, false);
         }
 
-        // Выталкиватель: выталкиваем готовый предмет из выходного слота (1) в соседа
+        // Pusher: push the finished item from the output slot (1) into a neighbour
         if (upg.itemPush() != null && MachineIO.pushItems(level, pos, upg.itemPush(), entity.itemHandler, 1)) entity.setChanged();
     }
 
@@ -157,7 +156,8 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
             SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
             for (int i = 0; i < itemHandler.getSlots(); i++)
                 inventory.setItem(i, itemHandler.getStackInSlot(i));
-            return level.getRecipeManager().getRecipeFor(RecipeType.SMELTING, inventory, level).orElse(null);
+            return level.getRecipeManager().getRecipeFor(RecipeType.SMELTING, new net.minecraft.world.item.crafting.SingleRecipeInput(inventory.getItem(0)), level)
+                    .map(net.minecraft.world.item.crafting.RecipeHolder::value).orElse(null);
         });
     }
 
@@ -203,39 +203,32 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY) return energyOptional.cast();
-        if (cap == ForgeCapabilities.ITEM_HANDLER) return itemOptional.cast();
-        return super.getCapability(cap, side);
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.EnergyStorage.BLOCK) return (T) energyStorage;
+        if (cap == Capabilities.ItemHandler.BLOCK) return (T) automationHandler;
+        return null;
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
-        energyOptional = LazyOptional.of(() -> energyStorage);
 
-        itemOptional   = LazyOptional.of(() -> automationHandler);
     }
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        energyOptional.invalidate();
-        itemOptional.invalidate();
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag tag) {
-        tag.put("inventory", itemHandler.serializeNBT());
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.put("inventory", itemHandler.serializeNBT(registries));
         tag.putInt("energy", energyStorage.getEnergyStored());
         tag.putInt("progress", progress);
-        super.saveAdditional(tag);
+        super.saveAdditional(tag, registries);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        itemHandler.deserializeNBT(tag.getCompound("inventory"));
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        itemHandler.deserializeNBT(registries, tag.getCompound("inventory"));
         energyStorage.setEnergy(tag.getInt("energy"));
         progress = tag.getInt("progress");
     }

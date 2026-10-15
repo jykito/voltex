@@ -1,0 +1,30 @@
+{
+  "type": "industrial_core:accelerating",
+  "inputs": [
+    {
+      "item": "minecraft:netherite_block",
+      "count": 2
+    },
+    {
+      "type": "neoforge:components",
+      "items": "industrial_core:capsule",
+      "components": {
+        "industrial_core:fluid_content": {
+          "id": "industrial_core:superfluid_condensate",
+          "amount": 1000
+        }
+      },
+      "count": 2
+    }
+  ],
+  "result": {
+    "id": "industrial_core:exotic_matter",
+    "count": 4
+  },
+  "minTier": 1,
+  "processingTime": 300,
+  "energyCostPerTick": 3000,
+  "minInstab": 42,
+  "bandLo": 43,
+  "bandHi": 45
+}

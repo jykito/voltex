@@ -1,0 +1,20 @@
+{
+  "type": "industrial_core:ore_washing_recipe",
+  "ingredient": {
+    "tag": "c:ores/copper"
+  },
+  "inputCount": 1,
+  "waterAmount": 1000,
+  "result": {
+    "id": "industrial_core:copper_dust",
+    "count": 4
+  },
+  "byproduct": {
+    "id": "industrial_core:lithium_dust",
+    "count": 1
+  },
+  "byproductChance": 0.4,
+  "processingTime": 200,
+  "energyCostPerTick": 400,
+  "lateOnly": true
+}

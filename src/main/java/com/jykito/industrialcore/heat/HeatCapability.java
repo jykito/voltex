@@ -1,21 +1,13 @@
 package com.jykito.industrialcore.heat;
 
 import com.jykito.industrialcore.IndustrialCore;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
-@Mod.EventBusSubscriber(modid = IndustrialCore.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+/** Our own heat network capability. Block entities expose it through Caps.Provider, registered in Caps.register. */
 public class HeatCapability {
 
-    public static final Capability<IHeatHandler> HEAT =
-            CapabilityManager.get(new CapabilityToken<>() {});
-
-    @SubscribeEvent
-    public static void register(RegisterCapabilitiesEvent event) {
-        event.register(IHeatHandler.class);
-    }
+    public static final BlockCapability<IHeatHandler, Direction> HEAT = BlockCapability.createSided(
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "heat"), IHeatHandler.class);
 }

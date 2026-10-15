@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " A ",
+    "BCB",
+    "DDD"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:superconducting_wire"
+    },
+    "B": {
+      "item": "industrial_core:photonic_lens"
+    },
+    "C": {
+      "item": "industrial_core:microcontroller"
+    },
+    "D": {
+      "item": "industrial_core:hardened_steel_ingot"
+    }
+  },
+  "result": {
+    "id": "industrial_core:drill_beacon",
+    "count": 1
+  }
+}

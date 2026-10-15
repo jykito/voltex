@@ -1,5 +1,7 @@
 package com.jykito.industrialcore.command;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import com.jykito.industrialcore.IndustrialCore;
 import com.jykito.industrialcore.item.custom.PlasmaArmorEventHandler;
 import com.jykito.industrialcore.item.custom.PlasmaArmorItem;
@@ -9,14 +11,14 @@ import net.minecraft.commands.Commands;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = IndustrialCore.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = IndustrialCore.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class ModCommands {
 
     private static final EquipmentSlot[] ARMOR_SLOTS = {

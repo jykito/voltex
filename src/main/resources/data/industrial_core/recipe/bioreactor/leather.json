@@ -1,0 +1,19 @@
+{
+  "type": "industrial_core:bioreactor_recipe",
+  "ingredient": {
+    "item": "industrial_core:biomass"
+  },
+  "inputCount": 3,
+  "additive": {
+    "item": "industrial_core:rubber"
+  },
+  "additiveCount": 1,
+  "waterAmount": 250,
+  "result": {
+    "id": "minecraft:leather",
+    "count": 1
+  },
+  "processingTime": 400,
+  "energyCostPerTick": 60,
+  "requiredHeat": 800
+}

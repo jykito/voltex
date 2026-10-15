@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "BBB",
+    "CCC"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/iron"
+    },
+    "B": {
+      "tag": "c:plates/bronze"
+    },
+    "C": {
+      "tag": "c:plates/tin"
+    }
+  },
+  "result": {
+    "id": "industrial_core:composite_ingot",
+    "count": 1
+  }
+}

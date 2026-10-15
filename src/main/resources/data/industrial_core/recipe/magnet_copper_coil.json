@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:coil_winding"
+    },
+    "B": {
+      "tag": "c:plates/copper"
+    },
+    "C": {
+      "item": "industrial_core:gold_conductor"
+    },
+    "D": {
+      "item": "industrial_core:hardened_steel_ingot"
+    }
+  },
+  "result": {
+    "id": "industrial_core:magnet_copper_coil",
+    "count": 1
+  }
+}

@@ -13,22 +13,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Жёсткая форма лейт-мультиблока в осях ядра: d вглубь от лица, s вбок, h вверх.
- * Ядро стоит там, где в схеме K (обычно в первой строке; строки перед ним — выступ вперёд), поэтому одна схема
- * подходит для любого поворота.
+ * Fixed late multiblock shape in core axes: d inwards from the face, s sideways, h up.
+ * The core stands where the schema has K (usually the first row; rows before it stick out forward), so one schema
+ * fits any rotation.
  * <p>
- * Символы схемы: C обшивка (на её месте можно поставить любой порт), G структурное стекло,
- * M блок механизма (на его месте можно поставить блок улучшения), K ядро, «.» не проверяется.
- * Других замен нет: форма целостная.
+ * Schema symbols: C casing (any port can stand in its place), G structural glass,
+ * M mechanism block (an upgrade block can stand in its place), K core, "." not checked.
+ * There are no other substitutions: the shape is fixed.
  * <p>
- * {@link #advancedTier()} — машина второго тира: продвинутая обшивка и продвинутое стекло вместо обычных.
- * {@link #requiresHeat()} — машине нужен хотя бы один тепловой порт.
+ * {@link #advancedTier()}: a tier two machine, advanced casing and advanced glass instead of the regular ones.
+ * {@link #requiresHeat()}: the machine needs at least one heat port.
  */
 public final class LateMultiblockPattern {
 
     public enum Cell { CASING, GLASS, MECHANISM, CORE, ANY }
 
-    /** Что не так со структурой. Порядок ordinal уходит клиенту в GUI. */
+    /** What is wrong with the structure. The ordinal goes to the client GUI. */
     public enum Problem { NONE, WRONG_BLOCK, NO_INPUT, NO_OUTPUT, NO_ENERGY, NO_HEAT }
 
     public record Result(Problem problem, Cell expected, BlockPos at,
@@ -42,9 +42,9 @@ public final class LateMultiblockPattern {
     private boolean advanced, needsHeat;
 
     /**
-     * @param coreLayer индекс слоя (снизу), в котором стоит ядро
-     * @param layers    слои снизу вверх; в слое строки от лица вглубь, символы слева направо.
-     *                  Ядро — в строке слоя coreLayer, где стоит K; строки до неё выступают перед ядром (плита магнита).
+     * @param coreLayer index of the layer (from the bottom) the core is in
+     * @param layers    layers bottom to top; within a layer rows from the face inwards, symbols left to right.
+     *                  The core is in the coreLayer row that has K; rows before it stick out in front of the core (the magnet slab).
      */
     public LateMultiblockPattern(int coreLayer, String[]... layers) {
         this.coreLayer = coreLayer;
@@ -66,10 +66,10 @@ public final class LateMultiblockPattern {
         }
     }
 
-    /** Второй тир: продвинутая обшивка и стекло. */
+    /** Tier two: advanced casing and glass. */
     public LateMultiblockPattern advancedTier() { advanced = true; return this; }
 
-    /** Без теплового порта структура не собрана. */
+    /** Without a heat port the structure is not formed. */
     public LateMultiblockPattern requiresHeat() { needsHeat = true; return this; }
 
     public boolean needsHeat() { return needsHeat; }
@@ -84,11 +84,11 @@ public final class LateMultiblockPattern {
             case 'M' -> Cell.MECHANISM;
             case 'K' -> Cell.CORE;
             case '.' -> Cell.ANY;
-            default -> throw new IllegalArgumentException("неизвестный символ схемы: " + c);
+            default -> throw new IllegalArgumentException("unknown schema symbol: " + c);
         };
     }
 
-    /** Позиция клетки схемы в мире. Ось s «вправо» берётся глядя из машины наружу, как у криокамеры. */
+    /** World position of a schema cell. The "right" s axis is taken looking out of the machine, as for the cryo chamber. */
     public BlockPos toWorld(BlockPos core, Direction facing, int h, int d, int s) {
         return core.relative(facing.getOpposite(), d - coreRow).relative(facing.getClockWise(), s - half).above(h - coreLayer);
     }
@@ -142,9 +142,9 @@ public final class LateMultiblockPattern {
     }
 
     /**
-     * Достраивает структуру вокруг ядра. Ставит только в пустые (заменяемые) клетки, правильные не трогает:
-     * порты на месте обшивки и улучшения на месте механизма остаются. Порты не ставит — это выбор игрока.
-     * В творческом режиме блоки бесплатны, иначе по одному списываются из инвентаря.
+     * Completes the structure around the core. Places only into empty (replaceable) cells and leaves correct ones alone:
+     * ports in place of casing and upgrades in place of mechanisms stay. It does not place ports, that is the player's choice.
+     * In creative the blocks are free, otherwise they are taken from the inventory one by one.
      */
     public void build(Level level, BlockPos core, Direction facing, WandBuild wb) {
         for (int h = 0; h < cells.length; h++) {
@@ -166,7 +166,7 @@ public final class LateMultiblockPattern {
         }
     }
 
-    /** Тот же критерий, что у {@link #validate}: порт годится вместо обшивки, улучшение вместо механизма. */
+    /** The same criterion as {@link #validate}: a port is fine instead of casing, an upgrade instead of a mechanism. */
     private boolean matches(Cell want, Block b) {
         return switch (want) {
             case CASING -> b instanceof MultiblockPortBlock || b == casing();

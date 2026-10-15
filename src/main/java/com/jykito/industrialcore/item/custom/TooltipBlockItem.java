@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.item.custom;
+import net.minecraft.world.item.Item;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -20,10 +21,11 @@ public class TooltipBlockItem extends BlockItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
+        @Nullable Level level = context.level();
 
         tooltipComponents.add(Component.translatable(this.tooltipKey).withStyle(ChatFormatting.AQUA));
 
-        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
+        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
     }
 }

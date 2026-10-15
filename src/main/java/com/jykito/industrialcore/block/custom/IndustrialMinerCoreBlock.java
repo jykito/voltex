@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.custom;
+import com.mojang.serialization.MapCodec;
+import com.jykito.industrialcore.block.BlockUse;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.ItemInteractionResult;
 
 import com.jykito.industrialcore.block.entity.IndustrialMinerCoreBlockEntity;
 import com.jykito.industrialcore.block.entity.ModBlockEntities;
@@ -26,14 +30,17 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Ядро промышленного шахтёра: середина фасада на втором ярусе структуры (см. IndustrialMinerStructure).
- * Собранное ядро не рисуется блоком — модель всей машины рисует IndustrialMinerBER.
+ * Industrial miner core: the middle of the front on the second layer of the structure (see IndustrialMinerStructure).
+ * A formed core is not drawn as a block; IndustrialMinerBER draws the model of the whole machine.
  */
 public class IndustrialMinerCoreBlock extends BaseEntityBlock {
+
+    /** 1.21: block codec. Vanilla does not call it for mod blocks; there is one block instance, so unit is exact. */
+    @Override
+    protected MapCodec<? extends IndustrialMinerCoreBlock> codec() { return MapCodec.unit(this); }
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty FORMED = BooleanProperty.create("formed");
@@ -72,13 +79,18 @@ public class IndustrialMinerCoreBlock extends BaseEntityBlock {
                 (lvl, pos, st, be) -> be.tick(lvl, pos, st));
     }
 
-    /** Собрано — окно; нет — какая клетка мешает, чтобы не искать её глазами по всей постройке. */
+    /** Formed: the window; not formed: which cell is in the way, so you do not hunt for it across the build. */
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        return BlockUse.toItemResult(use(state, level, pos, player, hand, hit));
+    }
+
+    /** Formerly Block.use (1.20.1); called from useItemOn for both hands, as before. */
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (level.isClientSide()) return InteractionResult.SUCCESS;
         if (!(level.getBlockEntity(pos) instanceof IndustrialMinerCoreBlockEntity core)) return InteractionResult.PASS;
         if (state.getValue(FORMED)) {
-            NetworkHooks.openScreen((ServerPlayer) player, core, pos);
+            ((ServerPlayer) player).openMenu(core, pos);
             return InteractionResult.CONSUME;
         }
         IndustrialMinerStructure.Problem p = IndustrialMinerStructure.check(level, pos, state.getValue(FACING));

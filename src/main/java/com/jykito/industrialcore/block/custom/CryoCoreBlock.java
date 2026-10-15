@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.custom;
+import com.mojang.serialization.MapCodec;
+import com.jykito.industrialcore.block.BlockUse;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.ItemInteractionResult;
 
 import com.jykito.industrialcore.block.entity.CryoCoreBlockEntity;
 import net.minecraft.ChatFormatting;
@@ -26,13 +30,27 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Ядро криокамеры — управляющий блок мультиблока.
+ * Cryo chamber core: the controlling block of the multiblock.
  * <p>
- * ПКМ открывает панель. Приседая — отчёт о структуре: собрана либо первое место, где не сходится.
- * Отчёт остался отдельной кнопкой потому, что искать одну неверную панель в оболочке 5×5×5
- * глазами больно, а панель об этом сказать не может.
+ * RMB opens the panel. Sneaking gives a structure report: formed, or the first place that does not match.
+ * The report stayed a separate action because finding one wrong panel in a 5x5x5 shell
+ * by eye is painful, and the panel cannot tell you.
  */
 public class CryoCoreBlock extends HorizontalDirectionalBlock implements EntityBlock {
+
+    /** Broken core: its contents fall out, and the casings, which forward its handlers, are unlinked before the entity goes. */
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof CryoCoreBlockEntity core) {
+            core.dropContents();
+            core.unlinkCasings();
+        }
+        super.onRemove(state, level, pos, newState, movedByPiston);
+    }
+
+    /** 1.21: block codec. Vanilla does not call it for mod blocks; there is one block instance, so unit is exact. */
+    @Override
+    protected MapCodec<? extends CryoCoreBlock> codec() { return MapCodec.unit(this); }
 
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
@@ -50,7 +68,7 @@ public class CryoCoreBlock extends HorizontalDirectionalBlock implements EntityB
 
     @Nullable @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
-        // лицом к игроку, как у остальных машин мода
+        // facing the player, like the other machines of the mod
         return defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite());
     }
 
@@ -58,12 +76,17 @@ public class CryoCoreBlock extends HorizontalDirectionalBlock implements EntityB
     public RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        return BlockUse.toItemResult(use(state, level, pos, player, hand, hit));
+    }
+
+    /** Formerly Block.use (1.20.1); called from useItemOn for both hands, as before. */
     public InteractionResult use(BlockState state, Level level, BlockPos pos,
                                  Player player, InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide && level.getBlockEntity(pos) instanceof CryoCoreBlockEntity be) {
-            String miss = be.firstMismatch(level, pos, state);
-            // Несобранная камера не открывает панель: пустое окно ничего не объясняет, а вот
-            // первое несовпадение — объясняет. Приседая, отчёт можно получить и на собранной.
+            Component miss = be.firstMismatch(level, pos, state);
+            // An unformed chamber does not open the panel: an empty window explains nothing, but
+            // the first mismatch does. Sneaking gives the report on a formed one too.
             if (miss != null) {
                 player.displayClientMessage(
                         Component.translatable("msg.industrial_core.cryo.missing", miss).withStyle(ChatFormatting.RED), false);
@@ -71,7 +94,7 @@ public class CryoCoreBlock extends HorizontalDirectionalBlock implements EntityB
                 player.displayClientMessage(
                         Component.translatable("msg.industrial_core.cryo.formed").withStyle(ChatFormatting.GREEN), false);
             } else {
-                net.minecraftforge.network.NetworkHooks.openScreen((net.minecraft.server.level.ServerPlayer) player, be, pos);
+                ((net.minecraft.server.level.ServerPlayer) player).openMenu(be, pos);
             }
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
@@ -85,8 +108,8 @@ public class CryoCoreBlock extends HorizontalDirectionalBlock implements EntityB
     @SuppressWarnings("unchecked")
     @Nullable @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        // проверка структуры серверная; createTickerHelper тут недоступен —
-        // он у BaseEntityBlock, а мы наследуем HorizontalDirectionalBlock ради FACING
+        // the structure check is server side; createTickerHelper is not available here:
+        // it lives in BaseEntityBlock, and we extend HorizontalDirectionalBlock for FACING
         if (level.isClientSide || type != ModBlockEntities.CRYO_CORE_BE.get()) return null;
         return (BlockEntityTicker<T>) (BlockEntityTicker<CryoCoreBlockEntity>) CryoCoreBlockEntity::serverTick;
     }

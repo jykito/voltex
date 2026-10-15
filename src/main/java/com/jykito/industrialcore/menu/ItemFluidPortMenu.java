@@ -10,12 +10,12 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
-/** Окно порта лейт-мультиблока. У МЭ-портов своё окно, {@link MePortMenu}. */
+/** Late multiblock port window. ME ports have their own window, {@link MePortMenu}. */
 public class ItemFluidPortMenu extends MachineMenu {
 
-    /** Сетка порта 9×3 с шагом 18 (шаг 19 в панель не влезает), левый верхний предмет в (48, 32). */
+    /** Port grid 9x3 with step 18 (step 19 does not fit into the panel), the top-left item at (48, 32). */
     public static final int GRID_X = 48, GRID_Y = 32, GRID_STEP = 18;
     public static final int UPGRADE_X = 191, UPGRADE_Y = 94;
 
@@ -24,7 +24,7 @@ public class ItemFluidPortMenu extends MachineMenu {
     private static final int PLAYER_START = PORT_SLOTS + 1;
     private static final int PLAYER_END = PLAYER_START + 36;
 
-    /** Кнопки: 0 — режим, 1 — автообмен. */
+    /** Buttons: 0 mode, 1 auto-exchange. */
     public static final int BTN_MODE = 0, BTN_AUTO = 1;
 
     public final ItemFluidPortBlockEntity blockEntity;
@@ -52,9 +52,9 @@ public class ItemFluidPortMenu extends MachineMenu {
     }
 
     public boolean isOutput()    { return blockEntity.isOutput(); }
-    /** Только жидкость: сетка слотов скрыта, на её месте бак. */
+    /** Fluid only: the slot grid is hidden and the tank takes its place. */
     public boolean isFluidMode() { return data.get(0) == ItemFluidPortBlockEntity.MODE_FLUIDS; }
-    /** Предметы + жидкость: сетка видна, объём жидкости строкой. */
+    /** Items + fluid: the grid is visible, the fluid volume as a line of text. */
     public boolean isBothMode()  { return data.get(0) == ItemFluidPortBlockEntity.MODE_BOTH; }
     public int getTier()         { return data.get(1); }
     public int activeSlots()     { return PortUpgradeItem.slots(getTier()); }

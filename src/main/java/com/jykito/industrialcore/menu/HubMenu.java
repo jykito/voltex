@@ -7,18 +7,18 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 import org.jetbrains.annotations.Nullable;
 
 public class HubMenu extends MachineMenu {
 
-    // координаты слотов (совпадают с hub_*_gui.png из tools/gui_gen/build_hub_guis.ps1)
+    // slot coordinates (match hub_*_gui.png from tools/gui_gen/build_hub_guis.ps1)
     public static final int INV_X = 44, INV_Y = 169;
     public static final int UP_X = 222, UP_Y = 29;
 
     @Nullable public final HubBlockEntity be;
     public int selectedFace = -1;
-    /** Какой фильтр показан в конфиге: 0 = ввод, 1 = вывод (только клиентский вид). */
+    /** Which filter is shown in the config: 0 = input, 1 = output (client view only). */
     public int filterDir = 0;
 
     public HubMenu(int id, Inventory inv, FriendlyByteBuf buf) {
@@ -47,8 +47,8 @@ public class HubMenu extends MachineMenu {
         addPlayerInventory(inv, INV_X, INV_Y);
     }
 
-    /** 0..5 цикл; 100+грань*3+m задать режим экскл.; 200+грань выбрать (206 закрыть);
-     *  300+грань*3+t тумблер; 400+грань*2+which shift-переключить ввод/вывод. */
+    /** 0..5 cycle; 100+face*3+m set an exclusive mode; 200+face select (206 close);
+     *  300+face*3+t toggle; 400+face*2+which shift-toggle input/output. */
     @Override
     public boolean clickMenuButton(Player player, int id) {
         if (be == null) return false;

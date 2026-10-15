@@ -1,0 +1,17 @@
+{
+  "type": "industrial_core:blast_furnace_recipe",
+  "ingredient": {
+    "tag": "c:ingots/iron"
+  },
+  "ingredientCount": 1,
+  "fuel": {
+    "tag": "c:ingots/nickel"
+  },
+  "fuelCount": 1,
+  "result": {
+    "id": "industrial_core:invar_ingot",
+    "count": 2
+  },
+  "processingTime": 300,
+  "requiredHeat": 1600
+}

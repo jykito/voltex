@@ -11,9 +11,9 @@ import net.minecraft.world.entity.player.Inventory;
 public class FluidGeneratorScreen extends MachineScreen<FluidGeneratorMenu> {
 
     private static final ResourceLocation TEX_LAVA =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/lava_gen_gui.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/lava_gen_gui.png");
     private static final ResourceLocation TEX_WATER =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/water_gen_gui.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/water_gen_gui.png");
 
     private static final int ENERGY_X = 72, ENERGY_Y = 97, BAR_H = 6;
 

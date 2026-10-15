@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "industrial_core:nickel_block"
+    }
+  ],
+  "result": {
+    "id": "industrial_core:nickel_ingot",
+    "count": 9
+  }
+}

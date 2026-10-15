@@ -1,0 +1,42 @@
+{
+  "keys": [
+    {
+      "name": "result",
+      "role": "output",
+      "type": "item_stack"
+    },
+    {
+      "name": "inputs",
+      "role": "input",
+      "type": {
+        "type": "list",
+        "component": "flat_sized_ingredient"
+      }
+    },
+    {
+      "name": "fluid",
+      "role": "input",
+      "type": "fluid_stack",
+      "default_optional": true
+    },
+    {
+      "name": "fluidResult",
+      "role": "output",
+      "type": "fluid_stack",
+      "default_optional": true
+    },
+    {
+      "name": "processingTime",
+      "type": "int",
+      "optional": 200
+    },
+    {
+      "name": "energyCostPerTick",
+      "type": "int",
+      "optional": 1000
+    }
+  ],
+  "unique": [
+    "result"
+  ]
+}

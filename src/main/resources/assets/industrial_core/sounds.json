@@ -1,5 +1,6 @@
 {
   "plasma_burst": {
+    "subtitle": "subtitles.industrial_core.plasma_burst",
     "sounds": [
       {
         "name": "industrial_core:plasma_burst",
@@ -8,6 +9,7 @@
     ]
   },
   "magnet_hum": {
+    "subtitle": "subtitles.industrial_core.magnet_hum",
     "sounds": [
       {
         "name": "industrial_core:magnet_hum",
@@ -16,6 +18,7 @@
     ]
   },
   "magnet_whoosh": {
+    "subtitle": "subtitles.industrial_core.magnet_whoosh",
     "sounds": [
       {
         "name": "industrial_core:magnet_whoosh",
@@ -24,6 +27,7 @@
     ]
   },
   "magnet_powerup": {
+    "subtitle": "subtitles.industrial_core.magnet_powerup",
     "sounds": [
       {
         "name": "industrial_core:magnet_powerup",

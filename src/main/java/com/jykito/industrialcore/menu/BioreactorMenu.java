@@ -9,10 +9,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
-/** Окно биореактора: раскладка промывателя плюс слот добавки над входом. Слоты меню: 0 биомасса, 1 добавка, 2–4 выходы, 5–8 апгрейды. */
+/** Bioreactor window: the ore washer layout plus an additive slot above the input. Menu slots: 0 biomass, 1 additive, 2-4 outputs, 5-8 upgrades. */
 public class BioreactorMenu extends MachineMenu {
     public final BioreactorBlockEntity blockEntity;
     private final ContainerData data;
@@ -48,7 +48,7 @@ public class BioreactorMenu extends MachineMenu {
     public int getMaxEnergy()    { return unpack(data.get(4), data.get(5)); }
     public int getScaledEnergy() { return scale(getEnergyStored(), getMaxEnergy(), 110); }
     public int getHeat()         { return data.get(6); }
-    /** Порог тепла текущего рецепта, 0 — рецепта нет. */
+    /** Heat threshold of the current recipe, 0 if there is no recipe. */
     public int getRequiredHeat() { return data.get(7); }
 
     @Override

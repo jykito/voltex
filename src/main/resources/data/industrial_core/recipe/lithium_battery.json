@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " A ",
+    "BCB",
+    " D "
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/aluminum"
+    },
+    "B": {
+      "item": "industrial_core:lithium"
+    },
+    "C": {
+      "item": "industrial_core:battery"
+    },
+    "D": {
+      "tag": "c:ingots/nickel"
+    }
+  },
+  "result": {
+    "id": "industrial_core:lithium_battery",
+    "count": 1
+  }
+}

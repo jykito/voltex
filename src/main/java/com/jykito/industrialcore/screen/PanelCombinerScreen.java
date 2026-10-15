@@ -11,10 +11,10 @@ import net.minecraft.world.entity.player.Inventory;
 public class PanelCombinerScreen extends MachineScreen<PanelCombinerMenu> {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/panel_combiner.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/panel_combiner.png");
 
     private static final int BAR_X = 73, BAR_Y = 119, BAR_W = 110, BAR_H = 6;
-    /** Показания в нише экрана (окно О3, юзер 2026-10-09): три строки целым шрифтом, шаг 11 (раньше масштаб 0.5). */
+    /** Readings in the screen recess (window O3, author 2026-10-09): three lines in full-size font, step 11 (scale 0.5 before). */
     private static final int INFO_X = 54, INFO_Y = 78, LINE = 11;
 
     private static final int TEXT_BRIGHT = 0xFFE6EDF3;

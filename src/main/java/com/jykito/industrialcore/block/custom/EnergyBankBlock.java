@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.custom;
+import com.mojang.serialization.MapCodec;
+import com.jykito.industrialcore.block.BlockUse;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.ItemInteractionResult;
 
 import com.jykito.industrialcore.block.entity.EnergyBankBlockEntity;
 import com.jykito.industrialcore.block.entity.ModBlockEntities;
@@ -18,11 +22,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
-/** Энергобанк: стационарное FE-хранилище. LEVEL 0..10 = визуальная шкала заряда (blockstate → 11 текстур). */
+/** Energy bank: stationary FE storage. LEVEL 0..10 = visual charge scale (blockstate -> 11 textures). */
 public class EnergyBankBlock extends BaseEntityBlock {
+
+    /** 1.21: block codec. Vanilla does not call it for mod blocks; there is one block instance, so unit is exact. */
+    @Override
+    protected MapCodec<? extends EnergyBankBlock> codec() { return MapCodec.unit(this); }
 
     public static final IntegerProperty LEVEL = IntegerProperty.create("level", 0, 10);
 
@@ -34,9 +41,14 @@ public class EnergyBankBlock extends BaseEntityBlock {
     @Override public RenderShape getRenderShape(BlockState s) { return RenderShape.MODEL; }
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        return BlockUse.toItemResult(use(state, level, pos, player, hand, hit));
+    }
+
+    /** Formerly Block.use (1.20.1); called from useItemOn for both hands, as before. */
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof EnergyBankBlockEntity be)
-            NetworkHooks.openScreen((ServerPlayer) player, be, pos);
+            ((ServerPlayer) player).openMenu(be, pos);
         return InteractionResult.sidedSuccess(level.isClientSide());
     }
 

@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.block.custom.BatteryChargerBlock;
 import com.jykito.industrialcore.energy.MachineEnergy;
@@ -16,26 +20,21 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.energy.EnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class BatteryChargerBlockEntity extends BlockEntity implements MenuProvider {
+public class BatteryChargerBlockEntity extends BlockEntity implements Caps.Provider, MenuProvider {
 
     private final MachineEnergy energyStorage = MachineEnergy.consumer(1000000, 50000);
-    private LazyOptional<EnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
     private final ItemStackHandler itemHandler = new ItemStackHandler(1) {
         @Override
         protected void onContentsChanged(int slot) { setChanged(); }
     };
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
     protected final ContainerData data;
 
@@ -66,9 +65,9 @@ public class BatteryChargerBlockEntity extends BlockEntity implements MenuProvid
 
         ItemStack batteryStack = itemHandler.getStackInSlot(0);
         if (!batteryStack.isEmpty() && energyStorage.getEnergyStored() > 0) {
-            var cap = batteryStack.getCapability(ForgeCapabilities.ENERGY);
+            var cap = Caps.get(batteryStack, Caps.ENERGY);
             if (cap.isPresent()) {
-                IEnergyStorage itemEnergy = cap.resolve().get();
+                IEnergyStorage itemEnergy = cap.get();
 
                 int maxAvailable = Math.min(energyStorage.getEnergyStored(), 50000);
 
@@ -101,37 +100,30 @@ public class BatteryChargerBlockEntity extends BlockEntity implements MenuProvid
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY) return lazyEnergyHandler.cast();
-        if (cap == ForgeCapabilities.ITEM_HANDLER) return lazyItemHandler.cast();
-        return super.getCapability(cap, side);
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.EnergyStorage.BLOCK) return (T) energyStorage;
+        if (cap == Capabilities.ItemHandler.BLOCK) return (T) itemHandler;
+        return null;
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
-        lazyEnergyHandler = LazyOptional.of(() -> energyStorage);
-        lazyItemHandler = LazyOptional.of(() -> itemHandler);
     }
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyEnergyHandler.invalidate();
-        lazyItemHandler.invalidate();
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag tag) {
-        tag.put("inventory", itemHandler.serializeNBT());
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.put("inventory", itemHandler.serializeNBT(registries));
         tag.putInt("energy", energyStorage.getEnergyStored());
-        super.saveAdditional(tag);
+        super.saveAdditional(tag, registries);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        itemHandler.deserializeNBT(tag.getCompound("inventory"));
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        itemHandler.deserializeNBT(registries, tag.getCompound("inventory"));
         this.energyStorage.setEnergy(tag.getInt("energy"));
     }
 }

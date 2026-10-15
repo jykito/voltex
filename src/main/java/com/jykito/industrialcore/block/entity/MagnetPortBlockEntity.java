@@ -1,4 +1,9 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import java.util.Optional;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -6,45 +11,39 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Порт-BE на скелет-блоках магнита. Сам ничего не хранит и НЕ тикает.
- * При сборке ядро «усыновляет» порт (bindCore); если блок на входной поверхности (нижняя платформа) —
- * порт отдаёт соседям капы ЯДРА: предметы (вход 0-7 / выход 8), жидкости (только налив), энергию (только приём).
- * Так провода/трубы/хабы коннектятся к платформе, а физически лезут в ядро за 3 блока.
+ * Port BE on the magnet skeleton blocks. Stores nothing itself and does NOT tick.
+ * When forming, the core "adopts" the port (bindCore); if the block is on the input surface (bottom platform),
+ * the port exposes the CORE's caps to neighbours: items (input 0-7 / output 8), fluids (fill only), energy (receive only).
+ * This way wires, pipes and hubs connect to the platform, while physically reaching into the core 3 blocks away.
  *
- * Капы реализованы через живые прокси (каждый вызов резолвит текущее ядро по позиции) —
- * поэтому смена/поломка/перестановка ядра не оставляет висячих хендлеров и не теряет предметы.
+ * The caps are live proxies (each call resolves the current core by position),
+ * so changing, breaking or moving the core leaves no dangling handlers and loses no items.
  */
-public class MagnetPortBlockEntity extends BlockEntity {
+public class MagnetPortBlockEntity extends BlockEntity implements Caps.Provider  {
 
     private BlockPos corePos = null;
     private boolean input = false;
 
-    private LazyOptional<IItemHandler>   itemCap   = LazyOptional.empty();
-    private LazyOptional<IFluidHandler>  fluidCap  = LazyOptional.empty();
-    private LazyOptional<IEnergyStorage> energyCap = LazyOptional.empty();
 
     public MagnetPortBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.MAGNET_PORT_BE.get(), pos, state);
     }
 
-    /** Текущее ядро (живой резол по позиции; null если порт неактивен, ядро выгружено/сломано). */
+    /** Current core (live lookup by position; null if the port is inactive or the core is unloaded/broken). */
     private @Nullable ElectromagnetCoreBlockEntity core() {
         if (!input || corePos == null || level == null) return null;
         return level.getBlockEntity(corePos) instanceof ElectromagnetCoreBlockEntity c && !c.isRemoved() ? c : null;
     }
 
-    // Прокси-хендлеры: стабильная идентичность, но каждый вызов бьёт в живое ядро (или no-op, если его нет).
+    // Proxy handlers: stable identity, but every call goes to the live core (or does nothing if there is none).
     private final IItemHandler itemProxy = new IItemHandler() {
         @Override public int getSlots() { var c = core(); return c != null ? c.getExternalItemHandler().getSlots() : 0; }
         @Override public @NotNull ItemStack getStackInSlot(int s) { var c = core(); return c != null ? c.getExternalItemHandler().getStackInSlot(s) : ItemStack.EMPTY; }
@@ -71,25 +70,25 @@ public class MagnetPortBlockEntity extends BlockEntity {
         @Override public boolean canReceive() { var c = core(); return c != null && c.getExternalEnergyHandler().canReceive(); }
     };
 
-    /** Ядро при сборке привязывает порт и говорит, входная ли это поверхность (нижняя платформа). */
+    /** When forming, the core binds the port and says whether it is the input surface (bottom platform). */
     public void bindCore(BlockPos core, boolean isInput) {
-        if (core.equals(corePos) && isInput == input) return; // без изменений — не дёргаем капы
+        if (core.equals(corePos) && isInput == input) return; // no change, do not touch the caps
         boolean wasActive = input;
         corePos = core.immutable();
         input = isInput;
         refreshCaps();
         setChanged();
-        // порт ожил (сборка/пересборка) → пнуть соседей, чтобы трубы/провода/хабы перескан капу и переконнектились
+        // the port came alive (form/reform) -> poke neighbours so pipes/wires/hubs rescan caps and reconnect
         if (input && !wasActive) notifyNeighbors();
     }
 
-    /** Тот же сигнал, что и при установке блока: заставляет соседние трубы/провода/хабы перепросканировать капы. */
+    /** The same signal as on block placement: makes neighbouring pipes/wires/hubs rescan caps. */
     private void notifyNeighbors() {
         if (level != null && !level.isClientSide())
             level.updateNeighborsAt(worldPosition, getBlockState().getBlock());
     }
 
-    /** Разборка мультиблока — порт глохнет, соседи отваливаются. */
+    /** Multiblock unformed: the port goes dead, neighbours disconnect. */
     public void unbind() {
         if (corePos == null && !input) return;
         corePos = null;
@@ -98,50 +97,36 @@ public class MagnetPortBlockEntity extends BlockEntity {
         setChanged();
     }
 
+    /** The port turned on or went dead: neighbours and their capability caches must ask again (pipes disconnect). */
     private void refreshCaps() {
-        if (input) { // активен — держим капы «живыми»
-            if (!itemCap.isPresent())   itemCap   = LazyOptional.of(() -> itemProxy);
-            if (!fluidCap.isPresent())  fluidCap  = LazyOptional.of(() -> fluidProxy);
-            if (!energyCap.isPresent()) energyCap = LazyOptional.of(() -> energyProxy);
-        } else {     // неактивен — рвём, чтобы трубы отсоединились
-            dropCaps();
-        }
-    }
-
-    private void dropCaps() {
-        itemCap.invalidate();   itemCap   = LazyOptional.empty();
-        fluidCap.invalidate();  fluidCap  = LazyOptional.empty();
-        energyCap.invalidate(); energyCap = LazyOptional.empty();
+        if (level != null) invalidateCapabilities();
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
         if (input) {
-            if (cap == ForgeCapabilities.ITEM_HANDLER)  return itemCap.cast();
-            if (cap == ForgeCapabilities.FLUID_HANDLER) return fluidCap.cast();
-            if (cap == ForgeCapabilities.ENERGY)        return energyCap.cast();
+            if (cap == Capabilities.ItemHandler.BLOCK)  return (T) itemProxy;
+            if (cap == Capabilities.FluidHandler.BLOCK) return (T) fluidProxy;
+            if (cap == Capabilities.EnergyStorage.BLOCK)        return (T) energyProxy;
         }
-        return super.getCapability(cap, side);
+        return null;
     }
 
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        dropCaps();
-    }
 
     @Override
-    protected void saveAdditional(@NotNull CompoundTag tag) {
-        super.saveAdditional(tag);
-        if (input && corePos != null) { // сохраняем только осмысленное состояние (входной порт)
+    protected void saveAdditional(@NotNull CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        if (input && corePos != null) { // save only meaningful state (input port)
             tag.putLong("core", corePos.asLong());
             tag.putBoolean("in", true);
         }
     }
 
     @Override
-    public void load(@NotNull CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(@NotNull CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         if (tag.contains("core")) {
             corePos = BlockPos.of(tag.getLong("core"));
             input = tag.getBoolean("in");

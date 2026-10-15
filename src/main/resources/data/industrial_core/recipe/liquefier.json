@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "EFE"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/invar"
+    },
+    "B": {
+      "item": "industrial_core:heat_conductor"
+    },
+    "C": {
+      "item": "minecraft:glass"
+    },
+    "D": {
+      "tag": "c:components/machine_casing"
+    },
+    "E": {
+      "item": "industrial_core:fluid_valve"
+    },
+    "F": {
+      "item": "industrial_core:electric_motor_advanced"
+    }
+  },
+  "result": {
+    "id": "industrial_core:liquefier",
+    "count": 1
+  }
+}

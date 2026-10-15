@@ -1,0 +1,14 @@
+{
+  "type": "industrial_core:machine_recipe",
+  "machine_type": "industrial_core:crushing",
+  "ingredient": {
+    "tag": "c:rods/blaze"
+  },
+  "inputCount": 1,
+  "result": {
+    "id": "minecraft:blaze_powder",
+    "count": 4
+  },
+  "processingTime": 140,
+  "energyCost": 50
+}

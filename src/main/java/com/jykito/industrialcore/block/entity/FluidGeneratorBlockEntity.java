@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.block.custom.FluidGeneratorBlock;
 import com.jykito.industrialcore.energy.MachineEnergy;
@@ -23,20 +27,17 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class FluidGeneratorBlockEntity extends BlockEntity implements MenuProvider {
+public class FluidGeneratorBlockEntity extends BlockEntity implements Caps.Provider, MenuProvider {
 
     private final FluidGeneratorType type;
 
@@ -49,7 +50,6 @@ public class FluidGeneratorBlockEntity extends BlockEntity implements MenuProvid
             return false;
         }
     };
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
     private final IItemHandlerModifiable automationHandler = new IItemHandlerModifiable() {
         @Override public void setStackInSlot(int slot, @NotNull ItemStack stack) { itemHandler.setStackInSlot(slot, stack); }
         @Override public int getSlots() { return itemHandler.getSlots(); }
@@ -62,10 +62,8 @@ public class FluidGeneratorBlockEntity extends BlockEntity implements MenuProvid
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
     private final MachineEnergy energyStorage;
-    private LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.empty();
 
     public final FluidTank outputTank;
-    private LazyOptional<IFluidHandler> lazyFluid = LazyOptional.empty();
 
     private int progress = 0;
     private int maxProgress;
@@ -132,7 +130,7 @@ public class FluidGeneratorBlockEntity extends BlockEntity implements MenuProvid
         MachineLit.tick(this, level, pos, state, FluidGeneratorBlock.LIT, working);setChanged();
     }
 
-    @Override public CompoundTag getUpdateTag() { return saveWithoutMetadata(); }
+    @Override public CompoundTag getUpdateTag(HolderLookup.Provider registries) { return saveWithoutMetadata(registries); }
     @Nullable @Override public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
@@ -145,40 +143,32 @@ public class FluidGeneratorBlockEntity extends BlockEntity implements MenuProvid
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY)        return lazyEnergy.cast();
-        if (cap == ForgeCapabilities.ITEM_HANDLER)  return lazyItemHandler.cast();
-        if (cap == ForgeCapabilities.FLUID_HANDLER) return lazyFluid.cast();
-        return super.getCapability(cap, side);
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.EnergyStorage.BLOCK)        return (T) energyStorage;
+        if (cap == Capabilities.ItemHandler.BLOCK)  return (T) automationHandler;
+        if (cap == Capabilities.FluidHandler.BLOCK) return (T) outputTank;
+        return null;
     }
 
     @Override public void onLoad() {
         super.onLoad();
-        lazyEnergy = LazyOptional.of(() -> energyStorage);
-        lazyItemHandler = LazyOptional.of(() -> automationHandler);
-        lazyFluid  = LazyOptional.of(() -> outputTank);
     }
 
-    @Override public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyEnergy.invalidate();
-        lazyItemHandler.invalidate();
-        lazyFluid.invalidate();
-    }
-
-    @Override protected void saveAdditional(CompoundTag tag) {
-        tag.put("inventory", itemHandler.serializeNBT());
+    @Override protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.put("inventory", itemHandler.serializeNBT(registries));
         tag.putInt("energy", energyStorage.getEnergyStored());
-        tag.put("outputTank", outputTank.writeToNBT(new CompoundTag()));
+        tag.put("outputTank", outputTank.writeToNBT(registries, new CompoundTag()));
         tag.putInt("progress", progress);
-        super.saveAdditional(tag);
+        super.saveAdditional(tag, registries);
     }
 
-    @Override public void load(CompoundTag tag) {
-        super.load(tag);
-        itemHandler.deserializeNBT(tag.getCompound("inventory"));
+    @Override public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        itemHandler.deserializeNBT(registries, tag.getCompound("inventory"));
         energyStorage.setEnergy(tag.getInt("energy"));
-        outputTank.readFromNBT(tag.getCompound("outputTank"));
+        outputTank.readFromNBT(registries, tag.getCompound("outputTank"));
         progress = tag.getInt("progress");
     }
 

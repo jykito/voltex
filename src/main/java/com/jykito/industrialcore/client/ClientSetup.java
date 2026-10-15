@@ -1,5 +1,7 @@
 package com.jykito.industrialcore.client;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import com.jykito.industrialcore.IndustrialCore;
 import com.jykito.industrialcore.block.entity.ModBlockEntities;
 import com.jykito.industrialcore.entity.ModEntities;
@@ -9,19 +11,19 @@ import com.jykito.industrialcore.menu.ModMenuTypes;
 import com.jykito.industrialcore.screen.*;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.client.event.RegisterColorHandlersEvent;
-import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.FluidUtil;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.fluids.FluidUtil;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
-@Mod.EventBusSubscriber(modid = IndustrialCore.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = IndustrialCore.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public final class ClientSetup {
 
     @SubscribeEvent
@@ -30,67 +32,71 @@ public final class ClientSetup {
             net.minecraft.client.renderer.item.ClampedItemPropertyFunction dirProp =
                     (stack, level, entity, seed) -> DirectionalUpgradeItem.getDirectionPredicate(stack);
             net.minecraft.client.renderer.item.ItemProperties.register(
-                    ModItems.ITEM_PUSHER.get(),  new ResourceLocation(IndustrialCore.MODID, "direction"), dirProp);
+                    ModItems.ITEM_PUSHER.get(),  ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "direction"), dirProp);
             net.minecraft.client.renderer.item.ItemProperties.register(
-                    ModItems.ITEM_PULLER.get(),  new ResourceLocation(IndustrialCore.MODID, "direction"), dirProp);
+                    ModItems.ITEM_PULLER.get(),  ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "direction"), dirProp);
             net.minecraft.client.renderer.item.ItemProperties.register(
-                    ModItems.FLUID_PUSHER.get(), new ResourceLocation(IndustrialCore.MODID, "direction"), dirProp);
+                    ModItems.FLUID_PUSHER.get(), ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "direction"), dirProp);
             net.minecraft.client.renderer.item.ItemProperties.register(
-                    ModItems.FLUID_PULLER.get(), new ResourceLocation(IndustrialCore.MODID, "direction"), dirProp);
+                    ModItems.FLUID_PULLER.get(), ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "direction"), dirProp);
 
             net.minecraft.client.renderer.item.ItemProperties.register(ModItems.UNIVERSAL_CAPSULE.get(),
-                    new ResourceLocation(IndustrialCore.MODID, "filled"),
+                    ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "filled"),
                     (stack, level, entity, seed) -> FluidUtil.getFluidContained(stack).isPresent() ? 1.0F : 0.0F);
 
-            MenuScreens.register(ModMenuTypes.COAL_GENERATOR_MENU.get(), CoalGeneratorScreen::new);
-            MenuScreens.register(ModMenuTypes.ELECTROMAGNET_MENU.get(), ElectromagnetScreen::new);
-            MenuScreens.register(ModMenuTypes.CRUSHER_MENU.get(), CrusherScreen::new);
-            MenuScreens.register(ModMenuTypes.ELECTRIC_FURNACE_MENU.get(), ElectricFurnaceScreen::new);
-            MenuScreens.register(ModMenuTypes.COMPRESSOR_MENU.get(), CompressorScreen::new);
-            MenuScreens.register(ModMenuTypes.ROLLING_MENU.get(), MetalFormerScreen::new);
-            MenuScreens.register(ModMenuTypes.BLAST_FURNACE_MENU.get(), BlastFurnaceScreen::new);
-            MenuScreens.register(ModMenuTypes.THERMOGENERATOR_MENU.get(), ThermogeneratorScreen::new);
-            MenuScreens.register(ModMenuTypes.BATTERY_CHARGER_MENU.get(), BatteryChargerScreen::new);
-            MenuScreens.register(ModMenuTypes.FLUID_ENRICHER_MENU.get(), FluidEnricherScreen::new);
-            MenuScreens.register(ModMenuTypes.LIQUEFIER_MENU.get(), LiquefierScreen::new);
-            MenuScreens.register(ModMenuTypes.CRYSTALLIZER_MENU.get(), CrystallizerScreen::new);
-            MenuScreens.register(ModMenuTypes.EVOLUTION_CHAMBER_MENU.get(), EvolutionChamberScreen::new);
-            MenuScreens.register(ModMenuTypes.NANITE_LAB_MENU.get(), NaniteLabScreen::new);
-            MenuScreens.register(ModMenuTypes.CRYO_CHAMBER_MENU.get(), CryoChamberScreen::new);
-            MenuScreens.register(ModMenuTypes.FLUID_GENERATOR_MENU.get(), FluidGeneratorScreen::new);
-            MenuScreens.register(ModMenuTypes.STONE_GENERATOR_MENU.get(), StoneGeneratorScreen::new);
-            MenuScreens.register(ModMenuTypes.CAPSULE_FILLER_MENU.get(), CapsuleFillerScreen::new);
-            MenuScreens.register(ModMenuTypes.CULTIVATOR_MENU.get(), CultivatorScreen::new);
-            MenuScreens.register(ModMenuTypes.CULTIVATOR_T2_MENU.get(), com.jykito.industrialcore.screen.CultivatorT2Screen::new);
-            MenuScreens.register(ModMenuTypes.ORE_WASHER_MENU.get(), OreWasherScreen::new);
-            MenuScreens.register(ModMenuTypes.BIOREACTOR_MENU.get(), BioreactorScreen::new);
-            MenuScreens.register(ModMenuTypes.RECIPE_EXPORTER_MENU.get(), RecipeExporterScreen::new);
-            MenuScreens.register(ModMenuTypes.MATTER_FABRICATOR_MENU.get(), MatterFabricatorScreen::new);
-            MenuScreens.register(ModMenuTypes.ROD_FABRICATOR_MENU.get(), RodFabricatorScreen::new);
-            MenuScreens.register(ModMenuTypes.EXTRACTOR_MENU.get(), ExtractorScreen::new);
-            MenuScreens.register(ModMenuTypes.PHASE_SPLITTER_MENU.get(), PhaseSplitterScreen::new);
-            MenuScreens.register(ModMenuTypes.RESTRUCTOR_MENU.get(), RestructorScreen::new);
-            MenuScreens.register(ModMenuTypes.RESTRUCTOR_T2_MENU.get(), com.jykito.industrialcore.screen.RestructorT2Screen::new);
-            MenuScreens.register(ModMenuTypes.MINER_CORE_MENU.get(), MinerCoreScreen::new);
-            MenuScreens.register(ModMenuTypes.LOGISTICS_NODE_MENU.get(), LogisticsNodeScreen::new);
-            MenuScreens.register(ModMenuTypes.HUB_MENU.get(), HubScreen::new);
-            MenuScreens.register(ModMenuTypes.SOLAR_PANEL_MENU.get(), SolarPanelScreen::new);
-            MenuScreens.register(ModMenuTypes.PANEL_COMBINER_MENU.get(), PanelCombinerScreen::new);
-            MenuScreens.register(ModMenuTypes.RESIN_COLLECTOR_MENU.get(), ResinCollectorScreen::new);
-            MenuScreens.register(ModMenuTypes.CRATE_MENU.get(), CrateScreen::new);
-            MenuScreens.register(ModMenuTypes.THERMOSTATION_MENU.get(), ThermostationScreen::new);
-            MenuScreens.register(ModMenuTypes.ENERGY_BANK_MENU.get(), EnergyBankScreen::new);
-            MenuScreens.register(ModMenuTypes.ITEM_FLUID_PORT_MENU.get(), ItemFluidPortScreen::new);
-            MenuScreens.register(ModMenuTypes.ME_PORT_MENU.get(), MePortScreen::new);
-            MenuScreens.register(ModMenuTypes.ENERGY_PORT_MENU.get(), EnergyPortScreen::new);
-            MenuScreens.register(ModMenuTypes.LATE_MACHINE_CORE_MENU.get(), LateMachineCoreScreen::new);
-            MenuScreens.register(ModMenuTypes.INDUSTRIAL_MINER_MENU.get(), IndustrialMinerScreen::new);
-            MenuScreens.register(ModMenuTypes.DRILL_BEACON_MENU.get(), DrillBeaconScreen::new);
         });
     }
 
     @SubscribeEvent
-    public static void onRegisterKeyMappings(net.minecraftforge.client.event.RegisterKeyMappingsEvent event) {
+    public static void onRegisterMenuScreens(net.neoforged.neoforge.client.event.RegisterMenuScreensEvent event) {
+        event.register(ModMenuTypes.COAL_GENERATOR_MENU.get(), CoalGeneratorScreen::new);
+        event.register(ModMenuTypes.ELECTROMAGNET_MENU.get(), ElectromagnetScreen::new);
+        event.register(ModMenuTypes.CRUSHER_MENU.get(), CrusherScreen::new);
+        event.register(ModMenuTypes.ELECTRIC_FURNACE_MENU.get(), ElectricFurnaceScreen::new);
+        event.register(ModMenuTypes.COMPRESSOR_MENU.get(), CompressorScreen::new);
+        event.register(ModMenuTypes.ROLLING_MENU.get(), MetalFormerScreen::new);
+        event.register(ModMenuTypes.BLAST_FURNACE_MENU.get(), BlastFurnaceScreen::new);
+        event.register(ModMenuTypes.THERMOGENERATOR_MENU.get(), ThermogeneratorScreen::new);
+        event.register(ModMenuTypes.BATTERY_CHARGER_MENU.get(), BatteryChargerScreen::new);
+        event.register(ModMenuTypes.FLUID_ENRICHER_MENU.get(), FluidEnricherScreen::new);
+        event.register(ModMenuTypes.LIQUEFIER_MENU.get(), LiquefierScreen::new);
+        event.register(ModMenuTypes.CRYSTALLIZER_MENU.get(), CrystallizerScreen::new);
+        event.register(ModMenuTypes.EVOLUTION_CHAMBER_MENU.get(), EvolutionChamberScreen::new);
+        event.register(ModMenuTypes.NANITE_LAB_MENU.get(), NaniteLabScreen::new);
+        event.register(ModMenuTypes.CRYO_CHAMBER_MENU.get(), CryoChamberScreen::new);
+        event.register(ModMenuTypes.FLUID_GENERATOR_MENU.get(), FluidGeneratorScreen::new);
+        event.register(ModMenuTypes.STONE_GENERATOR_MENU.get(), StoneGeneratorScreen::new);
+        event.register(ModMenuTypes.CAPSULE_FILLER_MENU.get(), CapsuleFillerScreen::new);
+        event.register(ModMenuTypes.CULTIVATOR_MENU.get(), CultivatorScreen::new);
+        event.register(ModMenuTypes.CULTIVATOR_T2_MENU.get(), com.jykito.industrialcore.screen.CultivatorT2Screen::new);
+        event.register(ModMenuTypes.ORE_WASHER_MENU.get(), OreWasherScreen::new);
+        event.register(ModMenuTypes.BIOREACTOR_MENU.get(), BioreactorScreen::new);
+        event.register(ModMenuTypes.RECIPE_EXPORTER_MENU.get(), RecipeExporterScreen::new);
+        event.register(ModMenuTypes.MATTER_FABRICATOR_MENU.get(), MatterFabricatorScreen::new);
+        event.register(ModMenuTypes.ROD_FABRICATOR_MENU.get(), RodFabricatorScreen::new);
+        event.register(ModMenuTypes.EXTRACTOR_MENU.get(), ExtractorScreen::new);
+        event.register(ModMenuTypes.PHASE_SPLITTER_MENU.get(), PhaseSplitterScreen::new);
+        event.register(ModMenuTypes.RESTRUCTOR_MENU.get(), RestructorScreen::new);
+        event.register(ModMenuTypes.RESTRUCTOR_T2_MENU.get(), com.jykito.industrialcore.screen.RestructorT2Screen::new);
+        event.register(ModMenuTypes.MINER_CORE_MENU.get(), MinerCoreScreen::new);
+        event.register(ModMenuTypes.LOGISTICS_NODE_MENU.get(), LogisticsNodeScreen::new);
+        event.register(ModMenuTypes.HUB_MENU.get(), HubScreen::new);
+        event.register(ModMenuTypes.SOLAR_PANEL_MENU.get(), SolarPanelScreen::new);
+        event.register(ModMenuTypes.PANEL_COMBINER_MENU.get(), PanelCombinerScreen::new);
+        event.register(ModMenuTypes.RESIN_COLLECTOR_MENU.get(), ResinCollectorScreen::new);
+        event.register(ModMenuTypes.CRATE_MENU.get(), CrateScreen::new);
+        event.register(ModMenuTypes.THERMOSTATION_MENU.get(), ThermostationScreen::new);
+        event.register(ModMenuTypes.ENERGY_BANK_MENU.get(), EnergyBankScreen::new);
+        event.register(ModMenuTypes.ITEM_FLUID_PORT_MENU.get(), ItemFluidPortScreen::new);
+        event.register(ModMenuTypes.ME_PORT_MENU.get(), MePortScreen::new);
+        event.register(ModMenuTypes.ENERGY_PORT_MENU.get(), EnergyPortScreen::new);
+        event.register(ModMenuTypes.LATE_MACHINE_CORE_MENU.get(), LateMachineCoreScreen::new);
+        event.register(ModMenuTypes.INDUSTRIAL_MINER_MENU.get(), IndustrialMinerScreen::new);
+        event.register(ModMenuTypes.DRILL_BEACON_MENU.get(), DrillBeaconScreen::new);
+    }
+
+    @SubscribeEvent
+    public static void onRegisterKeyMappings(net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent event) {
         ModKeyBindings.register(event);
     }
 
@@ -99,7 +105,7 @@ public final class ClientSetup {
         com.jykito.industrialcore.client.armor.PowerSuitModel.registerLayers(event);
     }
 
-    /** Слои пересобраны после перезагрузки ресурсов: модели брони берутся заново. */
+    /** Layers are rebuilt after a resource reload: armor models are taken anew. */
     @SubscribeEvent
     public static void onAddLayers(EntityRenderersEvent.AddLayers event) {
         com.jykito.industrialcore.client.armor.PowerSuitModel.clearCache();
@@ -114,7 +120,7 @@ public final class ClientSetup {
                 LogisticsBeamRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.ITEM_HUB_BE.get(),
                 LogisticsBeamRenderer::new);
-        // Теплотруба: свечение теперь статик-эмиссив по blockstate hot (в чанк-меше), BER-рендерер убран
+        // Heat pipe: the glow is now static emissive by the blockstate hot (in the chunk mesh), the BER renderer was removed
         event.registerBlockEntityRenderer(ModBlockEntities.ELECTROMAGNET_CORE_BE.get(),
                 ElectromagnetCoreBER::new);
         event.registerBlockEntityRenderer(ModBlockEntities.DISTANT_CONTROLLER_BE.get(),
@@ -127,9 +133,9 @@ public final class ClientSetup {
                 com.jykito.industrialcore.client.miner.DrillBeaconBER::new);
     }
 
-    /** Модель промышленного шахтёра читается из ресурсов один раз — после перезагрузки ресурсов перечитать. */
+    /** The industrial miner model is read from resources once; reread it after a resource reload. */
     @SubscribeEvent
-    public static void onRegisterReloadListeners(net.minecraftforge.client.event.RegisterClientReloadListenersEvent event) {
+    public static void onRegisterReloadListeners(net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent event) {
         event.registerReloadListener((net.minecraft.server.packs.resources.ResourceManagerReloadListener) rm ->
                 com.jykito.industrialcore.client.miner.IndustrialMinerModel.clear());
     }
@@ -153,13 +159,13 @@ public final class ClientSetup {
         event.register(AntigravColumnBER.PILON_CURRENT_MODEL);
     }
 
-    /** Структурное стекло: узел рамки во внутреннем углу Г-образной постройки (см. {@link GlassCtmModel}). */
+    /** Structural glass: frame node in the inner corner of an L-shaped build (see {@link GlassCtmModel}). */
     @SubscribeEvent
     public static void onModifyBakingResult(ModelEvent.ModifyBakingResult event) {
         for (net.minecraft.world.level.block.Block block : new net.minecraft.world.level.block.Block[]{
                 com.jykito.industrialcore.block.ModBlocks.STRUCTURAL_GLASS.get(), com.jykito.industrialcore.block.ModBlocks.STRUCTURAL_GLASS_ADVANCED.get()}) {
             for (net.minecraft.world.level.block.state.BlockState s : block.getStateDefinition().getPossibleStates()) {
-                ResourceLocation key = net.minecraft.client.renderer.block.BlockModelShaper.stateToModelLocation(s);
+                net.minecraft.client.resources.model.ModelResourceLocation key = net.minecraft.client.renderer.block.BlockModelShaper.stateToModelLocation(s);
                 net.minecraft.client.resources.model.BakedModel model = event.getModels().get(key);
                 if (model != null && !(model instanceof GlassCtmModel)) event.getModels().put(key, new GlassCtmModel(model));
             }
@@ -174,13 +180,13 @@ public final class ClientSetup {
             return FluidUtil.getFluidContained(stack).map(ClientSetup::capsuleFluidColor).orElse(0xFFFFFFFF);
         }, ModItems.UNIVERSAL_CAPSULE.get());
 
-        // штамм нанитов: окрашенные части (слой 1) в цвет главной руды штамма
+        // nanite strain: tinted parts (layer 1) in the colour of the strain's main ore
         event.register((stack, tintIndex) -> tintIndex != 1 ? 0xFFFFFFFF
-                : stack.hasTag() && stack.getTag().contains(com.jykito.industrialcore.nanite.NaniteAtlas.COLOR_TAG) ? stack.getTag().getInt(com.jykito.industrialcore.nanite.NaniteAtlas.COLOR_TAG)   // иконки атласа: силуэт, цвет черты
+                : stack.has(com.jykito.industrialcore.item.ModDataComponents.NANITE_COLOR.get()) ? stack.get(com.jykito.industrialcore.item.ModDataComponents.NANITE_COLOR.get())   // atlas icons: silhouette, trait colour
                 : com.jykito.industrialcore.nanite.NaniteColors.of(
                 com.jykito.industrialcore.nanite.NaniteGenome.read(stack).dominant()), ModItems.NANITE_STRAIN.get());
 
-        // карты данных: корпус (слой 1) в цвет темы, пустая — серая
+        // data cards: the body (layer 1) in the topic colour, a blank one is grey
         event.register((stack, tintIndex) -> tintIndex == 1 && stack.getItem() instanceof com.jykito.industrialcore.item.custom.DataCardItem d
                 ? com.jykito.industrialcore.nanite.NaniteColors.theme(d.theme()) : 0xFFFFFFFF,
                 java.util.stream.Stream.concat(java.util.stream.Stream.of(ModItems.DATA_CARD_BLANK), ModItems.DATA_CARDS.stream())
@@ -189,7 +195,7 @@ public final class ClientSetup {
 
     private static final java.util.Map<net.minecraft.world.level.material.Fluid, Integer> CAPSULE_FLUID_COLOR = new java.util.HashMap<>();
 
-    private static int capsuleFluidColor(net.minecraftforge.fluids.FluidStack fs) {
+    private static int capsuleFluidColor(net.neoforged.neoforge.fluids.FluidStack fs) {
         var f = fs.getFluid();
         if (f == Fluids.WATER || f == Fluids.FLOWING_WATER) return 0xFF3F76E4;
         if (f == Fluids.LAVA  || f == Fluids.FLOWING_LAVA)  return 0xFFFF7A1E;
@@ -207,7 +213,7 @@ public final class ClientSetup {
 
     private static int averageTextureColor(ResourceLocation tex) {
         try {
-            ResourceLocation png = new ResourceLocation(tex.getNamespace(), "textures/" + tex.getPath() + ".png");
+            ResourceLocation png = ResourceLocation.fromNamespaceAndPath(tex.getNamespace(), "textures/" + tex.getPath() + ".png");
             var resOpt = net.minecraft.client.Minecraft.getInstance().getResourceManager().getResource(png);
             if (resOpt.isEmpty()) return 0;
             try (var is = resOpt.get().open();
@@ -229,12 +235,12 @@ public final class ClientSetup {
     }
 
     @SubscribeEvent
-    public static void onRegisterOverlays(RegisterGuiOverlaysEvent event) {
-        event.registerAboveAll("armor_energy_hud", ArmorEnergyHudOverlay.OVERLAY);
+    public static void onRegisterOverlays(RegisterGuiLayersEvent event) {
+        event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "armor_energy_hud"), ArmorEnergyHudOverlay.OVERLAY);
     }
 
     @SubscribeEvent
-    public static void onRegisterParticles(net.minecraftforge.client.event.RegisterParticleProvidersEvent event) {
+    public static void onRegisterParticles(net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(com.jykito.industrialcore.particle.ModParticles.ENERGY_MOTE.get(),
                 com.jykito.industrialcore.client.particle.EnergyMoteParticle.Provider::new);
     }

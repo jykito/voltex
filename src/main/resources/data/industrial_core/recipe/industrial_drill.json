@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " A ",
+    "BCB",
+    " D "
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:netherite_drill_tip"
+    },
+    "B": {
+      "item": "industrial_core:logic_board"
+    },
+    "C": {
+      "item": "industrial_core:tool_base"
+    },
+    "D": {
+      "item": "industrial_core:copper_cable"
+    }
+  },
+  "result": {
+    "id": "industrial_core:industrial_drill",
+    "count": 1
+  }
+}

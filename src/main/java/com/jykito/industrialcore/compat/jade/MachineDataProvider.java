@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.compat.jade;
+import com.jykito.industrialcore.capability.Caps;
 
 import com.jykito.industrialcore.IndustrialCore;
 import com.jykito.industrialcore.ModStyle;
@@ -9,9 +10,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.minecraft.core.registries.BuiltInRegistries;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -19,50 +19,50 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 
 /**
- * Плашка Jade для блоков мода: энергия, тепло, содержимое бака, прогресс.
- * Всё снимается через капабилити и общий {@code baseData}, поэтому блок-сущности править не пришлось.
+ * Jade tooltip for the mod's blocks: energy, heat, tank contents, progress.
+ * Everything is read through capabilities and the shared {@code baseData}, so the block entities did not need changes.
  * <p>
- * ⚠️ Ссылок на этот класс из обычного кода мода быть не должно — его грузит сам Jade,
- * сканируя аннотацию {@link snownee.jade.api.WailaPlugin}. Без Jade класс не трогает никто.
+ * ⚠️ Regular mod code must not reference this class: Jade loads it itself
+ * by scanning for the {@link snownee.jade.api.WailaPlugin} annotation. Without Jade nobody touches the class.
  */
 public enum MachineDataProvider implements IServerDataProvider<BlockAccessor>, IBlockComponentProvider {
     INSTANCE;
 
-    public static final ResourceLocation UID = new ResourceLocation(IndustrialCore.MODID, "machine");
+    public static final ResourceLocation UID = ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "machine");
 
     @Override
     public ResourceLocation getUid() {
         return UID;
     }
 
-    // ------------------------------------------------------------- сервер
+    // ------------------------------------------------------------- server
 
     @Override
     public void appendServerData(CompoundTag data, BlockAccessor accessor) {
         BlockEntity be = accessor.getBlockEntity();
         if (be == null || !isOurs(accessor)) return;
 
-        be.getCapability(ForgeCapabilities.ENERGY).ifPresent(energy -> {
+        Caps.get(be, Caps.ENERGY).ifPresent(energy -> {
             if (energy.getMaxEnergyStored() > 0) {
                 data.putInt("fe", energy.getEnergyStored());
                 data.putInt("feMax", energy.getMaxEnergyStored());
             }
         });
 
-        be.getCapability(HeatCapability.HEAT).ifPresent(heat -> {
+        Caps.get(be, Caps.HEAT).ifPresent(heat -> {
             if (heat.getMaxHeat() > 0) {
                 data.putInt("heat", heat.getHeat());
                 data.putInt("heatMax", heat.getMaxHeat());
             }
         });
 
-        be.getCapability(ForgeCapabilities.FLUID_HANDLER).ifPresent(tanks -> {
+        Caps.get(be, Caps.FLUID_HANDLER).ifPresent(tanks -> {
             for (int i = 0; i < tanks.getTanks(); i++) {
                 FluidStack stack = tanks.getFluidInTank(i);
                 if (stack.isEmpty()) continue;
-                ResourceLocation id = ForgeRegistries.FLUIDS.getKey(stack.getFluid());
+                ResourceLocation id = BuiltInRegistries.FLUID.getKey(stack.getFluid());
                 if (id == null) continue;
-                // шлём id, а не готовое имя: локаль берётся на клиенте, а не серверная
+                // send the id, not a ready name: the locale is taken on the client, not the server's
                 data.putString("fluid", id.toString());
                 data.putInt("fluidAmount", stack.getAmount());
                 data.putInt("fluidCap", tanks.getTankCapacity(i));
@@ -79,7 +79,7 @@ public enum MachineDataProvider implements IServerDataProvider<BlockAccessor>, I
         }
     }
 
-    // ------------------------------------------------------------- клиент
+    // ------------------------------------------------------------- client
 
     @Override
     public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
@@ -98,7 +98,7 @@ public enum MachineDataProvider implements IServerDataProvider<BlockAccessor>, I
         }
 
         if (data.contains("fluid")) {
-            Fluid fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(data.getString("fluid")));
+            Fluid fluid = BuiltInRegistries.FLUID.get(ResourceLocation.parse(data.getString("fluid")));
             if (fluid != null) {
                 tooltip.add(Component.translatable("jade.industrial_core.fluid",
                         new FluidStack(fluid, 1).getDisplayName(),
@@ -112,15 +112,15 @@ public enum MachineDataProvider implements IServerDataProvider<BlockAccessor>, I
         }
     }
 
-    // ------------------------------------------------------------- утиль
+    // ------------------------------------------------------------- utils
 
-    /** Jade зовёт провайдер на любой блок под прицелом — чужие отсекаем сразу. */
+    /** Jade calls the provider for any block under the crosshair; other mods' blocks are cut off right away. */
     private static boolean isOurs(BlockAccessor accessor) {
-        ResourceLocation id = ForgeRegistries.BLOCKS.getKey(accessor.getBlock());
+        ResourceLocation id = BuiltInRegistries.BLOCK.getKey(accessor.getBlock());
         return id != null && IndustrialCore.MODID.equals(id.getNamespace());
     }
 
-    /** 1500000 -> «1.5M»: в плашку не влезают полные числа энергобанка. */
+    /** 1500000 -> "1.5M": full energy bank numbers do not fit into the tooltip. */
     private static String compact(int value) {
         if (value >= 1_000_000_000) return String.format("%.1fG", value / 1_000_000_000f);
         if (value >= 1_000_000)     return String.format("%.1fM", value / 1_000_000f);

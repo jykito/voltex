@@ -1,5 +1,8 @@
 package com.jykito.industrialcore.client;
+import com.mojang.blaze3d.vertex.PoseStack;
 
+
+import net.neoforged.fml.common.EventBusSubscriber;
 import com.jykito.industrialcore.IndustrialCore;
 import com.jykito.industrialcore.item.custom.StructureWandItem;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -10,19 +13,19 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 import org.joml.Matrix4f;
 
 /**
- * Каркас области, отмеченной DEV-жезлом: два угла — коробка между ними, видно сквозь стены.
+ * Frame of the area marked by the DEV wand: two corners, a box between them, visible through walls.
  * <p>
- * Рисуется только пока жезл в руке, поэтому в обычной игре не стоит ничего: без предмета
- * обработчик выходит на первой же проверке.
+ * Drawn only while the wand is in hand, so in normal play it costs nothing: without the item
+ * the handler exits at the very first check.
  */
-@Mod.EventBusSubscriber(modid = IndustrialCore.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+@EventBusSubscriber(modid = IndustrialCore.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class StructureSelectionRenderer {
 
     @SubscribeEvent
@@ -38,7 +41,7 @@ public class StructureSelectionRenderer {
         BlockPos a = StructureWandItem.getCorner(wand, true);
         BlockPos b = StructureWandItem.getCorner(wand, false);
         if (a == null) return;
-        if (b == null) b = a;                       // отмечен один угол — показываем одну клетку
+        if (b == null) b = a;                       // one corner marked: show a single cell
 
         double x0 = Math.min(a.getX(), b.getX()),     x1 = Math.max(a.getX(), b.getX()) + 1;
         double y0 = Math.min(a.getY(), b.getY()),     y1 = Math.max(a.getY(), b.getY()) + 1;
@@ -57,29 +60,29 @@ public class StructureSelectionRenderer {
         RenderSystem.lineWidth(2.5f);
 
         Tesselator tess = Tesselator.getInstance();
-        BufferBuilder buf = tess.getBuilder();
         Matrix4f m = ps.last().pose();
 
         final float r = 0.2f, g = 0.95f, bl = 1f, al = 0.9f;
-        buf.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder buf = tess.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
 
-        // четыре ребра по X
+        // four edges along X
         for (double y : new double[]{ y0, y1 }) for (double z : new double[]{ z0, z1 }) {
-            buf.vertex(m, (float) x0, (float) y, (float) z).color(r, g, bl, al).endVertex();
-            buf.vertex(m, (float) x1, (float) y, (float) z).color(r, g, bl, al).endVertex();
+            buf.addVertex(m, (float) x0, (float) y, (float) z).setColor(r, g, bl, al);
+            buf.addVertex(m, (float) x1, (float) y, (float) z).setColor(r, g, bl, al);
         }
-        // четыре по Y
+        // four along Y
         for (double x : new double[]{ x0, x1 }) for (double z : new double[]{ z0, z1 }) {
-            buf.vertex(m, (float) x, (float) y0, (float) z).color(r, g, bl, al).endVertex();
-            buf.vertex(m, (float) x, (float) y1, (float) z).color(r, g, bl, al).endVertex();
+            buf.addVertex(m, (float) x, (float) y0, (float) z).setColor(r, g, bl, al);
+            buf.addVertex(m, (float) x, (float) y1, (float) z).setColor(r, g, bl, al);
         }
-        // четыре по Z
+        // four along Z
         for (double x : new double[]{ x0, x1 }) for (double y : new double[]{ y0, y1 }) {
-            buf.vertex(m, (float) x, (float) y, (float) z0).color(r, g, bl, al).endVertex();
-            buf.vertex(m, (float) x, (float) y, (float) z1).color(r, g, bl, al).endVertex();
+            buf.addVertex(m, (float) x, (float) y, (float) z0).setColor(r, g, bl, al);
+            buf.addVertex(m, (float) x, (float) y, (float) z1).setColor(r, g, bl, al);
         }
 
-        tess.end();
+        com.mojang.blaze3d.vertex.MeshData mesh = buf.build();
+        if (mesh != null) com.mojang.blaze3d.vertex.BufferUploader.drawWithShader(mesh);
 
         RenderSystem.lineWidth(1f);
         RenderSystem.disableBlend();

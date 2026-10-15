@@ -3,7 +3,7 @@ package com.jykito.industrialcore.jei;
 import com.jykito.industrialcore.IndustrialCore;
 import com.jykito.industrialcore.recipe.BioreactorRecipe;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
@@ -25,10 +25,10 @@ import net.minecraft.world.level.material.Fluids;
 import java.util.Arrays;
 import java.util.List;
 
-/** Биореактор в JEI: раскладка промывателя (бак, вход, выход) плюс добавка над входом и порог тепла. */
+/** Bioreactor in JEI: the ore washer layout (tank, input, output) plus the additive above the input and the heat threshold. */
 public class BioreactorJeiCategory implements IRecipeCategory<BioreactorRecipe> {
 
-    private static final ResourceLocation TEXTURE = new ResourceLocation(IndustrialCore.MODID, "textures/gui/jei/jei_bioreactor.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/jei/jei_bioreactor.png");
     private static final int TEX_W = 154, TEX_H = 150, VIS_W = 154, VIS_H = 95;
     private static final int TANK_X = 28, TANK_Y = 17, TANK_W = 16, TANK_H = 48;
     private static final int GLASS_U = 125, GLASS_V = 100;
@@ -61,7 +61,7 @@ public class BioreactorJeiCategory implements IRecipeCategory<BioreactorRecipe> 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, BioreactorRecipe recipe, IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, TANK_X, TANK_Y)
-               .setCustomRenderer(ForgeTypes.FLUID_STACK, new FluidTankRenderer(TANK_W, TANK_H, TEXTURE, GLASS_U, GLASS_V, TEX_W, TEX_H))
+               .setCustomRenderer(NeoForgeTypes.FLUID_STACK, new FluidTankRenderer(TANK_W, TANK_H, TEXTURE, GLASS_U, GLASS_V, TEX_W, TEX_H))
                .addFluidStack(Fluids.WATER, recipe.getWaterAmount());
         builder.addSlot(RecipeIngredientRole.INPUT, IN_X, IN_Y).addItemStacks(withCount(recipe.getInput().getItems(), recipe.getInputCount()));
         if (recipe.hasAdditive())

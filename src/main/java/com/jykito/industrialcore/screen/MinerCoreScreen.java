@@ -8,12 +8,12 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class MinerCoreScreen extends MachineScreen<MinerCoreMenu> {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/miner_core_gui.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/miner_core_gui.png");
 
     private static final int ENERGY_X = 93, ENERGY_Y = 105, ENERGY_W = 69, BAR_H = 6;
 
@@ -47,8 +47,8 @@ public class MinerCoreScreen extends MachineScreen<MinerCoreMenu> {
         int filled = menu.getScaledEnergy(ENERGY_W);
         bars.draw(g, FillBar.ENERGY, x + ENERGY_X, y + ENERGY_Y, filled, BAR_H);
 
-        // Заполнение снизу вверх: берём нижние `progress` пикселей исходника
-        // и кладём их к нижней кромке области, поэтому смещение одно и то же по src и dst.
+        // Fill from bottom to top: take the bottom `progress` pixels of the source
+        // and put them at the bottom edge of the area, so the offset is the same for src and dst.
         int progress = menu.getScaledProgress(PROG_H);
         if (progress > 0) {
             int offset = PROG_H - progress;

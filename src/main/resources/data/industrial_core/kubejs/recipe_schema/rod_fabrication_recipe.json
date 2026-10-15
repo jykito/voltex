@@ -1,0 +1,42 @@
+{
+  "keys": [
+    {
+      "name": "result",
+      "role": "output",
+      "type": "item_stack"
+    },
+    {
+      "name": "ingredient1",
+      "role": "input",
+      "type": "ingredient"
+    },
+    {
+      "name": "ingredient2",
+      "role": "input",
+      "type": "ingredient"
+    },
+    {
+      "name": "count1",
+      "type": "int",
+      "optional": 1
+    },
+    {
+      "name": "count2",
+      "type": "int",
+      "optional": 1
+    },
+    {
+      "name": "processingTime",
+      "type": "int",
+      "optional": 200
+    },
+    {
+      "name": "energyCostPerTick",
+      "type": "int",
+      "optional": 500
+    }
+  ],
+  "unique": [
+    "result"
+  ]
+}

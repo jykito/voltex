@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "EFE"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:photonic_lens"
+    },
+    "B": {
+      "item": "industrial_core:plasma_core"
+    },
+    "C": {
+      "item": "industrial_core:kronium_alloy"
+    },
+    "D": {
+      "item": "industrial_core:solar_panel_t5"
+    },
+    "E": {
+      "item": "industrial_core:advanced_heat_vent"
+    },
+    "F": {
+      "item": "industrial_core:data_transfer_matrix"
+    }
+  },
+  "result": {
+    "id": "industrial_core:solar_panel_t6",
+    "count": 1
+  }
+}

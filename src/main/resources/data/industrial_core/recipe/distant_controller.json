@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "EFE"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/gold"
+    },
+    "B": {
+      "item": "industrial_core:signal_receiver"
+    },
+    "C": {
+      "item": "industrial_core:gold_conductor"
+    },
+    "D": {
+      "item": "industrial_core:magnet_copper_coil"
+    },
+    "E": {
+      "item": "industrial_core:logic_board"
+    },
+    "F": {
+      "tag": "c:dusts/redstone"
+    }
+  },
+  "result": {
+    "id": "industrial_core:distant_controller",
+    "count": 1
+  }
+}

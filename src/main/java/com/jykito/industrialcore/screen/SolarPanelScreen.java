@@ -30,8 +30,7 @@ public class SolarPanelScreen extends MachineScreen<SolarPanelMenu> {
 
     public SolarPanelScreen(SolarPanelMenu menu, Inventory inv, Component title) {
         super(menu, inv, title);
-        TEXTURE = new ResourceLocation(IndustrialCore.MODID,
-                "textures/gui/solar_gui_t" + menu.blockEntity.getTierLevel() + ".png");
+        TEXTURE = ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/solar_gui_t" + menu.blockEntity.getTierLevel() + ".png");
     }
 
     @Override

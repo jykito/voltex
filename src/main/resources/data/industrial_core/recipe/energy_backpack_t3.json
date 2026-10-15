@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "EFE"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:kronium_alloy"
+    },
+    "B": {
+      "item": "industrial_core:exotic_matter"
+    },
+    "C": {
+      "item": "industrial_core:plasma_core"
+    },
+    "D": {
+      "item": "industrial_core:energy_backpack_t2"
+    },
+    "E": {
+      "item": "industrial_core:carbon_composite_ingot"
+    },
+    "F": {
+      "item": "industrial_core:netherite_fiber_cable"
+    }
+  },
+  "result": {
+    "id": "industrial_core:energy_backpack_t3",
+    "count": 1
+  }
+}

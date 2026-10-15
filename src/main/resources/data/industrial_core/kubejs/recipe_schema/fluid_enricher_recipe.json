@@ -1,0 +1,58 @@
+{
+  "keys": [
+    {
+      "name": "ingredient",
+      "role": "input",
+      "type": "ingredient"
+    },
+    {
+      "name": "fluidInput",
+      "type": "string"
+    },
+    {
+      "name": "fluidOutput",
+      "type": "string"
+    },
+    {
+      "name": "itemCount",
+      "type": "int",
+      "optional": 1
+    },
+    {
+      "name": "fluidInputAmount",
+      "type": "int",
+      "optional": 1000
+    },
+    {
+      "name": "fluidOutputAmount",
+      "type": "int",
+      "optional": 1000
+    },
+    {
+      "name": "ingredient2",
+      "role": "input",
+      "type": "ingredient",
+      "default_optional": true
+    },
+    {
+      "name": "itemCount2",
+      "type": "int",
+      "optional": 1
+    },
+    {
+      "name": "processingTime",
+      "type": "int",
+      "optional": 100
+    },
+    {
+      "name": "energyCostPerTick",
+      "type": "int",
+      "optional": 50
+    },
+    {
+      "name": "lateOnly",
+      "type": "boolean",
+      "optional": false
+    }
+  ]
+}

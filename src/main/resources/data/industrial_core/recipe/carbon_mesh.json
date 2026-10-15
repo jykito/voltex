@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "industrial_core:carbon_fiber"
+    },
+    {
+      "item": "industrial_core:carbon_fiber"
+    }
+  ],
+  "result": {
+    "id": "industrial_core:carbon_mesh",
+    "count": 1
+  }
+}

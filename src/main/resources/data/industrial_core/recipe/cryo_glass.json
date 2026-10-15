@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "BCB",
+    "AAA"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:glass"
+    },
+    "B": {
+      "tag": "c:plates/aluminum"
+    },
+    "C": {
+      "item": "industrial_core:cryolite"
+    }
+  },
+  "result": {
+    "id": "industrial_core:cryo_glass",
+    "count": 8
+  }
+}

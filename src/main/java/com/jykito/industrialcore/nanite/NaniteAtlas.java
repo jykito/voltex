@@ -8,61 +8,59 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
 /**
- * Атлас видов нанитов (юзер 2026-10-07: «Атлас видов в информационной панели»): что игрок открыл и с каким рекордом.
- * Вид — класс плюс цель («miner:copper», «scientist:matter»), редкий вид — черта («trait:cryophile»).
- * Открывается, когда штамм попадает игроку в инвентарь ({@link com.jykito.industrialcore.item.custom.NaniteStrainItem#inventoryTick}).
+ * Nanite species atlas (author, 2026-10-07: "a species atlas in the information panel"): what the player unlocked and with what record.
+ * A species is a class plus a target ("miner:copper", "scientist:matter"), a rare species is a trait ("trait:cryophile").
+ * It unlocks when a strain gets into the player inventory ({@link com.jykito.industrialcore.item.custom.NaniteStrainItem#inventoryTick}).
  * <p>
- * Хранится в данных игрока под {@link Player#PERSISTED_NBT_TAG} — переживает смерть. Клиенту уходит целиком пакетом
- * ({@link AtlasSyncPacket}) при входе и при каждом открытии. Отметки за рекорд: бронза, серебро, золото по доле потолка класса.
+ * Stored in the player data under {@link Player#PERSISTED_NBT_TAG}, survives death. Sent to the client whole as a packet
+ * ({@link AtlasSyncPacket}) on join and on every unlock. Record marks: bronze, silver, gold by the share of the class cap.
  */
 public final class NaniteAtlas {
 
     private NaniteAtlas() {}
 
     public static final String TAG = "industrial_core_atlas";
-    /** Доли потолка класса для бронзы, серебра, золота. */
+    /** Shares of the class cap for bronze, silver, gold. */
     public static final float BRONZE = 0.25f, SILVER = 0.60f, GOLD = 0.95f;
 
     public static String speciesKey(NaniteGenome.Kind kind, String target) { return kind.key() + ":" + target; }
 
-    /** Ключ NBT, которым иконка штамма просит у ItemColor прямо заданный цвет (силуэт, цвет черты). */
-    public static final String COLOR_TAG = "AtlasColor";
     public static final int UNKNOWN_COLOR = 0xFF2A3036;
 
-    /** Штамм для иконки вида: класс и цель, чтобы ItemColor окрасил его в цвет материала или темы. */
+    /** Strain for a species icon: class and target, so ItemColor tints it in the material or topic colour. */
     public static net.minecraft.world.item.ItemStack icon(NaniteGenome.Kind kind, String target) { return icon(kind, target, 1f); }
 
-    /** То же с заданным сродством (JEI нанолаборатории: учёный ровно на пороге темы). */
+    /** The same with a given affinity (nanite lab JEI: a scientist exactly at the topic threshold). */
     public static net.minecraft.world.item.ItemStack icon(NaniteGenome.Kind kind, String target, float affinity) {
         net.minecraft.world.item.ItemStack st = new net.minecraft.world.item.ItemStack(com.jykito.industrialcore.item.ModItems.NANITE_STRAIN.get());
         CompoundTag g = new CompoundTag(), aff = new CompoundTag();
         aff.putFloat(target, affinity);
         g.put("Aff", aff); g.putString("Kind", kind.key()); g.putInt("Gen", 1);
-        st.addTagElement(NaniteGenome.TAG, g);
+        st.set(com.jykito.industrialcore.item.ModDataComponents.NANITE_GENOME.get(), net.minecraft.world.item.component.CustomData.of(g));
         return st;
     }
 
-    /** Штамм для иконки, окрашенный прямо заданным цветом. */
+    /** Strain for an icon, tinted with an explicitly set colour. */
     public static net.minecraft.world.item.ItemStack painted(int color) {
         net.minecraft.world.item.ItemStack st = new net.minecraft.world.item.ItemStack(com.jykito.industrialcore.item.ModItems.NANITE_STRAIN.get());
-        st.getOrCreateTag().putInt(COLOR_TAG, color);
+        st.set(com.jykito.industrialcore.item.ModDataComponents.NANITE_COLOR.get(), color);
         return st;
     }
     public static String traitKey(NaniteTrait t) { return "trait:" + t.key(); }
 
-    /** Отметка за рекорд: 0 нет, 1 бронза, 2 серебро, 3 золото. */
+    /** Record mark: 0 none, 1 bronze, 2 silver, 3 gold. */
     public static int medal(NaniteGenome.Kind kind, int bestPermille) {
         float share = bestPermille / 1000f / NaniteGenome.cap(kind);
         return share >= GOLD ? 3 : share >= SILVER ? 2 : share >= BRONZE ? 1 : 0;
     }
 
-    /** Атлас игрока (создаётся при первом обращении). */
+    /** The player's atlas (created on first access). */
     public static CompoundTag of(Player p) {
         CompoundTag root = p.getPersistentData();
         if (!root.contains(Player.PERSISTED_NBT_TAG)) root.put(Player.PERSISTED_NBT_TAG, new CompoundTag());
@@ -72,8 +70,8 @@ public final class NaniteAtlas {
     }
 
     /**
-     * Записать штамм в атлас игрока: новые виды, рекорды, черты. Если что-то изменилось — отправить клиенту; о новом
-     * скажет сам клиент всплывашкой справа сверху, как достижение (сравнивает с прежней копией).
+     * Record a strain into the player's atlas: new species, records, traits. If anything changed, send it to the client; the client
+     * announces new ones itself with a toast in the top right, like an advancement (it compares with the previous copy).
      */
     public static void discover(ServerPlayer player, NaniteGenome g) {
         if (g.kind() == null || g.isEmpty()) return;
@@ -86,7 +84,7 @@ public final class NaniteAtlas {
             if (best.contains(key) && now <= best.getInt(key)) continue;
             best.putInt(key, now);
             Item icon = g.icon(e.getKey());
-            ResourceLocation id = icon == null ? null : ForgeRegistries.ITEMS.getKey(icon);
+            ResourceLocation id = icon == null ? null : BuiltInRegistries.ITEM.getKey(icon);
             if (id != null && !icons.contains(key)) icons.putString(key, id.toString());
             changed = true;
         }
@@ -95,7 +93,7 @@ public final class NaniteAtlas {
             traits.putBoolean(t.key(), true);
             changed = true;
             com.jykito.industrialcore.advancement.VoltexEventTrigger.INSTANCE.trigger(player,
-                    com.jykito.industrialcore.advancement.VoltexEventTrigger.NANITE_RARE);   // редкий вид = черта
+                    com.jykito.industrialcore.advancement.VoltexEventTrigger.NANITE_RARE);   // rare species = trait
         }
         if (!changed) return;
         atlas.put("S", best); atlas.put("I", icons); atlas.put("T", traits);
@@ -106,7 +104,7 @@ public final class NaniteAtlas {
         ModMessages.sendToPlayer(new AtlasSyncPacket(of(player).copy()), player);
     }
 
-    /** Имя вида: «Добытчик: медная руда», «Учёный: материя». */
+    /** Species name: "Miner: copper ore", "Scientist: matter". */
     public static Component speciesName(NaniteGenome.Kind kind, String target, @Nullable Item icon) {
         Component what = kind == NaniteGenome.Kind.SCIENTIST ? Component.translatable("nanite_theme.industrial_core." + target)
                 : icon != null ? icon.getDescription() : Component.literal(target);

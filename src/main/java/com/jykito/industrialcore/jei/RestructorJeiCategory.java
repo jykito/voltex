@@ -21,7 +21,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +29,7 @@ import java.util.List;
 public class RestructorJeiCategory implements IRecipeCategory<MachineRecipe> {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/jei/jei_restructor.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/jei/jei_restructor.png");
     private static final int TEX_W = 154, TEX_H = 140, VIS_W = 154, VIS_H = 84;
 
     private static final int IN_X = 44, IN_Y = 21, OUT_X = 94, OUT_Y = 21, CAT_X = 69, CAT_Y = 42;
@@ -70,7 +70,7 @@ public class RestructorJeiCategory implements IRecipeCategory<MachineRecipe> {
 
         String catalystId = recipe.getCatalystId();
         if (catalystId != null) {
-            var catItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(catalystId));
+            var catItem = BuiltInRegistries.ITEM.get(ResourceLocation.parse(catalystId));
             if (catItem != null)
                 builder.addSlot(RecipeIngredientRole.CATALYST, CAT_X, CAT_Y).addItemStack(new ItemStack(catItem));
         }
@@ -82,7 +82,7 @@ public class RestructorJeiCategory implements IRecipeCategory<MachineRecipe> {
         anim.advance();
         JeiGui.tileFill(g, JeiGui.ENERGY_FILL, EBAR_X, EBAR_Y, EBAR_W, anim.frame());
         var font = Minecraft.getInstance().font;
-        // у реструктора нет времени: предмет + накопленная энергия = результат, стоимость — на весь крафт
+        // the restructor has no time: item + accumulated energy = result, the cost is for the whole craft
         JeiGui.smallText(g, font, JeiGui.fe(recipe.getEnergyCost()) + " FE", INFO_X, INFO_Y, JeiGui.ENERGY);
     }
 

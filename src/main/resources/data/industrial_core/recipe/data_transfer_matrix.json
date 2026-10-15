@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:plates/electrum"
+    },
+    "B": {
+      "tag": "c:plates/lapis"
+    },
+    "C": {
+      "item": "industrial_core:crystal_fiber"
+    },
+    "D": {
+      "item": "industrial_core:logic_board"
+    }
+  },
+  "result": {
+    "id": "industrial_core:data_transfer_matrix",
+    "count": 1
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "BCB"
+  ],
+  "key": {
+    "A": {
+      "item": "industrial_core:heat_vent"
+    },
+    "B": {
+      "item": "industrial_core:heat_resistant_plating"
+    },
+    "C": {
+      "tag": "c:components/machine_casing"
+    }
+  },
+  "result": {
+    "id": "industrial_core:thermostation_radiator",
+    "count": 1
+  }
+}

@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Inventory;
 public class CultivatorScreen extends MachineScreen<CultivatorMenu> {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/cultivator_gui.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/cultivator_gui.png");
 
     private static final int ENERGY_X = 72, ENERGY_Y = 97, BAR_H = 6;
 

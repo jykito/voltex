@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "BCB",
+    "DED"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:flint"
+    },
+    "B": {
+      "tag": "c:plates/iron"
+    },
+    "C": {
+      "tag": "c:components/machine_casing"
+    },
+    "D": {
+      "item": "minecraft:cobblestone"
+    },
+    "E": {
+      "item": "industrial_core:copper_solenoid"
+    }
+  },
+  "result": {
+    "id": "industrial_core:crusher",
+    "count": 1
+  }
+}

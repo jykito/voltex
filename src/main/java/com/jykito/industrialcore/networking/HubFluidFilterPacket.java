@@ -1,16 +1,28 @@
 package com.jykito.industrialcore.networking;
 
+import com.jykito.industrialcore.IndustrialCore;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+
 import com.jykito.industrialcore.block.entity.HubBlockEntity;
 import com.jykito.industrialcore.menu.HubMenu;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
 
-import java.util.function.Supplier;
 
-public class HubFluidFilterPacket {
+public class HubFluidFilterPacket implements CustomPacketPayload {
+    public static final Type<HubFluidFilterPacket> TYPE =
+            new Type<>(ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "hub_fluid_filter"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, HubFluidFilterPacket> STREAM_CODEC =
+            StreamCodec.ofMember(HubFluidFilterPacket::toBytes, HubFluidFilterPacket::new);
+
+    @Override
+    public Type<HubFluidFilterPacket> type() { return TYPE; }
+
     private final BlockPos pos;
     private final int face, slot;
     private final boolean output;
@@ -20,27 +32,25 @@ public class HubFluidFilterPacket {
         this.pos = pos; this.face = face; this.slot = slot; this.output = output; this.fluid = fluid;
     }
 
-    public HubFluidFilterPacket(FriendlyByteBuf buf) {
+    public HubFluidFilterPacket(RegistryFriendlyByteBuf buf) {
         pos = buf.readBlockPos(); face = buf.readVarInt(); slot = buf.readVarInt();
-        output = buf.readBoolean(); fluid = FluidStack.readFromPacket(buf);
+        output = buf.readBoolean(); fluid = FluidStack.OPTIONAL_STREAM_CODEC.decode(buf);
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
+    public void toBytes(RegistryFriendlyByteBuf buf) {
         buf.writeBlockPos(pos); buf.writeVarInt(face); buf.writeVarInt(slot);
-        buf.writeBoolean(output); fluid.writeToPacket(buf);
+        buf.writeBoolean(output); FluidStack.OPTIONAL_STREAM_CODEC.encode(buf, fluid);
     }
 
-    public boolean handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context ctx = supplier.get();
+    public void handle(IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
-            ServerPlayer player = ctx.getSender();
+            ServerPlayer player = (ServerPlayer) ctx.player();
             if (player == null) return;
             if (!(player.containerMenu instanceof HubMenu menu) || menu.be == null) return;
             HubBlockEntity be = menu.be;
             if (!be.fluid || !be.getBlockPos().equals(pos)) return;
             if (face < 0 || face >= 6 || slot < 0 || slot >= HubBlockEntity.FILTER_SLOTS) return;
             be.setFluidFilter(face, slot, output, fluid.isEmpty() ? FluidStack.EMPTY : fluid.copy());
-        });
-        return true;
+        });
     }
 }

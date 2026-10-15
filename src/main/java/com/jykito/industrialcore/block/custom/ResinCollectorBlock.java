@@ -1,4 +1,9 @@
 package com.jykito.industrialcore.block.custom;
+import com.mojang.serialization.MapCodec;
+import com.jykito.industrialcore.block.BlockUse;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.ItemInteractionResult;
+import com.jykito.industrialcore.capability.Caps;
 
 import com.jykito.industrialcore.block.entity.ModBlockEntities;
 import com.jykito.industrialcore.block.entity.ResinCollectorBlockEntity;
@@ -22,11 +27,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 public class ResinCollectorBlock extends BaseEntityBlock {
+
+    /** 1.21: block codec. Vanilla does not call it for mod blocks; there is one block instance, so unit is exact. */
+    @Override
+    protected MapCodec<? extends ResinCollectorBlock> codec() { return MapCodec.unit(this); }
 
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
@@ -66,12 +73,17 @@ public class ResinCollectorBlock extends BaseEntityBlock {
     }
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        return BlockUse.toItemResult(use(state, level, pos, player, hand, hit));
+    }
+
+    /** Formerly Block.use (1.20.1); called from useItemOn for both hands, as before. */
     public InteractionResult use(BlockState state, Level level, BlockPos pos,
                                  Player player, InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide()) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof ResinCollectorBlockEntity collector) {
-                NetworkHooks.openScreen((ServerPlayer) player, collector, pos);
+                ((ServerPlayer) player).openMenu(collector, pos);
             }
         }
         return InteractionResult.sidedSuccess(level.isClientSide());
@@ -99,7 +111,7 @@ public class ResinCollectorBlock extends BaseEntityBlock {
         if (state.getBlock() != newState.getBlock()) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be != null) {
-                be.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(h -> {
+                Caps.get(be, Caps.ITEM_HANDLER).ifPresent(h -> {
                     for (int i = 0; i < h.getSlots(); i++) {
                         var stack = h.getStackInSlot(i);
                         if (!stack.isEmpty())

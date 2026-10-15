@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Inventory;
 public class CrystallizerScreen extends MachineScreen<CrystallizerMenu> {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IndustrialCore.MODID, "textures/gui/crystallizer_gui.png");
+            ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/crystallizer_gui.png");
 
     private static final int ENERGY_X = 91, ENERGY_Y = 96, ENERGY_W = 81, BAR_H = 6;
 

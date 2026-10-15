@@ -13,14 +13,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * Апгрейд-модуль магнита «Фазозахват». В слоте апгрейда ядра удерживает нестабильность
- * на дрейфующей цели резонанса → надёжное ×2 без ручного/редстоун-слежения.
+ * "Phase Lock" magnet upgrade module. In the core upgrade slot it holds instability
+ * on the drifting resonance target -> reliable x2 without manual or redstone tracking.
  */
 public class PhaseLockUpgradeItem extends Item {
     public PhaseLockUpgradeItem(Properties props) { super(props); }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("tooltip.industrial_core.phase_lock_upgrade").withStyle(ChatFormatting.GRAY));
         UpgradeTargets.append(tooltip, ModBlocks.ELECTROMAGNET_CORE);
     }

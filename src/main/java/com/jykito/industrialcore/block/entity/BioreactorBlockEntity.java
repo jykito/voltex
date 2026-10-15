@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
+import com.jykito.industrialcore.capability.Caps;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.block.custom.BioreactorBlock;
 import com.jykito.industrialcore.energy.MachineEnergy;
@@ -29,28 +33,25 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.energy.EnergyStorage;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Биореактор (Э3): биомасса + добавка + вода → органика без мобов (слизь, кость, порох, кожа, чернила).
- * Культура живёт только в тепле: тепло приходит по теплосети, как у доменки — уровень растёт от притока
- * и остывает без него; ниже порога рецепта реактор стоит. Устроен как промыватель: те же слоты выходов
- * и апгрейдов, плюс слот добавки.
+ * Bioreactor (E3): biomass + additive + water -> organics without mobs (slime, bone, gunpowder, leather, ink).
+ * The culture only lives in heat: heat comes over the heat network, as with the blast furnace; the level rises with inflow
+ * and cools without it; below the recipe threshold the reactor stops. Built like the ore washer: the same output
+ * and upgrade slots, plus an additive slot.
  * <p>
- * Слоты: 0 — биомасса, 1–3 — выходы, 4–7 — апгрейды, 8 — добавка.
+ * Slots: 0 biomass, 1-3 outputs, 4-7 upgrades, 8 additive.
  */
-public class BioreactorBlockEntity extends BlockEntity implements MenuProvider {
+public class BioreactorBlockEntity extends BlockEntity implements Caps.Provider, MenuProvider {
 
     public static final int SLOT_INPUT = 0, SLOT_ADDITIVE = 8, MAX_HEAT = 2000;
     private static final int TANK_BASE = 8000;
@@ -67,9 +68,8 @@ public class BioreactorBlockEntity extends BlockEntity implements MenuProvider {
             return true;
         }
     };
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
-    /** Снаружи: класть биомассу и добавку, забирать выходы. */
+    /** From outside: insert biomass and additive, extract outputs. */
     private final IItemHandlerModifiable automationHandler = new IItemHandlerModifiable() {
         @Override public void setStackInSlot(int slot, @NotNull ItemStack stack) { itemHandler.setStackInSlot(slot, stack); }
         @Override public int getSlots() { return itemHandler.getSlots(); }
@@ -89,7 +89,6 @@ public class BioreactorBlockEntity extends BlockEntity implements MenuProvider {
     public ItemStackHandler getItemHandler() { return itemHandler; }
 
     private final MachineEnergy energyStorage = MachineEnergy.consumer(64000, 64000);
-    private LazyOptional<EnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
     public final FluidTank waterTank = new FluidTank(TANK_BASE, fs -> fs.getFluid() == Fluids.WATER) {
         @Override protected void onContentsChanged() {
@@ -108,9 +107,8 @@ public class BioreactorBlockEntity extends BlockEntity implements MenuProvider {
         @Override public @NotNull FluidStack drain(FluidStack resource, FluidAction action) { return FluidStack.EMPTY; }
         @Override public @NotNull FluidStack drain(int maxDrain, FluidAction action) { return FluidStack.EMPTY; }
     };
-    private LazyOptional<IFluidHandler> lazyFluidHandler = LazyOptional.empty();
 
-    // ── тепло: как у доменки, уровень от притока, без него остывает ──
+    // ── heat: as with the blast furnace, the level follows inflow and cools without it ──
     private int heat;
     private boolean receivingHeat;
     private final IHeatHandler heatHandler = new IHeatHandler() {
@@ -122,7 +120,6 @@ public class BioreactorBlockEntity extends BlockEntity implements MenuProvider {
             return accepted;
         }
     };
-    private LazyOptional<IHeatHandler> lazyHeat = LazyOptional.empty();
 
     protected final ContainerData data;
     private int progress = 0, maxProgress = 400, requiredHeat = 0;
@@ -164,7 +161,7 @@ public class BioreactorBlockEntity extends BlockEntity implements MenuProvider {
         if (AdaptiveTank.resize(waterTank, TANK_BASE, upg.parallel())) level.sendBlockUpdated(pos, state, state, 3);
 
         if (upg.fluidPull() != null && waterTank.getSpace() > 0) {
-            MachineIO.neighbor(level, pos, upg.fluidPull(), ForgeCapabilities.FLUID_HANDLER).ifPresent(nh -> {
+            MachineIO.neighbor(level, pos, upg.fluidPull(), Caps.FLUID_HANDLER).ifPresent(nh -> {
                 FluidStack drained = nh.drain(new FluidStack(Fluids.WATER, Math.min(1000, waterTank.getSpace())), IFluidHandler.FluidAction.EXECUTE);
                 if (!drained.isEmpty()) waterTank.fill(drained, IFluidHandler.FluidAction.EXECUTE);
             });
@@ -176,7 +173,7 @@ public class BioreactorBlockEntity extends BlockEntity implements MenuProvider {
         this.requiredHeat = recipe != null ? recipe.getRequiredHeat() : 0;
         int energy = upg.scaleEnergy(recipe != null ? recipe.getEnergyCostPerTick() : 60);
 
-        // культура в холоде не растёт: прогресс не сбрасывается, просто ждёт тепла
+        // the culture does not grow in the cold: progress is not reset, it just waits for heat
         if (recipe != null && heat >= recipe.getRequiredHeat()) {
             if (energyStorage.getEnergyStored() >= energy) {
                 energyStorage.consumeEnergy(energy);
@@ -197,7 +194,7 @@ public class BioreactorBlockEntity extends BlockEntity implements MenuProvider {
         return recipeCache.get(() -> {
             ItemStack in = itemHandler.getStackInSlot(SLOT_INPUT), add = itemHandler.getStackInSlot(SLOT_ADDITIVE);
             if (in.isEmpty()) return null;
-            for (BioreactorRecipe r : level.getRecipeManager().getAllRecipesFor(ModRecipes.BIOREACTOR_TYPE.get())) {
+            for (BioreactorRecipe r : com.jykito.industrialcore.recipe.RecipeLookup.all(level, ModRecipes.BIOREACTOR_TYPE.get())) {
                 if (!r.matches(in, add)) continue;
                 if (waterTank.getFluidAmount() < r.getWaterAmount()) continue;
                 if (!fits(r.getResult())) continue;
@@ -226,7 +223,7 @@ public class BioreactorBlockEntity extends BlockEntity implements MenuProvider {
 
     public int getHeat() { return heat; }
 
-    @Override public CompoundTag getUpdateTag() { return saveWithoutMetadata(); }
+    @Override public CompoundTag getUpdateTag(HolderLookup.Provider registries) { return saveWithoutMetadata(registries); }
     @Nullable @Override public Packet<ClientGamePacketListener> getUpdatePacket() { return ClientboundBlockEntityDataPacket.create(this); }
     @Override public Component getDisplayName() { return Component.translatable("block.industrial_core.bioreactor"); }
 
@@ -237,50 +234,39 @@ public class BioreactorBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY)        return lazyEnergyHandler.cast();
-        if (cap == ForgeCapabilities.ITEM_HANDLER)  return lazyItemHandler.cast();
-        if (cap == ForgeCapabilities.FLUID_HANDLER) return lazyFluidHandler.cast();
-        if (cap == HeatCapability.HEAT)             return lazyHeat.cast();
-        return super.getCapability(cap, side);
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCap(BlockCapability<T, Direction> cap, @Nullable Direction side) {
+        if (cap == Capabilities.EnergyStorage.BLOCK)        return (T) energyStorage;
+        if (cap == Capabilities.ItemHandler.BLOCK)  return (T) automationHandler;
+        if (cap == Capabilities.FluidHandler.BLOCK) return (T) fillOnlyHandler;
+        if (cap == HeatCapability.HEAT)             return (T) heatHandler;
+        return null;
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
-        lazyEnergyHandler = LazyOptional.of(() -> energyStorage);
-        lazyItemHandler   = LazyOptional.of(() -> automationHandler);
-        lazyFluidHandler  = LazyOptional.of(() -> fillOnlyHandler);
-        lazyHeat          = LazyOptional.of(() -> heatHandler);
     }
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyEnergyHandler.invalidate();
-        lazyItemHandler.invalidate();
-        lazyFluidHandler.invalidate();
-        lazyHeat.invalidate();
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag tag) {
-        tag.put("inventory", itemHandler.serializeNBT());
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.put("inventory", itemHandler.serializeNBT(registries));
         tag.putInt("energy", energyStorage.getEnergyStored());
-        tag.put("waterTank", waterTank.writeToNBT(new CompoundTag()));
+        tag.put("waterTank", waterTank.writeToNBT(registries, new CompoundTag()));
         AdaptiveTank.save(tag, "waterTankCapacity", waterTank);
         tag.putInt("progress", progress);
         tag.putInt("heat", heat);
-        super.saveAdditional(tag);
+        super.saveAdditional(tag, registries);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        itemHandler.deserializeNBT(tag.getCompound("inventory"));
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        itemHandler.deserializeNBT(registries, tag.getCompound("inventory"));
         energyStorage.setEnergy(tag.getInt("energy"));
         AdaptiveTank.load(tag, "waterTankCapacity", waterTank, TANK_BASE);
-        waterTank.readFromNBT(tag.getCompound("waterTank"));
+        waterTank.readFromNBT(registries, tag.getCompound("waterTank"));
         progress = tag.getInt("progress");
         heat = tag.getInt("heat");
     }

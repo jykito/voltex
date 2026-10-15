@@ -1,4 +1,8 @@
 package com.jykito.industrialcore.block.custom;
+import com.mojang.serialization.MapCodec;
+import com.jykito.industrialcore.block.BlockUse;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.ItemInteractionResult;
 
 import com.jykito.industrialcore.block.entity.CultivatorBlockEntity;
 import com.jykito.industrialcore.block.entity.ModBlockEntities;
@@ -23,15 +27,18 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 public class CultivatorBlock extends BaseEntityBlock {
 
+    /** 1.21: block codec. Vanilla does not call it for mod blocks; there is one block instance, so unit is exact. */
+    @Override
+    protected MapCodec<? extends CultivatorBlock> codec() { return MapCodec.unit(this); }
+
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
-    /** T2: три линии (см. CultivatorBlockEntity). */
+    /** T2: three lines (see CultivatorBlockEntity). */
     private final boolean t2;
 
     public CultivatorBlock(Properties props) {
@@ -58,12 +65,17 @@ public class CultivatorBlock extends BaseEntityBlock {
     }
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        return BlockUse.toItemResult(use(state, level, pos, player, hand, hit));
+    }
+
+    /** Formerly Block.use (1.20.1); called from useItemOn for both hands, as before. */
     public InteractionResult use(BlockState state, Level level, BlockPos pos,
                                  Player player, InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide()) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof CultivatorBlockEntity cult) {
-                NetworkHooks.openScreen((ServerPlayer) player, cult, pos);
+                ((ServerPlayer) player).openMenu(cult, pos);
             }
         }
         return InteractionResult.sidedSuccess(level.isClientSide());

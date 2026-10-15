@@ -8,8 +8,8 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 
 @OnlyIn(Dist.CLIENT)
@@ -30,7 +30,7 @@ public class PlasmaWaveRenderer extends EntityRenderer<PlasmaWaveEntity> {
 
     @Override
     public ResourceLocation getTextureLocation(PlasmaWaveEntity entity) {
-        return new ResourceLocation("minecraft", "textures/misc/white.png");
+        return ResourceLocation.fromNamespaceAndPath("minecraft", "textures/misc/white.png");
     }
 
     @Override
@@ -66,10 +66,10 @@ public class PlasmaWaveRenderer extends EntityRenderer<PlasmaWaveEntity> {
                 float c1 = Mth.cos(a1), s1 = Mth.sin(a1);
                 float c2 = Mth.cos(a2), s2 = Mth.sin(a2);
 
-                vc.vertex(mat, outerR * c1, ringY, outerR * s1).color(CR, CG, CB, ca).endVertex();
-                vc.vertex(mat, outerR * c2, ringY, outerR * s2).color(CR, CG, CB, ca).endVertex();
-                vc.vertex(mat, innerR * c2, ringY, innerR * s2).color(CR, CG, CB, ca).endVertex();
-                vc.vertex(mat, innerR * c1, ringY, innerR * s1).color(CR, CG, CB, ca).endVertex();
+                vc.addVertex(mat, outerR * c1, ringY, outerR * s1).setColor(CR, CG, CB, ca);
+                vc.addVertex(mat, outerR * c2, ringY, outerR * s2).setColor(CR, CG, CB, ca);
+                vc.addVertex(mat, innerR * c2, ringY, innerR * s2).setColor(CR, CG, CB, ca);
+                vc.addVertex(mat, innerR * c1, ringY, innerR * s1).setColor(CR, CG, CB, ca);
             }
         }
 

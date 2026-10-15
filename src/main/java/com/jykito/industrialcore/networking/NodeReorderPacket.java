@@ -1,15 +1,27 @@
 package com.jykito.industrialcore.networking;
 
+import com.jykito.industrialcore.IndustrialCore;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+
 import com.jykito.industrialcore.block.entity.LogisticsNodeBlockEntity;
 import com.jykito.industrialcore.menu.LogisticsNodeMenu;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
 
-import java.util.function.Supplier;
 
-public class NodeReorderPacket {
+public class NodeReorderPacket implements CustomPacketPayload {
+    public static final Type<NodeReorderPacket> TYPE =
+            new Type<>(ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "node_reorder"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, NodeReorderPacket> STREAM_CODEC =
+            StreamCodec.ofMember(NodeReorderPacket::toBytes, NodeReorderPacket::new);
+
+    @Override
+    public Type<NodeReorderPacket> type() { return TYPE; }
+
     private final BlockPos nodePos;
     private final int fromIndex;
     private final int toIndex;
@@ -18,22 +30,21 @@ public class NodeReorderPacket {
         this.nodePos = pos; this.fromIndex = from; this.toIndex = to;
     }
 
-    public NodeReorderPacket(FriendlyByteBuf buf) {
+    public NodeReorderPacket(RegistryFriendlyByteBuf buf) {
         nodePos    = buf.readBlockPos();
         fromIndex  = buf.readVarInt();
         toIndex    = buf.readVarInt();
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
+    public void toBytes(RegistryFriendlyByteBuf buf) {
         buf.writeBlockPos(nodePos);
         buf.writeVarInt(fromIndex);
         buf.writeVarInt(toIndex);
     }
 
-    public boolean handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context ctx = supplier.get();
+    public void handle(IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
-            ServerPlayer player = ctx.getSender();
+            ServerPlayer player = (ServerPlayer) ctx.player();
             if (player == null) return;
 
             if (!(player.containerMenu instanceof LogisticsNodeMenu menu) || !menu.nodePos.equals(nodePos)) return;
@@ -44,7 +55,6 @@ public class NodeReorderPacket {
             node.linkedPositions.add(toIndex, moved);
             node.setChanged();
             node.sync();
-        });
-        return true;
+        });
     }
 }
