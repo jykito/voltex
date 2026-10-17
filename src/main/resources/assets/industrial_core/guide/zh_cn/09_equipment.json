@@ -1,0 +1,193 @@
+{
+  "name": "装备",
+  "entries": [
+    {
+      "name": "锤子与剪线钳",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:hammer",
+          "title": "锤子与剪线钳"
+        },
+        {
+          "type": "text",
+          "text": "工作台上用的手工具。把工具和材料一起放进合成格：工具留在原位，只掉耐久，能用 128 次合成。"
+        },
+        {
+          "type": "text",
+          "text": "**锤子**把锭敲成板，**剪线钳**把板剪成裸线。金属成型机做这些更高效，所以这两样工具是前期用的。不过，只有剪线钳能从红石块剪出能源总线用的裸线，它还能用锡和铅做焊锡。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:hammer",
+            "industrial_core:cutters"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "工具",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:electric_wrench",
+          "title": "动力工具"
+        },
+        {
+          "type": "text",
+          "text": "每件都自带电量。在**电池充电器**里充电，也可以随身带**充能护符**或**充能背包**。**电动扳手**用来配置机器，一键就能把机器收起来，里面的东西会掉在你旁边。**电钻**和**工业钻机**挖得快，还能区域挖掘；钻头决定钻机能挖什么。两把钻机都做在**工具基座**上。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:electric_wrench",
+            "industrial_core:electric_drill",
+            "industrial_core:industrial_drill",
+            "industrial_core:netherite_drill_tip",
+            "industrial_core:tool_base"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "充能护符与背包",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:energy_backpack_t1",
+          "title": "充能护符与背包"
+        },
+        {
+          "type": "text",
+          "text": "放在物品栏里的任何位置，它都会自动给你的工具和护甲补电。**充能护符**容量 1M FE，**充能背包** T2 和 T3 分别是 10M 和 100M。**Shift + 右键**切换充能对象：手持物品、快捷栏，或包括身上护甲在内的全部。护符和背包本身要在**电池充电器**里充电。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:energy_backpack_t1",
+            "industrial_core:energy_backpack_t2",
+            "industrial_core:energy_backpack_t3"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "奈克希特护甲",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:nexite_helmet",
+          "title": "奈克希特护甲"
+        },
+        {
+          "type": "text",
+          "text": "靠电力运行的护甲：永不损坏，用自身的电量吸收伤害。靴子完全免除摔落伤害，全套充满时给你急迫效果。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:nexite_helmet",
+            "industrial_core:nexite_chestplate",
+            "industrial_core:nexite_leggings",
+            "industrial_core:nexite_boots"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "等离子护甲",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:plasma_helmet",
+          "title": "等离子护甲"
+        },
+        {
+          "type": "text",
+          "text": "最好的护甲。储能极大，最多吸收 100% 的伤害。全套带来飞行和防火，充满后还会用等离子爆发打击附近的敌人。它以奈克希特护甲为基础：每一件都用同部位的奈克希特护甲做成。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:plasma_helmet",
+            "industrial_core:plasma_chestplate",
+            "industrial_core:plasma_leggings",
+            "industrial_core:plasma_boots"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "能量刃",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:energy_blade",
+          "title": "能量刃"
+        },
+        {
+          "type": "text",
+          "text": "靠电力运行的剑。永不损坏，容量 100k FE，每击中一次消耗 400 FE。有电时造成 15 点伤害，没电只有 3 点。"
+        },
+        {
+          "type": "text",
+          "text": "按住 Shift 右键切换模式。**切割**能穿透护甲：这一击会额外加上目标护甲本应吸收的 30% 伤害。**电弧**打中你前方扇形范围内最远 3 格的所有目标，每个 10.5 点伤害；但没穿全套奈克希特护甲时，耗电翻倍。"
+        },
+        {
+          "type": "tip",
+          "text": "能量刃和奈克希特护甲配合使用。护甲承受的伤害会积攒成反击，最多 +7.5。全套充满时挥击更快，能量刃电量掉到一半以下时会从护甲取电。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:energy_blade",
+            "industrial_core:nexite_chestplate"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "高斯步枪",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:gauss_rifle",
+          "title": "高斯步枪"
+        },
+        {
+          "type": "text",
+          "text": "按住右键蓄力，每秒升一阶。松手后光束射向最远 64 格。容量 200k FE；如果不够升阶，它会打出负担得起的最强一阶。"
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "一阶",
+              "value": "24 点伤害，单个目标，2,000 FE"
+            },
+            {
+              "key": "二阶",
+              "value": "48 点伤害，最多三个目标，5,000 FE"
+            },
+            {
+              "key": "三阶",
+              "value": "90 点伤害，直线上的全部目标，10,000 FE"
+            }
+          ]
+        },
+        {
+          "type": "tip",
+          "text": "穿等离子护甲时蓄力快一倍，还能从护甲取电；等离子爆发就绪时打出三阶射击会爆炸：4 格内造成 30 点伤害并点燃。爆炸不会破坏方块。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:gauss_rifle",
+            "industrial_core:plasma_chestplate"
+          ]
+        }
+      ]
+    }
+  ]
+}

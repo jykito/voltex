@@ -1,0 +1,431 @@
+{
+  "name": "材料",
+  "entries": [
+    {
+      "name": "矿石",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:tin_ore",
+          "title": "矿石"
+        },
+        {
+          "type": "text",
+          "text": "新增三种矿石：**锡**、**铅**和**铝土**，铝就是从铝土里来的。它们和铁、铜一样，生成在主世界的石头与深板岩中。"
+        },
+        {
+          "type": "text",
+          "text": "用镐挖出来，然后像别的矿石一样粉碎、水洗，或者直接烧。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:tin_ore",
+            "industrial_core:lead_ore",
+            "industrial_core:bauxite_ore",
+            "industrial_core:raw_tin",
+            "industrial_core:raw_lead",
+            "industrial_core:raw_aluminum"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "粉",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:iron_dust",
+          "title": "粉"
+        },
+        {
+          "type": "text",
+          "text": "粉碎机把矿石和锭打成粉。粉能烧回锭，所以它既能翻倍矿石，也能拿来配合金。"
+        },
+        {
+          "type": "text",
+          "text": "有些粉还有别的用处：**青金石**粉加水做成冷却液，**矿物**粉做成钻探液，碳纤维则离不开**煤**粉。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:iron_dust",
+            "industrial_core:copper_dust",
+            "industrial_core:coal_dust",
+            "industrial_core:lapis_dust",
+            "industrial_core:mineral_dust"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "合金",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:bronze_ingot",
+          "title": "合金"
+        },
+        {
+          "type": "text",
+          "text": "**青铜粉**在工作台上用三份铜粉加一份锡粉混合，再放进普通电炉冶炼。**殷钢**、**琥珀金**和**硬化钢**要求更高：得靠小型高炉，而它又要热量。"
+        },
+        {
+          "type": "text",
+          "text": "**克罗尼姆合金**在工作台上用克罗尼特、水晶板和一胶囊超流体冷凝液合成，所以要造出深冷室之后才做得了。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:bronze_ingot",
+            "industrial_core:invar_ingot",
+            "industrial_core:electrum_ingot",
+            "industrial_core:hardened_steel_ingot",
+            "industrial_core:kronium_alloy"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "板",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:iron_plate",
+          "title": "板"
+        },
+        {
+          "type": "text",
+          "text": "板几乎哪儿都用得上：机器外壳、电缆、护甲。把锭放进**金属成型机**，切到辊压模式，一个锭能出两块板。"
+        },
+        {
+          "type": "tip",
+          "text": "还没造出成型机之前，可以直接在工作台上用**锤子**敲出一块板。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:iron_plate",
+            "industrial_core:copper_plate",
+            "industrial_core:bronze_plate",
+            "industrial_core:invar_plate"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "线材与电缆",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:copper_cable",
+          "title": "线材与电缆"
+        },
+        {
+          "type": "text",
+          "text": "裸线来自**金属成型机**的挤压模式：放一块板进去，出四根线。裹上橡胶，就是能输电的电缆。"
+        },
+        {
+          "type": "text",
+          "text": "电缆越好，能带的电越多。前期铜电缆够用，下界合金纤维则几乎什么都能扛。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:copper_cable",
+            "industrial_core:ferro_cable",
+            "industrial_core:gold_conductor",
+            "industrial_core:netherite_fiber_cable"
+          ],
+          "label": "由弱到强"
+        }
+      ]
+    },
+    {
+      "name": "电路",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:textolite_board",
+          "title": "电路"
+        },
+        {
+          "type": "text",
+          "text": "一切都从**层压板**开始。层压板做成逻辑电路板，逻辑电路板做成数据传输矩阵，矩阵再做微控制器。"
+        },
+        {
+          "type": "text",
+          "text": "高级机器、深冷室和电磁铁都要用电路，所以平时多囤点板。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:textolite_board",
+            "industrial_core:logic_board",
+            "industrial_core:data_transfer_matrix",
+            "industrial_core:microcontroller"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "树脂与橡胶",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:resin_sapling",
+          "title": "树脂与橡胶"
+        },
+        {
+          "type": "text",
+          "text": "种一棵**树脂树**。**树脂收集器**能从树上采到**树脂**，徒手是收不了的。萃取机也能把树脂树叶做成树脂，培育机则能用树苗把它种出来。"
+        },
+        {
+          "type": "text",
+          "text": "把树脂放进萃取机或熔炉，得到**橡胶**。想把裸线变成电缆，就得靠橡胶。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:resin_sapling",
+            "industrial_core:tree_resin",
+            "industrial_core:rubber",
+            "industrial_core:resin_collector"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "水晶",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:amethyst_crystal",
+          "title": "水晶"
+        },
+        {
+          "type": "text",
+          "text": "把紫水晶放进液化机，同时通入热量熔化，再连硅一起在结晶器里浇铸，得到**水晶锭**。重构机可以不用紫水晶，直接用石英做，但耗电很大。金属成型机从锭里拉出水晶纤维，压缩机把纤维压成水晶板，四个锭压成一块紫水晶晶体。"
+        },
+        {
+          "type": "text",
+          "text": "重构机、太阳能板和电磁铁都要用到水晶。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:amethyst_crystal",
+            "industrial_core:crystal_ingot",
+            "industrial_core:crystal_plate",
+            "industrial_core:crystal_fiber"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "碳与复合材料",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:carbon_fiber",
+          "title": "碳与复合材料"
+        },
+        {
+          "type": "text",
+          "text": "**煤粉**做成碳纤维，碳纤维做成碳网，碳网做成碳板。**复合材料**由复合锭在压缩机里压制，复合锭则用铁板、青铜板和锡板合成。"
+        },
+        {
+          "type": "text",
+          "text": "两者合起来做成**碳复合锭**，最贵的那批东西都要用它。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:carbon_fiber",
+            "industrial_core:carbon_plate",
+            "industrial_core:composite",
+            "industrial_core:carbon_composite_ingot"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "克罗尼特",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:kronit",
+          "title": "克罗尼特"
+        },
+        {
+          "type": "text",
+          "text": "克罗尼特出自深冷室：在第二阶段，它把硬化钢变成克罗尼特。这是第一种没有低温就拿不到的材料。"
+        },
+        {
+          "type": "text",
+          "text": "克罗尼特用来做克罗尼姆合金、奈克希特盔甲、后期机器的外壳和能量刃。克罗尼姆合金还需要一胶囊超流体冷凝液，它来自深冷室第三阶段，或者在电磁铁里以冷凝液安瓿的形式产出。金属成型机把克罗尼姆合金辊压成**装甲板**，后期机器的外壳和端口就是用它造的。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:kronit",
+            "industrial_core:kronium_alloy",
+            "industrial_core:armor_sheet"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "硅与锂",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:silicon_dust",
+          "title": "硅与锂"
+        },
+        {
+          "type": "text",
+          "text": "**硅粉**有三个来路：用粉碎机磨石英、用洗矿机洗沙子、用分相器分解矿物粉。硅粉烧成**硅**，水晶锭、晶体管、光子透镜和最初的太阳能板都要用硅。"
+        },
+        {
+          "type": "text",
+          "text": "没有锂矿石。**锂粉**只在洗铜时掉落：铜矿石 15%，粗铜 10%，用工业洗矿机则是 40%。**锂**用来做锂电池、深冷室的制冷舱和基础端口升级，所以早点给铜配一台洗矿机。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:silicon_dust",
+            "industrial_core:silicon",
+            "industrial_core:lithium_dust",
+            "industrial_core:lithium"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "机器零件",
+      "elements": [
+        {
+          "type": "header",
+          "text": "机器零件"
+        },
+        {
+          "type": "text",
+          "text": "几乎所有零件都在工作台上做。**螺线管**和**电动机**用在最初的机器里，**流体阀**用在每台带储罐的机器上，**隔热材料**用在热管和深冷室里，**线圈绕组**则用在电磁铁上。"
+        },
+        {
+          "type": "text",
+          "text": "到后来，电动机会有**高级**和**扩展**两种版本，还会出现**机械手**、**伺服驱动器**，以及给热力站和等离子护甲用的**耐热镀层**。伺服驱动器、**控制单元**和**装甲板**撑起了后面所有机器：机构块、端口和核心都是用它们造的。"
+        },
+        {
+          "type": "text",
+          "text": "电子件需要结晶器产的**焊锡**、金属成型机产的**玻璃纤维**，还有**晶体管**。**光子透镜**用在微控制器、采矿透镜和太阳能板上，**信号接收器**用在电磁铁的远程控制器和相位锁定上。"
+        },
+        {
+          "type": "itemlist",
+          "items": [
+            {
+              "id": "industrial_core:copper_solenoid",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:electric_motor",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:electric_motor_advanced",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:electric_motor_extended",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:fluid_valve",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:thermal_insulation",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:coil_winding",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:manipulator",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:servo_drive",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:control_unit",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:heat_resistant_plating",
+              "count": 1
+            }
+          ],
+          "label": "机械件"
+        },
+        {
+          "type": "itemlist",
+          "items": [
+            {
+              "id": "industrial_core:solder",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:glass_fiber",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:transistor",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:photonic_lens",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:signal_receiver",
+              "count": 1
+            }
+          ],
+          "label": "电子件"
+        }
+      ]
+    },
+    {
+      "name": "超导体",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:superconducting_wire",
+          "title": "超导体"
+        },
+        {
+          "type": "text",
+          "text": "超导体要从低温开始。深冷室在第一阶段把裸水晶导线变成**超导导线**。制棒机把它和冰晶石绞成**超导绞线**，绞线在工作台上做成**超导螺线管**，螺线管再做成**超导线圈**。"
+        },
+        {
+          "type": "text",
+          "text": "线圈还需要一张**深冷物理数据卡**，由纳米实验室写入。线圈本身的用处很多：电磁铁核心和它的超导线圈、分相器、重构机 T2、物质制造机和高斯步枪。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:superconducting_wire",
+            "industrial_core:superconducting_strand",
+            "industrial_core:superconducting_winding",
+            "industrial_core:superconductor_coil",
+            "industrial_core:data_card_cryophysics"
+          ]
+        }
+      ]
+    }
+  ]
+}

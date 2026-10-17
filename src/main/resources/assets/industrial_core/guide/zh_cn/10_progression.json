@@ -1,0 +1,126 @@
+{
+  "name": "发展路线",
+  "entries": [
+    {
+      "name": "发展之路",
+      "elements": [
+        {
+          "type": "header",
+          "text": "发展之路"
+        },
+        {
+          "type": "text",
+          "text": "先是矿石和最初的机器，然后是合金，以及为基地提供像样的电力。接下来是热量、重构机与高级材料，随之而来的是采矿机和深冷室。"
+        },
+        {
+          "type": "text",
+          "text": "然后是磁力加速器，接着是以**组装机**为首的大型端口机器。最后登场的是戴森太阳能板和**工业核心之心**。"
+        },
+        {
+          "type": "tip",
+          "text": "不要急着冲到最后。重构机和催化剂全程都有用，太阳能板和存储最好边走边扩。"
+        }
+      ]
+    },
+    {
+      "name": "奇异物质",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:exotic_matter",
+          "title": "奇异物质"
+        },
+        {
+          "type": "text",
+          "text": "磁力加速器产出**奇异物质**和**星辰碎片**。碎片用来做奇点核心与恒星矩阵——它们同样在磁力加速器上制作，是最贵的材料。奇异物质用来做等离子护甲、材料容器、引力子磁线圈和物质制造机。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:exotic_matter",
+            "industrial_core:star_shard",
+            "industrial_core:singularity_core",
+            "industrial_core:stellar_matrix"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "磁力加速器的更多产出",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:condensate_ampoule",
+          "title": "磁力加速器的更多产出"
+        },
+        {
+          "type": "text",
+          "text": "除了奇异物质，磁力加速器还用深冷水晶做**冷凝液安瓿**，以及**压电元件**和**材料容器**。把安瓿放进液化机熔化，就得到超流体冷凝液。压电元件和材料容器是戴森太阳能板需要的。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:condensate_ampoule",
+            "industrial_core:piezo_element",
+            "industrial_core:material_container"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "戴森太阳能板",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:solar_panel_t10",
+          "title": "戴森太阳能板"
+        },
+        {
+          "type": "text",
+          "text": "第十级太阳能板。在磁力加速器上用恒星矩阵和引力子磁线圈做成，是发电能力最强的发电机。"
+        },
+        {
+          "type": "tip",
+          "text": "把几块面板放进**聚合器**，一个方块就是一座发电厂。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:solar_panel_t10",
+            "industrial_core:panel_combiner"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "工业核心之心",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:heart_of_voltex",
+          "title": "工业核心之心"
+        },
+        {
+          "type": "text",
+          "text": "最后一件物品，一个奖杯。它没什么实际用处，只是告诉你：你已经通关了。"
+        },
+        {
+          "type": "text",
+          "text": "通往它的路要经过后期机器。工业压缩机把 512 个铁锭压成一个**铁簇**，也能把水晶锭和绿宝石压成各自的簇。工业高炉把铁簇和克罗尼姆合金熔成**工业核心锭**，辊压机把它压成板，组装机用这些簇做出**共振矩阵**。最后全部在工业电磁铁上汇合。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:heart_of_voltex",
+            "industrial_core:voltex_ingot",
+            "industrial_core:voltex_plate",
+            "industrial_core:resonance_matrix",
+            "industrial_core:iron_cluster",
+            "industrial_core:crystal_cluster",
+            "industrial_core:emerald_cluster"
+          ]
+        }
+      ]
+    }
+  ]
+}

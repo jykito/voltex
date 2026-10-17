@@ -1,0 +1,1883 @@
+{
+  "name": "多方块",
+  "entries": [
+    {
+      "name": "采矿机",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:miner_core",
+          "title": "采矿机"
+        },
+        {
+          "type": "text",
+          "text": "自己就能采矿，不用你去挖。它是一个 3×3×3 的立方体：核心在正中，四周 26 个外壳。"
+        },
+        {
+          "type": "text",
+          "text": "核心里的 **透镜** 决定它开采哪些矿石。它靠 FE 和钻探液运行。"
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:miner_casing",
+              "O": "industrial_core:miner_core"
+            },
+            "layers": [
+              [
+                "CCC",
+                "CCC",
+                "CCC"
+              ],
+              [
+                "CCC",
+                "COC",
+                "CCC"
+              ],
+              [
+                "CCC",
+                "CCC",
+                "CCC"
+              ]
+            ],
+            "model": "miner"
+          }
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:miner_core",
+            "industrial_core:miner_casing",
+            "industrial_core:miner_lens_1",
+            "industrial_core:miner_lens_4"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "工业采矿机",
+      "id": "industrial_miner",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:industrial_miner_core",
+          "title": "工业采矿机"
+        },
+        {
+          "type": "text",
+          "text": "一台 5×5 的大型采矿机。它不亲自挖世界：它开采的是 **钻探信标** 找到的矿。方块原地不动，矿脉也永不枯竭。"
+        },
+        {
+          "type": "text",
+          "text": "它用框架块搭建，核心在前墙正中、朝外。结构法杖可以替你把它搭起来。"
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "F": "industrial_core:industrial_miner_frame",
+              "K": "industrial_core:industrial_miner_core"
+            },
+            "layers": [
+              [
+                "F...F",
+                ".....",
+                ".....",
+                ".....",
+                "F...F"
+              ],
+              [
+                "FFFFF",
+                "FFFFF",
+                "FFFFF",
+                "FFFFF",
+                "FFFFF"
+              ],
+              [
+                "FFKFF",
+                "F...F",
+                "F...F",
+                "F...F",
+                "FFFFF"
+              ],
+              [
+                "FFFFF",
+                "FFFFF",
+                "FFFFF",
+                "FFFFF",
+                "FFFFF"
+              ],
+              [
+                ".....",
+                ".....",
+                "..F..",
+                ".....",
+                "....."
+              ],
+              [
+                ".....",
+                ".....",
+                "..F..",
+                ".....",
+                "....."
+              ]
+            ],
+            "model": "industrial_miner"
+          }
+        },
+        {
+          "type": "text",
+          "text": "每 5 秒它产出最多 64 个矿石方块，在所有已启用的信标之间平均分配。每个方块消耗 50,000 FE 和 250 mB 钻探液。电力、流体和输出管道可以接在任意框架块上。"
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "周期",
+              "value": "5 秒"
+            },
+            {
+              "key": "每周期矿石",
+              "value": "最多 64"
+            },
+            {
+              "key": "能量",
+              "value": "每块矿石 50,000 FE"
+            },
+            {
+              "key": "钻探液",
+              "value": "每块矿石 250 mB"
+            },
+            {
+              "key": "信标",
+              "value": "最多 4"
+            },
+            {
+              "key": "输出",
+              "value": "27 格"
+            }
+          ]
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:industrial_miner_core",
+            "industrial_core:industrial_miner_frame",
+            "industrial_core:drill_beacon"
+          ]
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "钻探信标",
+              "to": "drill_beacon"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "钻探信标",
+      "id": "drill_beacon",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:drill_beacon",
+          "title": "钻探信标"
+        },
+        {
+          "type": "text",
+          "text": "把它放在你想开采的地方。10 秒后信标会扫过周围 3×3 个区块，从世界底部一直到它自己的高度，清点其中的矿石。"
+        },
+        {
+          "type": "text",
+          "text": "在信标窗口里选一个高度区间。落在这个区间里的矿石、以及它们的数量，就是你将要开采的东西。"
+        },
+        {
+          "type": "text",
+          "text": "不装透镜时，信标只在主世界工作。要去下界或末地，就把信标放在那里，并给它对应世界的透镜；通用透镜在任何地方都能用。采矿机本身可以留在家里。"
+        },
+        {
+          "type": "text",
+          "text": "用链接器连接：先点信标，再点采矿核心。一台采矿机最多接四个信标，每个都能在自己的窗口里关掉。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:drill_beacon",
+            "industrial_core:miner_lens_1",
+            "industrial_core:miner_lens_2",
+            "industrial_core:miner_lens_3",
+            "industrial_core:miner_lens_4"
+          ]
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "工业采矿机",
+              "to": "industrial_miner"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "深冷室",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:cryo_core",
+          "title": "深冷室"
+        },
+        {
+          "type": "text",
+          "text": "一个 5×5×5 的立方体：地板和天花板用外壳，墙壁用深冷玻璃板，内部立着一列制冷舱。核心在地板最前排。它的工作原理见「深冷」章节。"
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "K": "industrial_core:cryo_casing",
+              "G": "industrial_core:cryo_glass",
+              "F": "industrial_core:refrigeration_chamber",
+              "R": "industrial_core:cryo_core"
+            },
+            "layers": [
+              [
+                "KKRKK",
+                "KKKKK",
+                "KKKKK",
+                "KKKKK",
+                "KKKKK"
+              ],
+              [
+                "GGGGG",
+                "G...G",
+                "G.F.G",
+                "G...G",
+                "GGGGG"
+              ],
+              [
+                "GGGGG",
+                "G...G",
+                "G.F.G",
+                "G...G",
+                "GGGGG"
+              ],
+              [
+                "GGGGG",
+                "G...G",
+                "G.F.G",
+                "G...G",
+                "GGGGG"
+              ],
+              [
+                "KKKKK",
+                "KKKKK",
+                "KKKKK",
+                "KKKKK",
+                "KKKKK"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:cryo_core",
+            "industrial_core:cryo_casing",
+            "industrial_core:cryo_glass",
+            "industrial_core:refrigeration_chamber"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "磁力加速器",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:structural_block",
+          "title": "磁力加速器"
+        },
+        {
+          "type": "text",
+          "text": "全书最大的机器：7×7×8 的结构方块框架，两个线圈支架和一个电磁铁核心。"
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "S": "industrial_core:structural_block",
+              "H": "industrial_core:coil_holder",
+              "C": "industrial_core:electromagnet_core"
+            },
+            "layers": [
+              [
+                ".SSSSS.",
+                "SSSSSSS",
+                "SSSSSSS",
+                "SSSSSSS",
+                "SSSSSSS",
+                "SSSSSSS",
+                ".SSSSS."
+              ],
+              [
+                "...C...",
+                ".S...S.",
+                "..SSS..",
+                "..SSS..",
+                "..SSS..",
+                ".S...S.",
+                "......."
+              ],
+              [
+                ".......",
+                ".S...S.",
+                ".......",
+                "...H...",
+                ".......",
+                ".S...S.",
+                "......."
+              ],
+              [
+                "S.....S",
+                ".......",
+                ".......",
+                ".......",
+                ".......",
+                ".......",
+                "S.....S"
+              ],
+              [
+                "S.....S",
+                ".......",
+                ".......",
+                ".......",
+                ".......",
+                ".......",
+                "S.....S"
+              ],
+              [
+                "S.....S",
+                ".......",
+                ".......",
+                ".......",
+                ".......",
+                ".......",
+                "S.....S"
+              ],
+              [
+                ".......",
+                ".S...S.",
+                ".......",
+                "...H...",
+                ".......",
+                ".S...S.",
+                "......."
+              ],
+              [
+                ".......",
+                ".S...S.",
+                "..SSS..",
+                "..SSS..",
+                "..SSS..",
+                ".S...S.",
+                "......."
+              ]
+            ],
+            "model": "magnet"
+          }
+        },
+        {
+          "type": "text",
+          "text": "线圈放进支架：铜、超导或引力子。线圈越好，你能跑起的加速就越强。"
+        },
+        {
+          "type": "tip",
+          "text": "加速会累积 **不稳定性**。在共振区间里输出翻倍，但一旦过冲，淬灭波就会撕穿你的基地。换更强的线圈 **之前**，先放好反重力柱。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:structural_block",
+            "industrial_core:coil_holder",
+            "industrial_core:electromagnet_core",
+            "industrial_core:antigrav_column"
+          ],
+          "label": "框架"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:magnet_copper_coil",
+            "industrial_core:magnet_superconductor_coil",
+            "industrial_core:magnet_graviton_coil"
+          ],
+          "label": "线圈"
+        }
+      ]
+    },
+    {
+      "name": "反重力柱",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:antigrav_column",
+          "title": "反重力柱"
+        },
+        {
+          "type": "text",
+          "text": "反重力柱靠 **热量** 运行，不用电。从热力发电机拉一根热管接到柱基。它会把热量存起来（最多 4000），升到 200 之后就开始帮磁力加速器。"
+        },
+        {
+          "type": "text",
+          "text": "每根热起来的柱子，都在基础 50% 之上把磁力加速器的安全阈值提高 7.5%。磁力中心 16 格以内的柱子最多计八根。"
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "铜线圈",
+              "value": "无需线圈"
+            },
+            {
+              "key": "超导",
+              "value": "需要 4 条线圈（80% 阈值）"
+            },
+            {
+              "key": "引力子",
+              "value": "需要 7 条线圈（100% 阈值）"
+            }
+          ]
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:antigrav_column",
+            "industrial_core:heat_pipe",
+            "industrial_core:thermogenerator"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "远程控制器",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:distant_controller",
+          "title": "远程控制器"
+        },
+        {
+          "type": "text",
+          "text": "运行中的磁力加速器会把周围的一切吸过来，站在核心边上会被直接杀掉。场强随不稳定性增长，所以运行时你该离核心远点，可你又需要它的窗口。"
+        },
+        {
+          "type": "text",
+          "text": "**远程控制器** 就是干这个的。把它放在安全的地方，用 **链接器** 连到核心，距离不超过 64 格。点控制器就能打开核心窗口，屏幕上显示正在加速什么、以及当前的不稳定性。"
+        },
+        {
+          "type": "tip",
+          "text": "你离控制器 8 格以内时，窗口会一直开着。控制器不能配工业电磁铁使用。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:distant_controller",
+            "industrial_core:logistics_linker"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "相位锁定",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:phase_lock_upgrade",
+          "title": "相位锁定"
+        },
+        {
+          "type": "text",
+          "text": "磁力核心的升级件，插进它的升级槽。插上之后，即使共振目标在漂移，不稳定性也会自己锁在目标上，输出稳定翻倍，不用手动调。它每游戏刻消耗 400 FE。"
+        },
+        {
+          "type": "tip",
+          "text": "相位锁定绝不会把不稳定性推过安全阈值。没有反重力柱时阈值就是 50%，所以它到不了高区间。工业电磁铁既不需要它，也不收它。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:phase_lock_upgrade"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "后期多方块",
+      "id": "late_overview",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_casing",
+          "title": "后期多方块",
+          "subtitle": "普通机器的大号版本"
+        },
+        {
+          "type": "text",
+          "text": "这些就是你以前造过的机器，只不过变大了。活还是那些活，但不再一次一个物品，而是整批处理：每周期最多 **64** 个物品，装上升级还能更多。"
+        },
+        {
+          "type": "text",
+          "text": "它们由围绕核心的 **外壳**、**结构玻璃** 和 **机构块** 搭成。核心没有槽位：机器要什么，你就放进输入端口；产物从输出端口取；电力接进能量端口。"
+        },
+        {
+          "type": "tip",
+          "text": "每台机器都有自己严格的形状。只允许两种替换：用 **端口** 顶替任意外壳，用 **升级块** 顶替机构块。"
+        },
+        {
+          "type": "text",
+          "text": "机器不启动就打开核心。它会告诉你哪里不对：缺哪个端口，或者哪块放错了、该放在哪。"
+        },
+        {
+          "type": "itemlist",
+          "items": [
+            {
+              "id": "industrial_core:multiblock_casing",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:structural_glass",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:mechanism_block",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:multiblock_input_port",
+              "count": 1
+            }
+          ],
+          "label": "建造材料"
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "端口",
+              "to": "late_ports"
+            },
+            {
+              "text": "升级块",
+              "to": "late_upgrades"
+            },
+            {
+              "text": "结构法杖",
+              "to": "late_wand"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "端口",
+      "id": "late_ports",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_input_port",
+          "title": "多方块端口",
+          "subtitle": "可以顶替任意外壳",
+          "tags": [
+            {
+              "text": "输入",
+              "color": "#FF5A00"
+            },
+            {
+              "text": "输出",
+              "color": "#5100FF"
+            },
+            {
+              "text": "能量",
+              "color": "#00FFCC"
+            },
+            {
+              "text": "热量",
+              "color": "#FFD000"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "机器该加工什么，就放进 **输入端口**。产物从 **输出端口** 取。把线缆接进 **能量端口**。端口想放多少就放多少，机器全都会用上。"
+        },
+        {
+          "type": "text",
+          "text": "端口窗口里的按钮决定它收什么：物品、流体，还是两者都收。另一个按钮打开自动模式：输入端口会自己从旁边的箱子和管道里拉东西，输出端口则把产物推出去。"
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "无升级",
+              "value": "9 格、16 桶储罐、1M FE 端口"
+            },
+            {
+              "key": "基础升级",
+              "value": "18 格、64 桶、10M FE"
+            },
+            {
+              "key": "高级升级",
+              "value": "27 格、256 桶、100M FE"
+            }
+          ]
+        },
+        {
+          "type": "tip",
+          "text": "如果一个配方同时要物品和流体，而你的自动合成器是一次性送来的，就把端口设成 **物品 + 流体**。模式只能在端口为空时改。"
+        },
+        {
+          "type": "text",
+          "text": "**热端口** 是给靠热量运行的机器用的。接一根热管进去，只要热量一直来，它就存着。供应一停，端口会慢慢冷下来。"
+        },
+        {
+          "type": "itemlist",
+          "items": [
+            {
+              "id": "industrial_core:multiblock_input_port",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:multiblock_output_port",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:multiblock_energy_port",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:multiblock_heat_port",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:port_upgrade_basic",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:port_upgrade_advanced",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "后期多方块",
+              "to": "late_overview"
+            },
+            {
+              "text": "升级块",
+              "to": "late_upgrades"
+            },
+            {
+              "text": "ME 端口",
+              "to": "late_me_ports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ME 端口",
+      "id": "late_me_ports",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:me_input_port",
+          "title": "ME 端口",
+          "subtitle": "用于 AE2 网络",
+          "tags": [
+            {
+              "text": "输入",
+              "color": "#FF5A00"
+            },
+            {
+              "text": "输出",
+              "color": "#5100FF"
+            },
+            {
+              "text": "样板",
+              "color": "#C86BF0"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "如果你的整合包里有 **AE2**，后期机器就能直接连上 ME 网络。ME 端口和普通端口一样顶替外壳，并占用一个频道。没有 AE2 就没有这些端口。"
+        },
+        {
+          "type": "text",
+          "text": "**ME 输入端口** 用起来像个接口：在槽位里设好要保留什么、保留多少，它会自己从网络里取，多出来的再送回去。**ME 输出端口** 把每件成品直接送进网络。"
+        },
+        {
+          "type": "text",
+          "text": "**ME 样板端口** 像样板供应器一样存放加工样板，机器也就成了你自动合成的一环。网络会把一个样板需要的所有东西一次性装进端口，产物再从 ME 输出端口回来。"
+        },
+        {
+          "type": "tip",
+          "text": "ME 端口不跟旁边的箱子打交道，一切都走网络。端口升级照常生效：更多行数和更大的储罐。"
+        },
+        {
+          "type": "itemlist",
+          "items": [
+            {
+              "id": "industrial_core:me_input_port",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:me_output_port",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:me_pattern_port",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "端口",
+              "to": "late_ports"
+            },
+            {
+              "text": "后期多方块",
+              "to": "late_overview"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "升级块",
+      "id": "late_upgrades",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:mechanism_parallel_3",
+          "title": "升级块",
+          "subtitle": "可以顶替机构块",
+          "tags": [
+            {
+              "text": "并行",
+              "color": "#C86BF0"
+            },
+            {
+              "text": "速度",
+              "color": "#FF8A4A"
+            },
+            {
+              "text": "能效",
+              "color": "#5CF4FF"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "大机器没有升级槽。里面的任意 **机构块** 都能换成升级块。机器自己会发现这次替换，不用按键。"
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "并行块 I",
+              "value": "每周期 +16 个物品"
+            },
+            {
+              "key": "并行块 II",
+              "value": "+32 个"
+            },
+            {
+              "key": "并行块 III",
+              "value": "+64 个"
+            },
+            {
+              "key": "速度块",
+              "value": "周期缩短 15%，能耗增加 15%"
+            },
+            {
+              "key": "能效块",
+              "value": "能耗降低 10%"
+            }
+          ]
+        },
+        {
+          "type": "tip",
+          "text": "速度和能效搭配起来很好用。两个速度块加三个能效块，周期缩短 30%，耗电不变。"
+        },
+        {
+          "type": "itemlist",
+          "items": [
+            {
+              "id": "industrial_core:mechanism_parallel_1",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:mechanism_parallel_2",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:mechanism_parallel_3",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:mechanism_speed",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:mechanism_efficiency",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:mechanism_block",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "后期多方块",
+              "to": "late_overview"
+            },
+            {
+              "text": "端口",
+              "to": "late_ports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "结构法杖",
+      "id": "late_wand",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:structure_wand",
+          "title": "结构法杖",
+          "subtitle": "替你搭起一座多方块"
+        },
+        {
+          "type": "text",
+          "text": "放下核心，用法杖点它一下：整台机器就搭起来了。生存模式下方块从你的背包里出，缺什么法杖会在聊天栏里告诉你。凑齐了再点一次。"
+        },
+        {
+          "type": "text",
+          "text": "法杖从不打坏别的方块，已经放对的地方也不会动。你的端口和升级块都留在原地。"
+        },
+        {
+          "type": "tip",
+          "text": "法杖不放置端口：每个端口放哪儿由你决定。"
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "后期多方块",
+              "to": "late_overview"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "二阶段",
+      "id": "late_tier2",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_casing_advanced",
+          "title": "二阶段",
+          "subtitle": "给更新的机器用的深色外壳"
+        },
+        {
+          "type": "text",
+          "text": "有些大机器不用普通外壳，而是用 **高级外壳** 搭，玻璃也用 **高级玻璃**。普通外壳装不上它们，高级外壳也装不上老机器。机器条目里会写明它需要哪一种。"
+        },
+        {
+          "type": "text",
+          "text": "端口还是那些端口。把端口放在高级外壳旁边，它会自己变深来配色。用法完全一样。"
+        },
+        {
+          "type": "itemlist",
+          "items": [
+            {
+              "id": "industrial_core:multiblock_casing_advanced",
+              "count": 1
+            },
+            {
+              "id": "industrial_core:structural_glass_advanced",
+              "count": 1
+            }
+          ],
+          "label": "建造材料"
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "工业液化机",
+              "to": "late_liquefier"
+            },
+            {
+              "text": "工业高炉",
+              "to": "late_blast"
+            },
+            {
+              "text": "工业电磁铁",
+              "to": "late_magnet"
+            },
+            {
+              "text": "端口",
+              "to": "late_ports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "工业粉碎机",
+      "id": "late_crusher",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_macerator",
+          "title": "工业粉碎机",
+          "subtitle": "大号粉碎机，5×5×4",
+          "tags": [
+            {
+              "text": "粉碎",
+              "color": "#02E2DB"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "普通粉碎机能磨的东西它都磨，只是整批来。把矿石放进输入端口，一个周期后输出端口里就躺着整批的粉。"
+        },
+        {
+          "type": "text",
+          "text": "核心嵌在一圈玻璃里，屋顶有一圈漏斗，内部九个机构块摆成方形。"
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing",
+              "G": "industrial_core:structural_glass",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_macerator",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port"
+            },
+            "layers": [
+              [
+                "CCCCC",
+                "CCCCC",
+                "CCCCC",
+                "CCCCC",
+                "CCCCC"
+              ],
+              [
+                "CGKGC",
+                "CMMMI",
+                "GMMMG",
+                "CMMMO",
+                "CCCCE"
+              ],
+              [
+                "CCCCC",
+                "CCCCC",
+                "CCCCC",
+                "CCCCC",
+                "CCCCC"
+              ],
+              [
+                ".....",
+                ".CCC.",
+                ".C.C.",
+                ".CCC.",
+                "....."
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "后期多方块",
+              "to": "late_overview"
+            },
+            {
+              "text": "端口",
+              "to": "late_ports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "工业洗矿机",
+      "id": "late_washer",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_washer",
+          "title": "工业洗矿机",
+          "subtitle": "大号洗矿机，5×5×4",
+          "tags": [
+            {
+              "text": "水",
+              "color": "#62B2FF"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "跟普通洗矿机一样洗矿。把矿石放进物品输入端口，把水倒进收流体的端口，洗好的产物从输出端口取。"
+        },
+        {
+          "type": "text",
+          "text": "副产物和小机器一样出：整批里每块矿石都各掷一次概率，所以 64 块矿石出的副产物，差不多等于一块一块洗 64 次。"
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing",
+              "G": "industrial_core:structural_glass",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_washer",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port"
+            },
+            "layers": [
+              [
+                "CCCCC",
+                "CCCCC",
+                "CCCCC",
+                "CCCCC",
+                "CCCCC"
+              ],
+              [
+                "CGKGC",
+                "CMMMI",
+                "CMMMG",
+                "CMMMO",
+                "CCCCE"
+              ],
+              [
+                "CCCCC",
+                "CGGGC",
+                "CGGGC",
+                "CGGGC",
+                "CCCCC"
+              ],
+              [
+                "CCCCC",
+                "C...C",
+                "C...C",
+                "C...C",
+                "CCCCC"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "端口",
+              "to": "late_ports"
+            },
+            {
+              "text": "升级块",
+              "to": "late_upgrades"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "工业电炉",
+      "id": "late_furnace",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_furnace",
+          "title": "工业电炉",
+          "subtitle": "大号电炉，5×3×5",
+          "tags": [
+            {
+              "text": "冶炼",
+              "color": "#FF8A2E"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "电炉能烧的东西它都能烧，只是整批来：往输入端口丢一整组，它一个周期烧完。"
+        },
+        {
+          "type": "text",
+          "text": "这是一座高塔，正面有一扇 3×3 的窗。核心在窗的最下一排，透过玻璃能看到一列九个机构块。"
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing",
+              "G": "industrial_core:structural_glass",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_furnace",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port"
+            },
+            "layers": [
+              [
+                "CCCCC",
+                "CCCCC",
+                "CCCCC"
+              ],
+              [
+                "CGKGC",
+                "CMMMI",
+                "CCCCO"
+              ],
+              [
+                "CGGGC",
+                "CMMME",
+                "CCCCC"
+              ],
+              [
+                "CGGGC",
+                "CMMMC",
+                "CCCCC"
+              ],
+              [
+                "CCCCC",
+                "CCCCC",
+                "CCCCC"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "后期多方块",
+              "to": "late_overview"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "工业压缩机",
+      "id": "late_compressor",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_compressor",
+          "title": "工业压缩机",
+          "subtitle": "大号压缩机，3×5×5",
+          "tags": [
+            {
+              "text": "压缩",
+              "color": "#C86BF0"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "跟普通压缩机压一样的东西，只是整批来。它身形窄长，核心在一端，侧边一条长窗，露出一列机构块。"
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing",
+              "G": "industrial_core:structural_glass",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_compressor",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port"
+            },
+            "layers": [
+              [
+                "CCC",
+                "CCC",
+                "CCC",
+                "CCC",
+                "CCC"
+              ],
+              [
+                "CKC",
+                "CMI",
+                "CMO",
+                "CME",
+                "CCC"
+              ],
+              [
+                "CGC",
+                "GMC",
+                "GMC",
+                "GMC",
+                "CCC"
+              ],
+              [
+                "CGC",
+                "GMC",
+                "GMC",
+                "GMC",
+                "CCC"
+              ],
+              [
+                "CCC",
+                "CCC",
+                "CCC",
+                "CCC",
+                "CCC"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "后期多方块",
+              "to": "late_overview"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "工业轧机",
+      "id": "late_rolling",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_rolling_mill",
+          "title": "工业轧机",
+          "subtitle": "大号金属成型机，7×4×3",
+          "tags": [
+            {
+              "text": "辊压",
+              "color": "#7CDC55"
+            },
+            {
+              "text": "挤压",
+              "color": "#7CDC55"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "和金属成型机一样，也是那两种模式。**辊压** 把锭变成板；**挤压** 把板变成线，也能出棒和纤维。"
+        },
+        {
+          "type": "text",
+          "text": "点核心窗口里的「模式」那一行就能切换。周期中途切换只会重开当前这一批，什么都不会丢。"
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing",
+              "G": "industrial_core:structural_glass",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_rolling_mill",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port"
+            },
+            "layers": [
+              [
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC"
+              ],
+              [
+                "CGGKGGC",
+                "CMMMMMI",
+                "CMMMMMO",
+                "CCCCCCE"
+              ],
+              [
+                "CCCCCCC",
+                "CGGGGGC",
+                "CGGGGGC",
+                "CCCCCCC"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "后期多方块",
+              "to": "late_overview"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "工业组装机",
+      "id": "late_assembler",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_crafter",
+          "title": "工业组装机",
+          "subtitle": "后期核心机器，7×7×3",
+          "tags": [
+            {
+              "text": "组装",
+              "color": "#FFC45C"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "其他大机器的核心，以及各种昂贵玩意儿，都是在这里做出来的。把需要的物品放进输入端口，配方要流体就再倒点流体，一个周期后取产物。有时产物本身就是流体。"
+        },
+        {
+          "type": "text",
+          "text": "后期多方块里最大的一台：玻璃屋顶下面，一圈 16 个机构块。"
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing",
+              "G": "industrial_core:structural_glass",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_crafter",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port"
+            },
+            "layers": [
+              [
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC"
+              ],
+              [
+                "CGGKGGC",
+                "CMMMMMI",
+                "CMCCCMO",
+                "CMCCCME",
+                "CMCCCMC",
+                "CMMMMMC",
+                "CCCCCCC"
+              ],
+              [
+                "CCCCCCC",
+                "CGGGGGC",
+                "CGCCCGC",
+                "CGCCCGC",
+                "CGCCCGC",
+                "CGGGGGC",
+                "CCCCCCC"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "后期多方块",
+              "to": "late_overview"
+            },
+            {
+              "text": "升级块",
+              "to": "late_upgrades"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "工业液化机",
+      "id": "late_liquefier",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_liquefier",
+          "title": "工业液化机",
+          "subtitle": "大号液化机，6×3×6",
+          "tags": [
+            {
+              "text": "热量",
+              "color": "#FFD000"
+            },
+            {
+              "text": "二阶段",
+              "color": "#C42A20"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "跟普通液化机一样把东西熔成流体，只是整批来。把锭或其他物品放进输入端口，再从设成流体的输出端口取熔液。"
+        },
+        {
+          "type": "text",
+          "text": "除了电力它还要 **热量**。在外壳上装一个热端口，接一根热管进去。端口里的热量低于配方所需时，机器就等着。核心窗口会显示现在有多少热量、需要多少。热量不会被消耗，只要一直供着就行。"
+        },
+        {
+          "type": "text",
+          "text": "左边是一座熔化东西的高塔，右边是盖着玻璃的低槽。核心在高塔正面。它用高级外壳和高级玻璃搭建。"
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing_advanced",
+              "G": "industrial_core:structural_glass_advanced",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_liquefier",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port",
+              "H": "industrial_core:multiblock_heat_port"
+            },
+            "layers": [
+              [
+                "ECCCCC",
+                "CCCCCC",
+                "CCCCCC"
+              ],
+              [
+                "CGCCKC",
+                "OMMCMC",
+                "CCCCCC"
+              ],
+              [
+                "GGGCGC",
+                "GGGGMG",
+                "GGGCGC"
+              ],
+              [
+                "...CGC",
+                "...IMG",
+                "...CGC"
+              ],
+              [
+                "...CGC",
+                "...HMG",
+                "...CGC"
+              ],
+              [
+                "...CCC",
+                "...CCC",
+                "...CCC"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "二阶段",
+              "to": "late_tier2"
+            },
+            {
+              "text": "端口",
+              "to": "late_ports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "工业高炉",
+      "id": "late_blast",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_blast_furnace",
+          "title": "工业高炉",
+          "subtitle": "大号高炉，7×5×4",
+          "tags": [
+            {
+              "text": "热量",
+              "color": "#FFD000"
+            },
+            {
+              "text": "二阶段",
+              "color": "#C42A20"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "跟普通高炉一样冶炼，只是整批来：合金和硬化钢。把要炼的东西和燃料放进输入端口，锭从输出端口取。"
+        },
+        {
+          "type": "text",
+          "text": "除了电力它还要 **热量**。在外壳上装一个热端口，接一根热管进去。端口里的热量低于配方所需时，高炉就等着。核心窗口会显示现在有多少、需要多少。热量不会被消耗，只要一直供着就行。"
+        },
+        {
+          "type": "text",
+          "text": "它像一条隧道：底座宽七格，内部二十个机构块，往上收窄成一道玻璃脊。核心在前方的一条玻璃带里。用高级外壳和高级玻璃搭建。"
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "能量",
+              "value": "每次冶炼每游戏刻 40 FE"
+            },
+            {
+              "key": "热量",
+              "value": "按配方 1,200 至 3,600"
+            },
+            {
+              "key": "每周期冶炼量",
+              "value": "最多 64"
+            }
+          ]
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing_advanced",
+              "G": "industrial_core:structural_glass_advanced",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_blast_furnace",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port",
+              "H": "industrial_core:multiblock_heat_port"
+            },
+            "layers": [
+              [
+                "CCICOCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCECCC"
+              ],
+              [
+                "CGGKGGC",
+                "CMMMMMC",
+                "CMMMMMC",
+                "CMMMMMC",
+                "CCCHCCC"
+              ],
+              [
+                ".......",
+                "CCCCCCC",
+                "CMMMMMC",
+                "CCCCCCC",
+                "......."
+              ],
+              [
+                ".......",
+                ".......",
+                "CGGGGGC",
+                ".......",
+                "......."
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "二阶段",
+              "to": "late_tier2"
+            },
+            {
+              "text": "工业液化机",
+              "to": "late_liquefier"
+            },
+            {
+              "text": "端口",
+              "to": "late_ports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "工业流体富集器",
+      "id": "late_enricher",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_fluid_enricher",
+          "title": "工业流体富集器",
+          "subtitle": "大号流体富集器，9×5×3",
+          "tags": [
+            {
+              "text": "富集",
+              "color": "#F06AB8"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "和普通流体富集器做同样的事，只是整批来。把流体倒进收流体的端口，把试剂放进物品输入端口，成品流体从设成流体的输出端口取。"
+        },
+        {
+          "type": "text",
+          "text": "两侧各立着一个圆玻璃罐，中间是容纳核心的低矮混合器。玻璃罐的四角不做校验，空着或者放什么都可以。"
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing",
+              "G": "industrial_core:structural_glass",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_fluid_enricher",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port"
+            },
+            "layers": [
+              [
+                ".I.CCC.O.",
+                "CCCCCCCCC",
+                ".C.CCC.C."
+              ],
+              [
+                ".G.GKG.G.",
+                "GMGMMMGMG",
+                ".G.CEC.G."
+              ],
+              [
+                ".G.CCC.G.",
+                "GMGCGCGMG",
+                ".G.CCC.G."
+              ],
+              [
+                ".G.....G.",
+                "GMG...GMG",
+                ".G.....G."
+              ],
+              [
+                ".C.....C.",
+                "CCC...CCI",
+                ".C.....C."
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "后期多方块",
+              "to": "late_overview"
+            },
+            {
+              "text": "端口",
+              "to": "late_ports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "工业电磁铁",
+      "id": "late_magnet",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:multiblock_magnet",
+          "title": "工业电磁铁",
+          "subtitle": "后期电磁铁，7×9×7",
+          "tags": [
+            {
+              "text": "加速",
+              "color": "#5560F0"
+            },
+            {
+              "text": "二阶段",
+              "color": "#C42A20"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "和普通电磁铁做同样的东西，但不需要反重力柱，也没有不稳定性和区间。把配方要的东西放进输入端口，通上电，从输出端口取产物。和其他大机器一样整批处理。"
+        },
+        {
+          "type": "text",
+          "text": "它是一座塔。一块底板托着带核心的基座，四角各一根柱子，然后是一根细玻璃杆、一个玻璃穹顶下九个机构块组成的头部，再是顶冠。底板在核心前方凸出两格。用高级外壳和高级玻璃搭建。"
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "C": "industrial_core:multiblock_casing_advanced",
+              "G": "industrial_core:structural_glass_advanced",
+              "M": "industrial_core:mechanism_block",
+              "K": "industrial_core:multiblock_magnet",
+              "I": "industrial_core:multiblock_input_port",
+              "O": "industrial_core:multiblock_output_port",
+              "E": "industrial_core:multiblock_energy_port",
+              "H": "industrial_core:multiblock_heat_port"
+            },
+            "layers": [
+              [
+                ".CICOC.",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                "CCCCCCC",
+                ".CCECC."
+              ],
+              [
+                ".......",
+                ".C...C.",
+                "..CKC..",
+                "..CCC..",
+                "..CCC..",
+                ".C...C.",
+                "......."
+              ],
+              [
+                ".......",
+                ".G...G.",
+                "...G...",
+                "..GMG..",
+                "...G...",
+                ".G...G.",
+                "......."
+              ],
+              [
+                ".......",
+                ".C...C.",
+                "...G...",
+                "..GMG..",
+                "...G...",
+                ".C...C.",
+                "......."
+              ],
+              [
+                ".......",
+                ".......",
+                "...C...",
+                "..CMC..",
+                "...C...",
+                ".......",
+                "......."
+              ],
+              [
+                ".......",
+                "...C...",
+                "...C...",
+                ".CCMCC.",
+                "...C...",
+                "...C...",
+                "......."
+              ],
+              [
+                ".......",
+                "..CCC..",
+                ".CMMMC.",
+                ".CMMMC.",
+                ".CMMMC.",
+                "..CCC..",
+                "......."
+              ],
+              [
+                ".......",
+                "..C.C..",
+                ".CGGGC.",
+                "..GGG..",
+                ".CGGGC.",
+                "..C.C..",
+                "......."
+              ],
+              [
+                ".......",
+                "..C.C..",
+                ".C...C.",
+                ".......",
+                ".C...C.",
+                "..C.C..",
+                "......."
+              ]
+            ]
+          }
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "二阶段",
+              "to": "late_tier2"
+            },
+            {
+              "text": "端口",
+              "to": "late_ports"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
