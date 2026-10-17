@@ -1,0 +1,431 @@
+{
+  "name": "加工",
+  "entries": [
+    {
+      "name": "粉碎机",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:crusher",
+          "title": "粉碎机"
+        },
+        {
+          "type": "text",
+          "text": "把矿石与锭磨成粉。一份矿石出两份粉，所以得到的金属是直接把矿石烧掉的两倍。"
+        },
+        {
+          "type": "text",
+          "text": "它也能磨原版物品：骨头变骨粉，紫水晶变紫水晶粉，石英变硅粉，羊毛变线，圆石变沙砾。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:crusher"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "电炉",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:electric_furnace",
+          "title": "电炉"
+        },
+        {
+          "type": "text",
+          "text": "烧的东西和普通熔炉一样，但用电，而且快一倍。它不需要燃料，所以很容易接进自动化产线。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:electric_furnace"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "压缩机",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:compressor",
+          "title": "压缩机"
+        },
+        {
+          "type": "text",
+          "text": "把东西压到一起：纤维与网压成致密板，雪球、黏土、沙子与冰压成方块，树叶与种子压成生物质。有些零件只能在这里做。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:compressor"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "金属成型机",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:metal_former",
+          "title": "金属成型机"
+        },
+        {
+          "type": "text",
+          "text": "它有两种模式，用界面里的按钮切换。**辊压**把锭变成板；**挤压**把板变成线，也能把一些锭变成棒与纤维。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:metal_former"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "萃取机",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:extractor",
+          "title": "萃取机"
+        },
+        {
+          "type": "text",
+          "text": "把有用的那部分从放进去的东西里抽出来：树脂出橡胶，树脂树叶出树脂，腐肉出皮革。它不粉碎任何东西，只是萃取。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:extractor"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "洗矿机",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:ore_washer",
+          "title": "洗矿机"
+        },
+        {
+          "type": "text",
+          "text": "用水洗矿石。一份矿石出三份粉，比粉碎机的两份多，有时还会额外掉落稀有金属。"
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "铁",
+              "value": "有时产出镍 30%"
+            },
+            {
+              "key": "金",
+              "value": "有时产出银 20%"
+            },
+            {
+              "key": "铜",
+              "value": "有时产出锂 15%"
+            }
+          ]
+        },
+        {
+          "type": "tip",
+          "text": "可以直接用桶把水倒进机器，也可以用管道送水。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:ore_washer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "重构机",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:restructor",
+          "title": "重构机"
+        },
+        {
+          "type": "text",
+          "text": "把一种物品变成另一种。把物品放进输入槽，把对应的**催化剂**放进它的槽位，再送电。等它攒够这次转化所需的那份能量，产物就出现在输出槽。"
+        },
+        {
+          "type": "text",
+          "text": "重构机没有加工时间，只吃能量：给的电越多，它跑得越快。催化剂分级，等级越高，能做的转化越珍贵。"
+        },
+        {
+          "type": "text",
+          "text": "**重构机 T2** 用一份催化剂同时进行三次转化，每次消耗的原料只有一半：T1 一次转化就用完的方块，它能用两次。能量消耗不变。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:restructor",
+            "industrial_core:restructor_t2",
+            "industrial_core:basic_catalyst",
+            "industrial_core:activated_catalyst",
+            "industrial_core:resonant_catalyst",
+            "industrial_core:universal_catalyst"
+          ],
+          "label": "催化剂"
+        }
+      ]
+    },
+    {
+      "name": "流体富集器",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:fluid_enricher",
+          "title": "流体富集器"
+        },
+        {
+          "type": "text",
+          "text": "把物品与流体混成一种新流体。青金石粉加水得到**冷却液**，矿物粉加水得到**钻探液**。有了深冷室之后，冷却液可以用蓝冰与水做，不必再用青金石。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:fluid_enricher"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "液化机",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:liquefier",
+          "title": "液化机"
+        },
+        {
+          "type": "text",
+          "text": "把物品熔成流体，但只有热力网络的热量送进来才行。紫水晶变成熔融紫水晶，铅锭变成熔融铅。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:liquefier"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "胶囊",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:capsule",
+          "title": "胶囊"
+        },
+        {
+          "type": "text",
+          "text": "一颗胶囊能装 1000 mB 任意流体。**胶囊注液机**用自己的储罐往里面灌流体，装满的胶囊可以直接放进配方。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:capsule",
+            "industrial_core:capsule_filler"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "分相器",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:phase_splitter",
+          "title": "分相器"
+        },
+        {
+          "type": "text",
+          "text": "把一份东西拆成几份：放一份原料进去，一次得到几种不同的产物。普通机器只出一种产物的地方就用它。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:phase_splitter"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "制棒机",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:rod_fabricator",
+          "title": "制棒机"
+        },
+        {
+          "type": "text",
+          "text": "制造深冷棒。第一根用一根空棒与冰晶石做成，第二根用第一根与深冷水晶做成，第三根用第二根与一胶囊超流体冷凝液做成。它还能把超导线拧成丝。"
+        },
+        {
+          "type": "text",
+          "text": "深冷棒在深冷室里会慢慢磨损，所以这台机器永远不缺活干。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:rod_fabricator",
+            "industrial_core:cryo_rod",
+            "industrial_core:cryo_rod_t2"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "培育机",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:cultivator",
+          "title": "培育机"
+        },
+        {
+          "type": "text",
+          "text": "用水培育并复制物品。种什么由升级决定：**生物促生器**管植物，**水晶谐振器**管矿物。比如装上谐振器，紫水晶芽就能长出碎片。"
+        },
+        {
+          "type": "text",
+          "text": "**培育机 T2** 有三条产线：每条放不同的东西，它们各自独立生长。三条线共用同一份水、能量、生长升级与机器升级。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:cultivator",
+            "industrial_core:cultivator_t2",
+            "industrial_core:cultivator_biostimulator",
+            "industrial_core:cultivator_resonator"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "生物反应器",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:bioreactor",
+          "title": "生物反应器"
+        },
+        {
+          "type": "text",
+          "text": "不用怪物也能产出怪物掉落物。放进**生物质**与一份添加物，再灌进水、从热力网络引来热量，出什么由添加物决定。"
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "岩浆胶囊",
+              "value": "烈焰棒"
+            },
+            {
+              "key": "矿物粉",
+              "value": "骨头"
+            },
+            {
+              "key": "绿宝石",
+              "value": "末影珍珠"
+            },
+            {
+              "key": "煤粉",
+              "value": "火药"
+            },
+            {
+              "key": "青金石",
+              "value": "墨囊"
+            },
+            {
+              "key": "橡胶",
+              "value": "皮革"
+            },
+            {
+              "key": "树脂",
+              "value": "黏液球"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "压缩机把树叶、种子、树苗、海带或甘蔗压成**生物质**。"
+        },
+        {
+          "type": "tip",
+          "text": "它至少需要 800 热量。如果供热断了，热量会慢慢流失，机器暂停，但进度会保留。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:bioreactor",
+            "industrial_core:biomass"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "资源发生器",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:stone_generator",
+          "title": "资源发生器"
+        },
+        {
+          "type": "text",
+          "text": "它们用能量造资源。**造石机**产出圆石、沙砾、沙子与黑曜石，**岩浆与水发生器**把流体灌满自己的储罐。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:stone_generator",
+            "industrial_core:lava_generator",
+            "industrial_core:water_generator"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "物质制造机",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:matter_fabricator",
+          "title": "物质制造机"
+        },
+        {
+          "type": "text",
+          "text": "把纯粹的能量变成**奇异物质**。你不用放任何东西进去：送电就行，每 50M FE 会在输出槽产出一件物品。它每游戏刻最多吃 10M FE，所以需要相当强的供电。"
+        },
+        {
+          "type": "text",
+          "text": "这台机器本身要在电磁铁核心上做，而且至少需要超导线圈。"
+        },
+        {
+          "type": "tip",
+          "text": "把**推送器**放进它的槽位，物质就会自己进到旁边的箱子里。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:matter_fabricator",
+            "industrial_core:exotic_matter"
+          ]
+        }
+      ]
+    }
+  ]
+}

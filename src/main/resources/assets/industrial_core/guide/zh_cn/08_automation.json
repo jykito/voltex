@@ -1,0 +1,203 @@
+{
+  "name": "自动化",
+  "entries": [
+    {
+      "name": "物流节点",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:logistics_node",
+          "title": "物流节点"
+        },
+        {
+          "type": "text",
+          "text": "节点把各个枢纽连成一张网络，哪怕它们相距很远。它自己不搬运任何东西，只负责连接：物品和流体随后在同一张网络的枢纽之间流动。"
+        },
+        {
+          "type": "text",
+          "text": "节点界面用一张列表和一幅以它为中心的地图显示连接，地图以北为上。列表的顺序就是优先级；拖动某行右侧的把手可以改顺序。「高亮」按钮会在世界里高亮选中的方块。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:logistics_node",
+            "industrial_core:logistics_linker"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "枢纽",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:item_hub",
+          "title": "枢纽"
+        },
+        {
+          "type": "text",
+          "text": "枢纽放在箱子或机器旁边。它的六个面可以分别设置：进、出、进出或关。"
+        },
+        {
+          "type": "text",
+          "text": "你可以选择放行哪些物品、在相邻的箱子里保留多少个，以及是否轮流分配。枢纽既向相邻方块搬运，也跨越整张相连的网络搬运。"
+        },
+        {
+          "type": "text",
+          "text": "枢纽界面左侧列出全部六个面，右侧显示选中那个面的设置：模式、输入或输出过滤、开关和升级槽。右键点击某个面可以循环切换它的模式。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:item_hub",
+            "industrial_core:fluid_hub"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "链接器",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:logistics_linker",
+          "title": "链接器"
+        },
+        {
+          "type": "text",
+          "text": "用它来连接设备。先点一个节点，再点枢纽或机器，它们就归入同一张网络。磁力加速器的远程控制器也是这样绑定的。"
+        },
+        {
+          "type": "text",
+          "text": "它还能把钻探信标连接到工业采矿机。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:logistics_linker"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "推送器与抽取器",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:item_pusher",
+          "title": "推送器与抽取器"
+        },
+        {
+          "type": "text",
+          "text": "最简单的自动化，不需要枢纽。把它放进机器的升级槽：**推送器**把成品送进旁边的箱子，**抽取器**从旁边的箱子取走机器需要的原料。物品和流体各有各的。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:item_pusher",
+            "industrial_core:item_puller",
+            "industrial_core:fluid_pusher",
+            "industrial_core:fluid_puller"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "枢纽升级",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:hub_upgrade_t1",
+          "title": "枢纽升级"
+        },
+        {
+          "type": "text",
+          "text": "它们装在枢纽的某个面上。带升级的枢纽搬得更勤，一次也搬得更多。共有三级，第三级最快。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:hub_upgrade_t1",
+            "industrial_core:hub_upgrade_t2",
+            "industrial_core:hub_upgrade_t3"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "机器升级",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:accelerator",
+          "title": "机器升级"
+        },
+        {
+          "type": "text",
+          "text": "它们放进机器的槽位。**加速器**让机器做得更快，但更费电。加速器有三个等级，可以叠加。**并行处理模块**让机器一次做多份：8、32 或 64 份。"
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "加速器",
+              "value": "时间 ×0.7，耗电 ×1.3"
+            },
+            {
+              "key": "加速器 Mk1",
+              "value": "时间 ×0.5，耗电 ×1.5"
+            },
+            {
+              "key": "加速器 Mk2",
+              "value": "时间 ×0.25，耗电 ×2"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "小型高炉、培育机和物流各有自己的升级，详见各自的条目。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:accelerator",
+            "industrial_core:accelerator_mk1",
+            "industrial_core:accelerator_mk2",
+            "industrial_core:parallel_module",
+            "industrial_core:advanced_parallel_module",
+            "industrial_core:quantum_parallel_module"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "存储",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:crate_t1",
+          "title": "板条箱与流体桶"
+        },
+        {
+          "type": "text",
+          "text": "**板条箱**存放物品：54、72 或 90 格。**流体桶**存放流体：32、128 或 512 桶，被打碎时里面的流体会保留。每一级都由前一级做出来。"
+        },
+        {
+          "type": "text",
+          "text": "它们便宜，而且很容易接入枢纽和机器。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:crate_t1",
+            "industrial_core:crate_t2",
+            "industrial_core:crate_t3",
+            "industrial_core:barrel_t1",
+            "industrial_core:barrel_t2",
+            "industrial_core:barrel_t3"
+          ]
+        }
+      ]
+    }
+  ]
+}

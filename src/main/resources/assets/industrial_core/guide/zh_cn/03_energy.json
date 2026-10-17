@@ -1,0 +1,198 @@
+{
+  "name": "能量",
+  "entries": [
+    {
+      "name": "燃煤发电机",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:coal_generator",
+          "title": "燃煤发电机"
+        },
+        {
+          "type": "text",
+          "text": "你的第一台发电机。什么燃料都能烧；煤炭块烧得更久，出力也更大。它会自动往每一面送电，把机器和电缆紧挨着放就行。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:coal_generator"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "太阳能板",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:solar_panel_t1",
+          "title": "太阳能板"
+        },
+        {
+          "type": "text",
+          "text": "只要头顶能看到天空，它们就自己发电。白天满出力，夜里降到四分之一。"
+        },
+        {
+          "type": "text",
+          "text": "一共十级，每一级都比上一级强得多。第一级用硅做，第十级是戴森太阳能板，也是整套内容里最强的发电机。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:solar_panel_t1",
+            "industrial_core:solar_panel_t4",
+            "industrial_core:solar_panel_t7",
+            "industrial_core:solar_panel_t10"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "面板聚合器",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:panel_combiner",
+          "title": "面板聚合器"
+        },
+        {
+          "type": "text",
+          "text": "不用铺开一大片太阳能板，直接把板塞进**聚合器**：它最多装 18 块板，从单个方块输出合计功率。聚合器本身也得能看到天空。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:panel_combiner"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "电缆",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:copper_cable",
+          "title": "电缆"
+        },
+        {
+          "type": "text",
+          "text": "电缆把电从发电机送到机器。每种电缆都有每游戏刻的传输上限。由低到高依次是：铜、铁、金、晶、绿宝石、重型，最后是下界合金纤维，几乎没有上限。"
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "铜电缆",
+              "value": "4,096 FE/t"
+            },
+            {
+              "key": "强化铁缆",
+              "value": "65,536 FE/t"
+            },
+            {
+              "key": "高精密金导体",
+              "value": "262,144 FE/t"
+            },
+            {
+              "key": "晶能通道",
+              "value": "1,048,576 FE/t"
+            },
+            {
+              "key": "绿宝石通量电缆",
+              "value": "4,194,304 FE/t"
+            },
+            {
+              "key": "能源总线",
+              "value": "16,777,216 FE/t"
+            },
+            {
+              "key": "下界合金纤维",
+              "value": "无上限"
+            }
+          ]
+        },
+        {
+          "type": "tip",
+          "text": "能源总线要用的裸导线，只能用**剪线钳**从红石块上剪出来。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:copper_cable",
+            "industrial_core:ferro_cable",
+            "industrial_core:gold_conductor",
+            "industrial_core:crystalline_channel",
+            "industrial_core:emerald_flux_cable",
+            "industrial_core:heavy_magistral",
+            "industrial_core:netherite_fiber_cable"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "电池与储能单元",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:battery",
+          "title": "电池与储能单元"
+        },
+        {
+          "type": "text",
+          "text": "它们用来存电，也是合成材料：**充能护符**、**充能背包**和其他带电装备都要用它们做。它们本身不给别的东西充电。想在外面给工具补电，就随身带一个充能护符或充能背包。从小到大依次是：电池、锂电池、通量核心、等离子核心。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:battery",
+            "industrial_core:lithium_battery",
+            "industrial_core:flux_core",
+            "industrial_core:plasma_core"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "能量库",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:energy_bank",
+          "title": "能量库"
+        },
+        {
+          "type": "text",
+          "text": "一块 1000 万 FE 的大型储电方块。在它的界面里设置预留百分之多少，超出的部分全部回送到电网。它还会显示进出的功率。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:energy_bank"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "电池充电器",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:battery_charger",
+          "title": "电池充电器"
+        },
+        {
+          "type": "text",
+          "text": "把电池、储能单元或工具放进去，接一根电缆过来，它就会从电网给这件物品充电。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:battery_charger"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,417 @@
+{
+  "name": "纳米机",
+  "entries": [
+    {
+      "name": "纳米机",
+      "id": "nanites",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:nanite_strain",
+          "title": "纳米机",
+          "subtitle": "会学习你手头工作的集群",
+          "tags": [
+            {
+              "text": "采矿型",
+              "color": "#F29A5C"
+            },
+            {
+              "text": "加工型",
+              "color": "#9EC4E6"
+            },
+            {
+              "text": "科研型",
+              "color": "#C98BFF"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "一株**纳米机品系**装在蜘蛛形的胶囊里。它自己什么都做不了：要在**进化舱**里培育，喂它什么，它就长成什么。"
+        },
+        {
+          "type": "text",
+          "text": "喂矿石，得到用于工业采矿机的**采矿型**。喂粉末，得到用于洗矿机的**加工型**。喂研究样本，得到用于纳米实验室的**科研型**。类别由第一代决定，之后永不改变。"
+        },
+        {
+          "type": "text",
+          "text": "外壳的颜色表示这株品系是往哪个方向培育的：铜色对应铜，金色对应金，紫色对应晶体学。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:nanite_strain",
+            "industrial_core:evolution_chamber",
+            "industrial_core:nanite_lab"
+          ]
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "进化舱",
+              "to": "nanite_chamber"
+            },
+            {
+              "text": "物种图鉴",
+              "to": "nanite_atlas"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "进化舱",
+      "id": "nanite_chamber",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:evolution_chamber",
+          "title": "进化舱",
+          "subtitle": "品系生长的地方"
+        },
+        {
+          "type": "text",
+          "text": "把品系放进上面的槽位，食物放进下面的槽位，再通上电。每 20 秒过去一个**世代**：从品系里长出各种变体，最适应食物的那个留下来。品系不会因此变差。"
+        },
+        {
+          "type": "text",
+          "text": "矿石和粉末每个世代消耗一个。研究样本不会被消耗，只用来研究。"
+        },
+        {
+          "type": "text",
+          "text": "界面里的曲线显示亲和度如何增长。一开始很快，然后越来越慢，直到碰到类别上限。"
+        },
+        {
+          "type": "text",
+          "text": "往进化舱里接一根**热管**，世代会变快，最多快四倍，步子也更大。但热量会降低品系的稳定性，见下一条。"
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "世代",
+              "value": "20 秒，满热量时 5 秒"
+            },
+            {
+              "key": "能量",
+              "value": "1,000 FE/游戏刻"
+            },
+            {
+              "key": "食物",
+              "value": "矿石、粉末或样本"
+            }
+          ]
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "稳定性与磨损",
+              "to": "nanite_stability"
+            },
+            {
+              "text": "纳米机",
+              "to": "nanites"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "稳定性与磨损",
+      "id": "nanite_stability",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:nanite_strain",
+          "title": "稳定性与磨损",
+          "subtitle": "速度的代价"
+        },
+        {
+          "type": "text",
+          "text": "刚培育出的品系稳定性 100%。每次加热的世代最多扣 3%，每次常温的世代回补 2%。它不会低于 10%。"
+        },
+        {
+          "type": "text",
+          "text": "稳定性在工作中很重要。不稳定的品系在机器里会慢慢**磨损**：时不时掉一部分亲和度。100% 时完全不会磨损。"
+        },
+        {
+          "type": "tip",
+          "text": "先让品系在热量下推进，然后撤掉热量再跑几个世代：稳定性回来了，亲和度留住了。这就是回火。"
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "进化舱",
+              "to": "nanite_chamber"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "采矿型",
+      "id": "nanite_miner",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:industrial_miner_core",
+          "title": "采矿型",
+          "subtitle": "同样的信标，更多的矿石",
+          "tags": [
+            {
+              "text": "采矿型",
+              "color": "#F29A5C"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "采矿型用对应材料的矿石或粗矿培育，放进**工业采矿机**界面右侧的槽位。"
+        },
+        {
+          "type": "text",
+          "text": "对某种材料的亲和度会直接加在矿石上：对铜 +84% 时，采矿型平均产出 1.84 个铜矿石，而不是 1 个。这份加成不需要钻探液。"
+        },
+        {
+          "type": "text",
+          "text": "一个采矿型的各项亲和度加起来最多 +300%。你可以选育只专精一种矿石的专家，也可以选育样样都会一点的品系。采矿型还有钻探液消耗系数，选育也会慢慢把它降下来。"
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "上限",
+              "value": "全部材料合计 +300%"
+            },
+            {
+              "key": "钻探液",
+              "value": "×0.5 至 ×1.5"
+            }
+          ]
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "工业采矿机",
+              "to": "industrial_miner"
+            },
+            {
+              "text": "稳定性与磨损",
+              "to": "nanite_stability"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "加工型",
+      "id": "nanite_processor",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:ore_washer",
+          "title": "加工型",
+          "subtitle": "洗矿机里的第二份产物",
+          "tags": [
+            {
+              "text": "加工型",
+              "color": "#9EC4E6"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "加工型用粉末培育。它只在洗矿机里工作：普通洗矿机放进升级槽，工业洗矿机放进核心面板上的槽位。"
+        },
+        {
+          "type": "text",
+          "text": "品系认识的每种材料，每次洗炼时主产物都有几率产出两份。输出槽放不下就没有额外产出，但也不会有损失。"
+        },
+        {
+          "type": "text",
+          "text": "这个几率涨得很慢，每代 2.5%，加热时 3.5%，最高 30%。"
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "上限",
+              "value": "30% 二次产出"
+            }
+          ]
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "工业洗矿机",
+              "to": "late_washer"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "科研型与纳米实验室",
+      "id": "nanite_scientist",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:nanite_lab",
+          "title": "科研型与纳米实验室",
+          "subtitle": "按课题分类的数据卡",
+          "tags": [
+            {
+              "text": "科研型",
+              "color": "#C98BFF"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "科研型用课题样本培育。样本在进化舱里不会被消耗。科研型没有加成，而是拥有对该课题的**学识**，从 0 到 100%。"
+        },
+        {
+          "type": "text",
+          "text": "在纳米实验室里放入科研型、样本和**空白数据卡**。科研型按样本的课题写入数据卡，一张卡消耗一张空白卡。样本在这里同样不会被消耗。"
+        },
+        {
+          "type": "text",
+          "text": "科研型只有学识达到门槛才会接手某个课题。过了门槛之后只是写得更快：从每分钟一张到每 20 秒一张。"
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "晶体学",
+              "value": "紫水晶，门槛 30%"
+            },
+            {
+              "key": "深冷物理",
+              "value": "深冷水晶或冰晶石，50%"
+            },
+            {
+              "key": "物质",
+              "value": "奇异物质，70%"
+            },
+            {
+              "key": "恒星物理",
+              "value": "星辰碎片或下界之星，90%"
+            }
+          ]
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:nanite_lab",
+            "industrial_core:data_card_blank",
+            "industrial_core:data_card_crystallography",
+            "industrial_core:data_card_cryophysics",
+            "industrial_core:data_card_matter",
+            "industrial_core:data_card_stellar"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "物种图鉴",
+      "id": "nanite_atlas",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:nanite_strain",
+          "title": "物种图鉴",
+          "subtitle": "本面板的最后一个页签"
+        },
+        {
+          "type": "text",
+          "text": "每一个类别与目标的组合都是一个独立**物种**：铜采矿型、锡加工型、晶体学科研型。品系进入你的物品栏时，对应物种就会解锁，右上角还会滑入一条横幅，就像成就一样。"
+        },
+        {
+          "type": "text",
+          "text": "图鉴为每个物种保存你的最佳记录，并按占类别上限的比例发奖牌。发现记录属于你，死亡也不会丢。"
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "铜牌",
+              "value": "达到上限的 25%"
+            },
+            {
+              "key": "银牌",
+              "value": "达到上限的 60%"
+            },
+            {
+              "key": "金牌",
+              "value": "达到上限的 95%"
+            }
+          ]
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "稀有物种",
+              "to": "nanite_rare"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "稀有物种",
+      "id": "nanite_rare",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:nanite_strain",
+          "title": "稀有物种",
+          "subtitle": "不靠培育，全凭碰上",
+          "tags": [
+            {
+              "text": "共五种",
+              "color": "#C98BFF"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "稀有物种是品系的一种特殊**性状**。它在特殊条件下选育时会自己冒出来，并且永久保留。有了它，品系干活比平常更好。"
+        },
+        {
+          "type": "text",
+          "text": "图鉴不会直接说怎么拿到它们，只给一点线索。去留意进化舱周围有什么不寻常的东西：寒冷、高温、强场，或者大把的耐心。"
+        },
+        {
+          "type": "tip",
+          "text": "性状会显示在品系的信息提示里。图鉴里已解锁的性状会写明它的确切触发条件和效果。"
+        },
+        {
+          "type": "links",
+          "label": "另见",
+          "links": [
+            {
+              "text": "物种图鉴",
+              "to": "nanite_atlas"
+            },
+            {
+              "text": "稳定性与磨损",
+              "to": "nanite_stability"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
