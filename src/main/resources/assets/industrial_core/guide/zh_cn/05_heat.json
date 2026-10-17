@@ -1,0 +1,224 @@
+{
+  "name": "热量",
+  "entries": [
+    {
+      "name": "热力网络",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:thermogenerator",
+          "title": "热力网络"
+        },
+        {
+          "type": "text",
+          "text": "在这里，热量与能量是两回事。**热力发电机**把能量变成热量，**热管**负责输送，小型高炉、液化机、热力站与深冷室把它用掉。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:thermogenerator",
+            "industrial_core:heat_pipe",
+            "industrial_core:heat_conductor"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "热力发电机",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:thermogenerator",
+          "title": "热力发电机"
+        },
+        {
+          "type": "text",
+          "text": "吃进能量，把热量送进它面对的那个方块。每条热量线路都从这里开始。"
+        },
+        {
+          "type": "text",
+          "text": "往它的升级槽里放一个部件，它决定这台机器给出多少热量、用掉多少能量。"
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "无升级",
+              "value": "每游戏刻 3 热量，200 FE/t"
+            },
+            {
+              "key": "电动机",
+              "value": "5 热量，400 FE/t"
+            },
+            {
+              "key": "热导体",
+              "value": "9 热量，800 FE/t"
+            },
+            {
+              "key": "高级热交换器",
+              "value": "17 热量，2,000 FE/t"
+            },
+            {
+              "key": "深冷换热器",
+              "value": "60 热量，4,200 FE/t，只在给热力站供热时生效"
+            }
+          ]
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:thermogenerator",
+            "industrial_core:electric_motor",
+            "industrial_core:heat_conductor",
+            "industrial_core:advanced_heat_exchanger",
+            "industrial_core:cryogenic_heat_exchanger"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "小型高炉",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:blast_furnace",
+          "title": "小型高炉"
+        },
+        {
+          "type": "text",
+          "text": "靠热量运行，不用能量。它能烧普通熔炉烧不了的合金：殷钢、琥珀金与硬化钢。"
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "强制鼓风",
+              "value": "冶炼速度加快 30%"
+            },
+            {
+              "key": "增氧强化",
+              "value": "加快 75%，且一次烧 4 个"
+            }
+          ]
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:blast_furnace",
+            "industrial_core:blast_upgrade_forced_air",
+            "industrial_core:blast_upgrade_oxygen_boost"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "热管",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:heat_pipe",
+          "title": "热管"
+        },
+        {
+          "type": "text",
+          "text": "把热量从发电机送到用热的设备。管道会自己接上，不需要的那一面可以用扳手关掉。"
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "热管",
+              "value": "每游戏刻最多向每个相邻方块输送 128 热量"
+            },
+            {
+              "key": "隔热热管 T2",
+              "value": "最多 512"
+            }
+          ]
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:heat_pipe",
+            "industrial_core:heat_pipe_t2"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "热量探针",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:heat_probe",
+          "title": "热量探针"
+        },
+        {
+          "type": "text",
+          "text": "用来查看热力网络的情况。点击一根热管，或紧挨着它的方块，聊天栏就会给出一份摘要：网络里有多少根管道、多少条用热端连接，每游戏刻实际送来多少热量、上限又是多少，以及管道里还存着多少热量。"
+        },
+        {
+          "type": "text",
+          "text": "最后一行告诉你瓶颈在哪：没有用热端、管道已经送不了更多、供热不足，或者一切正常、用热端正好取走它需要的量。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:heat_probe"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "热力站",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:thermostation_core",
+          "title": "热力站"
+        },
+        {
+          "type": "text",
+          "text": "一座塔：核心在最下面，扩展器在它上面。把热力发电机紧贴着塔的任意一层侧面放：它们的热量会汇进核心，核心再把热量送进管道。"
+        },
+        {
+          "type": "text",
+          "text": "扩展器提高储热量，背面的散热器提高每游戏刻的送出量。"
+        },
+        {
+          "type": "text",
+          "text": "往外送热要耗能量：每单位热量 5 FE。电缆要接到核心的背面。"
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "储量",
+              "value": "40,000，每个扩展器再加 20,000"
+            },
+            {
+              "key": "输出",
+              "value": "每游戏刻 100 热量，每个散热器再加 120"
+            },
+            {
+              "key": "能量",
+              "value": "每单位热量 5 FE"
+            }
+          ]
+        },
+        {
+          "type": "tip",
+          "text": "储量满了并不会让热力站停机：它照样往外送热，只是热力发电机不再往里补。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:thermostation_core",
+            "industrial_core:thermostation_expander",
+            "industrial_core:thermostation_radiator"
+          ]
+        }
+      ]
+    }
+  ]
+}

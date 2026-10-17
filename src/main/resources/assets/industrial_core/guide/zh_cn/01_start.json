@@ -1,0 +1,96 @@
+{
+  "name": "入门",
+  "entries": [
+    {
+      "name": "简介",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:manual",
+          "title": "工业核心",
+          "subtitle": "以 FE 驱动的科技玩法"
+        },
+        {
+          "type": "text",
+          "text": "起步先粉碎矿石，搭起最初的几台机器。之后要铺热力网络、建多方块、造电磁铁，最后组装戴森太阳能板。"
+        },
+        {
+          "type": "text",
+          "text": "这块面板讲清每台机器怎么运作、什么解锁什么。这里不列配方，只讲把机器开起来要知道的事。"
+        }
+      ]
+    },
+    {
+      "name": "最初的机器",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:machine_casing",
+          "title": "最初的机器"
+        },
+        {
+          "type": "text",
+          "text": "几乎每台机器都要用到**机器外壳**，所以先从这里入手。第一份电来自**燃煤发电机**：塞进煤炭，它就会开始给紧挨着的机器供电。"
+        },
+        {
+          "type": "text",
+          "text": "接着你需要**粉碎机**和**电炉**。粉碎机把矿石打成粉，电炉把粉冶炼成锭。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:machine_casing",
+            "industrial_core:coal_generator",
+            "industrial_core:crusher",
+            "industrial_core:electric_furnace"
+          ],
+          "label": "起步套装"
+        }
+      ]
+    },
+    {
+      "name": "矿石翻倍",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:tin_ore",
+          "title": "矿石翻倍"
+        },
+        {
+          "type": "text",
+          "text": "别急着直接烧矿石。先送进粉碎机：一块矿石出两份粉，而熔炉只给你一个锭。再把粉烧成锭，每块矿石的金属就翻了一倍。"
+        },
+        {
+          "type": "tip",
+          "text": "到后面**洗矿机**还能出得更多：一块矿石三份粉，有时还额外给一种稀有金属。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:tin_ore",
+            "industrial_core:tin_dust",
+            "industrial_core:tin_ingot"
+          ],
+          "label": "以锡为例"
+        }
+      ]
+    },
+    {
+      "name": "FE 能量",
+      "elements": [
+        {
+          "type": "header",
+          "text": "FE 能量"
+        },
+        {
+          "type": "text",
+          "text": "所有机器都靠 **FE** 运转。发电机产出 FE，电缆把它送到机器，每台机器存一小份缓冲，干活时消耗。"
+        },
+        {
+          "type": "text",
+          "text": "机器要是反复启停，就是电不够：要么发电机太弱，要么电缆带不动。换更好的电缆，能带的电更多。"
+        }
+      ]
+    }
+  ]
+}

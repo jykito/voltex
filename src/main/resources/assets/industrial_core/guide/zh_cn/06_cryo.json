@@ -1,0 +1,231 @@
+{
+  "name": "深冷",
+  "entries": [
+    {
+      "name": "深冷室",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:cryo_core",
+          "title": "深冷室"
+        },
+        {
+          "type": "text",
+          "text": "这里用热来制造冷，就像一台气体制冷冰箱那样。深冷室并不把热量排掉，而是把它烧掉：热量就是它的燃料。"
+        },
+        {
+          "type": "text",
+          "text": "它是一座 5×5×5 的多方块。地板与天花板是外壳，墙壁是深冷面板，内部立着一列制冷舱，核心在地板的最前一排。"
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "K": "industrial_core:cryo_casing",
+              "G": "industrial_core:cryo_glass",
+              "F": "industrial_core:refrigeration_chamber",
+              "R": "industrial_core:cryo_core"
+            },
+            "layers": [
+              [
+                "KKRKK",
+                "KKKKK",
+                "KKKKK",
+                "KKKKK",
+                "KKKKK"
+              ],
+              [
+                "GGGGG",
+                "G...G",
+                "G.F.G",
+                "G...G",
+                "GGGGG"
+              ],
+              [
+                "GGGGG",
+                "G...G",
+                "G.F.G",
+                "G...G",
+                "GGGGG"
+              ],
+              [
+                "GGGGG",
+                "G...G",
+                "G.F.G",
+                "G...G",
+                "GGGGG"
+              ],
+              [
+                "KKKKK",
+                "KKKKK",
+                "KKKKK",
+                "KKKKK",
+                "KKKKK"
+              ]
+            ]
+          }
+        },
+        {
+          "type": "tip",
+          "text": "**任意**外壳方块都能接入热量，所以你可以同时从地板和天花板的多处把管道接进来。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:cryo_core",
+            "industrial_core:cryo_casing",
+            "industrial_core:cryo_glass",
+            "industrial_core:refrigeration_chamber"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "深度",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:cryo_core",
+          "title": "深度"
+        },
+        {
+          "type": "text",
+          "text": "深冷室会一点点沉进低温里，这个状态就叫**深度**。深度取决于每游戏刻有多少热量进来，并恰好稳定在那个数值上。"
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "第一阶段",
+              "value": "每游戏刻 200 热量"
+            },
+            {
+              "key": "第二阶段",
+              "value": "800"
+            },
+            {
+              "key": "第三阶段",
+              "value": "1800"
+            }
+          ]
+        },
+        {
+          "type": "tip",
+          "text": "深度要攒上几分钟，掉下来却快三倍，所以最好一直别关机。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:cryo_core",
+            "industrial_core:heat_pipe_t2",
+            "industrial_core:thermostation_core"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "深度模块",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:depth_module_2",
+          "title": "深度模块"
+        },
+        {
+          "type": "text",
+          "text": "核心不装模块，无论喂多少热量，深冷室都过不了第一阶段。**II 级模块**能到第二阶段，**III 级模块**能到第三阶段。"
+        },
+        {
+          "type": "text",
+          "text": "III 级模块由 II 级模块与一枚深冷水晶做成，而深冷水晶只在第二阶段产出。所以要进第三阶段，得先在第二阶段干过活。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:depth_module_2",
+            "industrial_core:depth_module_3",
+            "industrial_core:cryo_crystal"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "深冷棒",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:cryo_rod",
+          "title": "深冷棒"
+        },
+        {
+          "type": "text",
+          "text": "最多往核心里插三根棒。每根都让深冷室更快：I 级快四分之一，II 级快一半，III 级快一倍。加成是相加的，所以三根 III 级棒能让它快四倍。"
+        },
+        {
+          "type": "text",
+          "text": "棒会磨损，而且深冷室越深磨得越快：第三阶段的磨损速度是第一阶段的九倍。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:cryo_rod",
+            "industrial_core:cryo_rod_t2",
+            "industrial_core:cryo_rod_t3"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "结晶器",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:crystallizer",
+          "title": "结晶器"
+        },
+        {
+          "type": "text",
+          "text": "唯一一台能把流体变成物品的机器。冷却液加铝粉得到**冰晶石**，整条深冷分支都靠它：面板、外壳、棒与模块。"
+        },
+        {
+          "type": "text",
+          "text": "它还能用雪块与水冻出冰，用锡与熔融铅铸出焊锡，产量是剪线钳的两倍。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:crystallizer",
+            "industrial_core:cryolite",
+            "industrial_core:aluminum_dust"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "冷却液",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:capsule",
+          "title": "冷却液"
+        },
+        {
+          "type": "text",
+          "text": "深冷室需要冷却液：它流过去，出来时就变热了。把热冷却液抽出来，否则储罐会满，深冷室就会停下。把它送回流体富集器，加一点青金石粉就能变回冷却液。"
+        },
+        {
+          "type": "text",
+          "text": "别把它倒掉：一胶囊热冷却液要用在**深冷换热器**的配方里。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:capsule",
+            "industrial_core:capsule_filler",
+            "industrial_core:cryogenic_heat_exchanger"
+          ]
+        }
+      ]
+    }
+  ]
+}
