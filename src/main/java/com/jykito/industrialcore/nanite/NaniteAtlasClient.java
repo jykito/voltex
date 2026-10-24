@@ -29,5 +29,6 @@ public final class NaniteAtlasClient {
     /** The item the species was unlocked on (id), or an empty string. */
     public static String icon(String speciesKey) { return data.getCompound("I").getString(speciesKey); }
 
-    public static boolean trait(NaniteTrait t) { return data.getCompound("T").getBoolean(t.key()); }
+    public static boolean trait(NaniteTrait t) { return trait(t.key()); }
+    public static boolean trait(String key) { return data.getCompound("T").getBoolean(key); }
 }

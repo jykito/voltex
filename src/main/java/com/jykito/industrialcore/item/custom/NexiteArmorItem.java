@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class NexiteArmorItem extends ArmorItem {
+public class NexiteArmorItem extends ArmorItem implements com.jykito.industrialcore.api.PowerSuitArmor {
 
     public static final int CAPACITY     = 200_000;
     public static final int MAX_TRANSFER = 200_000;
@@ -95,7 +95,7 @@ public class NexiteArmorItem extends ArmorItem {
 
     @Override
     public int getBarWidth(ItemStack stack) {
-        return Math.round(13f * getEnergy(stack) / CAPACITY);
+        return com.jykito.industrialcore.ModStyle.energyBar(getEnergy(stack), CAPACITY);
     }
 
     @Override

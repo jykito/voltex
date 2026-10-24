@@ -1,0 +1,114 @@
+{
+  "loader": "forge:obj",
+  "model": "industrial_core:models/block/wind_turbine/rotor_item.obj",
+  "flip_v": true,
+  "ambientocclusion": false,
+  "textures": {
+    "wind_turbine": "industrial_core:block/wind_turbine",
+    "particle": "industrial_core:block/wind_turbine_base_bottom"
+  },
+  "display": {
+    "gui": {
+      "rotation": [
+        15,
+        200,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.27,
+        0.27,
+        0.27
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        3,
+        0
+      ],
+      "scale": [
+        0.108,
+        0.108,
+        0.108
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.216,
+        0.216,
+        0.216
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.162,
+        0.162,
+        0.162
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.173,
+        0.173,
+        0.173
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.173,
+        0.173,
+        0.173
+      ]
+    }
+  }
+}

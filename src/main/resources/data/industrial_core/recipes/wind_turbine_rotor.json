@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " B ",
+    "BHB"
+  ],
+  "key": {
+    "B": {
+      "item": "industrial_core:wind_turbine_blade"
+    },
+    "H": {
+      "tag": "forge:plates/aluminum"
+    }
+  },
+  "result": {
+    "item": "industrial_core:wind_turbine_rotor"
+  }
+}

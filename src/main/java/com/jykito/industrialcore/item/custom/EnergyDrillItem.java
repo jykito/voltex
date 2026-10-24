@@ -107,7 +107,7 @@ public abstract class EnergyDrillItem extends DiggerItem {
 
     @Override
     public int getBarWidth(ItemStack stack) {
-        return Math.round(13.0f * getStoredEnergy(stack) / capacity);
+        return com.jykito.industrialcore.ModStyle.energyBar(getStoredEnergy(stack), capacity);
     }
 
     @Override

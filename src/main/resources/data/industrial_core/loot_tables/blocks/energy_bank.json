@@ -6,7 +6,25 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "industrial_core:energy_bank"
+          "name": "industrial_core:energy_bank",
+          "functions": [
+            {
+              "function": "minecraft:copy_nbt",
+              "source": "block_entity",
+              "ops": [
+                {
+                  "source": "energy",
+                  "target": "BlockEntityTag.energy",
+                  "op": "replace"
+                },
+                {
+                  "source": "reserve",
+                  "target": "BlockEntityTag.reserve",
+                  "op": "replace"
+                }
+              ]
+            }
+          ]
         }
       ],
       "conditions": [

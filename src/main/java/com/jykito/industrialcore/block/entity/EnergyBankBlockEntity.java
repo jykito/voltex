@@ -1,6 +1,7 @@
 package com.jykito.industrialcore.block.entity;
 
 import com.jykito.industrialcore.block.custom.EnergyBankBlock;
+import com.jykito.industrialcore.block.custom.EnergyBankTier;
 import com.jykito.industrialcore.energy.MachineEnergy;
 import com.jykito.industrialcore.menu.EnergyBankMenu;
 import net.minecraft.core.BlockPos;
@@ -13,6 +14,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,20 +28,19 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Energy bank: FE storage. Accepts on all sides, pushes surplus to neighbours (keeps a RESERVE %).
  * The charge reaches the client two ways: blockstate LEVEL (gauge on the side) + ContainerData (GUI).
+ * Capacity and throughput come from the block's {@link EnergyBankTier}. The charge travels with the item
+ * (BlockEntityTag), so a bank can be moved and upgraded without losing it.
  */
 public class EnergyBankBlockEntity extends BlockEntity implements MenuProvider {
 
-    public static final int CAPACITY = 10_000_000;
-    private static final int IO_RATE  = 100_000;
-    private static final int HYST     = CAPACITY / 100; // gauge level hysteresis (1%), so it does not flicker at a boundary
-
     private static class BankEnergy extends MachineEnergy {
         int inTick, outTick;                       // flow accumulated per tick (for the monitor)
-        BankEnergy() { super(CAPACITY, IO_RATE, IO_RATE); }
+        BankEnergy(EnergyBankTier tier) { super(tier.capacity, tier.ioRate, tier.ioRate); }
         @Override public int receiveEnergy(int max, boolean sim) { int r = super.receiveEnergy(max, sim); if (!sim) inTick += r; return r; }
         @Override public int extractEnergy(int max, boolean sim) { int e = super.extractEnergy(max, sim); if (!sim) outTick += e; return e; }
     }
-    private final BankEnergy energy = new BankEnergy();
+    private final EnergyBankTier tier;
+    private final BankEnergy energy;
     private LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.empty();
 
     private int reservePercent = 0;      // keep this % in reserve (do not give below it)
@@ -48,6 +49,8 @@ public class EnergyBankBlockEntity extends BlockEntity implements MenuProvider {
 
     public EnergyBankBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ENERGY_BANK_BE.get(), pos, state);
+        this.tier = tierOf(state);
+        this.energy = new BankEnergy(tier);
         this.data = new ContainerData() {
             @Override public int get(int i) {
                 int e = energy.getEnergyStored();
@@ -59,16 +62,30 @@ public class EnergyBankBlockEntity extends BlockEntity implements MenuProvider {
                     case 4 -> ioOut & 0xFFFF;
                     case 5 -> (ioOut >>> 16) & 0xFFFF;
                     case 6 -> reservePercent;
+                    case 7 -> tier.capacity & 0xFFFF;
+                    case 8 -> (tier.capacity >>> 16) & 0xFFFF;
                     default -> 0;
                 };
             }
             @Override public void set(int i, int v) {}
-            @Override public int getCount() { return 7; }
+            @Override public int getCount() { return 9; }
         };
     }
 
     public int getEnergyStored() { return energy.getEnergyStored(); }
-    public int getMaxEnergy()    { return CAPACITY; }
+    public int getMaxEnergy()    { return tier.capacity; }
+    public EnergyBankTier getTier() { return tier; }
+
+    private static EnergyBankTier tierOf(BlockState state) {
+        return state.getBlock() instanceof EnergyBankBlock b ? b.tier : EnergyBankTier.T1;
+    }
+
+    /** The bank as an item that keeps its charge and reserve, for the wrench and for the upgrade recipe. */
+    public ItemStack toItem() {
+        ItemStack stack = new ItemStack(getBlockState().getBlock());
+        if (energy.getEnergyStored() > 0 || reservePercent > 0) saveToItem(stack);
+        return stack;
+    }
     public int getReserve()      { return reservePercent; }
     public void setReserve(int pct) { reservePercent = Mth.clamp(pct, 0, 100); setChanged(); }
 
@@ -81,7 +98,7 @@ public class EnergyBankBlockEntity extends BlockEntity implements MenuProvider {
         return super.getCapability(cap, side);
     }
 
-    @Override public Component getDisplayName() { return Component.translatable("block.industrial_core.energy_bank"); }
+    @Override public Component getDisplayName() { return Component.translatable(getBlockState().getBlock().getDescriptionId()); }
     @Nullable @Override public AbstractContainerMenu createMenu(int id, Inventory inv, Player player) {
         return new EnergyBankMenu(id, inv, this, this.data);
     }
@@ -96,14 +113,15 @@ public class EnergyBankBlockEntity extends BlockEntity implements MenuProvider {
         be.ioIn = Math.max(0, net); be.ioOut = Math.max(0, -net);
 
         // output: keep the RESERVE, push the surplus into receiving neighbours
-        int reserveAmt = be.reservePercent * (CAPACITY / 100);
+        final int capacity = be.tier.capacity, ioRate = be.tier.ioRate;
+        int reserveAmt = be.reservePercent * (capacity / 100);
         if (be.energy.getEnergyStored() - reserveAmt > 0) {
             for (Direction d : Direction.values()) {
                 int avail = be.energy.getEnergyStored() - reserveAmt;
                 if (avail <= 0) break;
                 BlockEntity nbe = level.getBlockEntity(pos.relative(d));
                 if (nbe == null) continue;
-                final int cap = Math.min(IO_RATE, avail);
+                final int cap = Math.min(ioRate, avail);
                 nbe.getCapability(ForgeCapabilities.ENERGY, d.getOpposite()).ifPresent(n -> {
                     if (n.canReceive()) {
                         int sent = n.receiveEnergy(cap, false);
@@ -116,8 +134,9 @@ public class EnergyBankBlockEntity extends BlockEntity implements MenuProvider {
         // visual level 0..10 (hysteresis + throttle: remesh ONLY when the level changes)
         int charge = be.energy.getEnergyStored();
         int lvl = state.getValue(EnergyBankBlock.LEVEL), nl = lvl;
-        while (nl < 10 && charge >= (nl + 1) * (CAPACITY / 10)) nl++;
-        while (nl > 0 && charge <  nl * (CAPACITY / 10) - HYST) nl--;
+        final int step = capacity / 10, hyst = capacity / 100;   // hysteresis 1%, so the gauge does not flicker at a boundary
+        while (nl < 10 && charge >= (nl + 1) * step) nl++;
+        while (nl > 0 && charge <  nl * step - hyst) nl--;
         if (nl != lvl) level.setBlock(pos, state.setValue(EnergyBankBlock.LEVEL, nl), 2);
     }
 

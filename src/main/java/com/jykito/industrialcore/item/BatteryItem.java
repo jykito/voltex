@@ -48,7 +48,7 @@ public class BatteryItem extends Item {
     @Override
     public int getBarWidth(ItemStack pStack) {
         return pStack.getCapability(ForgeCapabilities.ENERGY)
-                .map(energy -> Math.round(13.0F * energy.getEnergyStored() / energy.getMaxEnergyStored()))
+                .map(energy -> com.jykito.industrialcore.ModStyle.energyBar(energy.getEnergyStored(), energy.getMaxEnergyStored()))
                 .orElse(0);
     }
 

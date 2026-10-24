@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "  F",
+    " F ",
+    "A  "
+  ],
+  "key": {
+    "F": {
+      "item": "industrial_core:glass_fiber"
+    },
+    "A": {
+      "tag": "forge:plates/aluminum"
+    }
+  },
+  "result": {
+    "item": "industrial_core:wind_turbine_blade"
+  }
+}

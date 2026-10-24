@@ -67,6 +67,9 @@
     "industrial_core:heat_pipe",
     "industrial_core:heat_pipe_t2",
     "industrial_core:energy_bank",
+    "industrial_core:energy_bank_t2",
+    "industrial_core:energy_bank_t3",
+    "industrial_core:charging_plate",
     "industrial_core:distant_controller",
     "industrial_core:thermostation_core",
     "industrial_core:thermostation_expander",
@@ -116,6 +119,9 @@
     "industrial_core:drill_beacon",
     "industrial_core:me_input_port",
     "industrial_core:me_output_port",
-    "industrial_core:me_pattern_port"
+    "industrial_core:me_pattern_port",
+    "industrial_core:wind_turbine_base",
+    "industrial_core:wind_turbine_mast",
+    "industrial_core:wind_turbine_nacelle"
   ]
 }

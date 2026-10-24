@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GMG",
+    "SCS",
+    "EEE"
+  ],
+  "key": {
+    "G": {
+      "item": "industrial_core:glass_fiber"
+    },
+    "M": {
+      "item": "industrial_core:microcontroller"
+    },
+    "S": {
+      "item": "industrial_core:copper_solenoid"
+    },
+    "C": {
+      "item": "industrial_core:battery_charger"
+    },
+    "E": {
+      "tag": "forge:plates/electrum"
+    }
+  },
+  "result": {
+    "item": "industrial_core:charging_plate"
+  }
+}

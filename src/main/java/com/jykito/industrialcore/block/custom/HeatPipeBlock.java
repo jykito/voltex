@@ -3,11 +3,13 @@ package com.jykito.industrialcore.block.custom;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.PipeBlock;
 import com.jykito.industrialcore.block.ModBlocks;
+import com.jykito.industrialcore.block.custom.cover.Covers;
 import com.jykito.industrialcore.block.entity.HeatPipeBlockEntity;
 import com.jykito.industrialcore.block.entity.ModBlockEntities;
 import com.jykito.industrialcore.heat.HeatCapability;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -47,15 +49,35 @@ public class HeatPipeBlock extends BaseEntityBlock {
         registerDefaultState(stateDefinition.any()
                 .setValue(NORTH, false).setValue(SOUTH, false)
                 .setValue(EAST, false).setValue(WEST, false)
-                .setValue(UP, false).setValue(DOWN, false).setValue(HOT, false));
+                .setValue(UP, false).setValue(DOWN, false).setValue(HOT, false).setValue(Covers.COVERED, false));
     }
 
     @Override public RenderShape getRenderShape(BlockState s) { return RenderShape.MODEL; }
 
-    /** The shape does not depend on heat, HOT is not part of the mask. */
+    /** The shape does not depend on heat, HOT is not part of the mask; a covered pipe is a full block. */
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
-        return SHAPES.get(state, PROPERTY_BY_DIRECTION);
+        return Covers.shape(state, SHAPES.get(state, PROPERTY_BY_DIRECTION));
+    }
+
+    // a cover blocks light and mines like the block it shows
+    @Override public int getLightBlock(BlockState state, BlockGetter level, BlockPos pos) { return Covers.isCovered(state) ? 15 : super.getLightBlock(state, level, pos); }
+    @Override public boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) { return !Covers.isCovered(state) && super.propagatesSkylightDown(state, level, pos); }
+    @Override public float getDestroyProgress(BlockState state, Player player, BlockGetter level, BlockPos pos) {
+        return Covers.destroyProgress(state, player, level, pos, super.getDestroyProgress(state, player, level, pos));
+    }
+
+    @Override
+    public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        Covers.forgetInCreative(level, pos, player);
+        super.playerWillDestroy(level, pos, state, player);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moving) {
+        if (!state.is(newState.getBlock())) Covers.dropOnRemove(level, pos);
+        super.onRemove(state, level, pos, newState, moving);
     }
 
     @Nullable @Override
@@ -108,6 +130,6 @@ public class HeatPipeBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> b) {
-        b.add(NORTH, SOUTH, EAST, WEST, UP, DOWN, HOT);
+        b.add(NORTH, SOUTH, EAST, WEST, UP, DOWN, HOT, Covers.COVERED);
     }
 }

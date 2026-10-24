@@ -93,7 +93,7 @@ public abstract class EnergyWeaponItem extends Item {
 
     @Override public boolean isDamageable(ItemStack stack) { return false; }
     @Override public boolean isBarVisible(ItemStack stack) { return true; }
-    @Override public int getBarWidth(ItemStack stack) { return Math.round(13.0f * getEnergy(stack) / capacity); }
+    @Override public int getBarWidth(ItemStack stack) { return ModStyle.energyBar(getEnergy(stack), capacity); }
     @Override public int getBarColor(ItemStack stack) { return ModStyle.ENERGY; }
 
     @Override

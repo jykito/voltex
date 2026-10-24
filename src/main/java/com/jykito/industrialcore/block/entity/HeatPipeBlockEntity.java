@@ -19,7 +19,13 @@ import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class HeatPipeBlockEntity extends BlockEntity {
+public class HeatPipeBlockEntity extends BlockEntity implements com.jykito.industrialcore.block.custom.cover.CoverHolder {
+
+    /** The block this pipe hides in, or null. See {@link com.jykito.industrialcore.block.custom.cover.Covers}. */
+    private @Nullable BlockState cover;
+
+    @Override public @Nullable BlockState getCover() { return cover; }
+    @Override public void setCover(@Nullable BlockState cover) { this.cover = cover; setChanged(); }
 
     public static final int MAX_HEAT = 4000;
     private static final int THROUGHPUT = 128;    // max flow per tick per neighbour (T1)
@@ -266,6 +272,7 @@ public class HeatPipeBlockEntity extends BlockEntity {
         byte[] dis = new byte[6];
         for (int i = 0; i < 6; i++) dis[i] = (byte) (disabled[i] ? 1 : 0);
         tag.putByteArray("disabled", dis);
+        com.jykito.industrialcore.block.custom.cover.Covers.save(tag, cover);
     }
 
     @Override
@@ -274,6 +281,10 @@ public class HeatPipeBlockEntity extends BlockEntity {
         buffer.setHeat(tag.getInt("heat"));
         byte[] dis = tag.getByteArray("disabled");
         if (dis.length == 6) for (int i = 0; i < 6; i++) disabled[i] = dis[i] != 0;
+        BlockState oldCover = cover;
+        cover = com.jykito.industrialcore.block.custom.cover.Covers.load(tag);
+        // the client rebuilds the chunk so the model picks the new cover up (heat updates alone do not need a remesh)
+        if (level != null && level.isClientSide() && oldCover != cover) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 8);
     }
 
     @Override public CompoundTag getUpdateTag() { CompoundTag t = new CompoundTag(); saveAdditional(t); return t; }

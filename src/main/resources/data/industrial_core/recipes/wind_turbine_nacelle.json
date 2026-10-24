@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " A ",
+    "SMS",
+    "ALA"
+  ],
+  "key": {
+    "A": {
+      "tag": "forge:plates/aluminum"
+    },
+    "S": {
+      "item": "industrial_core:copper_solenoid"
+    },
+    "M": {
+      "item": "industrial_core:electric_motor"
+    },
+    "L": {
+      "item": "industrial_core:logic_board"
+    }
+  },
+  "result": {
+    "item": "industrial_core:wind_turbine_nacelle"
+  }
+}

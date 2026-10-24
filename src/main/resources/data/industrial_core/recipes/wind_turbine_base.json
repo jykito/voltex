@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " C ",
+    "PKP",
+    "PAP"
+  ],
+  "key": {
+    "C": {
+      "item": "industrial_core:copper_cable"
+    },
+    "P": {
+      "tag": "forge:plates/iron"
+    },
+    "K": {
+      "tag": "forge:components/machine_casing"
+    },
+    "A": {
+      "item": "industrial_core:battery"
+    }
+  },
+  "result": {
+    "item": "industrial_core:wind_turbine_base"
+  }
+}

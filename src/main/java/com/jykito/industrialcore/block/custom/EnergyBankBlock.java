@@ -21,13 +21,19 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
-/** Energy bank: stationary FE storage. LEVEL 0..10 = visual charge scale (blockstate -> 11 textures). */
+/**
+ * Energy bank: stationary FE storage. LEVEL 0..10 = visual charge scale (blockstate -> 11 textures).
+ * All tiers share one block entity type; the tier sets capacity and throughput.
+ */
 public class EnergyBankBlock extends BaseEntityBlock {
 
     public static final IntegerProperty LEVEL = IntegerProperty.create("level", 0, 10);
 
-    public EnergyBankBlock(Properties p) {
+    public final EnergyBankTier tier;
+
+    public EnergyBankBlock(Properties p, EnergyBankTier tier) {
         super(p);
+        this.tier = tier;
         registerDefaultState(stateDefinition.any().setValue(LEVEL, 0));
     }
 

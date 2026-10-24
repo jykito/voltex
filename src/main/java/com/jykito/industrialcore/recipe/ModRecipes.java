@@ -15,6 +15,9 @@ public class ModRecipes {
     public static final DeferredRegister<RecipeSerializer<?>> SERIALIZERS =
             DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, IndustrialCore.MODID);
 
+    public static final RegistryObject<RecipeSerializer<EnergyBankUpgradeRecipe>> ENERGY_BANK_UPGRADE_SERIALIZER =
+            SERIALIZERS.register("energy_bank_upgrade", () -> EnergyBankUpgradeRecipe.Serializer.INSTANCE);
+
     public static final RegistryObject<RecipeSerializer<MachineRecipe>> MACHINE_SERIALIZER =
             SERIALIZERS.register("machine_recipe", () -> MachineRecipe.Serializer.INSTANCE);
 

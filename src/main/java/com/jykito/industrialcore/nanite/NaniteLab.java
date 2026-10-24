@@ -7,6 +7,7 @@ import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -31,6 +32,19 @@ public final class NaniteLab {
         THRESHOLDS.put("stellar", 0.90f);
     }
 
+    /** Data card item of a topic registered by an add-on; built-in topics use {@code industrial_core:data_card_<topic>}. */
+    private static final Map<String, ResourceLocation> CARDS = new HashMap<>();
+
+    /**
+     * Add-on scientist topic (API, see {@code api.VoltexNanites}). Call during mod setup. The topic then shows up in the
+     * atlas, the lab and JEI like the built-in ones; its samples go into the tag {@code industrial_core:nanite_research/<topic>},
+     * its name into the lang key {@code nanite_theme.industrial_core.<topic>}.
+     */
+    public static synchronized void registerTopic(String topic, float threshold, ResourceLocation cardItem) {
+        THRESHOLDS.put(topic, threshold);
+        CARDS.put(topic, cardItem);
+    }
+
     public static final int SLOW_TICKS = 1200, FAST_TICKS = 400;
 
     /** Topic threshold; unreachable for an unknown topic. */
@@ -43,7 +57,8 @@ public final class NaniteLab {
     }
 
     public static ResourceLocation cardId(String theme) {
-        return new ResourceLocation(IndustrialCore.MODID, "data_card_" + theme);
+        ResourceLocation custom = CARDS.get(theme);
+        return custom != null ? custom : new ResourceLocation(IndustrialCore.MODID, "data_card_" + theme);
     }
 
     public static @Nullable Item card(String theme) {

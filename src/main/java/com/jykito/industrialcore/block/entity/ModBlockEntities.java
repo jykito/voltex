@@ -61,6 +61,21 @@ public class ModBlockEntities {
                     () -> BlockEntityType.Builder.of(BatteryChargerBlockEntity::new,
                             ModBlocks.BATTERY_CHARGER.get()).build(null));
 
+    public static final RegistryObject<BlockEntityType<ChargingPlateBlockEntity>> CHARGING_PLATE_BE =
+            BLOCK_ENTITIES.register("charging_plate_be",
+                    () -> BlockEntityType.Builder.of(ChargingPlateBlockEntity::new,
+                            ModBlocks.CHARGING_PLATE.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<WindTurbineBaseBlockEntity>> WIND_TURBINE_BASE_BE =
+            BLOCK_ENTITIES.register("wind_turbine_base_be",
+                    () -> BlockEntityType.Builder.of(WindTurbineBaseBlockEntity::new,
+                            ModBlocks.WIND_TURBINE_BASE.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<WindTurbineNacelleBlockEntity>> WIND_TURBINE_NACELLE_BE =
+            BLOCK_ENTITIES.register("wind_turbine_nacelle_be",
+                    () -> BlockEntityType.Builder.of(WindTurbineNacelleBlockEntity::new,
+                            ModBlocks.WIND_TURBINE_NACELLE.get()).build(null));
+
     public static final RegistryObject<BlockEntityType<FluidEnricherBlockEntity>> FLUID_ENRICHER_BE =
             BLOCK_ENTITIES.register("fluid_enricher_be", () ->
                     BlockEntityType.Builder.of(FluidEnricherBlockEntity::new,
@@ -213,7 +228,7 @@ public class ModBlockEntities {
     public static final RegistryObject<BlockEntityType<EnergyBankBlockEntity>> ENERGY_BANK_BE =
             BLOCK_ENTITIES.register("energy_bank_be", () ->
                     BlockEntityType.Builder.of(EnergyBankBlockEntity::new,
-                            ModBlocks.ENERGY_BANK.get()).build(null));
+                            ModBlocks.ENERGY_BANK.get(), ModBlocks.ENERGY_BANK_T2.get(), ModBlocks.ENERGY_BANK_T3.get()).build(null));
 
     /** One type for input and output ports: the entity takes its direction from the block. */
     public static final RegistryObject<BlockEntityType<ItemFluidPortBlockEntity>> ITEM_FLUID_PORT_BE =

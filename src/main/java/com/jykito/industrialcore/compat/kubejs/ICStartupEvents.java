@@ -12,4 +12,7 @@ public class ICStartupEvents {
 
     public static final EventHandler RESTRUCTOR =
             GROUP.startup("restructor", () -> RestructorEventJS.class);
+
+    public static final EventHandler WIND_ROTOR =
+            GROUP.startup("windRotor", () -> WindRotorEventJS.class);
 }

@@ -125,13 +125,17 @@ public final class ClientSetup {
                 com.jykito.industrialcore.client.miner.IndustrialMinerBER::new);
         event.registerBlockEntityRenderer(ModBlockEntities.DRILL_BEACON_BE.get(),
                 com.jykito.industrialcore.client.miner.DrillBeaconBER::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.WIND_TURBINE_NACELLE_BE.get(),
+                com.jykito.industrialcore.client.wind.WindTurbineBER::new);
     }
 
-    /** The industrial miner model is read from resources once; reread it after a resource reload. */
+    /** The industrial miner and wind turbine models are read from resources once; reread them after a resource reload. */
     @SubscribeEvent
     public static void onRegisterReloadListeners(net.minecraftforge.client.event.RegisterClientReloadListenersEvent event) {
-        event.registerReloadListener((net.minecraft.server.packs.resources.ResourceManagerReloadListener) rm ->
-                com.jykito.industrialcore.client.miner.IndustrialMinerModel.clear());
+        event.registerReloadListener((net.minecraft.server.packs.resources.ResourceManagerReloadListener) rm -> {
+            com.jykito.industrialcore.client.miner.IndustrialMinerModel.clear();
+            com.jykito.industrialcore.client.wind.WindTurbineModel.clear();
+        });
     }
 
     @SubscribeEvent
@@ -164,6 +168,30 @@ public final class ClientSetup {
                 if (model != null && !(model instanceof GlassCtmModel)) event.getModels().put(key, new GlassCtmModel(model));
             }
         }
+        // cables and heat pipes: a cover swaps the model for the cover block's (see CoverModel)
+        for (net.minecraft.world.level.block.Block block : coverableBlocks()) {
+            for (net.minecraft.world.level.block.state.BlockState s : block.getStateDefinition().getPossibleStates()) {
+                ResourceLocation key = net.minecraft.client.renderer.block.BlockModelShaper.stateToModelLocation(s);
+                net.minecraft.client.resources.model.BakedModel model = event.getModels().get(key);
+                if (model != null && !(model instanceof CoverModel)) event.getModels().put(key, new CoverModel(model));
+            }
+        }
+    }
+
+    private static java.util.List<net.minecraft.world.level.block.Block> coverableBlocks() {
+        return net.minecraftforge.registries.ForgeRegistries.BLOCKS.getValues().stream()
+                .filter(b -> b.defaultBlockState().hasProperty(com.jykito.industrialcore.block.custom.cover.Covers.COVERED)).toList();
+    }
+
+    /** A covered block takes the cover's tint (grass, leaves); an uncovered cable has none. */
+    @SubscribeEvent
+    public static void onRegisterBlockColors(RegisterColorHandlersEvent.Block event) {
+        net.minecraft.client.color.block.BlockColors colors = event.getBlockColors();
+        event.register((state, level, pos, tint) -> {
+            if (level == null || pos == null || !com.jykito.industrialcore.block.custom.cover.Covers.isCovered(state)) return -1;
+            return level.getBlockEntity(pos) instanceof com.jykito.industrialcore.block.custom.cover.CoverHolder h && h.getCover() != null
+                    ? colors.getColor(h.getCover(), level, pos, tint) : -1;
+        }, coverableBlocks().toArray(net.minecraft.world.level.block.Block[]::new));
     }
 
     @SubscribeEvent

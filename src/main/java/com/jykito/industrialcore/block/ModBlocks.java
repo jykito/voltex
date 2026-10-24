@@ -265,6 +265,24 @@ public class ModBlocks {
                     .strength(5.0f, 6.0f)
                     .requiresCorrectToolForDrops()));
 
+    // wind turbine: base, mast sections, nacelle (block.custom.wind.WindTurbine has the rules)
+    public static final RegistryObject<Block> WIND_TURBINE_BASE = BLOCKS.register("wind_turbine_base",
+            () -> new com.jykito.industrialcore.block.custom.wind.WindTurbineBaseBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.METAL).strength(3.0f).requiresCorrectToolForDrops().sound(SoundType.METAL)));
+
+    public static final RegistryObject<Block> WIND_TURBINE_MAST = BLOCKS.register("wind_turbine_mast",
+            () -> new com.jykito.industrialcore.block.custom.wind.WindTurbineMastBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.METAL).strength(2.5f).requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
+
+    public static final RegistryObject<Block> WIND_TURBINE_NACELLE = BLOCKS.register("wind_turbine_nacelle",
+            () -> new com.jykito.industrialcore.block.custom.wind.WindTurbineNacelleBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.METAL).strength(3.0f).requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
+
+    public static final RegistryObject<Block> CHARGING_PLATE = BLOCKS.register("charging_plate",
+            () -> new com.jykito.industrialcore.block.custom.ChargingPlateBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
+                    .strength(5.0f, 6.0f).requiresCorrectToolForDrops().noOcclusion()
+                    .lightLevel(s -> s.getValue(com.jykito.industrialcore.block.custom.ChargingPlateBlock.CHARGING) ? 6 : 0)));
+
     public static final RegistryObject<Block> FLUID_ENRICHER = BLOCKS.register("fluid_enricher",
             () -> new com.jykito.industrialcore.block.custom.FluidEnricherBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops().strength(5.0f)));
 
@@ -426,7 +444,14 @@ public class ModBlocks {
             () -> new com.jykito.industrialcore.block.custom.HeatPipeBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(1.5f).noOcclusion()));
 
     public static final RegistryObject<Block> ENERGY_BANK = BLOCKS.register("energy_bank",
-            () -> new com.jykito.industrialcore.block.custom.EnergyBankBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(3.0f).requiresCorrectToolForDrops()));
+            () -> new com.jykito.industrialcore.block.custom.EnergyBankBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(3.0f).requiresCorrectToolForDrops(),
+                    com.jykito.industrialcore.block.custom.EnergyBankTier.T1));
+    public static final RegistryObject<Block> ENERGY_BANK_T2 = BLOCKS.register("energy_bank_t2",
+            () -> new com.jykito.industrialcore.block.custom.EnergyBankBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(3.5f).requiresCorrectToolForDrops(),
+                    com.jykito.industrialcore.block.custom.EnergyBankTier.T2));
+    public static final RegistryObject<Block> ENERGY_BANK_T3 = BLOCKS.register("energy_bank_t3",
+            () -> new com.jykito.industrialcore.block.custom.EnergyBankBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(4.0f).requiresCorrectToolForDrops(),
+                    com.jykito.industrialcore.block.custom.EnergyBankTier.T3));
 
     // ── Electromagnet / particle accelerator (multiblock) ──
     public static final RegistryObject<Block> STRUCTURAL_BLOCK = BLOCKS.register("structural_block",

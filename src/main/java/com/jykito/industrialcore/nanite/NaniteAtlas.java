@@ -90,9 +90,9 @@ public final class NaniteAtlas {
             if (id != null && !icons.contains(key)) icons.putString(key, id.toString());
             changed = true;
         }
-        for (NaniteTrait t : g.traits()) {
-            if (traits.contains(t.key())) continue;
-            traits.putBoolean(t.key(), true);
+        for (String key : g.allTraitKeys()) {
+            if (traits.contains(key)) continue;
+            traits.putBoolean(key, true);
             changed = true;
             com.jykito.industrialcore.advancement.VoltexEventTrigger.INSTANCE.trigger(player,
                     com.jykito.industrialcore.advancement.VoltexEventTrigger.NANITE_RARE);   // rare species = trait
@@ -108,8 +108,8 @@ public final class NaniteAtlas {
 
     /** Species name: "Miner: copper ore", "Scientist: matter". */
     public static Component speciesName(NaniteGenome.Kind kind, String target, @Nullable Item icon) {
-        Component what = kind == NaniteGenome.Kind.SCIENTIST ? Component.translatable("nanite_theme.industrial_core." + target)
-                : icon != null ? icon.getDescription() : Component.literal(target);
-        return Component.translatable("nanite_species.industrial_core." + kind.key(), what);
+        Component named = kind.targetName(target);
+        Component what = named != null ? named : icon != null ? icon.getDescription() : Component.literal(target);
+        return Component.translatable(kind.lang("nanite_species.industrial_core"), what);
     }
 }

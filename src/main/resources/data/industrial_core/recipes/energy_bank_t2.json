@@ -1,0 +1,26 @@
+{
+  "type": "industrial_core:energy_bank_upgrade",
+  "category": "misc",
+  "pattern": [
+    "KQK",
+    "WBW",
+    "KQK"
+  ],
+  "key": {
+    "K": {
+      "item": "industrial_core:kronium_alloy"
+    },
+    "Q": {
+      "item": "industrial_core:quantum_capacitor"
+    },
+    "W": {
+      "item": "industrial_core:superconducting_wire"
+    },
+    "B": {
+      "item": "industrial_core:energy_bank"
+    }
+  },
+  "result": {
+    "item": "industrial_core:energy_bank_t2"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "charging=false": {
+      "model": "industrial_core:block/charging_plate"
+    },
+    "charging=true": {
+      "model": "industrial_core:block/charging_plate_on"
+    }
+  }
+}

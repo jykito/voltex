@@ -71,7 +71,12 @@ public class EvolutionChamberScreen extends MachineScreen<EvolutionChamberMenu> 
         NaniteFeed food = NaniteFeed.of(feed);
         String target = food == null ? genome.dominant() : food.target();
         if (target == null) return;
-        Component name = NaniteStrainItem.targetName(genome, target, food == null || food.kind() == NaniteGenome.Kind.SCIENTIST ? null : feed);
+        if (food != null && genome.kind() != null && food.kind() != genome.kind()) {
+            // feed of another class: the strain does not evolve on it, so name the feed itself, without the class's reading
+            text(g, clip(feed.getHoverName().getString(), room), x + TEXT_X, y + LINE2_Y, C_LABEL);
+            return;
+        }
+        Component name = NaniteStrainItem.targetName(genome, target, food == null || food.kind().targetName(target) != null ? null : feed);
         text(g, clip(name.getString() + "  " + NaniteStrainItem.effectShort(genome, target).getString(), room), x + TEXT_X, y + LINE2_Y, C_ACCENT);
     }
 
@@ -83,7 +88,8 @@ public class EvolutionChamberScreen extends MachineScreen<EvolutionChamberMenu> 
             int ly = bottom - 1 - Math.round((GRAPH_H - 1) * k / 3f);
             for (int px = gx; px < gx + GRAPH_W; px += 4) g.fill(px, ly, px + 2, ly + 1, C_GRID);
         }
-        boolean scientist = !strain.isEmpty() && NaniteGenome.kindOf(strain) == NaniteGenome.Kind.SCIENTIST;
+        NaniteGenome.Kind strainKind = strain.isEmpty() ? null : NaniteGenome.kindOf(strain);
+        boolean scientist = strainKind != null && strainKind.knowledge();
         small(g, (scientist ? "" : "+") + Math.round(top * 100) + "%", gx + 2, gy + 1, C_LABEL);
 
         List<Integer> h = menu.chamber.getHistory();

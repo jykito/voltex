@@ -159,7 +159,7 @@ public class EvolutionChamberBlockEntity extends BlockEntity implements MenuProv
             history.add(permille(parent.bonus(target)));
         }
         NaniteGenome next = NaniteEvolution.step(parent, food.kind(), target, feed.getItem(), heat, level.random);
-        NaniteTraits.update(next, food.kind(), target, new NaniteTraits.Env(cold(level), field(level), heat));
+        NaniteTraits.update(next, food.kind(), target, new NaniteTraits.Env(cold(level), field(level), heat, com.jykito.industrialcore.nanite.NaniteTraitRegistry.probe(level, worldPosition)));
         ItemStack out = strain.copy();
         next.write(out);
         items.setStackInSlot(SLOT_STRAIN, out);

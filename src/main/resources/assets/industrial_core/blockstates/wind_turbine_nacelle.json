@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "industrial_core:block/wind_turbine_nacelle"
+    }
+  }
+}

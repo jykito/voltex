@@ -41,5 +41,6 @@ public class ICKubeJSPlugin extends KubeJSPlugin {
     public void initStartup() {
         ICStartupEvents.SOLAR_PANEL.post(ScriptType.STARTUP, new SolarPanelEventJS());
         ICStartupEvents.RESTRUCTOR.post(ScriptType.STARTUP, new RestructorEventJS());
+        ICStartupEvents.WIND_ROTOR.post(ScriptType.STARTUP, new WindRotorEventJS());
     }
 }

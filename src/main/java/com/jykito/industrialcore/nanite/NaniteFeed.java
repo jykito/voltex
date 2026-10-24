@@ -29,6 +29,11 @@ public record NaniteFeed(NaniteGenome.Kind kind, String target, boolean consumed
         if (ore != null) return new NaniteFeed(NaniteGenome.Kind.MINER, ore, true);
         String dust = OreMaterial.dust(item);
         if (dust != null) return new NaniteFeed(NaniteGenome.Kind.PROCESSOR, dust, true);
+        // add-on classes after the built-in ones, so a Voltex feed never changes meaning
+        for (NaniteGenome.Kind k : NaniteGenome.Kind.addOns()) {
+            String target = k.feedTarget(item);
+            if (target != null) return new NaniteFeed(k, target, k.consumesFeed());
+        }
         return null;
     }
 

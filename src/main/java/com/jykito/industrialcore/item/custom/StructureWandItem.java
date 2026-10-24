@@ -79,10 +79,13 @@ public class StructureWandItem extends Item {
         boolean cryo = state.getBlock() instanceof CryoCoreBlock;
         boolean late = state.getBlock() instanceof LateMachineCoreBlock;
         boolean miner = state.getBlock() instanceof com.jykito.industrialcore.block.custom.IndustrialMinerCoreBlock;
-        if ((magnet || cryo || late || miner) && player != null) {
+        boolean addon = state.getBlock() instanceof com.jykito.industrialcore.api.WandAssemblable;   // multiblocks of other mods
+        if ((magnet || cryo || late || miner || addon) && player != null) {
             if (!level.isClientSide) {
                 WandBuild wb = new WandBuild(player);
-                if (magnet)
+                if (addon)
+                    ((com.jykito.industrialcore.api.WandAssemblable) state.getBlock()).buildWithWand(level, pos, state, wb);
+                else if (magnet)
                     ElectromagnetCoreBlockEntity.buildStructure(level, pos, state.getValue(ElectromagnetCoreBlock.FACING), wb);
                 else if (cryo)
                     CryoCoreBlockEntity.buildStructure(level, pos, state.getValue(CryoCoreBlock.FACING), wb);

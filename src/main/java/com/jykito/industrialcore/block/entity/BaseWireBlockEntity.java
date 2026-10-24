@@ -2,6 +2,12 @@ package com.jykito.industrialcore.block.entity;
 
 import com.jykito.industrialcore.block.custom.wire.BaseWireBlock;
 import com.jykito.industrialcore.block.custom.wire.WireTier;
+import com.jykito.industrialcore.block.custom.cover.CoverHolder;
+import com.jykito.industrialcore.block.custom.cover.Covers;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -19,8 +25,10 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-public class BaseWireBlockEntity extends BlockEntity {
+public class BaseWireBlockEntity extends BlockEntity implements CoverHolder {
     private WireTier tier = WireTier.COPPER;
+    /** The block this cable hides in, or null. See {@link Covers}. */
+    private @Nullable BlockState cover;
     private final LazyOptional<IEnergyStorage> energyProxy;
 
     /**
@@ -53,6 +61,24 @@ public class BaseWireBlockEntity extends BlockEntity {
 
         this.energyProxy = LazyOptional.of(TransitEnergyStorage::new);
     }
+
+    @Override public @Nullable BlockState getCover() { return cover; }
+    @Override public void setCover(@Nullable BlockState cover) { this.cover = cover; setChanged(); }
+
+    @Override protected void saveAdditional(CompoundTag tag) { super.saveAdditional(tag); Covers.save(tag, cover); }
+
+    @Override
+    public void load(CompoundTag tag) {
+        super.load(tag);
+        BlockState oldCover = cover;
+        cover = Covers.load(tag);
+        // the client rebuilds the chunk so the model picks the new cover up
+        if (level != null && level.isClientSide() && oldCover != cover) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 8);
+    }
+
+    @Override public CompoundTag getUpdateTag() { CompoundTag t = new CompoundTag(); saveAdditional(t); return t; }
+    @Override public void handleUpdateTag(CompoundTag tag) { load(tag); }
+    @Nullable @Override public Packet<ClientGamePacketListener> getUpdatePacket() { return ClientboundBlockEntityDataPacket.create(this); }
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
