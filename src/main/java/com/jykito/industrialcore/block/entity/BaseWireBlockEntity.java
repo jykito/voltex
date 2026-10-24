@@ -1,4 +1,5 @@
 package com.jykito.industrialcore.block.entity;
+import net.minecraft.core.HolderLookup;
 import java.util.Optional;
 import com.jykito.industrialcore.capability.Caps;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -6,6 +7,12 @@ import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import com.jykito.industrialcore.block.custom.wire.BaseWireBlock;
 import com.jykito.industrialcore.block.custom.wire.WireTier;
+import com.jykito.industrialcore.block.custom.cover.CoverHolder;
+import com.jykito.industrialcore.block.custom.cover.Covers;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -20,8 +27,10 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-public class BaseWireBlockEntity extends BlockEntity implements Caps.Provider  {
+public class BaseWireBlockEntity extends BlockEntity implements Caps.Provider, CoverHolder {
     private WireTier tier = WireTier.COPPER;
+    /** The block this cable hides in, or null. See {@link Covers}. */
+    private @Nullable BlockState cover;
     private final IEnergyStorage energyProxy = new TransitEnergyStorage();
 
     /**
@@ -54,6 +63,24 @@ public class BaseWireBlockEntity extends BlockEntity implements Caps.Provider  {
         }
 
     }
+
+    @Override public @Nullable BlockState getCover() { return cover; }
+    @Override public void setCover(@Nullable BlockState cover) { this.cover = cover; setChanged(); }
+
+    @Override protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) { super.saveAdditional(tag, registries); Covers.save(tag, cover); }
+
+    @Override
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        BlockState oldCover = cover;
+        cover = Covers.load(tag);
+        // the client rebuilds the chunk so the model picks the new cover up
+        if (level != null && level.isClientSide() && oldCover != cover) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 8);
+    }
+
+    @Override public CompoundTag getUpdateTag(HolderLookup.Provider registries) { CompoundTag t = new CompoundTag(); saveAdditional(t, registries); return t; }
+    @Override public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) { loadAdditional(tag, registries); }
+    @Nullable @Override public Packet<ClientGamePacketListener> getUpdatePacket() { return ClientboundBlockEntityDataPacket.create(this); }
 
     @Override
     @SuppressWarnings("unchecked")

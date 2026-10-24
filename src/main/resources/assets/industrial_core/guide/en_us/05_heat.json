@@ -137,6 +137,10 @@
           ]
         },
         {
+          "type": "tip",
+          "text": "You can hide a cable or a heat pipe inside any full block, like stone or planks, and it keeps working as before. Hold the block, sneak and right-click the cable. To take the cover off, sneak and right-click with the wrench: the first click removes the cover, the next one the cable itself."
+        },
+        {
           "type": "items",
           "items": [
             "industrial_core:heat_pipe",

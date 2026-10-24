@@ -48,8 +48,8 @@ final class NaniteAtlasPages {
                 species.add(speciesPage(kind, target, key, best));
             }
         List<GuideContent.Entry> rare = new ArrayList<>();
-        for (NaniteTrait t : NaniteTrait.values()) {
-            boolean got = NaniteAtlasClient.trait(t);
+        for (com.jykito.industrialcore.nanite.NaniteTraitRegistry.TraitInfo t : com.jykito.industrialcore.nanite.NaniteTraitRegistry.all()) {
+            boolean got = NaniteAtlasClient.trait(t.key());
             total++; if (got) open++;
             rare.add(traitPage(t, got));
         }
@@ -63,6 +63,7 @@ final class NaniteAtlasPages {
 
     /** Class targets in this game: materials by tags or lab topics. */
     private static List<String> targets(NaniteGenome.Kind kind) {
+        if (!kind.builtIn()) return new ArrayList<>(kind.atlasTargets());
         if (kind == NaniteGenome.Kind.SCIENTIST) return new ArrayList<>(NaniteLab.THRESHOLDS.keySet());
         TreeSet<String> ores = materials("ores/"), out = new TreeSet<>();
         if (kind == NaniteGenome.Kind.MINER) return new ArrayList<>(ores);
@@ -84,6 +85,7 @@ final class NaniteAtlasPages {
     private static @Nullable Item sample(NaniteGenome.Kind kind, String target, String key) {
         String id = NaniteAtlasClient.icon(key);
         if (!id.isEmpty()) { Item it = BuiltInRegistries.ITEM.get(ResourceLocation.parse(id)); if (it != null) return it; }
+        if (!kind.builtIn()) return kind.atlasSample(target);
         String prefix = kind == NaniteGenome.Kind.PROCESSOR ? "dusts/" : "ores/";
         TagKey<Item> tag = TagKey.create(net.minecraft.core.registries.Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", prefix + target));
         return BuiltInRegistries.ITEM.getTag(tag).map(HolderSet.Named::stream).flatMap(s -> s.findFirst()).map(h -> h.value()).orElse(null);
@@ -109,15 +111,15 @@ final class NaniteAtlasPages {
         boolean got = best >= 0;
         Item sample = sample(kind, target, key);
         String name = got ? NaniteAtlas.speciesName(kind, target, sample).getString() : "???";
-        String kindName = tr("tooltip.industrial_core.nanite_strain.kind." + kind.key());
+        String kindName = tr(kind.lang("tooltip.industrial_core.nanite_strain.kind"));
         List<GuideContent.Element> els = new ArrayList<>();
         int medal = got ? NaniteAtlas.medal(kind, best) : 0;
         List<String[]> tags = new ArrayList<>();
         tags.add(new String[]{got ? tr("gui.industrial_core.atlas.medal." + medal) : tr("gui.industrial_core.atlas.closed"), MEDAL_COLOR[medal]});
         els.add(new GuideContent.Card(got ? NaniteAtlas.icon(kind, target) : NaniteAtlas.painted(NaniteAtlas.UNKNOWN_COLOR), name, kindName, tags));
-        String what = kind == NaniteGenome.Kind.SCIENTIST ? tr("nanite_theme.industrial_core." + target)
-                : sample != null ? sample.getDescription().getString() : target;
-        els.add(new GuideContent.Text(tr("gui.industrial_core.atlas.how." + kind.key(), what)));
+        net.minecraft.network.chat.Component named = kind.targetName(target);
+        String what = named != null ? named.getString() : sample != null ? sample.getDescription().getString() : target;
+        els.add(new GuideContent.Text(tr(kind.lang("gui.industrial_core.atlas.how"), what)));
         float cap = NaniteGenome.cap(kind);
         List<String[]> rows = new ArrayList<>();
         if (got) rows.add(new String[]{tr("gui.industrial_core.atlas.record"), value(kind, best / 1000f)});
@@ -128,24 +130,24 @@ final class NaniteAtlasPages {
         if (kind == NaniteGenome.Kind.SCIENTIST)
             rows.add(new String[]{tr("gui.industrial_core.atlas.threshold"), pct(NaniteLab.threshold(target))});
         els.add(new GuideContent.Stats(rows));
-        String id = kind.key() + "_" + target;
+        String id = kind.key().replace(':', '_') + "_" + target;
         return new GuideContent.Entry("atlas_" + id, name, els, got ? NaniteAtlas.icon(kind, target) : NaniteAtlas.painted(NaniteAtlas.UNKNOWN_COLOR));
     }
 
-    private static GuideContent.Entry traitPage(NaniteTrait t, boolean got) {
-        String name = got ? tr("nanite_trait.industrial_core." + t.key()) : "???";
+    private static GuideContent.Entry traitPage(com.jykito.industrialcore.nanite.NaniteTraitRegistry.TraitInfo t, boolean got) {
+        String name = got ? tr(t.langKey()) : "???";
         List<GuideContent.Element> els = new ArrayList<>();
         List<String[]> tags = new ArrayList<>();
         tags.add(new String[]{tr(got ? "gui.industrial_core.atlas.rare" : "gui.industrial_core.atlas.closed"), got ? "#c98bff" : MEDAL_COLOR[0]});
         ItemStack icon = NaniteAtlas.painted(got ? t.color() : NaniteAtlas.UNKNOWN_COLOR);
         els.add(new GuideContent.Card(icon, name, tr("gui.industrial_core.atlas.rare_kind"), tags));
-        els.add(new GuideContent.Text(tr("nanite_trait.industrial_core." + t.key() + (got ? ".how" : ".hint"))));
-        if (got) els.add(new GuideContent.Tip(tr("nanite_trait.industrial_core." + t.key() + ".effect")));
-        return new GuideContent.Entry("atlas_trait_" + t.key(), name, els, icon);
+        els.add(new GuideContent.Text(tr(t.langKey() + (got ? ".how" : ".hint"))));
+        if (got) els.add(new GuideContent.Tip(tr(t.langKey() + ".effect")));
+        return new GuideContent.Entry("atlas_trait_" + t.key().replace(':', '_'), name, els, icon);
     }
 
     private static String value(NaniteGenome.Kind kind, float v) {
-        return kind == NaniteGenome.Kind.SCIENTIST ? pct(v) : "+" + pct(v);
+        return kind.knowledge() ? pct(v) : "+" + pct(v);
     }
 
     private static String pct(float v) { return String.format(Locale.ROOT, "%d%%", Math.round(v * 100)); }

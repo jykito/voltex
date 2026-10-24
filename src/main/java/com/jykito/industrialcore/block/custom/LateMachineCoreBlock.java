@@ -88,8 +88,10 @@ public class LateMachineCoreBlock extends HorizontalDirectionalBlock implements 
     /** The strain in the washer slot drops separately: the loot table only drops the block itself. */
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moving) {
-        if (state.getBlock() != newState.getBlock() && level.getBlockEntity(pos) instanceof LateMachineCoreBlockEntity be)
+        if (state.getBlock() != newState.getBlock() && level.getBlockEntity(pos) instanceof LateMachineCoreBlockEntity be) {
             net.minecraft.world.Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), be.getNanites().getStackInSlot(0));
+            if (!level.isClientSide) be.dismantle(level);
+        }
         super.onRemove(state, level, pos, newState, moving);
     }
 
@@ -98,9 +100,12 @@ public class LateMachineCoreBlock extends HorizontalDirectionalBlock implements 
         return new LateMachineCoreBlockEntity(pos, state);
     }
 
+    /** The block entity type that ticks for this core; other mods return their own type here and from newBlockEntity (API). */
+    protected BlockEntityType<?> blockEntityType() { return ModBlockEntities.LATE_MACHINE_CORE_BE.get(); }
+
     @Nullable @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        if (level.isClientSide || type != ModBlockEntities.LATE_MACHINE_CORE_BE.get()) return null;
+        if (level.isClientSide || type != blockEntityType()) return null;
         return (l, p, s, be) -> LateMachineCoreBlockEntity.serverTick(l, p, s, (LateMachineCoreBlockEntity) be);
     }
 

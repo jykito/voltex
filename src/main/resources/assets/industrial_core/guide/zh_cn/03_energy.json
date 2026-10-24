@@ -69,6 +69,86 @@
       ]
     },
     {
+      "name": "风力涡轮机",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:wind_turbine_base",
+          "title": "风力涡轮机"
+        },
+        {
+          "type": "text",
+          "text": "风力涡轮机需要你亲手从下往上搭建：一个**底座**，上面放 2 到 10 段**塔架段**，最上面一段放**机舱**，再把**转子**装进机舱：手持转子右键点击机舱。它不用燃料，白天黑夜都能工作，能量从底座顶部以外的任意一面输出。"
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "B": "industrial_core:wind_turbine_base",
+              "M": "industrial_core:wind_turbine_mast",
+              "N": "industrial_core:wind_turbine_nacelle"
+            },
+            "layers": [
+              [
+                "B"
+              ],
+              [
+                "M"
+              ],
+              [
+                "M"
+              ],
+              [
+                "M"
+              ],
+              [
+                "M"
+              ],
+              [
+                "N"
+              ]
+            ],
+            "model": "wind_turbine"
+          }
+        },
+        {
+          "type": "text",
+          "text": "塔架越高，输出越多：2 段提供一半，10 段提供全部。位置越高也越好，山顶上的风力涡轮机比海边的更强。下雨时输出提高一半，雷雨时翻倍。风一直在变化，机舱会自己转向迎风，所以最好在旁边放一个能量库。"
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "平原，10 段，晴天",
+              "value": "约 130 FE/t"
+            },
+            {
+              "key": "山顶，10 段，晴天",
+              "value": "约 180 FE/t"
+            },
+            {
+              "key": "上限",
+              "value": "500 FE/t"
+            }
+          ]
+        },
+        {
+          "type": "tip",
+          "text": "转子需要空间：机舱上方要露天，周围 5×5 要空旷。潜行并空手右键可以取下转子。相距不到 6 格的风力涡轮机会互相抢风。空手右键点击任意部件，快捷栏上方会显示输出，或者是什么在妨碍它。"
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:wind_turbine_base",
+            "industrial_core:wind_turbine_mast",
+            "industrial_core:wind_turbine_nacelle",
+            "industrial_core:wind_turbine_rotor",
+            "industrial_core:wind_turbine_blade"
+          ]
+        }
+      ]
+    },
+    {
       "name": "电缆",
       "elements": [
         {
@@ -116,6 +196,10 @@
         {
           "type": "tip",
           "text": "能源总线要用的裸导线，只能用**剪线钳**从红石块上剪出来。"
+        },
+        {
+          "type": "tip",
+          "text": "电缆和热管可以藏进任何完整方块里，比如石头或木板，照常工作。手持方块，潜行并右键点击电缆。拆下外壳：手持电动扳手潜行右键，第一下拆外壳，第二下才拆电缆本身。"
         },
         {
           "type": "items",
@@ -167,9 +251,36 @@
           "text": "一块 1000 万 FE 的大型储电方块。在它的界面里设置预留百分之多少，超出的部分全部回送到电网。它还会显示进出的功率。"
         },
         {
+          "type": "text",
+          "text": "能量库会保留电量：用扳手或镐拆下后，能量仍留在里面。等级越高，容量越大，传输越快。**T2** 在工作台上用 T1 合成，并继承它的电量。**T3** 从工业组装机里出来时是空的，所以先把 T2 的电放完。"
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "容量 T1",
+              "value": "1000 万 FE"
+            },
+            {
+              "key": "容量 T2",
+              "value": "1 亿 FE"
+            },
+            {
+              "key": "容量 T3",
+              "value": "20 亿 FE"
+            },
+            {
+              "key": "输入与输出",
+              "value": "10 万、100 万、1 亿 FE/t"
+            }
+          ]
+        },
+        {
           "type": "items",
           "items": [
-            "industrial_core:energy_bank"
+            "industrial_core:energy_bank",
+            "industrial_core:energy_bank_t2",
+            "industrial_core:energy_bank_t3"
           ]
         }
       ]
@@ -190,6 +301,39 @@
           "type": "items",
           "items": [
             "industrial_core:battery_charger"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "充电板",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:charging_plate",
+          "title": "充电板"
+        },
+        {
+          "type": "text",
+          "text": "给充电板接上电缆，然后站到上面：你身上带的所有东西都会被充电。先充盔甲和背包，再充手上的物品，最后是整个物品栏。不用再脱下装甲拿去电池充电器。工作时，能量场和立柱会发光。"
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "速率",
+              "value": "总计 10 万 FE/t"
+            },
+            {
+              "key": "缓存",
+              "value": "100 万 FE"
+            }
+          ]
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:charging_plate"
           ]
         }
       ]

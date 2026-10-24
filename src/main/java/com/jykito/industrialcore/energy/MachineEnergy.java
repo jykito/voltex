@@ -36,6 +36,13 @@ public class MachineEnergy extends EnergyStorage {
         energy = (int) Math.min((long) capacity, (long) energy + amount);
     }
 
+    /** Change the capacity and the output limit at run time (a buffer that grows with its source). The charge is clamped to the capacity. */
+    public void setLimits(int capacity, int maxExtract) {
+        this.capacity = Math.max(1, capacity);
+        this.maxExtract = Math.max(0, maxExtract);
+        energy = Math.min(energy, this.capacity);
+    }
+
     /** Load from NBT. The value is clamped to 0..capacity. */
     public void setEnergy(int amount) {
         energy = Math.max(0, Math.min(capacity, amount));

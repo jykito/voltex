@@ -46,6 +46,11 @@ public final class ModCreativeTab {
                         output.accept(ModItems.PIEZO_ELEMENT.get());
                         output.accept(ModItems.HEAT_RESISTANT_PLATING.get());
                         output.accept(ModItems.COAL_GENERATOR_ITEM.get());
+                        output.accept(ModItems.WIND_TURBINE_BASE_ITEM.get());
+                        output.accept(ModItems.WIND_TURBINE_MAST_ITEM.get());
+                        output.accept(ModItems.WIND_TURBINE_NACELLE_ITEM.get());
+                        output.accept(ModItems.WIND_TURBINE_ROTOR.get());
+                        output.accept(ModItems.WIND_TURBINE_BLADE.get());
                         output.accept(ModItems.THERMOGENERATOR_ITEM.get());
                         output.accept(ModItems.MOD_BLAST_FURNACE_ITEM.get());
                         output.accept(ModItems.SOLAR_PANEL_T1_ITEM.get());
@@ -84,6 +89,7 @@ public final class ModCreativeTab {
                         output.accept(ModItems.RESTRUCTOR_T2_ITEM.get());
                         output.accept(ModItems.MATTER_FABRICATOR_ITEM.get());
                         output.accept(ModItems.BATTERY_CHARGER.get());
+                        output.accept(ModItems.CHARGING_PLATE_ITEM.get());
                         output.accept(ModItems.MINER_CASING_ITEM.get());
                         output.accept(ModItems.MINER_CORE_ITEM.get());
                         output.accept(ModItems.INDUSTRIAL_MINER_CORE_ITEM.get());
@@ -269,6 +275,8 @@ public final class ModCreativeTab {
                         output.accept(ModItems.HEAT_PIPE_ITEM.get());
                         output.accept(ModItems.HEAT_PIPE_T2_ITEM.get());
                         output.accept(ModItems.ENERGY_BANK_ITEM.get());
+                        output.accept(ModItems.ENERGY_BANK_T2_ITEM.get());
+                        output.accept(ModItems.ENERGY_BANK_T3_ITEM.get());
                         output.accept(ModItems.STRUCTURAL_BLOCK_ITEM.get());
                         output.accept(ModItems.COIL_HOLDER_ITEM.get());
                         output.accept(ModItems.ELECTROMAGNET_CORE_ITEM.get());

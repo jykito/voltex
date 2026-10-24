@@ -125,7 +125,90 @@ public class LateMachineCoreBlockEntity extends BlockEntity implements MenuProvi
     public boolean acceptsNanites() { return getBlockState().getBlock() == ModBlocks.MULTIBLOCK_WASHER.get(); }
 
     public LateMachineCoreBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.LATE_MACHINE_CORE_BE.get(), pos, state);
+        this(ModBlockEntities.LATE_MACHINE_CORE_BE.get(), pos, state);
+    }
+
+    /**
+     * For other mods' machines on this logic (API): their own block entity type, registered for their core blocks
+     * (which override {@code LateMachineCoreBlock.blockEntityType()} and {@code newBlockEntity}).
+     */
+    public LateMachineCoreBlockEntity(net.minecraft.world.level.block.entity.BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
+    }
+
+    // ── concealed machines (API): what the core's renderer draws ──
+
+    /** Formed state and the port in each socket (block id or ""), as last sent to the client. */
+    private boolean renderFormed;
+    private List<String> renderSockets = List.of();
+
+    /** Client: whether the machine is formed, for a renderer that draws the whole machine. */
+    public boolean isFormedForRender() { return renderFormed; }
+    /** Client: the port standing in each socket in schema order, as a block id, or "" for a blank plug. */
+    public List<String> socketPorts() { return renderSockets; }
+
+    /**
+     * Called when the structure forms or breaks apart (and once on the first check after loading). Add-on machines hide
+     * or show their own frame here; the ports in sockets are handled by the core itself. Must be idempotent.
+     */
+    protected void onFormedChanged(Level level, boolean formed) {}
+
+    /** The core is gone: show the ports again and let the add-on show its frame. */
+    public void dismantle(Level level) {
+        LateMachineCoreBlock block = (LateMachineCoreBlock) getBlockState().getBlock();
+        if (block.pattern().isConcealed())
+            for (BlockPos p : block.pattern().socketPositions(worldPosition, getBlockState().getValue(LateMachineCoreBlock.FACING)))
+                setConcealed(level, p, false);
+        if (structure != null && structure.formed()) onFormedChanged(level, false);
+    }
+
+    private void syncConcealed(Level level, BlockState state, LateMultiblockPattern pattern) {
+        boolean formed = structure.formed();
+        for (BlockPos p : pattern.socketPositions(worldPosition, state.getValue(LateMachineCoreBlock.FACING))) setConcealed(level, p, formed);
+        List<String> now = new ArrayList<>();
+        for (LateMultiblockPattern.Socket s : structure.sockets())
+            now.add(s.port() == null ? "" : BuiltInRegistries.BLOCK.getKey(s.port()).toString());
+        if (formed != renderFormed || !now.equals(renderSockets)) {
+            renderFormed = formed;
+            renderSockets = List.copyOf(now);
+            setChanged();
+            level.sendBlockUpdated(worldPosition, state, state, net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
+        }
+    }
+
+    private static void setConcealed(Level level, BlockPos p, boolean on) {
+        BlockState st = level.getBlockState(p);
+        if (st.getBlock() instanceof com.jykito.industrialcore.block.custom.MultiblockPortBlock
+                && st.getValue(com.jykito.industrialcore.block.custom.MultiblockPortBlock.CONCEALED) != on)
+            level.setBlock(p, st.setValue(com.jykito.industrialcore.block.custom.MultiblockPortBlock.CONCEALED, on), net.minecraft.world.level.block.Block.UPDATE_ALL);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        CompoundTag t = new CompoundTag();
+        t.putBoolean("RFormed", renderFormed);
+        net.minecraft.nbt.ListTag l = new net.minecraft.nbt.ListTag();
+        for (String s : renderSockets) l.add(net.minecraft.nbt.StringTag.valueOf(s));
+        t.put("RSockets", l);
+        return t;
+    }
+
+    @Override
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
+        renderFormed = tag.getBoolean("RFormed");
+        List<String> l = new ArrayList<>();
+        for (net.minecraft.nbt.Tag e : tag.getList("RSockets", net.minecraft.nbt.Tag.TAG_STRING)) l.add(e.getAsString());
+        renderSockets = List.copyOf(l);
+    }
+
+    @Nullable @Override
+    public net.minecraft.network.protocol.Packet<net.minecraft.network.protocol.game.ClientGamePacketListener> getUpdatePacket() {
+        return net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public void onDataPacket(net.minecraft.network.Connection net, net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries) {
+        if (pkt.getTag() != null) handleUpdateTag(pkt.getTag(), registries);
     }
 
     public int parallel() { return BASE_PARALLEL + (structure == null ? 0 : structure.parallelBonus()); }
@@ -153,11 +236,14 @@ public class LateMachineCoreBlockEntity extends BlockEntity implements MenuProvi
         LateMachineCoreBlock block = (LateMachineCoreBlock) state.getBlock();
         if (structure == null || ++checkTimer >= CHECK_INTERVAL) {
             checkTimer = 0;
-            boolean wasFormed = structure != null && structure.formed();
+            boolean first = structure == null;
+            boolean wasFormed = !first && structure.formed();
             structure = block.pattern().validate(level, pos, state.getValue(LateMachineCoreBlock.FACING));
             if (!wasFormed && structure.formed())
                 com.jykito.industrialcore.advancement.VoltexEventTrigger.award(level, pos, 16,
                         com.jykito.industrialcore.advancement.VoltexEventTrigger.LATE_FORMED);
+            if (first || wasFormed != structure.formed()) onFormedChanged(level, structure.formed());
+            if (block.pattern().isConcealed()) syncConcealed(level, state, block.pattern());
         }
         List<EnergyPortBlockEntity> energy = energyPorts(level);
         energyStored = 0; energyCap = 0;

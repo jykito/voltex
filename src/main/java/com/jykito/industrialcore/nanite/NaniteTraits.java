@@ -16,8 +16,11 @@ public final class NaniteTraits {
     public static final float HOT = 0.9f, PYRONITE_STABILITY = 0.5f, PYRONITE_CAP_SHARE = 0.95f, CHIMERA_SHARE = 0.25f;
     public static final int CHIMERA_TARGETS = 3;
 
-    /** What was around the chamber during this generation. */
-    public record Env(boolean cold, boolean field, float heat) {}
+    /** What was around the chamber during this generation; {@code flags} are the add-on probes that held ({@link NaniteTraitRegistry}). */
+    public record Env(boolean cold, boolean field, float heat, java.util.Set<String> flags) {
+        public Env(boolean cold, boolean field, float heat) { this(cold, field, heat, java.util.Set.of()); }
+        public boolean has(String flag) { return flags.contains(flag); }
+    }
 
     /** Update the strain counters after a generation for target {@code target}; returns the traits that appeared now. */
     public static List<NaniteTrait> update(NaniteGenome g, NaniteGenome.Kind kind, String target, Env env) {
@@ -35,6 +38,9 @@ public final class NaniteTraits {
         int strong = 0;
         for (float v : g.affinity().values()) if (v >= cap * CHIMERA_SHARE) strong++;
         give(g, got, NaniteTrait.CHIMERA, strong >= CHIMERA_TARGETS);
+        // add-on traits: each condition sees its own counters in the strain
+        for (NaniteTraitRegistry.CustomTrait t : NaniteTraitRegistry.customTraits())
+            if (!g.hasTrait(t.key()) && t.condition().test(g, kind, target, env, g.counters(t.key()))) g.addExtraTrait(t.key());
         return got;
     }
 

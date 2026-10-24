@@ -17,11 +17,11 @@ public final class NaniteEvolution {
     private NaniteEvolution() {}
 
     public static final int CANDIDATES = 8;
-    private static final float STEP = 0.05f, STEP_HEAT = 0.07f;
+    static final float STEP = 0.05f, STEP_HEAT = 0.07f;
     /** Processor: the best of 8 offspring gives about 1.4σ, that is +3.5% per generation at the start. */
-    private static final float PROCESSOR_STEP = 0.025f, PROCESSOR_STEP_HEAT = 0.035f;
+    static final float PROCESSOR_STEP = 0.025f, PROCESSOR_STEP_HEAT = 0.035f;
     /** Scientist: about +4% knowledge per generation at the start; up to 90% (stellar physics) takes around 55 generations without heat. */
-    private static final float SCIENTIST_STEP = 0.03f, SCIENTIST_STEP_HEAT = 0.04f;
+    static final float SCIENTIST_STEP = 0.03f, SCIENTIST_STEP_HEAT = 0.04f;
     private static final float DRIFT = 0.02f, FLUID_STEP = 0.03f, FLUID_WEIGHT = 0.25f;
     private static final float STABILITY_LOSS = 0.03f, STABILITY_GAIN = 0.02f, COLD = 0.05f;
 
@@ -31,12 +31,9 @@ public final class NaniteEvolution {
      */
     public static NaniteGenome step(NaniteGenome parent, NaniteGenome.Kind kind, String target, Item feed, float heat, RandomSource rnd) {
         NaniteGenome best = parent;
-        boolean miner = kind == NaniteGenome.Kind.MINER;
+        boolean miner = kind.usesFluid();
         float bestFit = fitness(parent, target, miner);
-        boolean processor = kind == NaniteGenome.Kind.PROCESSOR;
-        float sigma = processor ? PROCESSOR_STEP + PROCESSOR_STEP_HEAT * heat
-                : kind == NaniteGenome.Kind.SCIENTIST ? SCIENTIST_STEP + SCIENTIST_STEP_HEAT * heat
-                : STEP + STEP_HEAT * heat;
+        float sigma = kind.step() + kind.stepHeat() * heat;
         float cap = NaniteGenome.cap(kind);
         for (int i = 0; i < CANDIDATES; i++) {
             NaniteGenome child = mutate(parent, target, sigma, cap, miner, rnd);

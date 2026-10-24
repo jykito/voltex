@@ -30,7 +30,8 @@ public class NaniteStrainItem extends Item {
 
     /** Target label: for a scientist the topic, for the others the item it was bred on (or the feed in the slot), otherwise the material key. */
     public static Component targetName(NaniteGenome g, String target, @Nullable ItemStack feed) {
-        if (g.is(NaniteGenome.Kind.SCIENTIST)) return Component.translatable("nanite_theme.industrial_core." + target);
+        Component named = g.kind() == null ? null : g.kind().targetName(target);
+        if (named != null) return named;
         if (feed != null && !feed.isEmpty()) return feed.getHoverName();
         Item icon = g.icon(target);
         return icon != null ? icon.getDescription() : Component.literal(target);
@@ -43,6 +44,8 @@ public class NaniteStrainItem extends Item {
             return Component.translatable("tooltip.industrial_core.nanite_strain.effect.processor", percent(g.secondOutputChance(target)));
         if (g.is(NaniteGenome.Kind.SCIENTIST))
             return Component.translatable("tooltip.industrial_core.nanite_strain.effect.scientist", percent(b), percent(NaniteLab.threshold(target)));
+        if (g.kind() != null && !g.kind().builtIn())
+            return Component.translatable(g.kind().lang("tooltip.industrial_core.nanite_strain.effect"), percent(b));
         return Component.translatable("tooltip.industrial_core.nanite_strain.effect.miner", percent(b));
     }
 
@@ -53,6 +56,8 @@ public class NaniteStrainItem extends Item {
             return Component.translatable("tooltip.industrial_core.nanite_strain.effect_short.processor", percent(g.secondOutputChance(target)));
         if (g.is(NaniteGenome.Kind.SCIENTIST))
             return Component.translatable("tooltip.industrial_core.nanite_strain.effect_short.scientist", percent(b));
+        if (g.kind() != null && !g.kind().builtIn())
+            return Component.translatable(g.kind().lang("tooltip.industrial_core.nanite_strain.effect_short"), percent(b));
         return Component.translatable("tooltip.industrial_core.nanite_strain.effect_short.miner", percent(b));
     }
 
@@ -65,7 +70,7 @@ public class NaniteStrainItem extends Item {
         NaniteGenome g = NaniteGenome.read(stack);
         String main = g.dominant();
         if (main == null || g.kind() == null) return super.getName(stack);
-        return Component.translatable("item.industrial_core.nanite_strain.named." + g.kind().key(), targetName(g, main, null));
+        return Component.translatable(g.kind().lang("item.industrial_core.nanite_strain.named"), targetName(g, main, null));
     }
 
     /** A strain in the player's inventory unlocks its species (and traits) in the atlas; every 2 s, not every tick. */
@@ -82,7 +87,7 @@ public class NaniteStrainItem extends Item {
             tip.add(Component.translatable("tooltip.industrial_core.nanite_strain.empty").withStyle(ChatFormatting.GRAY));
             return;
         }
-        tip.add(Component.translatable("tooltip.industrial_core.nanite_strain.kind." + g.kind().key()).withStyle(ChatFormatting.DARK_AQUA));
+        tip.add(Component.translatable(g.kind().lang("tooltip.industrial_core.nanite_strain.kind")).withStyle(ChatFormatting.DARK_AQUA));
         tip.add(Component.translatable("tooltip.industrial_core.nanite_strain.generation", g.generation()).withStyle(ChatFormatting.GRAY));
         g.affinity().entrySet().stream()
                 .filter(e -> e.getValue() >= 0.005f)
@@ -93,9 +98,9 @@ public class NaniteStrainItem extends Item {
             tip.add(Component.translatable("tooltip.industrial_core.nanite_strain.fluid",
                     String.format(Locale.ROOT, "%.2f", g.fluid())).withStyle(ChatFormatting.GRAY));
         tip.add(Component.translatable("tooltip.industrial_core.nanite_strain.stability", percent(g.stability())).withStyle(ChatFormatting.GRAY));
-        for (com.jykito.industrialcore.nanite.NaniteTrait t : g.traits())   // rare traits
+        for (String key : g.allTraitKeys())   // rare traits, built-in and add-on
             tip.add(Component.translatable("tooltip.industrial_core.nanite_strain.trait",
-                    Component.translatable("nanite_trait.industrial_core." + t.key())).withStyle(ChatFormatting.LIGHT_PURPLE));
-        tip.add(Component.translatable("tooltip.industrial_core.nanite_strain.hint." + g.kind().key()).withStyle(ChatFormatting.DARK_GRAY));
+                    Component.translatable(com.jykito.industrialcore.nanite.NaniteTraitRegistry.langKey(key))).withStyle(ChatFormatting.LIGHT_PURPLE));
+        tip.add(Component.translatable(g.kind().lang("tooltip.industrial_core.nanite_strain.hint")).withStyle(ChatFormatting.DARK_GRAY));
     }
 }

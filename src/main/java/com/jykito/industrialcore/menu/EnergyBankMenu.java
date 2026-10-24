@@ -1,6 +1,5 @@
 package com.jykito.industrialcore.menu;
 
-import com.jykito.industrialcore.block.ModBlocks;
 import com.jykito.industrialcore.block.entity.EnergyBankBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -14,7 +13,7 @@ public class EnergyBankMenu extends MachineMenu {
     private final ContainerData data;
 
     public EnergyBankMenu(int id, Inventory inv, FriendlyByteBuf extra) {
-        this(id, inv, inv.player.level().getBlockEntity(extra.readBlockPos()), new SimpleContainerData(7));
+        this(id, inv, inv.player.level().getBlockEntity(extra.readBlockPos()), new SimpleContainerData(9));
     }
 
     public EnergyBankMenu(int id, Inventory inv, BlockEntity entity, ContainerData data) {
@@ -27,7 +26,7 @@ public class EnergyBankMenu extends MachineMenu {
     }
 
     public int getEnergy()    { return unpack(data.get(0), data.get(1)); }
-    public int getMaxEnergy() { return EnergyBankBlockEntity.CAPACITY; }
+    public int getMaxEnergy() { return unpack(data.get(7), data.get(8)); }
     public int getIoIn()      { return unpack(data.get(2), data.get(3)); }
     public int getIoOut()     { return unpack(data.get(4), data.get(5)); }
     public int getReserve()   { return data.get(6); }
@@ -46,6 +45,6 @@ public class EnergyBankMenu extends MachineMenu {
     @Override
     public boolean stillValid(Player player) {
         return stillValid(ContainerLevelAccess.create(blockEntity.getLevel(), blockEntity.getBlockPos()),
-                player, ModBlocks.ENERGY_BANK.get());
+                player, blockEntity.getBlockState().getBlock());
     }
 }

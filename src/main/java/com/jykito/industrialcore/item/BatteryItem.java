@@ -49,7 +49,7 @@ public class BatteryItem extends Item implements EnergyItem {
     @Override
     public int getBarWidth(ItemStack pStack) {
         return Caps.get(pStack, Caps.ENERGY)
-                .map(energy -> Math.round(13.0F * energy.getEnergyStored() / energy.getMaxEnergyStored()))
+                .map(energy -> com.jykito.industrialcore.ModStyle.energyBar(energy.getEnergyStored(), energy.getMaxEnergyStored()))
                 .orElse(0);
     }
 

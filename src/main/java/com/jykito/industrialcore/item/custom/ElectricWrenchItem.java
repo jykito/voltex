@@ -54,7 +54,7 @@ public class ElectricWrenchItem extends Item implements EnergyItem {
 
     @Override
     public int getBarWidth(ItemStack stack) {
-        return Math.round(13.0f * getStoredEnergy(stack) / CAPACITY);
+        return com.jykito.industrialcore.ModStyle.energyBar(getStoredEnergy(stack), CAPACITY);
     }
 
     @Override
@@ -108,7 +108,9 @@ public class ElectricWrenchItem extends Item implements EnergyItem {
         // shift -> remove the block
         Block block = state.getBlock();
         ResourceLocation id = BuiltInRegistries.BLOCK.getKey(block);
-        if (id == null || !IndustrialCore.MODID.equals(id.getNamespace())) return InteractionResult.PASS;
+        // covers come off any block that has one (add-on pipes too); removing blocks stays for Voltex blocks only
+        boolean covered = com.jykito.industrialcore.block.custom.cover.Covers.isCovered(state);
+        if (!covered && (id == null || !IndustrialCore.MODID.equals(id.getNamespace()))) return InteractionResult.PASS;
         BlockEntity be = level.getBlockEntity(pos);
         if (be == null) return InteractionResult.PASS;
 
@@ -120,6 +122,17 @@ public class ElectricWrenchItem extends Item implements EnergyItem {
                                 .withStyle(ChatFormatting.RED), true);
             }
             return InteractionResult.FAIL;
+        }
+
+        // a covered cable or pipe: the first click takes the cover off, the next one the block itself
+        if (covered) {
+            if (!level.isClientSide()) {
+                drainEnergy(wrench, COST);
+                ItemStack cover = com.jykito.industrialcore.block.custom.cover.Covers.remove(level, pos);
+                if (!cover.isEmpty()) net.minecraft.world.Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), cover);
+                level.playSound(null, pos, SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 0.4f, 1.9f);
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide());
         }
 
         if (!level.isClientSide()) {

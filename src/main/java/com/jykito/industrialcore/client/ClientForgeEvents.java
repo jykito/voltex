@@ -35,7 +35,7 @@ public final class ClientForgeEvents {
     @SubscribeEvent
     public static void onRenderPlayerPre(net.neoforged.neoforge.client.event.RenderPlayerEvent.Pre event) {
         var helmet = event.getEntity().getItemBySlot(EquipmentSlot.HEAD).getItem();
-        if (helmet instanceof com.jykito.industrialcore.item.custom.NexiteArmorItem || helmet instanceof PlasmaArmorItem) {
+        if (helmet instanceof com.jykito.industrialcore.api.PowerSuitArmor) {
             event.getRenderer().getModel().head.visible = false;
             event.getRenderer().getModel().hat.visible = false;
         }
@@ -55,7 +55,7 @@ public final class ClientForgeEvents {
         if (renderingArm) return;   // nested call from renderRightHand: the normal arm
         var player = event.getPlayer();
         ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
-        if (!(chest.getItem() instanceof com.jykito.industrialcore.item.custom.NexiteArmorItem) && !(chest.getItem() instanceof PlasmaArmorItem)) return;
+        if (!(chest.getItem() instanceof com.jykito.industrialcore.api.PowerSuitArmor)) return;
         if (!(Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(player) instanceof net.minecraft.client.renderer.entity.player.PlayerRenderer renderer)) return;
         PoseStack ps = event.getPoseStack();
         MultiBufferSource buf = event.getMultiBufferSource();
@@ -146,4 +146,21 @@ public final class ClientForgeEvents {
     }
 
     private ClientForgeEvents() {}
+
+    /** Any wind turbine rotor, ours or a pack's: what it gives and how it goes into the nacelle. */
+    @SubscribeEvent
+    public static void onWindRotorTooltip(net.neoforged.neoforge.event.entity.player.ItemTooltipEvent event) {
+        com.jykito.industrialcore.block.custom.wind.WindRotors.Spec rotor = com.jykito.industrialcore.block.custom.wind.WindRotors.get(event.getItemStack());
+        if (rotor == null) return;
+        java.util.List<net.minecraft.network.chat.Component> tip = event.getToolTip();
+        int at = Math.min(1, tip.size());
+        tip.add(at, net.minecraft.network.chat.Component.translatable("tooltip.industrial_core.wind_rotor.use").withStyle(net.minecraft.ChatFormatting.GRAY));
+        tip.add(at, net.minecraft.network.chat.Component.translatable("tooltip.industrial_core.wind_rotor", plain(rotor.output()), plain(rotor.radius()))
+                .withStyle(net.minecraft.ChatFormatting.AQUA));
+    }
+
+    /** 1.0 as "1", 2.5 as "2.5", up to two decimals. */
+    private static String plain(float v) {
+        return java.math.BigDecimal.valueOf(Math.round(v * 100) / 100.0).stripTrailingZeros().toPlainString();
+    }
 }

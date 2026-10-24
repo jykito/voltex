@@ -11,7 +11,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.GsonHelper;
@@ -37,17 +36,18 @@ import org.slf4j.Logger;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Guide content model + loader from JSON.
  * Files: assets/industrial_core/guide/&lt;lang&gt;/*.json, one per category.
- * The language follows the interface; if there is nothing for the language, falls back to en_us.
+ * The language follows the interface; a chapter missing in it is taken from en_us (see {@link #load}).
+ * A chapter with an "addon" field gets the add-on's name on its tab and title.
  * Loading is lazy (when the screen opens): edits are picked up with F3+T without a rebuild.
  */
 public final class GuideContent {
@@ -59,7 +59,10 @@ public final class GuideContent {
     // ---------- model ----------
     public static final class Category {
         public final String name; public final List<Entry> entries; public final ItemStack icon;
-        Category(String n, List<Entry> e, ItemStack icon) { name = n; entries = e; this.icon = icon; }
+        /** Name of the add-on the chapter comes from (its "addon" field), or "" for Voltex's own chapters. */
+        public final String addon;
+        Category(String n, List<Entry> e, ItemStack icon) { this(n, e, icon, ""); }
+        Category(String n, List<Entry> e, ItemStack icon, String addon) { name = n; entries = e; this.icon = icon; this.addon = addon; }
     }
     public static final class Entry {
         public final String id, name; public final List<Element> elements; public final ItemStack icon;
@@ -439,8 +442,9 @@ public final class GuideContent {
             Lighting.setupForFlatItems();                         // flat even light: visible faces are always lit (no "jump" while rotating)
             MultiBufferSource.BufferSource buf = Minecraft.getInstance().renderBuffers().bufferSource();
             BlockRenderDispatcher br = Minecraft.getInstance().getBlockRenderer();
-            boolean formed = model != null && showModel && shownLayers >= sy;   // formed view: blocks hidden, the model is drawn
-            for (int i = 0; i < states.size() && !formed; i++) {
+            boolean formed = model != null && showModel && shownLayers >= sy;   // formed view: the model is drawn
+            boolean hideBlocks = formed && !GuideStructureModels.overBlocks(model);   // ...instead of the blocks, or over them
+            for (int i = 0; i < states.size() && !hideBlocks; i++) {
                 BlockPos p = poss.get(i);
                 if (p.getY() >= shownLayers) continue;   // show layers 0..shownLayers-1
                 ps.pushPose();
@@ -463,28 +467,33 @@ public final class GuideContent {
     }
 
     // ---------- loading ----------
+    /**
+     * Chapters in the interface language, file by file: a chapter missing in it (not translated yet, or an add-on
+     * chapter written only in English) is taken from en_us. Chapters go in file name order.
+     */
     public static List<Category> load() {
         String lang = Minecraft.getInstance().getLanguageManager().getSelected();
-        List<Category> cats = loadLang(lang);
-        if (cats.isEmpty() && !"en_us".equals(lang)) cats = loadLang("en_us");
-        return cats;
-    }
-
-    private static List<Category> loadLang(String lang) {
+        Map<String, ResourceLocation> files = chapterFiles("en_us");
+        if (!"en_us".equals(lang)) files.putAll(chapterFiles(lang));
         ResourceManager rm = Minecraft.getInstance().getResourceManager();
-        Map<ResourceLocation, Resource> found = rm.listResources("guide/" + lang,
-                rl -> rl.getNamespace().equals(IndustrialCore.MODID) && rl.getPath().endsWith(".json"));
-        List<ResourceLocation> keys = new ArrayList<>(found.keySet());
-        keys.sort(Comparator.comparing(ResourceLocation::getPath));
         List<Category> cats = new ArrayList<>();
-        for (ResourceLocation rl : keys) {
-            try (InputStreamReader r = new InputStreamReader(found.get(rl).open(), StandardCharsets.UTF_8)) {
+        for (ResourceLocation rl : files.values()) {
+            try (InputStreamReader r = new InputStreamReader(rm.getResourceOrThrow(rl).open(), StandardCharsets.UTF_8)) {
                 cats.add(parseCategory(GsonHelper.parse(r)));
             } catch (Exception e) {
                 LOG.warn("[Voltex guide] could not parse {}: {}", rl, e.toString());
             }
         }
         return cats;
+    }
+
+    /** Chapter files of one language by file name, sorted. */
+    private static Map<String, ResourceLocation> chapterFiles(String lang) {
+        Map<String, ResourceLocation> out = new TreeMap<>();
+        for (ResourceLocation rl : Minecraft.getInstance().getResourceManager().listResources("guide/" + lang,
+                rl -> rl.getNamespace().equals(IndustrialCore.MODID) && rl.getPath().endsWith(".json")).keySet())
+            out.put(rl.getPath().substring(rl.getPath().lastIndexOf('/') + 1), rl);
+        return out;
     }
 
     private static Category parseCategory(JsonObject o) {
@@ -505,7 +514,7 @@ public final class GuideContent {
         }
         ItemStack icon = o.has("icon") ? stackOf(GsonHelper.getAsString(o, "icon")) : ItemStack.EMPTY;
         for (int i = 0; icon.isEmpty() && i < entries.size(); i++) icon = entries.get(i).icon;
-        return new Category(name, entries, icon);
+        return new Category(name, entries, icon, GsonHelper.getAsString(o, "addon", ""));
     }
 
     private static List<String[]> pairs(JsonObject o, String key, String a, String b) {
@@ -602,6 +611,13 @@ public final class GuideContent {
                 BooleanProperty prop = sideProperty(st, d);
                 if (prop == null) continue;
                 st = st.setValue(prop, occupied.get(p.relative(d)) == st.getBlock());
+            }
+            // wind turbine mast sections narrow upwards by the number of sections under them, as in the world
+            if (st.getBlock() instanceof com.jykito.industrialcore.block.custom.wind.WindTurbineMastBlock) {
+                int below = 0;
+                while (occupied.get(p.below(below + 1)) == st.getBlock()) below++;
+                st = st.setValue(com.jykito.industrialcore.block.custom.wind.WindTurbineMastBlock.LEVEL,
+                        Math.min(below, com.jykito.industrialcore.block.custom.wind.WindTurbine.MODEL_LEVELS - 1));
             }
             states.set(i, st);
         }

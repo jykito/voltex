@@ -69,6 +69,86 @@
       ]
     },
     {
+      "name": "Wind Turbine",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:wind_turbine_base",
+          "title": "Wind Turbine"
+        },
+        {
+          "type": "text",
+          "text": "You build the wind turbine yourself, bottom to top: a **base**, 2 to 10 **mast sections** on it, the **nacelle** on the top section and a **rotor** in the nacelle: right-click it with the rotor. It runs day and night without fuel and gives power out of the base on every side but the top."
+        },
+        {
+          "type": "multiblock",
+          "pattern": {
+            "key": {
+              "B": "industrial_core:wind_turbine_base",
+              "M": "industrial_core:wind_turbine_mast",
+              "N": "industrial_core:wind_turbine_nacelle"
+            },
+            "layers": [
+              [
+                "B"
+              ],
+              [
+                "M"
+              ],
+              [
+                "M"
+              ],
+              [
+                "M"
+              ],
+              [
+                "M"
+              ],
+              [
+                "N"
+              ]
+            ],
+            "model": "wind_turbine"
+          }
+        },
+        {
+          "type": "text",
+          "text": "The taller the mast, the more it makes: 2 sections give half, 10 sections give it all. A high site helps too, a turbine on a mountain beats one by the sea. Rain gives half as much again, a thunderstorm doubles it. The wind keeps changing and the nacelle turns after it, so put an energy bank next to it."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Plains, 10 sections, clear",
+              "value": "about 130 FE/t"
+            },
+            {
+              "key": "Mountain, 10 sections, clear",
+              "value": "about 180 FE/t"
+            },
+            {
+              "key": "Cap",
+              "value": "500 FE/t"
+            }
+          ]
+        },
+        {
+          "type": "tip",
+          "text": "The rotor needs room: open sky above the nacelle and 5×5 of free space around it. To take the rotor out, sneak and right-click with an empty hand. Turbines closer than 6 blocks take wind from each other. Click any part with an empty hand to see the output, or what holds it back, above the hotbar."
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:wind_turbine_base",
+            "industrial_core:wind_turbine_mast",
+            "industrial_core:wind_turbine_nacelle",
+            "industrial_core:wind_turbine_rotor",
+            "industrial_core:wind_turbine_blade"
+          ]
+        }
+      ]
+    },
+    {
       "name": "Cables",
       "elements": [
         {
@@ -116,6 +196,10 @@
         {
           "type": "tip",
           "text": "The bare wire for the energy magistral only comes from **wire cutters**, out of a redstone block."
+        },
+        {
+          "type": "tip",
+          "text": "You can hide a cable or a heat pipe inside any full block, like stone or planks, and it keeps working as before. Hold the block, sneak and right-click the cable. To take the cover off, sneak and right-click with the wrench: the first click removes the cover, the next one the cable itself."
         },
         {
           "type": "items",
@@ -167,9 +251,36 @@
           "text": "A big 10M FE battery block. In its window you set how many percent to keep in reserve, and everything above that goes back into the grid. It also shows how much power comes in and out."
         },
         {
+          "type": "text",
+          "text": "The bank keeps its charge: pick it up with a wrench or a pickaxe and the energy stays inside. Higher tiers hold more and move it faster. **T2** is crafted from a T1 on a crafting table and takes over its charge. **T3** comes out of the industrial assembler empty, so drain the T2 first."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Capacity T1",
+              "value": "10M FE"
+            },
+            {
+              "key": "Capacity T2",
+              "value": "100M FE"
+            },
+            {
+              "key": "Capacity T3",
+              "value": "2B FE"
+            },
+            {
+              "key": "In and out",
+              "value": "100k, 1M, 100M FE/t"
+            }
+          ]
+        },
+        {
           "type": "items",
           "items": [
-            "industrial_core:energy_bank"
+            "industrial_core:energy_bank",
+            "industrial_core:energy_bank_t2",
+            "industrial_core:energy_bank_t3"
           ]
         }
       ]
@@ -190,6 +301,39 @@
           "type": "items",
           "items": [
             "industrial_core:battery_charger"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Charging Plate",
+      "elements": [
+        {
+          "type": "card",
+          "icon": "industrial_core:charging_plate",
+          "title": "Charging Plate"
+        },
+        {
+          "type": "text",
+          "text": "Run a cable to the plate and stand on it: everything you carry gets charged. Armour and backpack first, then your hands, then the whole inventory. No need to take your suit off and carry things to a charger. The field and the posts glow while it works."
+        },
+        {
+          "type": "stats",
+          "rows": [
+            {
+              "key": "Rate",
+              "value": "100k FE/t in total"
+            },
+            {
+              "key": "Buffer",
+              "value": "1M FE"
+            }
+          ]
+        },
+        {
+          "type": "items",
+          "items": [
+            "industrial_core:charging_plate"
           ]
         }
       ]

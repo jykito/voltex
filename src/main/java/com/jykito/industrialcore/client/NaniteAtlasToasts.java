@@ -39,7 +39,8 @@ public final class NaniteAtlasToasts {
         var toasts = Minecraft.getInstance().getToasts();
         CompoundTag ps = prev.getCompound("S"), ns = next.getCompound("S"), icons = next.getCompound("I");
         for (String key : ns.getAllKeys()) {
-            String[] kt = key.split(":", 2);
+            int cut = key.lastIndexOf(':');   // class keys of add-ons contain a colon themselves: modid:name:target
+            String[] kt = cut < 0 ? new String[]{key} : new String[]{key.substring(0, cut), key.substring(cut + 1)};
             NaniteGenome.Kind kind = kt.length == 2 ? NaniteGenome.Kind.byKey(kt[0]) : null;
             if (kind == null) continue;
             Component name = NaniteAtlas.speciesName(kind, kt[1], item(icons.getString(key)));
@@ -52,10 +53,10 @@ public final class NaniteAtlasToasts {
                     Component.translatable("toast.industrial_core.atlas.medal", Component.translatable("gui.industrial_core.atlas.medal." + now)), name, C_MEDAL[now]));
         }
         CompoundTag pt = prev.getCompound("T"), nt = next.getCompound("T");
-        for (NaniteTrait t : NaniteTrait.values())
+        for (com.jykito.industrialcore.nanite.NaniteTraitRegistry.TraitInfo t : com.jykito.industrialcore.nanite.NaniteTraitRegistry.all())
             if (nt.getBoolean(t.key()) && !pt.getBoolean(t.key()))
                 toasts.addToast(new NaniteAtlasToast(NaniteAtlas.painted(t.color()), Component.translatable("toast.industrial_core.atlas.rare"),
-                        Component.translatable("nanite_trait.industrial_core." + t.key()), C_RARE));
+                        Component.translatable(t.langKey()), C_RARE));
     }
 
     private static Item item(String id) {

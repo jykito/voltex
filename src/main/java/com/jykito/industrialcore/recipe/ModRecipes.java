@@ -17,6 +17,9 @@ public class ModRecipes {
     public static final DeferredRegister<RecipeSerializer<?>> SERIALIZERS =
             DeferredRegister.create(Registries.RECIPE_SERIALIZER, IndustrialCore.MODID);
 
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<EnergyBankUpgradeRecipe>> ENERGY_BANK_UPGRADE_SERIALIZER =
+            SERIALIZERS.register("energy_bank_upgrade", () -> EnergyBankUpgradeRecipe.Serializer.INSTANCE);
+
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<MachineRecipe>> MACHINE_SERIALIZER =
             SERIALIZERS.register("machine_recipe", () -> MachineRecipe.Serializer.INSTANCE);
 

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "B B",
+    " P ",
+    "B B"
+  ],
+  "key": {
+    "B": {
+      "item": "minecraft:iron_bars"
+    },
+    "P": {
+      "tag": "c:plates/iron"
+    }
+  },
+  "result": {
+    "id": "industrial_core:wind_turbine_mast",
+    "count": 4
+  }
+}

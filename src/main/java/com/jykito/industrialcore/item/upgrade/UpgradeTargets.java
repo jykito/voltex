@@ -55,6 +55,36 @@ public final class UpgradeTargets {
             ModBlocks.ORE_WASHER, ModBlocks.CAPSULE_FILLER, ModBlocks.CULTIVATOR, ModBlocks.CULTIVATOR_T2, ModBlocks.FLUID_ENRICHER,
             ModBlocks.CRYSTALLIZER, ModBlocks.STONE_GENERATOR, ModBlocks.BIOREACTOR);
 
+    /** Shared upgrade kinds other mods can register their machines for (API: {@code api.VoltexUpgrades}). */
+    public enum Shared {
+        ACCELERATOR, PARALLEL, ITEM_PUSH, ITEM_PULL, FLUID_PUSH, FLUID_PULL;
+        List<DeferredHolder<Block, Block>> builtIn() {
+            return switch (this) {
+                case ACCELERATOR -> UpgradeTargets.ACCELERATOR;
+                case PARALLEL -> UpgradeTargets.PARALLEL;
+                case ITEM_PUSH -> UpgradeTargets.ITEM_PUSH;
+                case ITEM_PULL -> UpgradeTargets.ITEM_PULL;
+                case FLUID_PUSH -> UpgradeTargets.FLUID_PUSH;
+                case FLUID_PULL -> UpgradeTargets.FLUID_PULL;
+            };
+        }
+    }
+
+    private static final java.util.Map<Shared, java.util.List<java.util.function.Supplier<Block>>> EXTRA = new java.util.EnumMap<>(Shared.class);
+
+    /**
+     * A machine of another mod takes this shared upgrade: its upgrade slots should check {@link #works}, and the upgrade
+     * tooltip lists it. The machine itself applies the effect (for example through {@code MachineUpgrades.scan}). Call during setup.
+     */
+    public static synchronized void register(Shared kind, java.util.function.Supplier<Block> machine) {
+        EXTRA.computeIfAbsent(kind, k -> new java.util.ArrayList<>()).add(machine);
+    }
+
+    private static List<java.util.function.Supplier<Block>> extrasFor(List<DeferredHolder<Block, Block>> builtIn) {
+        for (Shared k : Shared.values()) if (k.builtIn() == builtIn) return EXTRA.getOrDefault(k, List.of());
+        return List.of();
+    }
+
     /**
      * Whether a shared upgrade works in this machine. Machine upgrade slots check through this
      * method, so a slot accepts exactly what the tooltip says and nothing useless.
@@ -72,6 +102,8 @@ public final class UpgradeTargets {
         else if (item instanceof DirectionalUpgradeItem dir) targets = forMode(dir.getMode());
         else return false;
         for (DeferredHolder<Block, Block> b : targets)
+            if (b.get() == machine) return true;
+        for (java.util.function.Supplier<Block> b : extrasFor(targets))
             if (b.get() == machine) return true;
         return false;
     }
@@ -105,6 +137,9 @@ public final class UpgradeTargets {
         tooltip.add(Component.translatable("tooltip.industrial_core.upgrade.works_in")
                 .withStyle(ChatFormatting.GRAY));
         for (DeferredHolder<Block, Block> b : targets)
+            tooltip.add(Component.translatable("tooltip.industrial_core.upgrade.target",
+                    Component.translatable(b.get().getDescriptionId())).withStyle(ChatFormatting.DARK_AQUA));
+        for (java.util.function.Supplier<Block> b : extrasFor(targets))
             tooltip.add(Component.translatable("tooltip.industrial_core.upgrade.target",
                     Component.translatable(b.get().getDescriptionId())).withStyle(ChatFormatting.DARK_AQUA));
     }

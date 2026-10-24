@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "industrial_core:block/machine/energy_bank_t3_top",
+    "bottom": "industrial_core:block/machine/energy_bank_t3_bottom",
+    "side": "industrial_core:block/machine/energy_bank_t3_side_50",
+    "particle": "industrial_core:block/machine/energy_bank_t3_side_50"
+  }
+}

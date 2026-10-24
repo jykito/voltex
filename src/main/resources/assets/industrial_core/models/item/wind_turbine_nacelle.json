@@ -1,0 +1,114 @@
+{
+  "loader": "neoforge:obj",
+  "model": "industrial_core:models/block/wind_turbine/nacelle_item.obj",
+  "flip_v": true,
+  "ambientocclusion": false,
+  "textures": {
+    "wind_turbine": "industrial_core:block/wind_turbine",
+    "particle": "industrial_core:block/wind_turbine_base_bottom"
+  },
+  "display": {
+    "gui": {
+      "rotation": [
+        30,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.47,
+        0.47,
+        0.47
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        3,
+        0
+      ],
+      "scale": [
+        0.188,
+        0.188,
+        0.188
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.376,
+        0.376,
+        0.376
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.282,
+        0.282,
+        0.282
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.301,
+        0.301,
+        0.301
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.301,
+        0.301,
+        0.301
+      ]
+    }
+  }
+}

@@ -391,6 +391,24 @@ import com.jykito.industrialcore.IndustrialCore;
 
         public static final DeferredHolder<Item, Item> BATTERY_CHARGER = ITEMS.register("battery_charger",
                 () -> new BlockItem(ModBlocks.BATTERY_CHARGER.get(), new Item.Properties()));
+        public static final DeferredHolder<Item, Item> WIND_TURBINE_BASE_ITEM = ITEMS.register("wind_turbine_base",
+                () -> new com.jykito.industrialcore.item.custom.TooltipBlockItem(ModBlocks.WIND_TURBINE_BASE.get(), new Item.Properties(), "tooltip.industrial_core.wind_turbine_base"));
+
+        public static final DeferredHolder<Item, Item> WIND_TURBINE_MAST_ITEM = ITEMS.register("wind_turbine_mast",
+                () -> new com.jykito.industrialcore.item.custom.TooltipBlockItem(ModBlocks.WIND_TURBINE_MAST.get(), new Item.Properties(), "tooltip.industrial_core.wind_turbine_mast"));
+
+        public static final DeferredHolder<Item, Item> WIND_TURBINE_NACELLE_ITEM = ITEMS.register("wind_turbine_nacelle",
+                () -> new com.jykito.industrialcore.item.custom.TooltipBlockItem(ModBlocks.WIND_TURBINE_NACELLE.get(), new Item.Properties(), "tooltip.industrial_core.wind_turbine_nacelle"));
+
+        // the basic wind turbine rotor; packs and add-ons register their own (block.custom.wind.WindRotors)
+        public static final DeferredHolder<Item, Item> WIND_TURBINE_ROTOR = ITEMS.register("wind_turbine_rotor",
+                () -> new Item(new Item.Properties().stacksTo(16)));
+
+        public static final DeferredHolder<Item, Item> WIND_TURBINE_BLADE = ITEMS.register("wind_turbine_blade",
+                () -> new Item(new Item.Properties()));
+
+        public static final DeferredHolder<Item, Item> CHARGING_PLATE_ITEM = ITEMS.register("charging_plate",
+                () -> new BlockItem(ModBlocks.CHARGING_PLATE.get(), new Item.Properties()));
 
         public static final DeferredHolder<Item, Item> TIN_ORE_ITEM = ITEMS.register("tin_ore",
                 () -> new BlockItem(ModBlocks.TIN_ORE.get(), new Item.Properties()));
@@ -478,7 +496,11 @@ import com.jykito.industrialcore.IndustrialCore;
                 () -> new BlockItem(ModBlocks.HEAT_PIPE_T2.get(), new Item.Properties()));
 
         public static final DeferredHolder<Item, Item> ENERGY_BANK_ITEM = ITEMS.register("energy_bank",
-                () -> new BlockItem(ModBlocks.ENERGY_BANK.get(), new Item.Properties()));
+                () -> new EnergyBankItem((com.jykito.industrialcore.block.custom.EnergyBankBlock) ModBlocks.ENERGY_BANK.get(), new Item.Properties()));
+        public static final DeferredHolder<Item, Item> ENERGY_BANK_T2_ITEM = ITEMS.register("energy_bank_t2",
+                () -> new EnergyBankItem((com.jykito.industrialcore.block.custom.EnergyBankBlock) ModBlocks.ENERGY_BANK_T2.get(), new Item.Properties()));
+        public static final DeferredHolder<Item, Item> ENERGY_BANK_T3_ITEM = ITEMS.register("energy_bank_t3",
+                () -> new EnergyBankItem((com.jykito.industrialcore.block.custom.EnergyBankBlock) ModBlocks.ENERGY_BANK_T3.get(), new Item.Properties()));
 
         public static final DeferredHolder<Item, Item> STRUCTURAL_BLOCK_ITEM = ITEMS.register("structural_block",
                 () -> new BlockItem(ModBlocks.STRUCTURAL_BLOCK.get(), new Item.Properties()));

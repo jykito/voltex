@@ -59,5 +59,9 @@ public final class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<BlockPos>> WAND_CORNER_B =
             COMPONENTS.registerComponentType("wand_corner_b", b -> b.persistent(BlockPos.CODEC).networkSynchronized(BlockPos.STREAM_CODEC));
 
+    /** Reserve percent of an energy bank carried as an item. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> BANK_RESERVE =
+            COMPONENTS.registerComponentType("bank_reserve", b -> b.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT));
+
     public static void register(IEventBus bus) { COMPONENTS.register(bus); }
 }

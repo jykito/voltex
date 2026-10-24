@@ -18,28 +18,37 @@ import java.util.List;
  * fits any rotation.
  * <p>
  * Schema symbols: C casing (any port can stand in its place), G structural glass,
- * M mechanism block (an upgrade block can stand in its place), K core, "." not checked.
- * There are no other substitutions: the shape is fixed.
+ * M mechanism block (an upgrade block can stand in its place), K core, "." not checked,
+ * P socket: a port, or casing as a blank plug. There are no other substitutions: the shape is fixed.
+ * <p>
+ * Other mods can build their own machines on this pattern (API): {@link #withBlocks} swaps the casing and glass for
+ * their own frame blocks, {@link #concealed()} marks a machine that hides its blocks when formed and is drawn by one
+ * model from the core. In a concealed machine ports go only into sockets, so the model knows where to draw each one
+ * ({@link Result#sockets()}), and the ports in them are hidden too ({@link com.jykito.industrialcore.block.custom.MultiblockPortBlock#CONCEALED}).
  * <p>
  * {@link #advancedTier()}: a tier two machine, advanced casing and advanced glass instead of the regular ones.
  * {@link #requiresHeat()}: the machine needs at least one heat port.
  */
 public final class LateMultiblockPattern {
 
-    public enum Cell { CASING, GLASS, MECHANISM, CORE, ANY }
+    public enum Cell { CASING, GLASS, MECHANISM, CORE, ANY, SOCKET }
 
     /** What is wrong with the structure. The ordinal goes to the client GUI. */
     public enum Problem { NONE, WRONG_BLOCK, NO_INPUT, NO_OUTPUT, NO_ENERGY, NO_HEAT }
 
+    /** A socket cell in schema order and the port standing in it, or null for a blank plug. */
+    public record Socket(BlockPos pos, @org.jetbrains.annotations.Nullable Block port) {}
+
     public record Result(Problem problem, Cell expected, BlockPos at,
                          List<BlockPos> inputs, List<BlockPos> outputs, List<BlockPos> energy, List<BlockPos> heat,
-                         int parallelBonus, int speedBlocks, int efficiencyBlocks) {
+                         int parallelBonus, int speedBlocks, int efficiencyBlocks, List<Socket> sockets) {
         public boolean formed() { return problem == Problem.NONE; }
     }
 
     private final Cell[][][] cells;   // [layer][d][s]
     private final int coreLayer, coreRow, half;
-    private boolean advanced, needsHeat;
+    private boolean advanced, needsHeat, concealed;
+    private @org.jetbrains.annotations.Nullable java.util.function.Supplier<Block> casingBlock, glassBlock;
 
     /**
      * @param coreLayer index of the layer (from the bottom) the core is in
@@ -74,8 +83,17 @@ public final class LateMultiblockPattern {
 
     public boolean needsHeat() { return needsHeat; }
 
-    private Block casing() { return advanced ? ModBlocks.MULTIBLOCK_CASING_ADVANCED.get() : ModBlocks.MULTIBLOCK_CASING.get(); }
-    private Block glass()  { return advanced ? ModBlocks.STRUCTURAL_GLASS_ADVANCED.get() : ModBlocks.STRUCTURAL_GLASS.get(); }
+    /** Own frame blocks instead of the Voltex casing and glass (glass may stay null if the schema has no G). */
+    public LateMultiblockPattern withBlocks(java.util.function.Supplier<Block> casing, @org.jetbrains.annotations.Nullable java.util.function.Supplier<Block> glass) {
+        this.casingBlock = casing; this.glassBlock = glass; return this;
+    }
+
+    /** Formed, the machine hides its blocks and ports and the core's renderer draws it; ports go into sockets only. */
+    public LateMultiblockPattern concealed() { concealed = true; return this; }
+    public boolean isConcealed() { return concealed; }
+
+    private Block casing() { return casingBlock != null ? casingBlock.get() : advanced ? ModBlocks.MULTIBLOCK_CASING_ADVANCED.get() : ModBlocks.MULTIBLOCK_CASING.get(); }
+    private Block glass()  { return glassBlock != null ? glassBlock.get() : advanced ? ModBlocks.STRUCTURAL_GLASS_ADVANCED.get() : ModBlocks.STRUCTURAL_GLASS.get(); }
 
     private static Cell parse(char c) {
         return switch (c) {
@@ -84,6 +102,7 @@ public final class LateMultiblockPattern {
             case 'M' -> Cell.MECHANISM;
             case 'K' -> Cell.CORE;
             case '.' -> Cell.ANY;
+            case 'P' -> Cell.SOCKET;
             default -> throw new IllegalArgumentException("unknown schema symbol: " + c);
         };
     }
@@ -95,6 +114,7 @@ public final class LateMultiblockPattern {
 
     public Result validate(Level level, BlockPos core, Direction facing) {
         List<BlockPos> inputs = new ArrayList<>(), outputs = new ArrayList<>(), energy = new ArrayList<>(), heat = new ArrayList<>();
+        List<Socket> sockets = new ArrayList<>();
         int parallelBonus = 0, speedBlocks = 0, efficiencyBlocks = 0;
         for (int h = 0; h < cells.length; h++) {
             for (int d = 0; d < cells[h].length; d++) {
@@ -106,8 +126,18 @@ public final class LateMultiblockPattern {
                     BlockState st = level.getBlockState(p);
                     Block b = st.getBlock();
                     boolean ok = switch (want) {
-                        case CASING -> {
+                        case SOCKET -> {
                             if (b instanceof MultiblockPortBlock port) {
+                                addPort(port, p, inputs, outputs, energy, heat);
+                                sockets.add(new Socket(p, b));
+                                yield true;
+                            }
+                            if (b != casing()) yield false;
+                            sockets.add(new Socket(p, null));
+                            yield true;
+                        }
+                        case CASING -> {
+                            if (b instanceof MultiblockPortBlock port && !concealed) {
                                 switch (port.kind()) {
                                     case INPUT  -> inputs.add(p);
                                     case OUTPUT -> outputs.add(p);
@@ -138,7 +168,33 @@ public final class LateMultiblockPattern {
         }
         Problem missing = inputs.isEmpty() ? Problem.NO_INPUT : outputs.isEmpty() ? Problem.NO_OUTPUT
                 : energy.isEmpty() ? Problem.NO_ENERGY : needsHeat && heat.isEmpty() ? Problem.NO_HEAT : Problem.NONE;
-        return new Result(missing, Cell.ANY, null, inputs, outputs, energy, heat, parallelBonus, speedBlocks, efficiencyBlocks);
+        return new Result(missing, Cell.ANY, null, inputs, outputs, energy, heat, parallelBonus, speedBlocks, efficiencyBlocks, sockets);
+    }
+
+    private static void addPort(MultiblockPortBlock port, BlockPos p, List<BlockPos> inputs, List<BlockPos> outputs, List<BlockPos> energy, List<BlockPos> heat) {
+        switch (port.kind()) {
+            case INPUT  -> inputs.add(p);
+            case OUTPUT -> outputs.add(p);
+            case ENERGY -> energy.add(p);
+            case HEAT   -> heat.add(p);
+        }
+    }
+
+    /** Positions of the socket cells in schema order (the order of {@link Result#sockets()}). */
+    public List<BlockPos> socketPositions(BlockPos core, Direction facing) {
+        List<BlockPos> out = new ArrayList<>();
+        forEach(core, facing, (cell, p) -> { if (cell == Cell.SOCKET) out.add(p); });
+        return out;
+    }
+
+    /** Every checked cell of the structure with its world position (core and "." cells skipped), for hiding a frame. */
+    public void forEach(BlockPos core, Direction facing, java.util.function.BiConsumer<Cell, BlockPos> action) {
+        for (int h = 0; h < cells.length; h++)
+            for (int d = 0; d < cells[h].length; d++)
+                for (int s = 0; s < cells[h][d].length; s++) {
+                    Cell c = cells[h][d][s];
+                    if (c != Cell.ANY && c != Cell.CORE) action.accept(c, toWorld(core, facing, h, d, s));
+                }
     }
 
     /**
@@ -169,7 +225,8 @@ public final class LateMultiblockPattern {
     /** The same criterion as {@link #validate}: a port is fine instead of casing, an upgrade instead of a mechanism. */
     private boolean matches(Cell want, Block b) {
         return switch (want) {
-            case CASING -> b instanceof MultiblockPortBlock || b == casing();
+            case CASING -> (b instanceof MultiblockPortBlock && !concealed) || b == casing();
+            case SOCKET -> b instanceof MultiblockPortBlock || b == casing();
             case GLASS -> b == glass();
             case MECHANISM -> b instanceof MechanismUpgradeBlock || b == ModBlocks.MECHANISM_BLOCK.get();
             default -> true;
@@ -177,6 +234,6 @@ public final class LateMultiblockPattern {
     }
 
     private static Result fail(Cell want, BlockPos p) {
-        return new Result(Problem.WRONG_BLOCK, want, p, List.of(), List.of(), List.of(), List.of(), 0, 0, 0);
+        return new Result(Problem.WRONG_BLOCK, want, p, List.of(), List.of(), List.of(), List.of(), 0, 0, 0, List.of());
     }
 }

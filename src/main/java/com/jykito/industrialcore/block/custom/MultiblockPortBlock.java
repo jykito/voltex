@@ -50,21 +50,26 @@ public class MultiblockPortBlock extends BaseEntityBlock {
     public enum Kind { INPUT, OUTPUT, ENERGY, HEAT }
 
     public static final BooleanProperty DARK = BooleanProperty.create("dark");
+    /**
+     * Hidden inside a machine drawn by one model (a concealed pattern, API): the port is not drawn but stays solid,
+     * clickable and working. The machine core sets it when the structure forms and clears it when it breaks apart.
+     */
+    public static final BooleanProperty CONCEALED = BooleanProperty.create("concealed");
 
     private final Kind kind;
 
     public MultiblockPortBlock(Kind kind, Properties props) {
         super(props);
         this.kind = kind;
-        registerDefaultState(stateDefinition.any().setValue(DARK, false));
+        registerDefaultState(stateDefinition.any().setValue(DARK, false).setValue(CONCEALED, false));
     }
 
     public Kind kind() { return kind; }
 
-    @Override public RenderShape getRenderShape(BlockState s) { return RenderShape.MODEL; }
+    @Override public RenderShape getRenderShape(BlockState s) { return s.getValue(CONCEALED) ? RenderShape.INVISIBLE : RenderShape.MODEL; }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> b) { b.add(DARK); }
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> b) { b.add(DARK, CONCEALED); }
 
     /** Dark look if at least one neighbour is advanced casing or advanced glass. */
     private static boolean nearAdvanced(BlockGetter level, BlockPos pos) {

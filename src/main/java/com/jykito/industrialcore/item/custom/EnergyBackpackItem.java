@@ -129,8 +129,7 @@ public class EnergyBackpackItem extends Item implements EnergyItem {
 
     @Override
     public int getBarWidth(ItemStack stack) {
-        int stored = getEnergy(stack);
-        return capacity == 0 ? 0 : Math.round(13f * stored / capacity);
+        return com.jykito.industrialcore.ModStyle.energyBar(getEnergy(stack), capacity);
     }
 
     @Override

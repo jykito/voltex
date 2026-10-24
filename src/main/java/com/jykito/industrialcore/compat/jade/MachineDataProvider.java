@@ -70,6 +70,10 @@ public enum MachineDataProvider implements IServerDataProvider<BlockAccessor>, I
             }
         });
 
+        if (be instanceof com.jykito.industrialcore.block.entity.WindTurbineNacelleBlockEntity
+                || be instanceof com.jykito.industrialcore.block.entity.WindTurbineBaseBlockEntity)
+            data.put("wind", com.jykito.industrialcore.block.custom.wind.WindTurbine.statusAt(be.getLevel(), be.getBlockPos()).save());
+
         if (be instanceof BaseMachineBlockEntity machine) {
             int progress = machine.baseData.get(4), max = machine.baseData.get(5);
             if (progress > 0 && max > 0) {
@@ -105,6 +109,9 @@ public enum MachineDataProvider implements IServerDataProvider<BlockAccessor>, I
                         compact(data.getInt("fluidAmount")), compact(data.getInt("fluidCap"))));
             }
         }
+
+        if (data.contains("wind"))
+            tooltip.add(com.jykito.industrialcore.block.custom.wind.WindTurbine.Status.load(data.getCompound("wind")).describe());
 
         if (data.contains("progress")) {
             int percent = data.getInt("progress") * 100 / Math.max(1, data.getInt("progressMax"));

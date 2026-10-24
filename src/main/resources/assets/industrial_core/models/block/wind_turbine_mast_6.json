@@ -1,0 +1,10 @@
+{
+  "loader": "neoforge:obj",
+  "model": "industrial_core:models/block/wind_turbine/mast_6.obj",
+  "flip_v": true,
+  "ambientocclusion": false,
+  "textures": {
+    "wind_turbine": "industrial_core:block/wind_turbine",
+    "particle": "industrial_core:block/wind_turbine_base_bottom"
+  }
+}

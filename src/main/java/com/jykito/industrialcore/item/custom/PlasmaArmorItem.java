@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class PlasmaArmorItem extends ArmorItem implements EnergyItem {
+public class PlasmaArmorItem extends ArmorItem implements EnergyItem, com.jykito.industrialcore.api.PowerSuitArmor {
 
     public static final int CAPACITY     = 1_000_000;
     public static final int MAX_TRANSFER = 1_000_000;
@@ -114,7 +114,7 @@ public class PlasmaArmorItem extends ArmorItem implements EnergyItem {
 
     @Override
     public int getBarWidth(ItemStack stack) {
-        return Math.round(13f * getEnergy(stack) / CAPACITY);
+        return com.jykito.industrialcore.ModStyle.energyBar(getEnergy(stack), CAPACITY);
     }
 
     @Override

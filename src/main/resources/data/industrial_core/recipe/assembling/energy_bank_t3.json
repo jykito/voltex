@@ -1,0 +1,35 @@
+{
+  "type": "industrial_core:assembling",
+  "inputs": [
+    {
+      "item": "industrial_core:energy_bank_t2",
+      "count": 1
+    },
+    {
+      "item": "industrial_core:voltex_plate",
+      "count": 8
+    },
+    {
+      "item": "industrial_core:quantum_capacitor",
+      "count": 4
+    },
+    {
+      "item": "industrial_core:resonance_matrix",
+      "count": 2
+    },
+    {
+      "item": "industrial_core:control_unit",
+      "count": 1
+    }
+  ],
+  "fluid": {
+    "fluid": "industrial_core:superfluid_condensate",
+    "amount": 2000
+  },
+  "result": {
+    "id": "industrial_core:energy_bank_t3",
+    "count": 1
+  },
+  "processingTime": 1200,
+  "energyCostPerTick": 16000
+}

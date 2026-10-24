@@ -30,8 +30,14 @@ final class GuideStructureModels {
             case "industrial_miner" -> "industrial_core:industrial_miner_core";
             case "miner" -> "industrial_core:miner_core";
             case "magnet" -> "industrial_core:electromagnet_core";
-            default -> null;
+            case "wind_turbine" -> "industrial_core:wind_turbine_nacelle";
+            default -> com.jykito.industrialcore.api.client.GuideModels.coreOf(model);   // models of other mods
         };
+    }
+
+    /** Models drawn over the schema's blocks instead of replacing them: the wind turbine mast stays ordinary blocks. */
+    static boolean overBlocks(String model) {
+        return "wind_turbine".equals(model);
     }
 
     /** The pose is already set in the core block. */
@@ -42,7 +48,11 @@ final class GuideStructureModels {
             case "industrial_miner" -> industrialMiner(ps, buf, t, light, ov);
             case "miner" -> MinerCoreBER.renderFormed(ps, buf, Direction.NORTH, (t * 0.5f) % 360f, light, ov);
             case "magnet" -> ElectromagnetCoreBER.renderModels(ps, buf, 0f, (t * 2f) % 360f, 1, ov);   // with a copper coil
-            default -> { }
+            // rotor to the north like the schema front, the nacelle swaying a little as if after the wind
+            case "wind_turbine" -> com.jykito.industrialcore.client.wind.WindTurbineBER.renderParts(ps, buf,
+                    Mth.PI + Mth.sin(t * 0.01f) * 0.4f, t * 0.15f, t * 0.25f,
+                    com.jykito.industrialcore.block.custom.wind.WindRotors.BASIC, light, ov, 0.8f);
+            default -> com.jykito.industrialcore.api.client.GuideModels.render(model, ps, buf, t);
         }
     }
 

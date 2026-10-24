@@ -25,6 +25,8 @@ public class GuideScreen extends Screen {
     private static final int MAX_W = 470, MAX_H = 300, MIN_W = 315, MIN_H = 256;
     private static final int BEZEL = 7, TAB_H = 24, TAB_W = 22, LIST_W = 128, SEARCH_H = 18, FOOT_H = 15, ROW_H = 13;
     private static final int TEXT = 0xFFE6EDF3, SUB = 0xFFAEB6BF, DIM = 0xFF8B949E, ACCENT = 0xFF00FFCC, EDGE = 0xFF3A4048;
+    /** Add-on chapters: amber, apart from Voltex's own cyan. */
+    private static final int ADDON = 0xFFE8B04A;
     private static final int C_BEZEL = 0xFF14171A, C_BEZEL_IN = 0xFF1A1E22, C_TABS = 0xFF343A40, C_LIST = 0xFF1B1E21,
             C_BODY = 0xFF23272B, C_FOOT = 0xFF1D2125, C_FIELD = 0xFF0E1013;
 
@@ -117,6 +119,7 @@ public class GuideScreen extends Screen {
             else if (hv) g.fill(x - 1, iy + 2, x + TAB_W + 1, iy + TAB_H, 0x18FFFFFF);
             ItemStack icon = cats.get(ci).icon;
             if (icon != null && !icon.isEmpty()) g.renderItem(icon, x + 3, iy + 5);
+            if (!cats.get(ci).addon.isEmpty()) g.fill(x + TAB_W - 4, iy + 5, x + TAB_W - 1, iy + 8, ADDON);   // add-on chapter mark
             tabHits.add(new int[]{x - 1, iy + 2, TAB_W + 2, TAB_H - 2, ci});
             x += TAB_W + 2;
         }
@@ -146,6 +149,13 @@ public class GuideScreen extends Screen {
         int startY = top + 2 - listScroll, y = startY;
         boolean over = in(mx, my, x, top, LIST_W, h);
         g.enableScissor(x, top, x + LIST_W, top + h);
+        // add-on chapter: its add-on's name as the first row (the title bar has no room once tabs pile up)
+        String addon = query.isEmpty() && !cats.isEmpty() ? cats.get(catI).addon : "";
+        if (!addon.isEmpty()) {
+            g.fill(x + 7, y + 3, x + 11, y + 7, ADDON);
+            g.drawString(font, font.plainSubstrByWidth(addon, LIST_W - 26), x + 20, y + 2, ADDON, false);
+            y += ROW_H;
+        }
         int found = 0;
         for (int ci = 0; ci < cats.size(); ci++) {
             if (query.isEmpty() && ci != catI) continue;
@@ -245,7 +255,13 @@ public class GuideScreen extends Screen {
 
     private void renderTooltips(GuiGraphics g, int mx, int my) {
         for (int[] t : tabHits)
-            if (in(mx, my, t[0], t[1], t[2], t[3])) { g.renderTooltip(font, Component.literal(cats.get(t[4]).name), mx, my); return; }
+            if (in(mx, my, t[0], t[1], t[2], t[3])) {
+                GuideContent.Category c = cats.get(t[4]);
+                List<Component> lines = new ArrayList<>(List.of(Component.literal(c.name)));
+                if (!c.addon.isEmpty()) lines.add(Component.literal(c.addon).withStyle(s -> s.withColor(ADDON & 0xFFFFFF)));
+                g.renderComponentTooltip(font, lines, mx, my);
+                return;
+            }
         if (!in(mx, my, ctX, ctY, ctW, ctH)) return;
         GuideContent.Entry e = current();
         if (e == null) return;
