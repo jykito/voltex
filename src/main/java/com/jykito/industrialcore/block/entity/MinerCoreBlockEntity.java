@@ -174,6 +174,8 @@ public class MinerCoreBlockEntity extends BlockEntity implements Caps.Provider, 
 
         int effectiveMax = upg.scaleTime(BASE_PROGRESS);
         this.maxProgress = effectiveMax;
+        // accelerators raise the draw a tick, as on every other machine; without it a faster cycle made each ore cheaper
+        int energyPerTick = upg.scaleEnergy(ENERGY_PER_TICK);
 
         pushToAdjacentInventories(level, pos);
 
@@ -181,15 +183,15 @@ public class MinerCoreBlockEntity extends BlockEntity implements Caps.Provider, 
         boolean canWork = isStructureValid
                 && !lensStack.isEmpty()
                 && lensStack.getItem() instanceof MinerLensItem
-                && energyStorage.getEnergyStored() >= ENERGY_PER_TICK
+                && energyStorage.getEnergyStored() >= energyPerTick
                 && !isOutputFull();
 
         boolean hasChanges = false;
         boolean working = false;
         if (canWork) {
             // parallel the energy covers this tick (not more than the module, not more than the stock)
-            int energyParallel = Math.max(1, Math.min(upg.parallel(), energyStorage.getEnergyStored() / ENERGY_PER_TICK));
-            energyStorage.consumeEnergy(energyParallel * ENERGY_PER_TICK);
+            int energyParallel = Math.max(1, Math.min(upg.parallel(), energyStorage.getEnergyStored() / energyPerTick));
+            energyStorage.consumeEnergy(energyParallel * energyPerTick);
             progress++;
             working = true;
             hasChanges = true;

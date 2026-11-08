@@ -141,6 +141,17 @@ public class IndustrialCoreJeiPlugin implements IModPlugin {
         return ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "jei_plugin");
     }
 
+    /** under EMI JEI's click areas do nothing, so the windows' areas go through EMI */
+    @Override
+    public void onRuntimeAvailable(mezz.jei.api.runtime.IJeiRuntime runtime) {
+        if (net.neoforged.fml.ModList.get().isLoaded("emi")) com.jykito.industrialcore.compat.emi.JeiAreasUnderEmi.start(runtime);
+    }
+
+    @Override
+    public void onRuntimeUnavailable() {
+        if (net.neoforged.fml.ModList.get().isLoaded("emi")) com.jykito.industrialcore.compat.emi.JeiAreasUnderEmi.stop();
+    }
+
     private static ResourceLocation guiTex(String name) {
         return ResourceLocation.fromNamespaceAndPath(IndustrialCore.MODID, "textures/gui/" + name + ".png");
     }

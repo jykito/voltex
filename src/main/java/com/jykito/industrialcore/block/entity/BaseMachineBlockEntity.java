@@ -37,6 +37,8 @@ public abstract class BaseMachineBlockEntity extends BlockEntity implements Caps
     @Nullable private MachineRecipe cachedRecipe = null;
     private boolean recipeDirty = true;
     private int myRecipeGeneration = -1;
+    /** ticks without a recipe; at CachedRecipe.RESCAN_TICKS the input is looked at again (a shift-click grows it silently) */
+    private int recipeIdle = 0;
 
     protected final ItemStackHandler itemHandler = new ItemStackHandler(6) {
         @Override
@@ -120,7 +122,9 @@ public abstract class BaseMachineBlockEntity extends BlockEntity implements Caps
         boolean hasChanges = false;
         boolean isWorking  = false;
 
-        if (recipeDirty || myRecipeGeneration != recipeGeneration) {
+        if (recipeDirty || myRecipeGeneration != recipeGeneration
+                || (cachedRecipe == null && ++recipeIdle >= com.jykito.industrialcore.recipe.CachedRecipe.RESCAN_TICKS)) {
+            recipeIdle = 0;
             SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
             for (int i = 0; i < itemHandler.getSlots(); i++)
                 inventory.setItem(i, itemHandler.getStackInSlot(i));
